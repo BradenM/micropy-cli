@@ -1,8 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 
 import click
 from pathlib import Path
-from project import Project
+from micropy.project import Project
 
 
 @click.group()
