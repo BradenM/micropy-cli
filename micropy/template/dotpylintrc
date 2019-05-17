@@ -1,5 +1,5 @@
 # Micropython ESP 32
-init-hook='import sys; sys.path.insert(1,"$STUB");sys.path.insert(1,"./lib")'
+init-hook='import sys; sys.path.insert(1,"$stub");sys.path.insert(1,"./lib")'
 
 disable = missing-docstring, line-too-long, trailing-newlines, broad-except, logging-format-interpolation, invalid-name, 
         no-method-argument, assignment-from-no-return, too-many-function-args, unexpected-keyword-arg
