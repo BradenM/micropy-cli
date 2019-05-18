@@ -23,14 +23,24 @@ class Project:
         self.name = project_name
         self.path = Path.cwd() / self.name
         self.log = ServiceLog(self.name, 'bright_blue')
-        self.setup()
-        self.create(self.path)
 
     def setup(self):
         if not self.FILES.exists():
             self.log.info("Missing .micropy folder, creating now...")
-            self.STUB_DIR.mkdir(parents=True)
-            self.log.success("Done!")
+            self.FILES.mkdir()
+        if not self.STUB_DIR.exists():
+            e = Exception('You have no stubs!')
+            self.log.exception(e)
+            self.log.error("Please run micropy stub get")
+            raise e
+
+    def add_stub(self, path):
+        stub_path = Path(path)
+        out = self.STUB_DIR / stub_path.name
+        self.log.info(f"Adding $[{stub_path.name}] to stubs...")
+        copytree(stub_path, out)
+        self.log.success("Done!")
+
 
     def copy_file(self, src, dest):
         file = Path(src)
@@ -55,16 +65,11 @@ class Project:
         path.write_text(output)
         return output
 
-    def create(self, path):
-        self.log.info(f"Initiating $[{self.name}]")
-        copytree(self.TEMPLATE, self.path, copy_function=self.copy_file)
+    def load_stubs(self):
         vs_path = self.path / '.vscode' / 'settings.json'
         pylint_path = self.path / '.pylintrc'
-        vs_old = self.path / 'dotvscode'
-        vs_old.rmdir()
-        self.log.success("Files Loaded!")
-        self.log.info("Populating Stub info...")
         stubs = [f'"{s}"' for s in list(self.STUB_DIR.iterdir())]
+        self.log.info(f"Found $[{len(stubs)}] stubs, injecting...")
         esp_stub = next(self.STUB_DIR.glob("esp32_1_10*"))
         vscode_sub = {
             'stubs': ',\n'.join(stubs)
@@ -75,3 +80,13 @@ class Project:
         self.load_template(vs_path, **vscode_sub)
         self.load_template(pylint_path, **pylint_sub)
         self.log.success("Stubs Loaded!")
+
+    def create(self):
+        self.log.info(f"Initiating $[{self.name}]")
+        copytree(self.TEMPLATE, self.path, copy_function=self.copy_file)
+        vs_old = self.path / 'dotvscode'
+        vs_old.rmdir()
+        self.log.success("Files Loaded!")
+        self.log.info("Populating Stub info...")
+        self.load_stubs()
+        self.log.success("Project Initiated!")
