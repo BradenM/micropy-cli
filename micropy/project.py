@@ -68,14 +68,16 @@ class Project:
     def load_stubs(self):
         vs_path = self.path / '.vscode' / 'settings.json'
         pylint_path = self.path / '.pylintrc'
-        stubs = [f'"{s}"' for s in list(self.STUB_DIR.iterdir())]
+        stubs = list(self.STUB_DIR.iterdir())
+        vs_stubs = [f'"{s}"' for s in stubs]
+        pylint_stubs = [f'sys.path.insert(1,"{stub}")' for stub in stubs]
         self.log.info(f"Found $[{len(stubs)}] stubs, injecting...")
         esp_stub = next(self.STUB_DIR.glob("esp32_1_10*"))
         vscode_sub = {
-            'stubs': ',\n'.join(stubs)
+            'stubs': ',\n'.join(vs_stubs)
         }
         pylint_sub = {
-            'stub': str(esp_stub.resolve())
+            'stubs': ';'.join(pylint_stubs)
         }
         self.load_template(vs_path, **vscode_sub)
         self.load_template(pylint_path, **pylint_sub)
