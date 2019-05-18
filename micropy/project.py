@@ -5,11 +5,13 @@
 from pathlib import Path
 from string import Template
 from shutil import copytree, copy2
+from micropy.logger import ServiceLog
 
 
 class Project:
     TEMPLATE = Path(__file__).parent / 'template'
-    STUB_DIR = Path.home() / '.micropy' / 'stubs'
+    FILES = Path.home() / '.micropy'
+    STUB_DIR = FILES / 'stubs'
 
     def __init__(self, project_name, **kwargs):
         """Handles Project file generation and modification
@@ -20,13 +22,20 @@ class Project:
         """
         self.name = project_name
         self.path = Path.cwd() / self.name
+        self.log = ServiceLog(self.name, 'bright_blue')
+        self.setup()
         self.create(self.path)
+
+    def setup(self):
+        if not self.FILES.exists():
+            self.log.info("Missing .micropy folder, creating now...")
+            self.STUB_DIR.mkdir(parents=True)
+            self.log.success("Done!")
 
     def copy_file(self, src, dest):
         file = Path(src)
         filename = file.name
         parent = file.parent
-        print(src)
         if filename[:3] == 'dot':
             name = filename[3:]
             out = f'.{name}'
@@ -37,8 +46,6 @@ class Project:
             out_dir = Path(dest).parent.parent / out
             out_dir.mkdir(parents=True, exist_ok=True)
             dest = out_dir / filename
-        print(dest)
-        print("\n")
         return copy2(src, dest)
 
     def load_template(self, path, **kwargs):
@@ -49,14 +56,16 @@ class Project:
         return output
 
     def create(self, path):
+        self.log.info(f"Initiating $[{self.name}]")
         copytree(self.TEMPLATE, self.path, copy_function=self.copy_file)
         vs_path = self.path / '.vscode' / 'settings.json'
         pylint_path = self.path / '.pylintrc'
         vs_old = self.path / 'dotvscode'
         vs_old.rmdir()
+        self.log.success("Files Loaded!")
+        self.log.info("Populating Stub info...")
         stubs = [f'"{s}"' for s in list(self.STUB_DIR.iterdir())]
         esp_stub = next(self.STUB_DIR.glob("esp32_1_10*"))
-        print(stubs)
         vscode_sub = {
             'stubs': ',\n'.join(stubs)
         }
@@ -65,3 +74,4 @@ class Project:
         }
         self.load_template(vs_path, **vscode_sub)
         self.load_template(pylint_path, **pylint_sub)
+        self.log.success("Stubs Loaded!")
