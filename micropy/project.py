@@ -20,8 +20,8 @@ class Project:
             project_name (string): name of project
 
         """
-        self.name = project_name
-        self.path = Path.cwd() / self.name
+        self.path = Path.cwd() / project_name
+        self.name = self.path.name
         self.log = ServiceLog(self.name, 'bright_blue')
 
     def setup(self):
@@ -80,6 +80,16 @@ class Project:
         self.load_template(vs_path, **vscode_sub)
         self.load_template(pylint_path, **pylint_sub)
         self.log.success("Stubs Loaded!")
+
+    def refresh_stubs(self):
+        self.log.info(f"Refreshing Stubs for $[{self.name}]")
+        vs_temp = self.TEMPLATE / 'dotvscode' / 'settings.json'
+        pylint_temp = self.TEMPLATE / 'dotpylintrc'
+        vs_path = self.path / '.vscode' / 'settings.json'
+        pylint_path = self.path / '.pylintrc'
+        copy2(vs_temp, vs_path)
+        copy2(pylint_temp, pylint_path)
+        return self.load_stubs()
 
     def create(self):
         self.log.info(f"Initiating $[{self.name}]")

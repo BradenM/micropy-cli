@@ -34,9 +34,8 @@ def init(project_name=""):
 @click.argument('project_name', required=True)
 def reload(project_name=''):
     """Reload Stubs"""
-    log.info(f"Refreshing Stubs for $[{project_name}]")
     project = Project(project_name)
-    project.load_stubs()
+    project.refresh_stubs()
 
 @stub.command()
 def get():
