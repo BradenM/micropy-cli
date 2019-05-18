@@ -20,7 +20,8 @@ VERSION = '0.1.0'
 
 # Required Packages
 REQUIRED = [
-    'click'
+    'click',
+    'requests'
 ]
 
 EXTRAS = {}
