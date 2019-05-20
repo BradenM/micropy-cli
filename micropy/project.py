@@ -6,6 +6,7 @@ from pathlib import Path
 from string import Template
 from shutil import copytree, copy2
 from micropy.logger import ServiceLog
+import questionary as prompt
 
 
 class Project:
@@ -41,7 +42,6 @@ class Project:
         copytree(stub_path, out)
         self.log.success("Done!")
 
-
     def copy_file(self, src, dest):
         file = Path(src)
         filename = file.name
@@ -70,9 +70,11 @@ class Project:
         pylint_path = self.path / '.pylintrc'
         stubs = list(self.STUB_DIR.iterdir())
         vs_stubs = [f'"{s}"' for s in stubs]
-        pylint_stubs = [f'sys.path.insert(1,"{stub}")' for stub in stubs]
         self.log.info(f"Found $[{len(stubs)}] stubs, injecting...")
-        esp_stub = next(self.STUB_DIR.glob("esp32_1_10*"))
+        lint_stubs = prompt.checkbox(
+            "Which stubs would you like pylint to load?", choices=[i.name for i in stubs]).ask()
+        pylint_stubs = [
+            f'sys.path.insert(1,"{stub}")' for stub in stubs if stub.name in lint_stubs]
         vscode_sub = {
             'stubs': ',\n'.join(vs_stubs)
         }

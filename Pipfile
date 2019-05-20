@@ -12,6 +12,7 @@ twine = "*"
 [packages]
 click = "*"
 requests = "*"
+questionary = "*"
 
 [requires]
 python_version = "3.7"
