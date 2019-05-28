@@ -58,8 +58,12 @@ def get():
 @click.argument('path', required=True, type=click.Path(exists=True, file_okay=False, resolve_path=True))
 def add(path):
     """Add stubs"""
-    project = Project("Stubs")
-    project.add_stub(path)
+    return mp.add_stub(path)
+
+@stubs.command()
+def list():
+    """Lists all stubs"""
+    return mp.list_stubs()
 
 
 if __name__ == "__main__":

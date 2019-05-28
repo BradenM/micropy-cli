@@ -14,8 +14,7 @@ from micropy.micropy import MicroPy
 class Project(MicroPy):
     """Handles Project file generation and modification
 
-    :param project_name: name of project
-    :type project_name: string
+    :param str project_name: name of project
 
     """
 
@@ -32,18 +31,6 @@ class Project(MicroPy):
             self.log.exception(e)
             self.log.error("Please run micropy stub get")
             raise e
-
-    def add_stub(self, path):
-        """Adds stub to micropy folder
-
-        :param str path: path of stub to add
-
-        """
-        stub_path = Path(path)
-        out = self.STUB_DIR / stub_path.name
-        self.log.info(f"Adding $[{stub_path.name}] to stubs...")
-        copytree(stub_path, out)
-        self.log.success("Done!")
 
     def copy_file(self, src, dest):
         """Helper function to parse 'dots' out of template names
