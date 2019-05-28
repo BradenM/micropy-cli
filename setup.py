@@ -20,7 +20,8 @@ VERSION = '0.1.0'
 REQUIRED = [
     'click',
     'requests',
-    'questionary'
+    'questionary',
+    'rshell',
 ]
 
 EXTRAS = {}
