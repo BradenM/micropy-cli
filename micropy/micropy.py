@@ -17,7 +17,7 @@ class MicroPy:
     STUB_DIR = FILES / 'stubs'
     CREATE_STUBS = FILES / 'createstubs.py'
     CREATE_STUBS_URL = "https://git.io/fjRiM"
-    STUBS = [Stub(i) for i in STUB_DIR.iterdir()]
+    STUBS = [Stub(i) for i in STUB_DIR.iterdir()] if STUB_DIR.exists() else []
 
     def __init__(self):
         setup = self.setup()
