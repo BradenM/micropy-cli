@@ -8,11 +8,13 @@ autopep8 = "*"
 pylint = "*"
 isort = "*"
 twine = "*"
+autoflake = "*"
 
 [packages]
 click = "*"
 requests = "*"
 questionary = "*"
+rshell = "*"
 
 [requires]
 python_version = "3.7"
