@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import os
-import re
 import logging
+import re
 from pathlib import Path
 
 from click import clear, confirm, prompt, secho, style
+
 
 class ServiceLog:
     """Handles logging to stdout and micropy.log
@@ -19,7 +19,8 @@ class ServiceLog:
     LOG_FILE = Path.home() / '.micropy' / 'micropy.log'
 
     def __init__(self, service_name, base_color, **kwargs):
-        logging.basicConfig(level=logging.DEBUG, filename=self.LOG_FILE, filemode='a')
+        logging.basicConfig(level=logging.DEBUG,
+                            filename=self.LOG_FILE, filemode='a')
         self.is_root = kwargs.get('root', False)
         self.parent_name = style(
             f"[MicroPy] \u276f", fg='bright_green', bold=True)
@@ -187,8 +188,6 @@ class ServiceLog:
         secho(f"{self.parent_name} {title} ", nl=False)
         return confirm(msg, show_default="[y/N] ", prompt_suffix=suffix, **kwargs)
 
-
     def clear(self):
         """Clears terminal screen"""
         return clear()
-

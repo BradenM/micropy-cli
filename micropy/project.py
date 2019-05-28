@@ -2,11 +2,13 @@
 
 
 from pathlib import Path
+from shutil import copy2, copytree
 from string import Template
-from shutil import copytree, copy2
+
+import questionary as prompt
+
 from micropy.logger import ServiceLog
 from micropy.micropy import MicroPy
-import questionary as prompt
 
 
 class Project(MicroPy):

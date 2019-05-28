@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from pathlib import Path
+
 from micropy.logger import ServiceLog
+
 
 class MicroPy:
     """Parent class for handling setup and variables"""
@@ -16,7 +18,7 @@ class MicroPy:
         self.log.debug("\n---- MicropyCLI Session ----")
         if setup:
             self.log.info("Missing .micropy folder, created it.")
-        
+
     def setup(self):
         """creates necessary directories for micropy"""
         if not self.FILES.exists():
