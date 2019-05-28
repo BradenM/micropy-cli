@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from shutil import copytree
-
+import re
 
 class Stub:
     """Handles Stub Directory
@@ -14,6 +14,13 @@ class Stub:
         self.path = path.absolute()
         self.name = self.path.name
 
+    @staticmethod
+    def clean_stub_name(stub_path):
+        """Cleans stub names"""
+        name = stub_path.name
+        cleaned = re.sub(r'\([^)]*\)', '', name)
+        return stub_path.with_name(cleaned)                               
+
     @classmethod
     def create_from_path(cls, stub_dir, path):
         """Creates Stub instance from path
@@ -22,6 +29,7 @@ class Stub:
         :param str path: path to new stub
 
         """
-        out = stub_dir / path.name
+        stub_path = Stub.clean_stub_name(path)
+        out = stub_dir / stub_path.name
         copytree(path, out)
         return cls(out)

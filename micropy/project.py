@@ -79,7 +79,7 @@ class Project(MicroPy):
         lint_stubs = prompt.checkbox(
             "Which stubs would you like pylint to load?", choices=[i.name for i in stubs]).ask()
         pylint_stubs = [
-            f'sys.path.insert(1,"{stub}")' for stub in stubs if stub.name in lint_stubs]
+            f'sys.path.insert(1,"{str(stub.absolute())}")' for stub in stubs if stub.name in lint_stubs]
         vscode_sub = {
             'stubs': ',\n'.join(vs_stubs)
         }

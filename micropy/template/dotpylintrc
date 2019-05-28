@@ -1,4 +1,4 @@
-# Micropython ESP 32
+# Micropy Stubs For Micropython
 init-hook='import sys; $stubs;sys.path.insert(1,"./lib")'
 
 disable = missing-docstring, line-too-long, trailing-newlines, broad-except, logging-format-interpolation, invalid-name, 
