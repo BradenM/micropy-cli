@@ -41,18 +41,6 @@ def reload(project_name=''):
     project.refresh_stubs()
 
 
-@stubs.command()
-def get():
-    """Retrieves createstubs.py"""
-    CREATE_STUB = "https://raw.githubusercontent.com/Josverl/micropython-stubber/master/createstubs.py"
-    out = Path.cwd() / 'createstubs.py'
-    mp.log.info(
-        "Retrieving $[createstubs.py] from $[Josverl/micropython-stubber]...")
-    content = requests.get(CREATE_STUB)
-    out.write_text(content.text)
-    mp.log.info(f"Request complete, outputted to: {out.resolve()}")
-    mp.log.success("Done!")
-
 
 @stubs.command()
 @click.argument('path', required=True, type=click.Path(exists=True, file_okay=False, resolve_path=True))
