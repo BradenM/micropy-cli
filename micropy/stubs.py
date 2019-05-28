@@ -2,12 +2,14 @@
 
 from shutil import copytree
 
+
 class Stub:
     """Handles Stub Directory
 
     :param str path: path to stub
 
     """
+
     def __init__(self, path, *args, **kwargs):
         self.path = path.absolute()
         self.name = self.path.name

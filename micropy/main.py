@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from pathlib import Path
-
 import click
-import requests
 
 from micropy.micropy import MicroPy
 from micropy.project import Project
@@ -41,17 +38,18 @@ def reload(project_name=''):
     project.refresh_stubs()
 
 
-
 @stubs.command()
 @click.argument('path', required=True, type=click.Path(exists=True, file_okay=False, resolve_path=True))
 def add(path):
     """Add stubs"""
     return mp.add_stub(path)
 
+
 @stubs.command()
 def list():
     """Lists all stubs"""
     return mp.list_stubs()
+
 
 @stubs.command()
 @click.argument('port', required=True)
