@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 
@@ -6,29 +5,25 @@ from pathlib import Path
 from string import Template
 from shutil import copytree, copy2
 from micropy.logger import ServiceLog
+from micropy.micropy import MicroPy
 import questionary as prompt
 
 
-class Project:
-    TEMPLATE = Path(__file__).parent / 'template'
-    FILES = Path.home() / '.micropy'
-    STUB_DIR = FILES / 'stubs'
+class Project(MicroPy):
+    """Handles Project file generation and modification
+
+    Args:
+        project_name (string): name of project
+
+    """
 
     def __init__(self, project_name, **kwargs):
-        """Handles Project file generation and modification
-
-        Args:
-            project_name (string): name of project
-
-        """
         self.path = Path.cwd() / project_name
         self.name = self.path.name
         self.log = ServiceLog(self.name, 'bright_blue')
+        super().__init__()
 
     def setup(self):
-        if not self.FILES.exists():
-            self.log.info("Missing .micropy folder, creating now...")
-            self.FILES.mkdir()
         if not self.STUB_DIR.exists():
             e = Exception('You have no stubs!')
             self.log.exception(e)

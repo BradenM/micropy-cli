@@ -5,18 +5,17 @@
 import click
 from pathlib import Path
 from micropy.project import Project
-from micropy.logger import ServiceLog
+from micropy.micropy import MicroPy
 import requests
 
-log = ServiceLog('MicroPy', 'bright_blue', root=True)
-
+mp = MicroPy()
 
 @click.group()
 def cli():
     pass
 
 @cli.group()
-def stub():
+def stubs():
     """Manage Stubs"""
     pass
 
@@ -25,7 +24,7 @@ def stub():
 @click.argument('project_name', required=True)
 def init(project_name=""):
     """Create new Micropython Project"""
-    log.info("Creating New Project...")
+    mp.log.info("Creating New Project...")
     project = Project(project_name)
     project.setup()
     project.create()
@@ -37,18 +36,18 @@ def reload(project_name=''):
     project = Project(project_name)
     project.refresh_stubs()
 
-@stub.command()
+@stubs.command()
 def get():
     """Retrieves createstubs.py"""
     CREATE_STUB = "https://raw.githubusercontent.com/Josverl/micropython-stubber/master/createstubs.py"
     out = Path.cwd() / 'createstubs.py'
-    log.info("Retrieving $[createstubs.py] from $[Josverl/micropython-stubber]...")
+    mp.log.info("Retrieving $[createstubs.py] from $[Josverl/micropython-stubber]...")
     content = requests.get(CREATE_STUB)
     out.write_text(content.text)
-    log.info(f"Request complete, outputted to: {out.resolve()}")
-    log.success("Done!")
+    mp.log.info(f"Request complete, outputted to: {out.resolve()}")
+    mp.log.success("Done!")
 
-@stub.command()
+@stubs.command()
 @click.argument('path', required=True, type=click.Path(exists=True, file_okay=False, resolve_path=True))
 def add(path):
     """Add stubs"""
