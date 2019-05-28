@@ -65,6 +65,12 @@ def list():
     """Lists all stubs"""
     return mp.list_stubs()
 
+@stubs.command()
+@click.argument('port', required=True)
+def create(port):
+    """Create stubs from a pyboard"""
+    return mp.create_stubs(port)
+
 
 if __name__ == "__main__":
     cli()
