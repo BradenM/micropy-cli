@@ -13,6 +13,7 @@ pytest = "*"
 micropy-cli = {editable = true,path = "."}
 pyfakefs = "*"
 pytest-cov = "*"
+requests-mock = "*"
 
 [packages]
 click = "*"
