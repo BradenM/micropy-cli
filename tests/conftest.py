@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 @pytest.fixture
-def fs_reload_micropy():
+def fs_micropy():
     patcher = Patcher(modules_to_reload=[micropy])
     patcher.setUp()
     linecache.open = patcher.original_open
@@ -22,7 +22,7 @@ def fs_reload_micropy():
 
 
 @pytest.fixture
-def mock_micropy(fs_reload_micropy):
+def mock_micropy(fs_micropy):
     tmp_dir = Path(os.getenv('HOME'))
-    fs_reload_micropy.create_dir(tmp_dir)
+    fs_micropy.create_dir(tmp_dir)
     return micropy.MicroPy()
