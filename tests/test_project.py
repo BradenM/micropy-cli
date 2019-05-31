@@ -4,9 +4,7 @@ import pytest
 import pyfakefs
 import micropy
 from pathlib import Path
-import io
 import sys
-import questionary
 import os
 
 
@@ -23,19 +21,6 @@ def with_stubs(fs_micropy):
     [mp.add_stub(i) for i in stubs]
     project = micropy.project.Project("NewProject")
     return project
-
-
-@pytest.fixture
-def mock_prompt(monkeypatch):
-    def mock_prompt(*args, **kwargs):
-        class prompt_mock:
-            def __init__(self, *args, **kwargs):
-                return None
-
-            def ask(self):
-                return ['stub']
-        return prompt_mock(*args, **kwargs)
-    monkeypatch.setattr(questionary, 'checkbox', mock_prompt)
 
 
 def test_project_no_stubs(fs_micropy, mock_micropy):
