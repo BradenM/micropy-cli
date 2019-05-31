@@ -29,7 +29,7 @@ class Project(MicroPy):
         if not self.STUB_DIR.exists():
             e = Exception('You have no stubs!')
             self.log.exception(e)
-            self.log.error("Please run micropy stub get")
+            self.log.error("Please run micropy stubs get")
             raise e
 
     def copy_file(self, src, dest):
