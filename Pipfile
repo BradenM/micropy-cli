@@ -9,6 +9,10 @@ pylint = "*"
 isort = "*"
 twine = "*"
 autoflake = "*"
+pytest = "*"
+micropy-cli = {editable = true,path = "."}
+pyfakefs = "*"
+pytest-cov = "*"
 
 [packages]
 click = "*"
