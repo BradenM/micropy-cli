@@ -53,6 +53,7 @@ class MicroPy:
 
         """
         create_script = self.STUBBER / 'createstubs.py'
+        stubber_logger = self.STUBBER / 'lib' / 'logging.py'
         self.log.info(f"Connecting to PyBoard @ $[{port}]...")
         rsh.ASCII_XFER = False
         rsh.connect(port)
@@ -61,6 +62,8 @@ class MicroPy:
         self.log.info("Uploading $[createstubs.py]...")
         rsh.cp(str(create_script.absolute()),
                f"{dev.name_path}/{create_script.name}")
+        rsh.cp(str(stubber_logger.absolute()),
+               f"{dev.name_path}/{stubber_logger.name}")
         self.log.success("Done!")
         self.log.info("Executing $[createstubs.py]")
         pyb = dev.pyb
