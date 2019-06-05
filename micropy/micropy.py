@@ -13,10 +13,10 @@ from micropy.stubs import Stub
 class MicroPy:
     """Parent class for handling setup and variables"""
     TEMPLATE = Path(__file__).parent / 'template'
+    LIB = Path(__file__).parent / 'lib'
+    STUBBER = LIB / 'stubber'
     FILES = Path.home() / '.micropy'
     STUB_DIR = FILES / 'stubs'
-    CREATE_STUBS = FILES / 'createstubs.py'
-    CREATE_STUBS_URL = "https://git.io/fjRiM"
     STUBS = [Stub(i) for i in STUB_DIR.iterdir()] if STUB_DIR.exists() else []
 
     def __init__(self):
@@ -46,25 +46,13 @@ class MicroPy:
         self.log.success("Done!")
         return stub
 
-    def retrieve_create_script(self):
-        """Retrieves createstubs.py"""
-        if self.CREATE_STUBS.exists():
-            self.CREATE_STUBS.unlink()
-        self.log.info(
-            "Retrieving $[createstubs.py] from $[Josverl/micropython-stubber]...")
-        content = requests.get(self.CREATE_STUBS_URL)
-        self.CREATE_STUBS.write_text(content.text)
-        self.log.info(f"$[createstubs.py] written to {self.CREATE_STUBS}")
-        self.log.success("Done!")
-        return self.CREATE_STUBS
-
     def create_stubs(self, port):
         """Create stubs from a pyboard
 
         :param str port: port of pyboard
 
         """
-        create_script = self.retrieve_create_script()
+        create_script = self.STUBBER / 'createstubs.py'
         self.log.info(f"Connecting to PyBoard @ $[{port}]...")
         rsh.ASCII_XFER = False
         rsh.connect(port)
