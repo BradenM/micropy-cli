@@ -4,11 +4,11 @@
 
 import click
 
-from micropy.micropy import MicroPy
+from micropy import MicroPy
 from micropy.project import Project
+from micropy.logger import ServiceLog
 
 mp = MicroPy()
-
 
 @click.group()
 def cli():

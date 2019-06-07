@@ -8,10 +8,10 @@ from string import Template
 import questionary as prompt
 
 from micropy.logger import ServiceLog
-from micropy.micropy import MicroPy
+from micropy import MicroPy
 
 
-class Project(MicroPy):
+class Project:
     """Handles Project file generation and modification
 
     :param str project_name: name of project
@@ -26,7 +26,7 @@ class Project(MicroPy):
 
     def setup(self):
         """runs stub check"""
-        if not self.STUB_DIR.exists():
+        if not MicroPy.STUB_DIR.exists():
             e = Exception('You have no stubs!')
             self.log.exception(e)
             self.log.error("Please run micropy stubs get")
@@ -73,7 +73,7 @@ class Project(MicroPy):
         """loads stubs into templates"""
         vs_path = self.path / '.vscode' / 'settings.json'
         pylint_path = self.path / '.pylintrc'
-        stubs = list(self.STUB_DIR.iterdir())
+        stubs = list(MicroPy.STUB_DIR.iterdir())
         vs_stubs = [f'"{s}"' for s in stubs]
         self.log.info(f"Found $[{len(stubs)}] stubs, injecting...")
         lint_stubs = prompt.checkbox(
@@ -93,8 +93,8 @@ class Project(MicroPy):
     def refresh_stubs(self):
         """refreshes project with new stubs"""
         self.log.info(f"Refreshing Stubs for $[{self.name}]")
-        vs_temp = self.TEMPLATE / 'dotvscode' / 'settings.json'
-        pylint_temp = self.TEMPLATE / 'dotpylintrc'
+        vs_temp = MicroPy.TEMPLATE / 'dotvscode' / 'settings.json'
+        pylint_temp = MicroPy.TEMPLATE / 'dotpylintrc'
         vs_path = self.path / '.vscode' / 'settings.json'
         pylint_path = self.path / '.pylintrc'
         copy2(vs_temp, vs_path)
@@ -104,7 +104,7 @@ class Project(MicroPy):
     def create(self):
         """creates a new project"""
         self.log.info(f"Initiating $[{self.name}]")
-        copytree(self.TEMPLATE, self.path, copy_function=self.copy_file)
+        copytree(MicroPy.TEMPLATE, self.path, copy_function=self.copy_file)
         vs_old = self.path / 'dotvscode'
         vs_old.rmdir()
         self.log.success("Files Loaded!")
