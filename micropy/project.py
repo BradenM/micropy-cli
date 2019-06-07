@@ -8,7 +8,7 @@ from string import Template
 import questionary as prompt
 
 from micropy.logger import ServiceLog
-from micropy import MicroPy
+from micropy import MicroPy, LOGGER
 
 
 class Project:
@@ -21,16 +21,8 @@ class Project:
     def __init__(self, project_name, **kwargs):
         self.path = Path.cwd() / project_name
         self.name = self.path.name
-        self.log = ServiceLog(self.name, 'bright_blue')
+        self.log = LOGGER.add_logger(self.name, 'bright_blue')
         super().__init__()
-
-    def setup(self):
-        """runs stub check"""
-        if not MicroPy.STUB_DIR.exists():
-            e = Exception('You have no stubs!')
-            self.log.exception(e)
-            self.log.error("Please run micropy stubs get")
-            raise e
 
     def copy_file(self, src, dest):
         """Helper function to parse 'dots' out of template names
@@ -73,13 +65,13 @@ class Project:
         """loads stubs into templates"""
         vs_path = self.path / '.vscode' / 'settings.json'
         pylint_path = self.path / '.pylintrc'
-        stubs = list(MicroPy.STUB_DIR.iterdir())
-        vs_stubs = [f'"{s}"' for s in stubs]
+        stubs = MicroPy.STUBS
+        vs_stubs = [f'"{s.path}"' for s in stubs]
         self.log.info(f"Found $[{len(stubs)}] stubs, injecting...")
         lint_stubs = prompt.checkbox(
-            "Which stubs would you like pylint to load?", choices=[i.name for i in stubs]).ask()
+            "Which stubs would you like pylint to load?", choices=[str(i) for i in stubs]).ask()
         pylint_stubs = [
-            f'sys.path.insert(1,"{str(stub.absolute())}")' for stub in stubs if stub.name in lint_stubs]
+            f'sys.path.insert(1,"{str(stub.path)}")' for stub in stubs if str(stub) in lint_stubs]
         vscode_sub = {
             'stubs': ',\n'.join(vs_stubs)
         }

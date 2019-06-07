@@ -26,7 +26,6 @@ def init(project_name=""):
     """Create new Micropython Project"""
     mp.log.info("Creating New Project...")
     project = Project(project_name)
-    project.setup()
     project.create()
 
 
