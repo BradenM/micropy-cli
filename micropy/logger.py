@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 
 from click import clear, confirm, prompt, secho, style
+from contextlib import contextmanager
 
 class ServiceLog:
     """Handles logging to stdout and micropy.log
@@ -41,6 +42,11 @@ class ServiceLog:
         logger = next((i for i in self.loggers if i.service_name == service_name))
         return logger
 
+    @contextmanager
+    def silent(self):
+        self.stdout = False
+        yield self
+        self.stdout = True
 
 
     def parse_msg(self, msg, accent_color=None):
