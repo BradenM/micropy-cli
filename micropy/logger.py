@@ -6,7 +6,6 @@ from pathlib import Path
 
 from click import clear, confirm, prompt, secho, style
 
-
 class ServiceLog:
     """Handles logging to stdout and micropy.log
 
@@ -19,16 +18,30 @@ class ServiceLog:
     LOG_FILE = Path.home() / '.micropy' / 'micropy.log'
 
     def __init__(self, service_name, base_color, **kwargs):
+        self.LOG_FILE.parent.mkdir(exist_ok=True)
         logging.basicConfig(level=logging.DEBUG,
                             filename=self.LOG_FILE, filemode='a')
-        self.is_root = kwargs.get('root', False)
-        self.parent_name = style(
-            f"[MicroPy] \u276f", fg='bright_green', bold=True)
+        self.parent = kwargs.get('parent', None)
         self.base_color = base_color
         self.service_name = service_name
         self.info_color = kwargs.get('info_color', 'white')
         self.accent_color = kwargs.get('accent_color', 'yellow')
         self.warn_color = kwargs.get('warn_color', 'green')
+        self.loggers = []
+        self.stdout = True
+
+    def add_logger(self, service_name, base_color, **kwargs):
+        """Creates a new child ServiceLog instance"""
+        logger = ServiceLog(service_name, base_color, parent=self)
+        self.loggers.append(logger)
+        return logger
+
+    def get_logger(self, service_name):
+        """Retrieves a child logger by service name"""
+        logger = next((i for i in self.loggers if i.service_name == service_name))
+        return logger
+
+
 
     def parse_msg(self, msg, accent_color=None):
         """Parses any color codes accordingly.
@@ -58,7 +71,9 @@ class ServiceLog:
         """
         color = kwargs.pop('fg', self.base_color)
         title = style(
-            f"[{self.service_name}] \u276f", fg=color, **kwargs)
+        f"[{self.service_name}] \u276f", fg=color, **kwargs)
+        if self.parent is not None:
+            title = f"{self.parent.get_service(bold=True)} {title}"
         return title
 
     def echo(self, msg, **kwargs):
@@ -69,14 +84,13 @@ class ServiceLog:
 
         """
         title_color = kwargs.pop('title_color', self.base_color)
-        title_bold = kwargs.pop('title_bold', False)
+        title_bold = kwargs.pop('title_bold', self.parent is None)
         accent_color = kwargs.pop('accent', self.accent_color)
         service_title = self.get_service(fg=title_color, bold=title_bold)
-        title = f"{self.parent_name} {service_title if not self.is_root else ''}"
         message = self.parse_msg(msg, accent_color)
-        secho(
-            f"{title} ", nl=False)
-        secho(message, **kwargs)
+        if self.stdout:
+            secho(f"{service_title} ", nl=False)
+            secho(message, **kwargs)
 
     def info(self, msg, **kwargs):
         """Prints message with info formatting
@@ -90,7 +104,7 @@ class ServiceLog:
         logging.info(msg)
         return self.echo(msg, **kwargs)
 
-    def error(self, msg, **kwargs):
+    def error(self, msg, exception=None, **kwargs):
         """Prints message with error formatting
 
         :param msg: 
@@ -100,7 +114,9 @@ class ServiceLog:
 
         """
         logging.error(msg)
-        return self.echo(msg, title_color='red', title_bold=True, fg='red', underline=True, accent='red', **kwargs)
+        self.echo(msg, title_color='red', title_bold=True, fg='red', underline=True, accent='red', **kwargs)
+        if exception:
+            return self.exception(exception)
 
     def warn(self, msg, **kwargs):
         """Prints message with warn formatting
@@ -169,7 +185,7 @@ class ServiceLog:
                 nl_default) > 0 else msg
         title = self.get_service()
         suffix = style('\u27a4 ', fg=self.accent_color)
-        secho(f"{self.parent_name} {title} ", nl=False)
+        secho(f"{title} ", nl=False)
         return prompt(msg + '\n' if new_line else msg,
                       prompt_suffix=suffix, **kwargs)
 
@@ -185,7 +201,7 @@ class ServiceLog:
         msg = self.parse_msg(msg)
         title = self.get_service()
         suffix = style('\u27a4 ', fg=self.accent_color)
-        secho(f"{self.parent_name} {title} ", nl=False)
+        secho(f"{title} ", nl=False)
         return confirm(msg, show_default="[y/N] ", prompt_suffix=suffix, **kwargs)
 
     def clear(self):
