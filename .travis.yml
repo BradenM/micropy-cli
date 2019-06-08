@@ -1,8 +1,11 @@
 language: python
+dist: xenial
 python:
-- '3.6'
-cache: pip
-install:
-  - pip install pipenv
-  - pipenv install --dev
-script: 'pipenv run pytest tests'
+  - "3.7"
+  - "3.6"
+  - "3.5"
+  - "3.4"
+
+install: pip install -U tox-travis tox-pyenv
+
+script: tox
