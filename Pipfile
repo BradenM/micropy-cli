@@ -17,10 +17,7 @@ requests-mock = "*"
 
 [packages]
 click = "*"
-requests = "*"
 questionary = "*"
 rshell = "*"
 jsonschema = "*"
-
-[requires]
-python_version = "3.7"
+colorama = {version = "*",sys_platform = "== 'win32'"}
