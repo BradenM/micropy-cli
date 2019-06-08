@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import io
@@ -18,9 +19,9 @@ VERSION = '0.1.0'
 # Required Packages
 REQUIRED = [
     'click',
-    'requests',
     'questionary',
     'rshell',
+    'colorama ; platform_system=="Windows"'
 ]
 
 EXTRAS = {}
@@ -97,7 +98,7 @@ setup(
         exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
 
     entry_points={
-        'console_scripts': ['micropy=micropy.main:cli'],
+        'console_scripts': ['micropy=micropy.cli:cli'],
     },
     install_requires=REQUIRED,
     extras_require=EXTRAS,
