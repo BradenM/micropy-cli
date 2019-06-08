@@ -13,7 +13,13 @@ pytest = "*"
 micropy-cli = {editable = true,path = "."}
 pyfakefs = "*"
 pytest-cov = "*"
-requests-mock = "*"
+tox-pipenv = "*"
+bump2version = "*"
+flake8 = "*"
+tox = "*"
+coverage = "*"
+pytest-runner = "*"
+tox-pyenv = "*"
 
 [packages]
 click = "*"
