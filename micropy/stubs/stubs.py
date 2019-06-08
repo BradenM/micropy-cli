@@ -5,7 +5,7 @@ import re
 import json
 from jsonschema import validate, Draft7Validator, ValidationError
 from pathlib import Path
-import micropy
+from micropy import LOG
 
 class Stub:
     """Handles Stub Files
@@ -17,7 +17,7 @@ class Stub:
 
     def __init__(self, path, *args, **kwargs):
         self.path = path.absolute()
-        self.log = micropy.LOGGER.add_logger('Stubs', 'yellow')
+        self.log = LOG.add_logger('Stubs', 'yellow')
         if Stub.validate(self.path):
             module = self.path / 'modules.json'
             info = json.load(module.open())
@@ -62,4 +62,4 @@ class Stub:
         return f"Stub(machine={self.machine}, nodename={self.nodename}, release={self.release}, sysname={self.sysname}, version={self.version}, modules={self.modules})"
 
     def __str__(self):
-        return f"{self.sysname}@{self.version}"      
+        return f"{self.sysname}@{self.version}"

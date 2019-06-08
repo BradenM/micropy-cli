@@ -7,8 +7,9 @@ from string import Template
 
 import questionary as prompt
 
-from micropy.logger import ServiceLog
-from micropy import MicroPy, LOGGER
+from micropy import LOG
+from micropy.main import MicroPy
+
 
 
 class Project:
@@ -21,7 +22,7 @@ class Project:
     def __init__(self, project_name, **kwargs):
         self.path = Path.cwd() / project_name
         self.name = self.path.name
-        self.log = LOGGER.add_logger(self.name, 'bright_blue')
+        self.log = LOG.add_logger(self.name, 'bright_blue')
         super().__init__()
 
     def copy_file(self, src, dest):
@@ -49,8 +50,8 @@ class Project:
     def load_template(self, path, **kwargs):
         """Renders a template
 
-        :param str path: path to template 
-        :param **kwargs: 
+        :param str path: path to template
+        :param **kwargs:
         :return: rendered text
         :rtype: str
 
