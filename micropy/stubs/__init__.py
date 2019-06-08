@@ -2,4 +2,6 @@
 
 """Module for stub handling."""
 
-from .stubs import *
+from .stubs import Stub
+
+__all__ = ['Stub']
