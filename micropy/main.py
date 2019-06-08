@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+"""Main Module"""
+
 import tempfile
 from pathlib import Path
 from shutil import copytree

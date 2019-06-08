@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+"""MicropyCli Console Entrypoint"""
 import click
 
 from micropy.main import MicroPy
