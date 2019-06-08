@@ -2,13 +2,13 @@
 
 import tempfile
 from pathlib import Path
+from shutil import copytree
 
-import requests
 from rshell import main as rsh
 
 from micropy import LOG
 from micropy.stubs import Stub
-from shutil import copytree
+
 
 class MicroPy:
     """Parent class for handling setup and variables"""
@@ -38,7 +38,8 @@ class MicroPy:
                     try:
                         self.add_stub(stub)
                     except Exception as e:
-                        self.log.error(f"Failed to add {stub} as stub", exception=e)
+                        self.log.error(
+                            f"Failed to add {stub} as stub", exception=e)
             return True
         return False
 

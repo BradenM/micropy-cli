@@ -2,10 +2,11 @@
 
 import logging
 import re
+from contextlib import contextmanager
 from pathlib import Path
 
 from click import clear, confirm, prompt, secho, style
-from contextlib import contextmanager
+
 
 class ServiceLog:
     """Handles logging to stdout and micropy.log
@@ -39,7 +40,8 @@ class ServiceLog:
 
     def get_logger(self, service_name):
         """Retrieves a child logger by service name"""
-        logger = next((i for i in self.loggers if i.service_name == service_name))
+        logger = next(
+            (i for i in self.loggers if i.service_name == service_name))
         return logger
 
     @contextmanager
@@ -47,7 +49,6 @@ class ServiceLog:
         self.stdout = False
         yield self
         self.stdout = True
-
 
     def parse_msg(self, msg, accent_color=None):
         """Parses any color codes accordingly.
@@ -70,14 +71,14 @@ class ServiceLog:
     def get_service(self, **kwargs):
         """Retrieves formatted service title
 
-        :param **kwargs: 
+        :param **kwargs:
         :return: formatted title
         :rtype: str
 
         """
         color = kwargs.pop('fg', self.base_color)
         title = style(
-        f"[{self.service_name}] \u276f", fg=color, **kwargs)
+            f"[{self.service_name}] \u276f", fg=color, **kwargs)
         if self.parent is not None:
             title = f"{self.parent.get_service(bold=True)} {title}"
         return title
@@ -86,7 +87,7 @@ class ServiceLog:
         """Prints msg to stdout
 
         :param str msg: message to print
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         title_color = kwargs.pop('title_color', self.base_color)
@@ -101,8 +102,8 @@ class ServiceLog:
     def info(self, msg, **kwargs):
         """Prints message with info formatting
 
-        :param msg: 
-        :param **kwargs: 
+        :param msg:
+        :param **kwargs:
         :return: method to print msg
         :rtype: method
 
@@ -113,22 +114,23 @@ class ServiceLog:
     def error(self, msg, exception=None, **kwargs):
         """Prints message with error formatting
 
-        :param msg: 
-        :param **kwargs: 
+        :param msg:
+        :param **kwargs:
         :return: method to print msg
         :rtype: method
 
         """
         logging.error(msg)
-        self.echo(msg, title_color='red', title_bold=True, fg='red', underline=True, accent='red', **kwargs)
+        self.echo(msg, title_color='red', title_bold=True,
+                  fg='red', underline=True, accent='red', **kwargs)
         if exception:
             return self.exception(exception)
 
     def warn(self, msg, **kwargs):
         """Prints message with warn formatting
 
-        :param msg: 
-        :param **kwargs: 
+        :param msg:
+        :param **kwargs:
         :return: method to print msg
         :rtype: method
 
@@ -139,8 +141,8 @@ class ServiceLog:
     def exception(self, error, **kwargs):
         """Prints message with exception formatting
 
-        :param error: 
-        :param **kwargs: 
+        :param error:
+        :param **kwargs:
         :return: method to print msg
         :rtype: method
 
@@ -151,8 +153,8 @@ class ServiceLog:
     def success(self, msg, **kwargs):
         """Prints message with success formatting
 
-        :param msg: 
-        :param **kwargs: 
+        :param msg:
+        :param **kwargs:
         :return: method to print msg
         :rtype: method
         :return: method to print msg
@@ -166,8 +168,8 @@ class ServiceLog:
     def debug(self, msg, **kwargs):
         """Prints message with debug formatting
 
-        :param msg: 
-        :param **kwargs: 
+        :param msg:
+        :param **kwargs:
         :return: method to log msg
         :rtype: method
 
@@ -177,8 +179,8 @@ class ServiceLog:
     def prompt(self, msg, **kwargs):
         """Prompts user with question.
 
-        :param msg: 
-        :param **kwargs: 
+        :param msg:
+        :param **kwargs:
         :return: prompt
         :rtype: method
 
@@ -198,8 +200,8 @@ class ServiceLog:
     def confirm(self, msg, **kwargs):
         """Prompts confirmation from user.
 
-        :param msg: 
-        :param **kwargs: 
+        :param msg:
+        :param **kwargs:
         :return: click confirm
         :rtype: method
 

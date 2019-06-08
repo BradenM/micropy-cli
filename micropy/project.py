@@ -11,7 +11,6 @@ from micropy import LOG
 from micropy.main import MicroPy
 
 
-
 class Project:
     """Handles Project file generation and modification
 

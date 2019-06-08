@@ -9,6 +9,7 @@ from micropy.project import Project
 
 mp = MicroPy()
 
+
 @click.group()
 def cli():
     pass

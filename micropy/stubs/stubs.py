@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from shutil import copytree
-import re
 import json
-from jsonschema import validate, Draft7Validator, ValidationError
 from pathlib import Path
+
+from jsonschema import Draft7Validator, ValidationError
+
 from micropy import LOG
+
 
 class Stub:
     """Handles Stub Files
@@ -50,7 +51,8 @@ class Stub:
         """Validates stubs"""
         stub_info = path / 'modules.json'
         if not stub_info.exists():
-            raise Exception(f"{path.absolute()} contains no modules.json file!")
+            raise Exception(
+                f"{path.absolute()} contains no modules.json file!")
         schema = json.load(Stub.SCHEMA.open())
         stub_info = json.load(stub_info.open())
         is_valid = Stub.validate_json(schema, stub_info)
