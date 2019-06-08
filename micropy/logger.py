@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+"""Logging functionality"""
+
 import logging
 import re
 from contextlib import contextmanager
