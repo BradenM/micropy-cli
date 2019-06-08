@@ -13,15 +13,16 @@ NAME = 'micropy-cli'
 DESCRIPTION = 'A WIP micropython command line app for initiating projects with VSCode'
 URL = 'https://github.com/BradenM/micropy-cli'
 AUTHOR = 'Braden Mars'
-REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.1.0'
+REQUIRES_PYTHON = '>=3.4.0'
+VERSION = '0.0.0'
 
 # Required Packages
 REQUIRED = [
     'click',
     'questionary',
     'rshell',
-    'colorama ; platform_system=="Windows"'
+    'colorama ; platform_system=="Windows"',
+    'jsonschema'
 ]
 
 EXTRAS = {}
@@ -108,7 +109,7 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: Implementation :: MicroPython',
