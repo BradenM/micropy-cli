@@ -25,7 +25,7 @@ lint: ## check style with flake8
 	flake8 micropy tests --config=setup.cfg
 
 test: ## run tests quickly with the default Python
-	py.test
+	pytest
 
 test-all: ## run tests on every Python version with tox
 	tox
