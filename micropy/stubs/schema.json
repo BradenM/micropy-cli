@@ -7,7 +7,13 @@
         "oneOf": [
             {
                 "type": "object",
-                "required": ["machine", "nodename", "release", "sysname", "version"],
+                "required": [
+                    "machine",
+                    "nodename",
+                    "release",
+                    "sysname",
+                    "version"
+                ],
                 "properties": {
                     "machine": {
                         "type": "string"
@@ -28,7 +34,7 @@
             },
             {
                 "type": "object",
-                "required": ["stubber"],
+                "required": [],
                 "properties": {
                     "stubber": {
                         "type": "string"
