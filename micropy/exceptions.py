@@ -2,8 +2,6 @@
 
 """Micropy Exceptions"""
 
-from micropy.logger import Log
-
 
 class StubError(Exception):
     """Exception for any errors raised by stubs"""
@@ -20,7 +18,8 @@ class StubValidationError(StubError):
 
     def __init__(self, stub, errors):
         errs = '\n'.join(errors)
-        msg = f"Stub at [{stub.path}] encountered the following validation errors: {errs}"
+        msg = f"Stub at [{stub.path}] encountered \
+            the following validation errors: {errs}"
         super().__init__(stub, message=msg)
 
     def __str__(self):

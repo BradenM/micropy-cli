@@ -70,9 +70,11 @@ class Project:
         vs_stubs = [f'"{s.path}"' for s in stubs]
         self.log.info(f"Found $[{len(stubs)}] stubs, injecting...")
         lint_stubs = prompt.checkbox(
-            "Which stubs would you like pylint to load?", choices=[str(i) for i in stubs]).ask()
+            "Which stubs would you like pylint to load?",
+            choices=[str(i) for i in stubs]).ask()
         pylint_stubs = [
-            f'sys.path.insert(1,"{str(stub.path)}")' for stub in stubs if str(stub) in lint_stubs]
+            f'sys.path.insert(1,"{str(stub.path)}")' for stub in stubs
+            if str(stub) in lint_stubs]
         vscode_sub = {
             'stubs': ',\n'.join(vs_stubs)
         }

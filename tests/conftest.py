@@ -3,7 +3,6 @@
 
 import pytest
 import micropy
-from pathlib import Path
 import questionary
 
 

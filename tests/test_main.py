@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import pytest
 from micropy import main
-from pathlib import Path
-import os
-import requests
 
 
 def test_setup(mock_micropy_path):
