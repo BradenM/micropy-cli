@@ -34,14 +34,6 @@ def init(project_name=""):
     project.create()
 
 
-@cli.command()
-@click.argument('project_name', required=True)
-def reload(project_name=''):
-    """Reload Stubs"""
-    project = Project(project_name)
-    project.refresh_stubs()
-
-
 @stubs.command()
 @click.argument('path', required=True, type=click.Path(
     exists=True, file_okay=False, resolve_path=True))
