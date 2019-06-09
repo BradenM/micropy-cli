@@ -38,7 +38,8 @@ def reload(project_name=''):
 
 
 @stubs.command()
-@click.argument('path', required=True, type=click.Path(exists=True, file_okay=False, resolve_path=True))
+@click.argument('path', required=True, type=click.Path(
+    exists=True, file_okay=False, resolve_path=True))
 def add(path):
     """Add stubs"""
     return mp.add_stub(path)

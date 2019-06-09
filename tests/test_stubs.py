@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from pathlib import Path
 from micropy import stubs, exceptions
-import json
 
 
 def test_bad_stub(tmp_path):

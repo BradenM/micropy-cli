@@ -3,11 +3,11 @@
 import json
 from pathlib import Path
 
-from jsonschema import Draft7Validator, ValidationError
+from jsonschema import Draft7Validator
 from shutil import copytree
 
 from micropy.logger import Log
-from micropy.exceptions import StubError, StubValidationError
+from micropy.exceptions import StubValidationError
 
 
 class Stub:
@@ -70,7 +70,9 @@ class Stub:
         return self
 
     def __repr__(self):
-        return f"Stub(machine={self.machine}, nodename={self.nodename}, release={self.release}, sysname={self.sysname}, version={self.version}, modules={self.modules})"
+        return f"Stub(machine={self.machine}, nodename={self.nodename}, \
+                release={self.release}, sysname={self.sysname}, \
+                version={self.version}, modules={self.modules})"
 
     def __str__(self):
         return f"{self.sysname}@{self.version}"

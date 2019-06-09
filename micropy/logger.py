@@ -44,7 +44,8 @@ class ServiceLog:
     """
     LOG_FILE = Path.home() / '.micropy' / 'micropy.log'
 
-    def __init__(self, service_name='MicroPy', base_color='bright_green', **kwargs):
+    def __init__(
+            self, service_name='MicroPy', base_color='bright_green', **kwargs):
         self.parent = kwargs.get('parent', None)
         self.LOG_FILE.parent.mkdir(exist_ok=True)
         logging.basicConfig(level=logging.DEBUG,
@@ -160,7 +161,9 @@ class ServiceLog:
 
         """
         logging.exception(str(error))
-        return self.echo(str(error), title_color='red', title_bold=True, **kwargs)
+        return self.echo(
+            str(error),
+            title_color='red', title_bold=True, **kwargs)
 
     def success(self, msg, **kwargs):
         """Prints message with success formatting
@@ -201,7 +204,8 @@ class ServiceLog:
         nl_default = kwargs.get('default', None)
         msg = self.parse_msg(msg)
         msg = msg + \
-            style(f"\n Press Enter to Use: [{nl_default}]", dim=True) if nl_default and len(
+            style(f"\n Press Enter to Use: [{nl_default}]", dim=True) if \
+            nl_default and len(
                 nl_default) > 0 else msg
         title = self.get_service()
         suffix = style('\u27a4 ', fg=self.accent_color)
@@ -222,7 +226,8 @@ class ServiceLog:
         title = self.get_service()
         suffix = style('\u27a4 ', fg=self.accent_color)
         secho(f"{title} ", nl=False)
-        return confirm(msg, show_default="[y/N] ", prompt_suffix=suffix, **kwargs)
+        return confirm(
+            msg, show_default="[y/N] ", prompt_suffix=suffix, **kwargs)
 
     def clear(self):
         """Clears terminal screen"""

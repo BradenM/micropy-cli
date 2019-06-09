@@ -4,7 +4,6 @@
 
 import tempfile
 from pathlib import Path
-from shutil import copytree
 
 from rshell import main as rsh
 
@@ -59,7 +58,6 @@ class MicroPy:
             stub = Stub(path, copy_to=stub_out)
         except StubValidationError:
             self.log.error(f"{stub_path.name} is not a valid stub!")
-            pass
         else:
             self.STUBS.append(stub)
             self.log.debug(f"Added New Stub: {stub}")
@@ -93,10 +91,13 @@ class MicroPy:
         self.log.success("Done!")
         self.log.info("Downloading Stubs...")
         stub_name = rsh.auto(
-            rsh.listdir_stat, f'{dev.name_path}/stubs', show_hidden=False)[0][0]
+            rsh.listdir_stat, f'{dev.name_path}/stubs',
+            show_hidden=False)[0][0]
         with tempfile.TemporaryDirectory() as tmpdir:
-            rsh.rsync(f"{dev.name_path}/stubs", tmpdir, recursed=True, mirror=False,
-                      dry_run=False, print_func=lambda *args: None, sync_hidden=False)
+            rsh.rsync(
+                f"{dev.name_path}/stubs", tmpdir, recursed=True, mirror=False,
+                dry_run=False, print_func=lambda * args: None,
+                sync_hidden=False)
             stub_path = Path(tmpdir) / stub_name
             self.add_stub(stub_path)
         self.log.success("Done!")
