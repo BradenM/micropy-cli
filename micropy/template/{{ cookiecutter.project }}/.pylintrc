@@ -1,0 +1,7 @@
+[MASTER]
+# LoBo ESP 32 3.2.24
+init-hook='import sys;{% for stub, attrs in cookiecutter.pylint|dictsort %}sys.path.insert(1, "{{ attrs.path }}");{% endfor %}sys.path.insert(1,"./lib")'
+
+disable = missing-docstring, line-too-long, trailing-newlines, broad-except, logging-format-interpolation, invalid-name,
+        no-method-argument, assignment-from-no-return, too-many-function-args, unexpected-keyword-arg
+        # the 2nd  line deals with the limited information in the generated stubs.
