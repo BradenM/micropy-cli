@@ -6,6 +6,8 @@ import click
 
 from micropy.main import MicroPy
 from micropy.project import Project
+import questionary as prompt
+from questionary import Choice
 
 mp = MicroPy()
 
@@ -25,7 +27,10 @@ def stubs():
 def init(project_name=""):
     """Create new Micropython Project"""
     mp.log.info("Creating New Project...")
-    project = Project(project_name)
+    stubs = [Choice(str(s), value=s) for s in mp.STUBS]
+    stub_choices = prompt.checkbox(
+        "Which stubs would you like to use?", choices=stubs).ask()
+    project = Project(project_name, stub_choices)
     project.create()
 
 
