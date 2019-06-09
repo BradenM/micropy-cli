@@ -1,3 +1,4 @@
 include README.md LICENSE
 recursive-include micropy/template *
 recursive-include micropy *.json
+recursive-include micropy/lib *
