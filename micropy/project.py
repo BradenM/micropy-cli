@@ -34,7 +34,6 @@ class Project:
             "project": self.name,
             "pylint": stub_ctx,
             "vscode": [str(i.path) for i in self.stubs],
-            "_template": MicroPy.TEMPLATE
         }
         self.log.debug(f"Generated Project Context: {proj_ctx}")
         return proj_ctx
