@@ -10,16 +10,17 @@ isort = "*"
 twine = "*"
 autoflake = "*"
 pytest = "*"
-micropy-cli = {editable = true,path = "."}
-pyfakefs = "*"
 pytest-cov = "*"
 tox-pipenv = "*"
 bump2version = "*"
 flake8 = "*"
-tox = "*"
 coverage = "*"
 pytest-runner = "*"
 tox-pyenv = "*"
+pytest-mock = "*"
+pytest-datadir = "*"
+tox = "==3.7.0"
+micropy-cli = {editable = true,path = "."}
 
 [packages]
 click = "*"
