@@ -4,6 +4,7 @@
 import pytest
 import micropy
 import questionary
+from pathlib import Path
 
 
 @pytest.fixture
@@ -34,3 +35,12 @@ def mock_micropy_path(monkeypatch, tmp_path):
 def mock_micropy(mock_micropy_path):
     mp = micropy.main.MicroPy()
     return mp
+
+
+@pytest.fixture
+def mock_cwd(monkeypatch, tmp_path):
+    """Mock Path.cwd"""
+    def _mock_cwd():
+        return tmp_path
+    monkeypatch.setattr(Path, 'cwd', _mock_cwd)
+    return tmp_path
