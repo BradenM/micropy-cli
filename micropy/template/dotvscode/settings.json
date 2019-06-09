@@ -1,9 +1,0 @@
-{
-  "python.linting.enabled": true,
-
-  "python.autoComplete.extraPaths": [$stubs],
-  "python.autoComplete.typeshedPaths": [$stubs],
-  "python.analysis.typeshedPaths": [$stubs],
-
-  "python.linting.pylintEnabled": true
-}
