@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from jsonschema import Draft7Validator, ValidationError
+from shutil import copytree
 
 from micropy.logger import Log
 from micropy.exceptions import StubError, StubValidationError
@@ -13,14 +14,19 @@ class Stub:
     """Handles Stub Files
 
     :param str path: path to stub
+    :param Optional[str] copy_to: directory to copy stub to if it validates
 
     """
     SCHEMA = Path(__file__).parent / 'schema.json'
 
-    def __init__(self, path, *args, **kwargs):
+    def __init__(self, path, copy_to=None, **kwargs):
         self.path = path.absolute()
         self.log = Log().add_logger('Stubs', 'yellow')
-        if Stub.validate(self.path):
+        try:
+            self.validate(self.path)
+        except StubValidationError as e:
+            raise e
+        else:
             module = self.path / 'modules.json'
             info = json.load(module.open())
             device = info.pop(0)
@@ -32,34 +38,36 @@ class Stub:
             self.release = device.get('release')
             self.sysname = device.get('sysname')
             self.version = device.get('version')
+            if copy_to is not None:
+                self.copy_to(copy_to)
 
-    @staticmethod
-    def validate_json(schema, json):
+    def validate_json(self, json):
         """Checks json against a schema"""
-        try:
-            val = Draft7Validator(schema)
-            errors = sorted(val.iter_errors(json))
-            if len(errors) <= 0:
-                return True
-            for err in sorted(val.iter_errors(json), key=str):
-                print(err.message)
-        except ValidationError as e:
-            print(e.message)
-        return False
+        schema = json.load(self.SCHEMA.open())
+        val = Draft7Validator(schema)
+        errors = sorted(val.iter_errors(json))
+        if len(errors) <= 0:
+            return True
+        errors = sorted(val.iter_errors(json), key=str)
+        exc = StubValidationError(self, errors)
+        self.log.error(exc.message)
+        raise exc
 
-    @staticmethod
-    def validate(path):
+    def validate(self, path):
         """Validates stubs"""
+        self.log.debug(f"Validating: {path}")
         stub_info = path / 'modules.json'
         if not stub_info.exists():
-            raise Exception(
-                f"{path.absolute()} contains no modules.json file!")
-        schema = json.load(Stub.SCHEMA.open())
+            raise StubValidationError(
+                self, [f"{path.name} contains no modules.json file!"])
         stub_info = json.load(stub_info.open())
-        is_valid = Stub.validate_json(schema, stub_info)
-        if not is_valid:
-            raise Exception("Modules.json contains errors!")
-        return is_valid
+        return self.validate_json
+
+    def copy_to(self, dest):
+        """Copy stub to a directory"""
+        copytree(self.path, dest)
+        self.path = dest
+        return self
 
     def __repr__(self):
         return f"Stub(machine={self.machine}, nodename={self.nodename}, release={self.release}, sysname={self.sysname}, version={self.version}, modules={self.modules})"

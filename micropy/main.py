@@ -20,7 +20,7 @@ class MicroPy:
     STUBBER = LIB / 'stubber'
     FILES = Path.home() / '.micropy'
     STUB_DIR = FILES / 'stubs'
-    STUBS = [Stub(i) for i in STUB_DIR.iterdir()] if STUB_DIR.exists() else []
+    STUBS = []
 
     def __init__(self):
         self.log = Log().get_logger('MicroPy')
@@ -29,6 +29,10 @@ class MicroPy:
     def setup(self):
         """creates necessary directories for micropy"""
         self.log.debug("\n---- MicropyCLI Session ----")
+        self.log.debug("Loading stubs...")
+        self.STUBS = [Stub(i) for i in self.STUB_DIR.iterdir()
+                      ] if self.STUB_DIR.exists() else []
+        [self.log.debug(f"Loaded: {stub}") for stub in self.STUBS]
         if not self.STUB_DIR.exists():
             self.log.debug("Running first time setup...")
             self.log.debug(f"Creating .micropy directory @ {self.FILES}")
@@ -38,11 +42,7 @@ class MicroPy:
             self.log.debug("Adding stubs from Josverl/micropython-stubber")
             with self.log.silent():
                 for stub in initial_stubs_dir.iterdir():
-                    try:
-                        self.add_stub(stub)
-                    except Exception as e:
-                        self.log.error(
-                            f"Failed to add {stub} as stub", exception=e)
+                    self.add_stub(stub)
             return True
         return False
 
@@ -54,14 +54,17 @@ class MicroPy:
         """
         stub_path = Path(path)
         self.log.info(f"Adding $[{stub_path.name}] to stubs...")
-        if Stub.validate(stub_path):
-            stub_out = self.STUB_DIR / stub_path.name
-            copytree(stub_path, stub_out)
-            stub = Stub(stub_out)
+        stub_out = self.STUB_DIR / stub_path.name
+        try:
+            stub = Stub(path, copy_to=stub_out)
+        except StubValidationError:
+            self.log.error(f"{stub_path.name} is not a valid stub!")
+            pass
+        else:
             self.STUBS.append(stub)
             self.log.debug(f"Added New Stub: {stub}")
-        self.log.success("Done!")
-        return stub
+            self.log.success("Done!")
+            return stub
 
     def create_stubs(self, port):
         """Create stubs from a pyboard
@@ -94,9 +97,8 @@ class MicroPy:
         with tempfile.TemporaryDirectory() as tmpdir:
             rsh.rsync(f"{dev.name_path}/stubs", tmpdir, recursed=True, mirror=False,
                       dry_run=False, print_func=lambda *args: None, sync_hidden=False)
-            stub_out = Path(tmpdir) / stub_name
-            self.log.info(f"Adding $[{stub_name}] to micropy stubs...")
-            self.STUBS.append(Stub.create_from_path(self.STUB_DIR, stub_out))
+            stub_path = Path(tmpdir) / stub_name
+            self.add_stub(stub_path)
         self.log.success("Done!")
         return self.list_stubs()
 
