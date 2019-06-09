@@ -30,8 +30,8 @@ class MicroPy:
         """creates necessary directories for micropy"""
         self.log.debug("\n---- MicropyCLI Session ----")
         self.log.debug("Loading stubs...")
-        self.STUBS = [Stub(i) for i in self.STUB_DIR.iterdir()
-                      ] if self.STUB_DIR.exists() else []
+        MicroPy.STUBS = [Stub(i) for i in self.STUB_DIR.iterdir()
+                         ] if self.STUB_DIR.exists() else []
         [self.log.debug(f"Loaded: {stub}") for stub in self.STUBS]
         if not self.STUB_DIR.exists():
             self.log.debug("Running first time setup...")
