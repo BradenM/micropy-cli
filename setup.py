@@ -14,7 +14,7 @@ DESCRIPTION = 'A WIP micropython command line app for initiating projects with V
 URL = 'https://github.com/BradenM/micropy-cli'
 AUTHOR = 'Braden Mars'
 REQUIRES_PYTHON = '>=3.4.0'
-VERSION = '0.0.0'
+VERSION = '0.1.0'
 
 # Required Packages
 REQUIRED = [
