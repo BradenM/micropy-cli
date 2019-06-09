@@ -2,34 +2,9 @@
 """ Common Pytest Fixtures"""
 
 import pytest
-import linecache
-import tokenize
-import pyfakefs
-from pyfakefs.fake_filesystem_unittest import Patcher
-from micropy import micropy, project
-import os.path
+import micropy
 from pathlib import Path
 import questionary
-
-
-@pytest.fixture
-def fs_micropy():
-    pyfakefs.fake_filesystem.set_uid(0)
-    patcher = Patcher(modules_to_reload=[micropy, project])
-    patcher.setUp()
-    linecache.open = patcher.original_open
-    tokenize._builtin_open = patcher.original_open
-    yield patcher.fs
-    patcher.tearDown()
-
-
-@pytest.fixture
-def mock_micropy(fs_micropy):
-    tmp_dir = Path(os.getenv('HOME'))
-    fs_micropy.create_dir(tmp_dir)
-    mp = micropy.MicroPy()
-    fs_micropy.add_real_directory(mp.TEMPLATE)
-    return mp
 
 
 @pytest.fixture
@@ -43,3 +18,20 @@ def mock_prompt(monkeypatch):
                 return ['stub']
         return prompt_mock(*args, **kwargs)
     monkeypatch.setattr(questionary, 'checkbox', mock_prompt)
+
+
+@pytest.fixture
+def mock_micropy_path(monkeypatch, tmp_path):
+    path = tmp_path / '.micropy'
+    stub_path = path / 'stubs'
+    log_path = path / 'micropy.log'
+    monkeypatch.setattr(micropy.logger.ServiceLog, 'LOG_FILE', log_path)
+    monkeypatch.setattr(micropy.main.MicroPy, 'FILES', path)
+    monkeypatch.setattr(micropy.main.MicroPy, 'STUB_DIR', stub_path)
+    return path
+
+
+@pytest.fixture
+def mock_micropy(mock_micropy_path):
+    mp = micropy.main.MicroPy()
+    return mp
