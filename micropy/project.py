@@ -8,7 +8,7 @@ from string import Template
 
 import questionary as prompt
 
-from micropy import LOG
+from micropy.logger import Log
 from micropy.main import MicroPy
 
 
@@ -22,7 +22,7 @@ class Project:
     def __init__(self, project_name, **kwargs):
         self.path = Path.cwd() / project_name
         self.name = self.path.name
-        self.log = LOG.add_logger(self.name, 'bright_blue')
+        self.log = Log().add_logger(self.name, 'bright_blue')
         super().__init__()
 
     def copy_file(self, src, dest):

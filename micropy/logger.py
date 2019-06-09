@@ -10,6 +10,29 @@ from pathlib import Path
 from click import clear, confirm, prompt, secho, style
 
 
+class Log:
+    """Borg for easy access to any Log from anywhere in the package"""
+    __shared_state = {}
+
+    def __init__(self):
+        self.__dict__ = self.__shared_state
+        self.parent_logger = ServiceLog()
+        self.loggers = [self.parent_logger]
+
+    def add_logger(self, service_name, base_color, **kwargs):
+        """Creates a new child ServiceLog instance"""
+        logger = ServiceLog(service_name, base_color,
+                            parent=self.parent_logger)
+        self.loggers.append(logger)
+        return logger
+
+    def get_logger(self, service_name):
+        """Retrieves a child logger by service name"""
+        logger = next(
+            (i for i in self.loggers if i.service_name == service_name))
+        return logger
+
+
 class ServiceLog:
     """Handles logging to stdout and micropy.log
 
@@ -21,30 +44,17 @@ class ServiceLog:
     """
     LOG_FILE = Path.home() / '.micropy' / 'micropy.log'
 
-    def __init__(self, service_name, base_color, **kwargs):
+    def __init__(self, service_name='MicroPy', base_color='bright_green', **kwargs):
+        self.parent = kwargs.get('parent', None)
         self.LOG_FILE.parent.mkdir(exist_ok=True)
         logging.basicConfig(level=logging.DEBUG,
                             filename=self.LOG_FILE, filemode='a')
-        self.parent = kwargs.get('parent', None)
         self.base_color = base_color
         self.service_name = service_name
         self.info_color = kwargs.get('info_color', 'white')
         self.accent_color = kwargs.get('accent_color', 'yellow')
         self.warn_color = kwargs.get('warn_color', 'green')
-        self.loggers = []
         self.stdout = True
-
-    def add_logger(self, service_name, base_color, **kwargs):
-        """Creates a new child ServiceLog instance"""
-        logger = ServiceLog(service_name, base_color, parent=self)
-        self.loggers.append(logger)
-        return logger
-
-    def get_logger(self, service_name):
-        """Retrieves a child logger by service name"""
-        logger = next(
-            (i for i in self.loggers if i.service_name == service_name))
-        return logger
 
     @contextmanager
     def silent(self):

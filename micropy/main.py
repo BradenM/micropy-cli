@@ -8,8 +8,9 @@ from shutil import copytree
 
 from rshell import main as rsh
 
-from micropy import LOG
 from micropy.stubs import Stub
+from micropy.logger import Log
+from micropy.exceptions import StubValidationError
 
 
 class MicroPy:
@@ -22,7 +23,7 @@ class MicroPy:
     STUBS = [Stub(i) for i in STUB_DIR.iterdir()] if STUB_DIR.exists() else []
 
     def __init__(self):
-        self.log = LOG
+        self.log = Log().get_logger('MicroPy')
         self.setup()
 
     def setup(self):

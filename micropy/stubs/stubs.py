@@ -5,7 +5,8 @@ from pathlib import Path
 
 from jsonschema import Draft7Validator, ValidationError
 
-from micropy import LOG
+from micropy.logger import Log
+from micropy.exceptions import StubError, StubValidationError
 
 
 class Stub:
@@ -18,7 +19,7 @@ class Stub:
 
     def __init__(self, path, *args, **kwargs):
         self.path = path.absolute()
-        self.log = LOG.add_logger('Stubs', 'yellow')
+        self.log = Log().add_logger('Stubs', 'yellow')
         if Stub.validate(self.path):
             module = self.path / 'modules.json'
             info = json.load(module.open())
