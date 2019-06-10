@@ -21,7 +21,8 @@ REQUIRED = [
     'questionary',
     'rshell',
     'colorama ; platform_system=="Windows"',
-    'jsonschema'
+    'jsonschema',
+    'cookiecutter'
 ]
 
 EXTRAS = {}
