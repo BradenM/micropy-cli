@@ -1,6 +1,7 @@
 # Micropy Cli
 
 Command line Application for automating Micropython project creation in Visual Studio Code.
+![micropy_still](.github/img/micropy.svg)
 
 ## Installation
 
@@ -20,6 +21,11 @@ Commands:
   init   Create new Micropython Project
   stubs  Manage Stubs
 ```
+
+### Creating a Project
+
+![micropy_project](.github/img/usage.svg)
+
 
 ## Credit
 
