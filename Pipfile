@@ -20,6 +20,7 @@ pytest-mock = "*"
 pytest-datadir = "*"
 tox = "==3.7.0"
 micropy-cli = {editable = true,path = "."}
+wheel = "*"
 
 [packages]
 click = "*"
