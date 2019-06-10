@@ -1,0 +1,9 @@
+{
+    "python.linting.enabled": true,
+
+    "python.autoComplete.extraPaths": [],
+    "python.autoComplete.typeshedPaths": [],
+    "python.analysis.typeshedPaths": [],
+
+    "python.linting.pylintEnabled": true
+}
