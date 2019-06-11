@@ -1,72 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink" id="terminal" baseProfile="full" viewBox="0 0 1191 656" width="1191" version="1.1">
-    <defs>
-        <termtosvg:template_settings xmlns:termtosvg="https://github.com/nbedos/termtosvg">
-            <termtosvg:screen_geometry columns="82" rows="19"/>
-        </termtosvg:template_settings>
-        <style type="text/css" id="generated-style"><![CDATA[#screen {
-                font-family: 'DejaVu Sans Mono', monospace;
-                font-style: normal;
-                font-size: 14px;
-            }
-
-        text {
-            dominant-baseline: text-before-edge;
-            white-space: pre;
-        }]]></style>
-        <style type="text/css" id="user-style">.foreground{fill:#bbbbbb;}.background{fill:#2b2b2b;}.color0{fill:#2b2b2b;}.color1,.color9{fill:#ff6b68;}.color2,.color10{fill:#a8c023;}.color3,.color11{fill:#d6bf55;}.color4,.color12{fill:#5394ec;}.color5,.color13{fill:#ae8abe;}.color6,.color14{fill:#299999;}.color7,.color15{fill:#999999;}.color8{fill:#555555;}</style>
-    </defs>
-    <rect id="terminalui" class="background" width="100%" height="100%" ry="4.5826941"/>
-    <circle cx="24" cy="23" r="7" class="color1"/>
-    <circle cx="44" cy="23" r="7" class="color3"/>
-    <circle cx="64" cy="23" r="7" class="color2"/>
-    <svg id="screen" width="1144" x="23" y="50" viewBox="0 0 1144 510" preserveAspectRatio="xMidYMin meet">
-        <rect class="background" height="100%" width="100%" x="0" y="0"/>
-        <defs>
-            <g id="g1">
-                <text class="foreground" textLength="1144" x="0"></text>
-            </g>
-            <g id="g2">
-                <text class="color14" font-weight="bold" textLength="8" x="0">~</text>
-                <text class="foreground" font-weight="bold" textLength="40" x="8"> via </text>
-                <text class="color10" font-weight="bold" textLength="80" x="48">&#11042; v11.13.0</text>
-                <text class="foreground" font-weight="bold" textLength="8" x="128"></text>
-            </g>
-            <g id="g3">
-                <text class="color10" font-weight="bold" textLength="72" x="0">&#10095; micropy</text>
-                <text class="foreground" font-weight="bold" textLength="128" x="72"></text>
-                <text class="foreground" textLength="944" x="200"></text>
-            </g>
-            <g id="g4">
-                <text class="foreground" font-weight="bold" textLength="336" x="0">Usage: micropy [OPTIONS] COMMAND [ARGS]...</text>
-            </g>
-            <g id="g5">
-                <text class="foreground" font-weight="bold" textLength="64" x="0">Options:</text>
-            </g>
-            <g id="g6">
-                <text class="foreground" font-weight="bold" textLength="296" x="0">  --help  Show this message and exit.</text>
-            </g>
-            <g id="g7">
-                <text class="foreground" font-weight="bold" textLength="72" x="0">Commands:</text>
-            </g>
-            <g id="g8">
-                <text class="foreground" font-weight="bold" textLength="312" x="0">  init   Create new Micropython Project</text>
-            </g>
-            <g id="g9">
-                <text class="foreground" font-weight="bold" textLength="168" x="0">  stubs  Manage Stubs</text>
-            </g>
-        </defs>
-        <g>
-            <use y="0" xlink:href="#g1"/>
-            <use y="17" xlink:href="#g2"/>
-            <use y="34" xlink:href="#g3"/>
-            <use y="51" xlink:href="#g4"/>
-            <use y="85" xlink:href="#g5"/>
-            <use y="102" xlink:href="#g6"/>
-            <use y="136" xlink:href="#g7"/>
-            <use y="153" xlink:href="#g8"/>
-            <use y="170" xlink:href="#g9"/>
-            <use y="187" xlink:href="#g1"/>
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink" width="840" height="515.91">
+    <rect width="840" height="515.91" rx="5" ry="5" class="a"/>
+    <svg y="0%" x="0%">
+        <circle cx="20" cy="20" r="6" fill="#ff5f58"/>
+        <circle cx="40" cy="20" r="6" fill="#ffbd2e"/>
+        <circle cx="60" cy="20" r="6" fill="#18c132"/>
+    </svg>
+    <svg height="455.91" viewBox="0 0 80 45.591" width="800" x="15" 
+        xmlns="http://www.w3.org/2000/svg" 
+        xmlns:xlink="http://www.w3.org/1999/xlink" y="30">
+        <style>.a{fill:#282d35}.g{fill:#b9c0cb}.k{fill:#a8cc8c;font-weight:700}</style>
+        <g font-size="1.67" font-family="Monaco,Consolas,Menlo,'Bitstream Vera Sans Mono','Powerline Symbols',monospace">
+            <defs>
+                <symbol id="a">
+                    <path fill="transparent" d="M0 0h80v22H0z"/>
+                </symbol>
+            </defs>
+            <path class="a" d="M0 0h80v45.591H0z"/>
+            <svg width="80">
+                <svg>
+                    <use xlink:href="#a"/>
+                    <text y="6.012" fill="#66c2cd" font-weight="700">~</text>
+                    <text x="2.004" y="6.012" fill="#b9c0cb" font-weight="700">via</text>
+                    <text x="6.012" y="6.012" class="k">⬢</text>
+                    <text x="8.016" y="6.012" class="k">v11.13.0</text>
+                    <text y="8.183" class="k">❯</text>
+                    <text x="2.004" y="8.183" fill="#a8cc8c">micropy</text>
+                    <text y="10.354" class="g">Usage:</text>
+                    <text x="7.014" y="10.354" class="g">micropy</text>
+                    <text x="15.03" y="10.354" class="g">[OPTIONS]</text>
+                    <text x="25.05" y="10.354" class="g">COMMAND</text>
+                    <text x="33.066" y="10.354" class="g">[ARGS]...</text>
+                    <text y="14.696" class="g">Options:</text>
+                    <text x="2.004" y="16.867" class="g">--help</text>
+                    <text x="10.02" y="16.867" class="g">Show</text>
+                    <text x="15.03" y="16.867" class="g">this</text>
+                    <text x="20.04" y="16.867" class="g">message</text>
+                    <text x="28.056" y="16.867" class="g">and</text>
+                    <text x="32.064" y="16.867" class="g">exit.</text>
+                    <text y="21.209" class="g">Commands:</text>
+                    <text x="2.004" y="23.38" class="g">init</text>
+                    <text x="9.018" y="23.38" class="g">Create</text>
+                    <text x="16.032" y="23.38" class="g">new</text>
+                    <text x="20.04" y="23.38" class="g">Micropython</text>
+                    <text x="32.064" y="23.38" class="g">Project</text>
+                    <text x="2.004" y="25.551" class="g">stubs</text>
+                    <text x="9.018" y="25.551" class="g">Manage</text>
+                    <text x="16.032" y="25.551" class="g">Stubs</text>
+                </svg>
+            </svg>
         </g>
     </svg>
 </svg>
