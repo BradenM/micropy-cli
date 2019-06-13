@@ -21,3 +21,14 @@ def test_vscode_template(mock_micropy, tmp_path):
     assert sorted(stub_paths) == sorted(
         content["python.autoComplete.extraPaths"])
     assert expected_path.exists()
+
+
+def test_generic_template(mock_micropy, tmp_path):
+    prov = TemplateProvider()
+    prov.render_to('boot', tmp_path)
+    expected_path = tmp_path / 'src' / 'boot.py'
+    assert expected_path.exists()
+    expected_content = (prov.TEMPLATE_DIR / 'src' / 'boot.py').read_text()
+    out_content = expected_path.read_text()
+    print(out_content)
+    assert expected_content.strip() == out_content.strip()

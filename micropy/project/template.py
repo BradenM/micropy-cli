@@ -12,6 +12,7 @@ class Template:
 
     :param jinja2.Template template: Jinja Template Instance
     """
+    FILENAME = None
 
     def __init__(self, template, **kwargs):
         self.template = template
@@ -26,6 +27,19 @@ class Template:
         """Returns template stream from context"""
         stream = self.template.stream(self.context)
         return stream
+
+
+class GenericTemplate(Template):
+    """Generic Template for files without context"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.FILENAME = self.template.name
+
+    @property
+    def context(self):
+        """Empty Context"""
+        return {}
 
 
 class CodeTemplate(Template):
@@ -67,7 +81,10 @@ class TemplateProvider:
     """Template Factory"""
     _templates = {
         'vscode': CodeTemplate,
-        'pylint': PylintTemplate
+        'pylint': PylintTemplate,
+        'pymakr': "pymakr.conf",
+        'main': "src/main.py",
+        'boot': "src/boot.py"
     }
     ENVIRONMENT = None
     TEMPLATE_DIR = Path(__file__).parent / 'template'
@@ -82,8 +99,11 @@ class TemplateProvider:
 
          :param str name: Template name to retrieve
          """
-        temp_cls = self._templates.get(name)
-        file_temp = self.ENVIRONMENT.get_template(temp_cls.FILENAME)
+        temp_def = self._templates.get(name)
+        file_attr = getattr(temp_def, "FILENAME", None)
+        filename = temp_def if file_attr is None else file_attr
+        temp_cls = GenericTemplate if file_attr is None else temp_def
+        file_temp = self.ENVIRONMENT.get_template(filename)
         template = temp_cls(file_temp, *args, **kwargs)
         return template
 
