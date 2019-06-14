@@ -119,3 +119,8 @@ class TemplateProvider:
         out_dir.parent.mkdir(exist_ok=True, parents=True)
         stream = template.render_stream()
         return stream.dump(str(out_dir))
+
+    @property
+    def templates(self):
+        """returns all template names"""
+        return self._templates.keys()
