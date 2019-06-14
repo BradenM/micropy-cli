@@ -19,10 +19,11 @@ class Log:
         self.parent_logger = ServiceLog()
         self.loggers = [self.parent_logger]
 
-    def add_logger(self, service_name, base_color, **kwargs):
+    def add_logger(self, service_name, base_color="white", **kwargs):
         """Creates a new child ServiceLog instance"""
+        parent = kwargs.get("parent", self.parent_logger)
         logger = ServiceLog(service_name, base_color,
-                            parent=self.parent_logger)
+                            parent=parent)
         self.loggers.append(logger)
         return logger
 
@@ -48,10 +49,9 @@ class ServiceLog:
             self, service_name='MicroPy', base_color='bright_green', **kwargs):
         self.parent = kwargs.get('parent', None)
         self.LOG_FILE.parent.mkdir(exist_ok=True)
-        logging.basicConfig(level=logging.DEBUG,
-                            filename=self.LOG_FILE, filemode='a')
         self.base_color = base_color
         self.service_name = service_name
+        self.load_handler()
         self.info_color = kwargs.get('info_color', 'white')
         self.accent_color = kwargs.get('accent_color', 'yellow')
         self.warn_color = kwargs.get('warn_color', 'green')
@@ -62,6 +62,23 @@ class ServiceLog:
         self.stdout = False
         yield self
         self.stdout = True
+
+    def load_handler(self):
+        """Loads Logging Module Formatting"""
+        self.log = logging.getLogger()
+        if not self.log.hasHandlers():
+            self.log.setLevel(logging.DEBUG)
+            self.log_handler = logging.FileHandler(
+                str(self.LOG_FILE), mode='a')
+            self.log_handler.setLevel(logging.DEBUG)
+            self.log.addHandler(self.log_handler)
+        self.log_handler = self.log.handlers[0]
+        parents = self.get_parents()
+        log_head = f"%(levelname)s|{parents[0]}"
+        if self.parent:
+            log_head = f"{log_head}|{'|'.join(parents[1:])}"
+        log_form = f"[{log_head}] %(message)s"
+        self.log_handler.setFormatter(logging.Formatter(log_form))
 
     def parse_msg(self, msg, accent_color=None):
         """Parses any color codes accordingly.
@@ -74,12 +91,24 @@ class ServiceLog:
         """
         msg_special = re.findall(r'\$(.*?)\[(.*?)\]', msg)
         color = accent_color or self.accent_color
+        clean = msg
         for w in msg_special:
             if w[0] == 'w':
                 color = self.warn_color
             msg = msg.replace(f"${w[0]}[{w[1]}]", style(
                 w[1], fg=color))
-        return msg
+            clean = msg.replace(f"${w[0]}[{w[1]}]", w[1])
+        clean = clean.encode('ascii', 'ignore').decode('unicode_escape')
+        return (msg, clean)
+
+    def get_parents(self, names=[]):
+        """Retrieve all parents"""
+        if len(names) == 0:
+            names = [self.service_name]
+        if self.parent:
+            names.insert(0, self.parent.service_name)
+            names = self.parent.get_parents(names)
+        return names
 
     def get_service(self, **kwargs):
         """Retrieves formatted service title
@@ -107,7 +136,12 @@ class ServiceLog:
         title_bold = kwargs.pop('title_bold', self.parent is None)
         accent_color = kwargs.pop('accent', self.accent_color)
         service_title = self.get_service(fg=title_color, bold=title_bold)
-        message = self.parse_msg(msg, accent_color)
+        message, clean = self.parse_msg(msg, accent_color)
+        log_attr = kwargs.pop("log", None)
+        if log_attr:
+            self.load_handler()
+            log_func = getattr(logging, log_attr)
+            log_func(clean)
         if self.stdout:
             secho(f"{service_title} ", nl=False)
             secho(message, **kwargs)
@@ -121,8 +155,7 @@ class ServiceLog:
         :rtype: method
 
         """
-        logging.info(msg)
-        return self.echo(msg, **kwargs)
+        return self.echo(msg, log="info", **kwargs)
 
     def error(self, msg, exception=None, **kwargs):
         """Prints message with error formatting
@@ -133,8 +166,7 @@ class ServiceLog:
         :rtype: method
 
         """
-        logging.error(msg)
-        self.echo(msg, title_color='red', title_bold=True,
+        self.echo(msg, log="error", title_color='red', title_bold=True,
                   fg='red', underline=True, accent='red', **kwargs)
         if exception:
             return self.exception(exception)
@@ -148,8 +180,8 @@ class ServiceLog:
         :rtype: method
 
         """
-        logging.warning(msg)
-        return self.echo(msg, title_color='red', title_bold=True)
+        return self.echo(msg, log="warning",
+                         title_color='red', title_bold=True)
 
     def exception(self, error, **kwargs):
         """Prints message with exception formatting
@@ -160,9 +192,9 @@ class ServiceLog:
         :rtype: method
 
         """
-        logging.exception(str(error))
         return self.echo(
             str(error),
+            log="exception",
             title_color='red', title_bold=True, **kwargs)
 
     def success(self, msg, **kwargs):
@@ -176,9 +208,8 @@ class ServiceLog:
         :rtype: method
 
         """
-        logging.info(msg)
         message = f"\u2714 {msg}"
-        return self.echo(message, fg='green')
+        return self.echo(message, log="info", fg='green')
 
     def debug(self, msg, **kwargs):
         """Prints message with debug formatting
@@ -189,7 +220,11 @@ class ServiceLog:
         :rtype: method
 
         """
-        return logging.debug(msg)
+        if self.stdout:
+            with self.silent():
+                return self.debug(msg, **kwargs)
+        self.echo(msg, log="debug")
+        return msg
 
     def prompt(self, msg, **kwargs):
         """Prompts user with question.
@@ -203,10 +238,8 @@ class ServiceLog:
         new_line = kwargs.pop('nl', False)
         nl_default = kwargs.get('default', None)
         msg = self.parse_msg(msg)
-        msg = msg + \
-            style(f"\n Press Enter to Use: [{nl_default}]", dim=True) if \
-            nl_default and len(
-                nl_default) > 0 else msg
+        msg = msg + style(f"\n Press Enter to Use: [{nl_default}]", dim=True)\
+            if nl_default and len(nl_default) > 0 else msg
         title = self.get_service()
         suffix = style('\u27a4 ', fg=self.accent_color)
         secho(f"{title} ", nl=False)
