@@ -1,8 +1,8 @@
 # Micropy Cli
 
-![PyPI](https://img.shields.io/pypi/v/micropy-cli.svg?style=popout-square)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/micropy-cli.svg?style=popout-square)
-![Travis (.com)](https://img.shields.io/travis/com/BradenM/micropy-cli/master.svg?style=popout-square)
+[![PyPI](https://img.shields.io/pypi/v/micropy-cli.svg?style=popout-square)](https://pypi.org/project/micropy-cli/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/micropy-cli.svg?style=popout-square)](https://pypi.org/project/micropy-cli/)
+[![Travis (.com)](https://img.shields.io/travis/com/BradenM/micropy-cli/master.svg?style=popout-square)](https://travis-ci.com/BradenM/micropy-cli)
 
 
 Command line Application for automating Micropython project creation in Visual Studio Code.
@@ -19,6 +19,8 @@ You can download and install the latest version of this software from the Python
 
 ```sh
 Usage: micropy [OPTIONS] COMMAND [ARGS]...
+
+  CLI Application for creating/managing Micropython Projects.
 
 Options:
   --help  Show this message and exit.
