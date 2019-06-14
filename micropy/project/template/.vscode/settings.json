@@ -1,0 +1,10 @@
+{
+    "python.linting.enabled": true,
+
+    // Loaded Stubs: {% for stub in stubs %} {{ stub }} {% endfor %}
+    "python.autoComplete.extraPaths": {{ paths }},
+    "python.autoComplete.typeshedPaths":  {{ paths }},
+    "python.analysis.typeshedPaths":  {{ paths }},
+
+    "python.linting.pylintEnabled": true
+}

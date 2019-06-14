@@ -14,7 +14,6 @@ from micropy.exceptions import StubValidationError
 
 class MicroPy:
     """Parent class for handling setup and variables"""
-    TEMPLATE = Path(__file__).parent / 'template'
     LIB = Path(__file__).parent / 'lib'
     STUBBER = LIB / 'stubber'
     FILES = Path.home() / '.micropy'

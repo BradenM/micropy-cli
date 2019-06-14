@@ -31,7 +31,8 @@ def init(project_name=""):
     stub_choices = prompt.checkbox(
         "Which stubs would you like to use?", choices=stubs).ask()
     project = Project(project_name, stub_choices)
-    project.create()
+    proj_relative = project.create()
+    mp.log.info(f"Created $[{project.name}] at $w[./{proj_relative}]")
 
 
 @stubs.command()
