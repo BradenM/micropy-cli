@@ -18,11 +18,13 @@ class Project:
     """
 
     def __init__(self, project_name, stubs, **kwargs):
-        self.provider = TemplateProvider()
         self.path = Path(project_name).resolve()
         self.name = self.path.name
         self.stubs = stubs
-        self.log = Log().add_logger(self.name, 'cyan')
+        log = Log()
+        self.log = log.add_logger(self.name, 'cyan')
+        template_log = log.add_logger("Templater", parent=self.log)
+        self.provider = TemplateProvider(log=template_log)
         self.log.info(f"Initiating $[{self.name}]")
 
     @property
