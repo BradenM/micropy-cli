@@ -2,7 +2,7 @@
 
 ![PyPI](https://img.shields.io/pypi/v/micropy-cli.svg?style=popout-square)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/micropy-cli.svg?style=popout-square)
-![Travis (.com)](https://img.shields.io/travis/com/BradenM/micropy-cli.svg?style=popout-square)
+![Travis (.com)](https://img.shields.io/travis/com/BradenM/micropy-cli/master.svg?style=popout-square)
 
 
 Command line Application for automating Micropython project creation in Visual Studio Code.
