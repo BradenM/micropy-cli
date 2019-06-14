@@ -35,7 +35,7 @@ def test_pylint_template(mock_micropy, tmp_path):
         lint_args = ["--rcfile", str(expected_path.absolute())]
         pylint.lint.Run(lint_args)
     except SyntaxError:
-        pytest.fail(str(SyntaxError))
+        pytest.fail(str(SyntaxError))  # noqa
     except:  # noqa
         pass
 
