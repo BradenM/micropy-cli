@@ -28,5 +28,4 @@ questionary = "*"
 rshell = "*"
 jsonschema = "*"
 colorama = {version = "*",sys_platform = "== 'win32'"}
-cookiecutter = "*"
 jinja2 = "*"

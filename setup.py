@@ -22,7 +22,7 @@ REQUIRED = [
     'rshell',
     'colorama ; platform_system=="Windows"',
     'jsonschema',
-    'cookiecutter'
+    'jinja2'
 ]
 
 EXTRAS = {}
