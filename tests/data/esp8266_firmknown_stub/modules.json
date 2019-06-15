@@ -1,0 +1,18 @@
+[
+    {
+        "nodename": "esp8266",
+        "release": "2.2.0-dev(9422289)",
+        "version": "v1.9.4-8-ga9a3caad0 on 2018-05-11",
+        "machine": "ESP module with ESP8266",
+        "sysname": "esp8266",
+        "firmware": "micropython"
+    },
+    { "stubber": "1.1.2" },
+    { "file": "/stubs/esp8266_test_stub/math.py", "module": "math" },
+    {
+        "file": "/stubs/esp8266_test_stub/micropython.py",
+        "module": "micropython"
+    },
+    { "file": "/stubs/esp8266_test_stub/sys.py", "module": "sys" },
+    { "file": "/stubs/esp8266_test_stub/time.py", "module": "time" }
+]

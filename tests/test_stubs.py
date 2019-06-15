@@ -26,3 +26,7 @@ def test_valid_stub(shared_datadir):
     assert stub.sysname == "esp8266"
     assert expect_module in stub.modules
     assert str(stub) == "esp8266@v1.9.4-8-ga9a3caad0 on 2018-05-11"
+
+def test_frozen_stubs(shared_datadir):
+    """should detect and create frozen stubs"""
+    
