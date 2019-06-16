@@ -18,10 +18,10 @@ def test_known_firmware_from_stub(mock_micropy, shared_datadir):
     """Tests retrieving firmware from stub"""
     stub_path = shared_datadir / 'esp8266_firmknown_stub'
     stub = Stub(stub_path)
-    fware = firmware.Firmware.from_stub(stub)
-    assert fware.name == "MicroPython Offical"
+    fware = firmware.Firmware.from_stub(stub, name="micropython")
+    assert fware.name == "MicroPython Official"
     assert fware.repo == "micropython/micropython"
-    assert fware.tag == "v1.9.4"
+    assert fware.tag == "1.9.4"
     assert fware.port == "esp8266"
     assert fware.module_path == "ports/esp8266/modules"
 
