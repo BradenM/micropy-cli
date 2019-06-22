@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from jsonschema import Draft7Validator, ValidationError
+from jsonschema import Draft7Validator
 from pathlib import Path
 import json
 
