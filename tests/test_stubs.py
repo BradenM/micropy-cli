@@ -4,14 +4,6 @@ import pytest
 from micropy import stubs, exceptions
 
 
-def test_stubs_load(mock_micropy):
-    """should load stubs"""
-    path = mock_micropy.STUBS_DIR
-    manager = stubs.StubManager()
-    manager.load_from(path)
-    assert len(path.iterdir()) == len(manager.loaded)
-
-
 def test_stub_validation(shared_datadir):
     """should pass validation"""
     stub_path = shared_datadir / 'esp8266_test_stub'
