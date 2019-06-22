@@ -7,9 +7,24 @@ from micropy import stubs, exceptions
 def test_stubs_load(mock_micropy):
     """should load stubs"""
     path = mock_micropy.STUBS_DIR
-    manager = stubs.Stubs()
+    manager = stubs.StubManager()
     manager.load_from(path)
     assert len(path.iterdir()) == len(manager.loaded)
+
+
+def test_stub_validation(shared_datadir):
+    """should pass validation"""
+    stub_path = shared_datadir / 'esp8266_test_stub'
+    manager = stubs.StubManager()
+    manager.validate(stub_path)
+
+
+def test_bad_stub_validation(shared_datadir):
+    """should fail validation"""
+    stub_path = shared_datadir / 'esp'
+    manager = stubs.StubManager()
+    with pytest.raises(exceptions.StubValidationError):
+        manager.validate(stub_path)
 
 
 def test_bad_stub(tmp_path):
@@ -19,7 +34,7 @@ def test_bad_stub(tmp_path):
 
 
 def test_valid_stub(shared_datadir):
-    """should not raise any validation errors"""
+    """should have all attributes"""
     stub_path = shared_datadir / 'esp8266_test_stub'
     stub = stubs.Stub(stub_path)
     expect_module = {

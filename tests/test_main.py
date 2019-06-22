@@ -30,7 +30,9 @@ def test_initial_stubs(mock_micropy_path):
 def test_add_stub(mock_micropy, shared_datadir):
     """Test Adding Valid Stub"""
     stub_path = shared_datadir / 'esp8266_test_stub'
-    stub = mock_micropy.add_stub(stub_path)
+    stubs = mock_micropy.STUBS
+    # stub = mock_micropy.add_stub(stub_path)
+    stub = stubs.add(stub_path)
     assert stub in mock_micropy.STUBS
     assert stub.path in mock_micropy.STUB_DIR.iterdir()
     assert stub.path.exists()
