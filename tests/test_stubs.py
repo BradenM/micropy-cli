@@ -21,7 +21,7 @@ def test_stub_validation(shared_datadir):
 
 def test_bad_stub_validation(shared_datadir):
     """should fail validation"""
-    stub_path = shared_datadir / 'esp'
+    stub_path = shared_datadir / 'esp8266_invalid_stub'
     manager = stubs.StubManager()
     with pytest.raises(exceptions.StubValidationError):
         manager.validate(stub_path)
@@ -29,7 +29,7 @@ def test_bad_stub_validation(shared_datadir):
 
 def test_bad_stub(tmp_path):
     """should raise exception on invalid stub"""
-    with pytest.raises(exceptions.StubValidationError):
+    with pytest.raises(FileNotFoundError):
         stubs.Stub(tmp_path)
 
 
