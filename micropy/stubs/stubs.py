@@ -21,7 +21,7 @@ class Stub:
 
     def __init__(self, path, copy_to=None, **kwargs):
         self.path = path.absolute()
-        self.log = Log().add_logger('Stubs', 'yellow')
+        self.log = Log.add_logger('Stubs', 'yellow')
         self.validate(path)
         module = self.path / 'modules.json'
         info = json.load(module.open())
