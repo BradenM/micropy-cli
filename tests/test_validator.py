@@ -16,15 +16,15 @@ def schema(datadir):
 @pytest.mark.validator
 def test_validate(schema):
     """Test for successful validation"""
-    schema, pass_file = schema
-    val = Validator(schema=schema)
-    assert val.validate(pass_file)
+    schema, pass_file, _ = schema
+    val = Validator(schema_path=schema)
+    val.validate(pass_file)
 
 
 @pytest.mark.validator
 def test_fail_validate(schema):
     """Test for invalid file"""
     schema, _, fail_file = schema
-    val = Validator(schema=schema)
+    val = Validator(schema_path=schema)
     with pytest.raises(ValidationError):
         val.validate(fail_file)
