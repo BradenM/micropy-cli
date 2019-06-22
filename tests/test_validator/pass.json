@@ -1,0 +1,20 @@
+[
+    {
+        "nodename": "esp32",
+        "release": "1.10.0",
+        "version": "'v1.10-247-g0fb15fc3f on 2019-03-29",
+        "machine": "ESP32 module with ESP32",
+        "sysname": "esp32"
+    },
+    {
+        "stubber": "1.1.2"
+    },
+    {
+        "file": "/foobar/foo/bar.py",
+        "module": "bar"
+    },
+    {
+        "file": "/barfoo/bar/foo.py",
+        "module": "foo"
+    }
+]
