@@ -1,7 +1,4 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "http://json-schema.org/draft-07/schema#",
-    "title": "Stub Definition Schema",
     "type": "array",
     "items": {
         "oneOf": [
@@ -15,42 +12,24 @@
                     "version"
                 ],
                 "properties": {
-                    "machine": {
-                        "type": "string"
-                    },
-                    "nodename": {
-                        "type": "string"
-                    },
-                    "release": {
-                        "type": "string"
-                    },
-                    "sysname": {
-                        "type": "string"
-                    },
-                    "version": {
-                        "type": "string"
-                    }
+                    "machine": { "type": "string" },
+                    "nodename": { "type": "string" },
+                    "release": { "type": "string" },
+                    "sysname": { "type": "string" },
+                    "version": { "type": "string" }
                 }
             },
             {
                 "type": "object",
-                "required": [],
-                "properties": {
-                    "stubber": {
-                        "type": "string"
-                    }
-                }
+                "required": ["stubber"],
+                "properties": { "stubber": { "type": "string" } }
             },
             {
                 "type": "object",
                 "required": ["file", "module"],
                 "properties": {
-                    "file": {
-                        "type": "string"
-                    },
-                    "module": {
-                        "type": "string"
-                    }
+                    "file": { "type": "string" },
+                    "module": { "type": "string" }
                 }
             }
         ]
