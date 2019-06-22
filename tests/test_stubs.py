@@ -4,6 +4,14 @@ import pytest
 from micropy import stubs, exceptions
 
 
+def test_stubs_load(mock_micropy):
+    """should load stubs"""
+    path = mock_micropy.STUBS_DIR
+    manager = stubs.Stubs()
+    manager.load_from(path)
+    assert len(path.iterdir()) == len(manager.loaded)
+
+
 def test_bad_stub(tmp_path):
     """should raise exception on invalid stub"""
     with pytest.raises(exceptions.StubValidationError):
