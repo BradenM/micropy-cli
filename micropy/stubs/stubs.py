@@ -89,6 +89,7 @@ class Stub:
         self.release = device.get('release')
         self.sysname = device.get('sysname')
         self.version = device.get('version')
+        self.name = f"{self.sysname}@{self.version}"
         if copy_to is not None:
             self.copy_to(copy_to)
 
@@ -101,13 +102,13 @@ class Stub:
         return self
 
     def __eq__(self, other):
-        return repr(self) == repr(other)
+        return self.name == other.name
 
     def __hash__(self):
-        return hash(repr(self))
+        return hash(self.name)
 
     def __repr__(self):
         return f"Stub(machine={self.machine}, nodename={self.nodename}, release={self.release}, sysname={self.sysname}, version={self.version})"
 
     def __str__(self):
-        return f"{self.sysname}@{self.version}"
+        return self.name
