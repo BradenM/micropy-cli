@@ -80,9 +80,3 @@ class MicroPy:
             self.add_stub(stub_path)
         self.log.success("Done!")
         return self.list_stubs()
-
-    def list_stubs(self):
-        """Lists all available stubs"""
-        self.log.info("$w[Available Stubs:]")
-        [self.log.info(str(i)) for i in self.STUBS]
-        self.log.info(f"$[Total Stubs:] {len(self.STUBS)}")

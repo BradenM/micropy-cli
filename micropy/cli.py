@@ -46,8 +46,11 @@ def add(path):
 
 @stubs.command()
 def list():
-    """Lists all stubs"""
-    return mp.list_stubs()
+    """Lists available stubs"""
+    mp.log.info("$w[Available Stubs:]")
+    for stub in mp.STUBS:
+        mp.log.info(str(stub))
+    return mp.log.info(f"$[Total:] {len(mp.STUBS)}")
 
 
 @stubs.command()
