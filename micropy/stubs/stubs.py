@@ -60,6 +60,22 @@ class StubManager:
         except Exception as e:
             raise StubValidationError(path, str(e))
 
+    def is_valid(self, path):
+        """Check if stub is valid without raising an exception
+
+        Args:
+            path (str): path to stub
+
+        Returns:
+            bool: True if stub is valid
+        """
+        try:
+            self.validate(path)
+        except StubValidationError:
+            return False
+        else:
+            return True
+
     def load_from(self, directory, *args, **kwargs):
         """Load all stubs in a directory"""
         dir_path = Path(str(directory)).resolve()
@@ -72,11 +88,25 @@ class StubManager:
         dest_path = Path(str(dest_dir)).resolve()
         return self.load_from(source_dir, copy_to=dest_dir)
 
-    def add(self, source_dir, dest_dir):
-        """add single stub"""
-        source_path = Path(str(source_dir)).resolve()
-        dest_path = Path(str(dest_dir)).resolve()
-        return self._load(source_dir, copy_to=dest_dir)
+    def add(self, source, dest=None):
+        """Add stub(s) from source
+
+        Args:
+            source (str): path to stub(s)
+            dest (str, optional): path to copy stubs to.
+                Defaults to self.resource
+
+        Raises:
+            TypeError: No resource or destination provided
+        """
+        source_path = Path(str(source)).resolve()
+        _dest = dest or self.resource
+        if not _dest:
+            raise TypeError("No Stub Destination Provided!")
+        dest = Path(str(_dest)).resolve()
+        if not self.is_valid(source_path):
+            return self.load_from(source_path, copy_to=dest)
+        return self._load(source_path, copy_to=dest)
 
 
 class Stub:
