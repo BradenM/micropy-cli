@@ -85,11 +85,6 @@ class StubManager:
         stubs = [self._load(d, *args, **kwargs) for d in dirs]
         return stubs
 
-    def add_from(self, source_dir, dest_dir):
-        """Add all stubs in a directory"""
-        dest_path = Path(str(dest_dir)).resolve()
-        return self.load_from(source_dir, copy_to=dest_dir)
-
     def add(self, source, dest=None):
         """Add stub(s) from source
 
