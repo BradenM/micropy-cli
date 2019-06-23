@@ -1,0 +1,10 @@
+[
+    {
+        "nodename": "esp32",
+        "release": "1.10.0"
+    },
+    {
+        "pathtofile": "/foobar/foo/bar.py",
+        "something": "bar"
+    }
+]
