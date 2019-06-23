@@ -7,6 +7,7 @@ from pathlib import Path
 
 from rshell import main as rsh
 
+from micropy.stubs import StubManager
 from micropy.exceptions import StubValidationError
 from micropy.logger import Log
 from micropy.stubs import Stub
@@ -18,7 +19,7 @@ class MicroPy:
     STUBBER = LIB / 'stubber'
     FILES = Path.home() / '.micropy'
     STUB_DIR = FILES / 'stubs'
-    STUBS = []
+    STUBS = StubManager()
 
     def __init__(self):
         self.log = Log().get_logger('MicroPy')
@@ -28,8 +29,6 @@ class MicroPy:
         """creates necessary directories for micropy"""
         self.log.debug("\n---- MicropyCLI Session ----")
         self.log.debug("Loading stubs...")
-        MicroPy.STUBS = [Stub(i) for i in self.STUB_DIR.iterdir()
-                         ] if self.STUB_DIR.exists() else []
         [self.log.debug(f"Loaded: {stub}") for stub in self.STUBS]
         if not self.STUB_DIR.exists():
             self.log.debug("Running first time setup...")
@@ -39,10 +38,8 @@ class MicroPy:
             initial_stubs_dir = self.STUBBER / 'stubs'
             self.log.debug("Adding stubs from Josverl/micropython-stubber")
             with self.log.silent():
-                for stub in initial_stubs_dir.iterdir():
-                    self.add_stub(stub)
-            return True
-        return False
+                self.STUBS.add_from(initial_stubs_dir, self.STUB_DIR)
+        self.STUBS.load_from(self.STUB_DIR)
 
     def add_stub(self, path):
         """Adds stub to micropy folder

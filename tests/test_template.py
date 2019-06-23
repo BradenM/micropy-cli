@@ -8,7 +8,7 @@ from micropy.project.template import TemplateProvider
 
 
 def test_vscode_template(mock_micropy, tmp_path):
-    stubs = mock_micropy.STUBS[:3]
+    stubs = list(mock_micropy.STUBS)[:3]
     prov = TemplateProvider()
     prov.render_to('vscode', tmp_path, stubs=stubs)
     expected_path = tmp_path / '.vscode' / 'settings.json'
@@ -27,7 +27,7 @@ def test_vscode_template(mock_micropy, tmp_path):
 
 
 def test_pylint_template(mock_micropy, tmp_path):
-    stubs = mock_micropy.STUBS[:3]
+    stubs = list(mock_micropy.STUBS)[:3]
     prov = TemplateProvider()
     prov.render_to("pylint", tmp_path, stubs=stubs)
     expected_path = tmp_path / '.pylintrc'
