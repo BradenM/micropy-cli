@@ -10,7 +10,6 @@ from rshell import main as rsh
 from micropy.stubs import StubManager
 from micropy.exceptions import StubValidationError
 from micropy.logger import Log
-from micropy.stubs import Stub
 
 
 class MicroPy:
@@ -42,25 +41,6 @@ class MicroPy:
             self.STUBS = StubManager(resource=self.STUB_DIR)
             self.STUBS.add(initial_stubs_dir)
             return self.STUBS
-
-    def add_stub(self, path):
-        """Adds stub to micropy folder
-
-        :param str path: path of stub to add
-
-        """
-        stub_path = Path(path)
-        self.log.info(f"Adding $[{stub_path.name}] to stubs...")
-        stub_out = self.STUB_DIR / stub_path.name
-        try:
-            stub = Stub(path, copy_to=stub_out)
-        except StubValidationError:
-            self.log.error(f"{stub_path.name} is not a valid stub!")
-        else:
-            self.STUBS.append(stub)
-            self.log.debug(f"Added New Stub: {stub}")
-            self.log.success("Done!")
-            return stub
 
     def create_stubs(self, port):
         """Create stubs from a pyboard

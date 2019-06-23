@@ -41,7 +41,8 @@ class StubManager:
         """Loads a stub"""
         try:
             self.validate(path)
-        except StubValidationError:
+        except StubValidationError as e:
+            self.log.debug(f"{path.name} failed to validate: {e.message}")
             pass
         else:
             stub = Stub(path, *args, **kwargs)
@@ -147,7 +148,9 @@ class Stub:
         return hash(self.name)
 
     def __repr__(self):
-        return f"Stub(machine={self.machine}, nodename={self.nodename}, release={self.release}, sysname={self.sysname}, version={self.version})"
+        return (f"Stub(machine={self.machine}, nodename={self.nodename},"
+                f" release={self.release}, sysname={self.sysname},"
+                f" version={self.version})")
 
     def __str__(self):
         return self.name

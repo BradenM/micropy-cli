@@ -93,7 +93,7 @@ def test_bad_stub_validation(shared_datadir):
 def test_bad_stub(tmp_path):
     """should raise exception on invalid stub"""
     with pytest.raises(FileNotFoundError):
-        stubs.Stub(tmp_path)
+        stubs.stubs.Stub(tmp_path)
 
 
 def test_valid_stub(shared_datadir):
