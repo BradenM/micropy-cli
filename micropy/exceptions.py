@@ -6,7 +6,7 @@
 class StubError(Exception):
     """Exception for any errors raised by stubs"""
 
-    def __init__(self, stub, message=None):
+    def __init__(self, stub=None, message=None):
         self.stub = stub
         self.message = message
         if message is None:
@@ -16,11 +16,11 @@ class StubError(Exception):
 class StubValidationError(StubError):
     """Raised when a stub fails validation"""
 
-    def __init__(self, stub, errors):
+    def __init__(self, path, errors, *args, **kwargs):
         errs = '\n'.join(errors)
-        msg = f"Stub at [{stub.path}] encountered \
+        msg = f"Stub at [{str(path)}] encountered \
             the following validation errors: {errs}"
-        super().__init__(stub, message=msg)
+        super().__init__(message=msg, *args, **kwargs)
 
     def __str__(self):
         return self.message

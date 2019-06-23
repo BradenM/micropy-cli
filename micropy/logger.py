@@ -19,12 +19,14 @@ class Log:
         self.parent_logger = ServiceLog()
         self.loggers = [self.parent_logger]
 
-    def add_logger(self, service_name, base_color="white", **kwargs):
+    @classmethod
+    def add_logger(cls, service_name, base_color="white", **kwargs):
         """Creates a new child ServiceLog instance"""
-        parent = kwargs.get("parent", self.parent_logger)
+        _self = cls()
+        parent = kwargs.get("parent", _self.parent_logger)
         logger = ServiceLog(service_name, base_color,
                             parent=parent)
-        self.loggers.append(logger)
+        _self.loggers.append(logger)
         return logger
 
     def get_logger(self, service_name):

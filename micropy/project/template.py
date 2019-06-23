@@ -97,7 +97,7 @@ class TemplateProvider:
     TEMPLATE_DIR = Path(__file__).parent / 'template'
 
     def __init__(self, log=None):
-        self.log = log or Log().add_logger('Templater')
+        self.log = log or Log.add_logger('Templater')
         if self.__class__.ENVIRONMENT is None:
             loader = FileSystemLoader(str(self.TEMPLATE_DIR))
             self.__class__.ENVIRONMENT = Environment(loader=loader)
