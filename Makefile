@@ -34,6 +34,12 @@ test: ## run tests quickly with the default Python
 test-all: ## run tests on every Python version with tox
 	tox
 
+coverage: ## generate coverage
+	pytest --cov --cov-config=setup.cfg
+
+coverage-html:
+	pytest --cov --cov-config=setup.cfg --cov-report html
+
 release: dist ## package and release
 	@printf '$(bold)Uploading package to PyPi...\n$(rsttxt)'
 	twine upload dist/*
