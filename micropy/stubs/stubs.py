@@ -29,6 +29,8 @@ class StubManager:
         self._loaded = set()
         self.resource = resource
         self.log = Log.add_logger('Stubs', 'yellow')
+        if self.resource:
+            self.load_from(resource)
 
     def __iter__(self):
         return iter(self._loaded)

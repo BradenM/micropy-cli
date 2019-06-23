@@ -76,3 +76,9 @@ def test_add_no_resource_no_dest(datadir):
     manager = stubs.StubManager()
     with pytest.raises(TypeError):
         manager.add(datadir)
+
+
+def test_loads_from_resource(datadir):
+    """should load from resource if provided"""
+    manager = stubs.StubManager(resource=datadir)
+    assert len(manager) == len(list(datadir.iterdir())) - 1
