@@ -13,9 +13,9 @@ from micropy.exceptions import StubValidationError
 class StubManager:
     """Manager for Stub Instances"""
     _schema = Path(__file__).parent / 'schema.json'
-    _loaded = set()
 
     def __init__(self):
+        self._loaded = set()
         self.log = Log.add_logger('Stubs', 'yellow')
 
     def __iter__(self):
