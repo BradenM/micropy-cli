@@ -11,11 +11,23 @@ from micropy.exceptions import StubValidationError
 
 
 class StubManager:
-    """Manager for Stub Instances"""
+    """Manages a collection of Stubs
+
+    Kwargs:
+        resource (str): Default resource path
+
+    Raises:
+        StubValidationError: a stub is missing a def file
+        StubValidationError: a stubs def file is not valid
+
+    Returns:
+        object: Instance of StubManager
+    """
     _schema = Path(__file__).parent / 'schema.json'
 
-    def __init__(self):
+    def __init__(self, resource=None):
         self._loaded = set()
+        self.resource = resource
         self.log = Log.add_logger('Stubs', 'yellow')
 
     def __iter__(self):
