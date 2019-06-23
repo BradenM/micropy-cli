@@ -46,6 +46,7 @@ class StubManager:
         else:
             stub = Stub(path, *args, **kwargs)
             self._loaded.add(stub)
+            self.log.debug(f"Loaded: {stub}")
             return stub
 
     def validate(self, path):

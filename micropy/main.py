@@ -19,7 +19,7 @@ class MicroPy:
     STUBBER = LIB / 'stubber'
     FILES = Path.home() / '.micropy'
     STUB_DIR = FILES / 'stubs'
-    STUBS = StubManager()
+    STUBS = None
 
     def __init__(self):
         self.log = Log().get_logger('MicroPy')
@@ -29,17 +29,19 @@ class MicroPy:
         """creates necessary directories for micropy"""
         self.log.debug("\n---- MicropyCLI Session ----")
         self.log.debug("Loading stubs...")
-        [self.log.debug(f"Loaded: {stub}") for stub in self.STUBS]
-        if not self.STUB_DIR.exists():
-            self.log.debug("Running first time setup...")
-            self.log.debug(f"Creating .micropy directory @ {self.FILES}")
-            self.FILES.mkdir(exist_ok=True)
-            self.STUB_DIR.mkdir()
-            initial_stubs_dir = self.STUBBER / 'stubs'
-            self.log.debug("Adding stubs from Josverl/micropython-stubber")
-            with self.log.silent():
-                self.STUBS.add_from(initial_stubs_dir, self.STUB_DIR)
-        self.STUBS.load_from(self.STUB_DIR)
+        if self.STUB_DIR.exists():
+            self.STUBS = StubManager(resource=self.STUB_DIR)
+            return self.STUBS
+        self.log.debug("Running first time setup...")
+        self.log.debug(f"Creating .micropy directory @ {self.FILES}")
+        self.FILES.mkdir(exist_ok=True)
+        self.STUB_DIR.mkdir()
+        initial_stubs_dir = self.STUBBER / 'stubs'
+        self.log.debug("Adding stubs from Josverl/micropython-stubber")
+        with self.log.silent():
+            self.STUBS = StubManager(resource=self.STUB_DIR)
+            self.STUBS.add(initial_stubs_dir)
+            return self.STUBS
 
     def add_stub(self, path):
         """Adds stub to micropy folder
