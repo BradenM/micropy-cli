@@ -65,18 +65,18 @@ class PyboardWrapper:
     def pyboard(self):
         """rshell pyboard instance"""
         if self.connected:
-            dev = rsh.DEVS[0]
-            return dev.pyb
+            dev = rsh.find_serial_device_by_port(self.port)
+            return getattr(dev, "pyb", None)
 
     @property
     def pyb_root(self):
         """pyboard root dirname"""
         if self.connected:
-            dev = rsh.DEVS[0]
+            dev = rsh.find_serial_device_by_port(self.port)
             return getattr(dev, 'name_path', '/pyboard/')
 
     def run(self, path):
-        """Execute a script on the pyboard
+        """Execute a local script on the pyboard
 
         Args:
             path (str): path to file
