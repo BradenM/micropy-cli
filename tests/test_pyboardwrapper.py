@@ -11,8 +11,8 @@ def connect_mock(mocker):
 
 
 @pytest.fixture
-def root_mock(monkeypatch):
-    monkeypatch.setattr(PyboardWrapper, "pyb_root", "/mock/")
+def root_mock(mocker):
+    mocker.patch.object(PyboardWrapper, "pyb_root", "/mock/")
     return "/mock/"
 
 
