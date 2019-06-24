@@ -79,4 +79,3 @@ def tan():
 
 def trunc():
     pass
-

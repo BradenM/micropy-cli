@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from micropy.utils import Validator
 from jsonschema import ValidationError
+
+from micropy.utils import Validator
 
 
 @pytest.fixture

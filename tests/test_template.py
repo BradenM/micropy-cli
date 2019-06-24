@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from micropy.project.template import TemplateProvider
 import json
+
 import pylint.lint
+
+from micropy.project.template import TemplateProvider
 
 
 def test_vscode_template(mock_micropy, tmp_path):

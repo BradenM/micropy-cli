@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """ Common Pytest Fixtures"""
 
-import pytest
-import micropy
-import questionary
 from pathlib import Path
+
+import pytest
+import questionary
+
+import micropy
 
 
 @pytest.fixture

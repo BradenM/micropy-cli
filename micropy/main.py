@@ -7,9 +7,9 @@ from pathlib import Path
 
 from rshell import main as rsh
 
-from micropy.stubs import Stub
-from micropy.logger import Log
 from micropy.exceptions import StubValidationError
+from micropy.logger import Log
+from micropy.stubs import Stub
 
 
 class MicroPy:

@@ -3,11 +3,11 @@
 
 """MicropyCli Console Entrypoint"""
 import click
+import questionary as prompt
+from questionary import Choice
 
 from micropy.main import MicroPy
 from micropy.project import Project
-import questionary as prompt
-from questionary import Choice
 
 mp = MicroPy()
 

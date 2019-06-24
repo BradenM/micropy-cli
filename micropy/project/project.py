@@ -4,7 +4,6 @@
 
 from pathlib import Path
 
-
 from micropy.logger import Log
 from micropy.project.template import TemplateProvider
 

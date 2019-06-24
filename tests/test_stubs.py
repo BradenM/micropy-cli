@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from micropy import stubs, exceptions
+
+from micropy import exceptions, stubs
 
 
 def test_bad_stub(tmp_path):

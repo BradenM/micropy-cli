@@ -2,9 +2,10 @@
 
 """Module for handling jinja2 and MicroPy Templates"""
 
-from jinja2 import Environment, FileSystemLoader
-from pathlib import Path
 import json
+from pathlib import Path
+
+from jinja2 import Environment, FileSystemLoader
 
 from micropy.logger import Log
 

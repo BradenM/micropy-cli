@@ -2,7 +2,7 @@
 
 """MicroPy Utility Module"""
 
-from .validate import Validator
 from .pybwrapper import PyboardWrapper
+from .validate import Validator
 
 __all__ = ["Validator", "PyboardWrapper"]

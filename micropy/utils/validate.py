@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from jsonschema import Draft7Validator
-from pathlib import Path
 import json
+from pathlib import Path
+
+from jsonschema import Draft7Validator
 
 
 class Validator:

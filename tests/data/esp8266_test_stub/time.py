@@ -35,4 +35,3 @@ def ticks_us():
 
 def time():
     pass
-

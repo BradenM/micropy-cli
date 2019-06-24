@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import rshell.main as rsh
-from micropy.logger import Log
-from pathlib import Path
 from contextlib import contextmanager
+from pathlib import Path
+
+import rshell.main as rsh
+
+from micropy.logger import Log
 
 
 class PyboardWrapper:

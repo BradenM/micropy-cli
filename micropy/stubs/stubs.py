@@ -2,12 +2,11 @@
 
 import json
 from pathlib import Path
-
 from shutil import copytree
 
+from micropy.exceptions import StubValidationError
 from micropy.logger import Log
 from micropy.utils import Validator
-from micropy.exceptions import StubValidationError
 
 
 class Stub:
