@@ -37,3 +37,56 @@ def test_pyboard_list_dir(mocker, connect_mock, root_mock):
     value = pyb.list_dir("/path")
     mocked_auto.assert_called_once_with(mocker.ANY, "/mock/path")
     assert value == ['main.py', 'boot.py']
+
+
+def test_pyboard_copy_dir(mocker, connect_mock, root_mock, tmp_path):
+    """should copy directory"""
+    mocked_rsync = mocker.patch("rshell.main.rsync")
+    dest_path = tmp_path / 'dest'
+    dest_path.mkdir()
+    pyb = PyboardWrapper("/dev/PORT")
+    out_dir = pyb.copy_dir('/foobar/bar', dest_path)
+    assert out_dir == dest_path / 'bar'
+    expected_rsync = {
+        "recursed": True,
+        "mirror": False,
+        "dry_run": False,
+        "print_func": mocker.ANY,
+        "sync_hidden": False
+    }
+    expected_dir_path = "/mock/foobar/bar"
+    mocked_rsync.assert_called_once_with(
+        expected_dir_path, str(dest_path), **expected_rsync)
+
+
+def test_pyboard_run(mocker, connect_mock, tmp_path):
+    """should execute script"""
+    tmp_script = tmp_path / 'script.py'
+    pyb_mock = mocker.patch.object(PyboardWrapper, 'pyboard')
+    pyb_mock.execfile.return_value = b"abc"
+    pyb = PyboardWrapper("/dev/PORT")
+    result = pyb.run(tmp_script)
+    assert result == "abc"
+    pyb_mock.execfile.assert_called_once_with(tmp_script)
+
+
+def test_pyboard_attr(mocker, connect_mock):
+    """should return pyboard"""
+    find_mock = mocker.patch("rshell.main.find_serial_device_by_port")
+    pyb = PyboardWrapper("/dev/PORT")
+    pyb.pyboard
+    find_mock.assert_called_once_with("/dev/PORT")
+    pyb = PyboardWrapper("/dev/PORT2", connect=False)
+    pyb.pyboard
+    find_mock.assert_called_once()
+
+
+def test_pyboard_root(mocker, connect_mock):
+    """should get root"""
+    find_mock = mocker.patch("rshell.main.find_serial_device_by_port")
+    pyb = PyboardWrapper("/dev/PORT")
+    pyb.pyb_root
+    find_mock.assert_called_once_with("/dev/PORT")
+    pyb = PyboardWrapper("/dev/PORT2", connect=False)
+    pyb.pyb_root
+    find_mock.assert_called_once()
