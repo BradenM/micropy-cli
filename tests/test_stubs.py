@@ -75,21 +75,6 @@ import pytest
 from micropy import exceptions, stubs
 
 
-def test_stub_validation(shared_datadir):
-    """should pass validation"""
-    stub_path = shared_datadir / 'esp8266_test_stub'
-    manager = stubs.StubManager()
-    manager.validate(stub_path)
-
-
-def test_bad_stub_validation(shared_datadir):
-    """should fail validation"""
-    stub_path = shared_datadir / 'esp8266_invalid_stub'
-    manager = stubs.StubManager()
-    with pytest.raises(exceptions.StubValidationError):
-        manager.validate(stub_path)
-
-
 def test_bad_stub(tmp_path):
     """should raise exception on invalid stub"""
     with pytest.raises(FileNotFoundError):
