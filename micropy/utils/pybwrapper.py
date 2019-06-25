@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import rshell.main as rsh
+from rshell.pyboard import PyboardError
 
 from micropy.logger import Log
 
@@ -83,9 +84,14 @@ class PyboardWrapper:
         Args:
             path (str): path to file
         """
+        # TODO: Better Exception handling
         file_path = Path(str(path)).resolve()
         with self.repl():
-            out_bytes = self.pyboard.execfile(file_path)
+            try:
+                out_bytes = self.pyboard.execfile(file_path)
+            except PyboardError as e:
+                self.log.debug(f"Failed to run script on pyboard: {str(e)}")
+                raise Exception(e.message)
             out = str(out_bytes, 'utf-8')
             return out
 
@@ -119,5 +125,4 @@ class PyboardWrapper:
         }
         rsync_args.update(rsync)
         self.rsh.rsync(dir_path, str(dest_path), **rsync_args)
-        out_dir = dest_path / Path(path).name
-        return out_dir
+        return dest_path
