@@ -3,6 +3,7 @@
 from micropy import main
 from micropy.stubs import stubs
 from pathlib import Path
+from shutil import copytree
 
 
 def test_setup(mock_micropy_path):
@@ -42,10 +43,14 @@ def test_add_stub(mock_micropy, shared_datadir):
     assert stub.path.exists()
 
 
-def test_create_stub(mock_micropy_path, mocker, shared_datadir):
+def test_create_stub(mock_micropy_path, mocker, shared_datadir, tmp_path):
     """should create and add stubs"""
+    tmp_stub_path = tmp_path / 'createtest'
+    tmp_stub_path.mkdir()
+    copytree(str(shared_datadir / 'esp8266_test_stub'),
+             str(tmp_stub_path / 'esp8266_test_stub'))
     mock_pyb = mocker.patch("micropy.main.PyboardWrapper")
-    mock_pyb.return_value.copy_dir.return_value = Path(str(shared_datadir))
+    mock_pyb.return_value.copy_dir.return_value = Path(str(tmp_stub_path))
     mock_pyb.side_effect = [SystemExit,
                             mock_pyb.return_value, mock_pyb.return_value]
     mp = main.MicroPy()
