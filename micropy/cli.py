@@ -48,7 +48,7 @@ def add(path):
         mp.log.info(f"Adding stub from $[{stub_path}]")
         mp.STUBS.validate(stub_path)
         stub = mp.STUBS.add(stub_path)
-    except StubError as e:
+    except StubError:
         mp.log.error(f"{stub_path.name} is not a valid stub!")
     else:
         mp.log.success(f"{stub.name} added!")
