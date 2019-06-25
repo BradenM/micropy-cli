@@ -18,8 +18,8 @@ class StubValidationError(StubError):
 
     def __init__(self, path, errors, *args, **kwargs):
         errs = '\n'.join(errors)
-        msg = f"Stub at [{str(path)}] encountered \
-            the following validation errors: {errs}"
+        msg = (f"Stub at[{str(path)}] encountered"
+               f" the following validation errors: {errs}")
         super().__init__(message=msg, *args, **kwargs)
 
     def __str__(self):

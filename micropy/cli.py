@@ -5,9 +5,11 @@
 import click
 import questionary as prompt
 from questionary import Choice
+from pathlib import Path
 
 from micropy.main import MicroPy
 from micropy.project import Project
+from micropy.exceptions import StubError
 
 mp = MicroPy()
 
@@ -41,19 +43,35 @@ def init(project_name=""):
     exists=True, file_okay=False, resolve_path=True))
 def add(path):
     """Add stubs"""
-    return mp.add_stub(path)
+    stub_path = Path(str(path))
+    try:
+        mp.log.info(f"Adding stub from $[{stub_path}]")
+        mp.STUBS.validate(stub_path)
+        stub = mp.STUBS.add(stub_path)
+    except StubError:
+        mp.log.error(f"{stub_path.name} is not a valid stub!")
+    else:
+        mp.log.success(f"{stub.name} added!")
 
 
 @stubs.command()
 def list():
-    """Lists all stubs"""
-    return mp.list_stubs()
+    """Lists available stubs"""
+    mp.log.info("$w[Available Stubs:]")
+    for stub in mp.STUBS:
+        mp.log.info(str(stub))
+    return mp.log.info(f"$[Total:] {len(mp.STUBS)}")
 
 
 @stubs.command()
 @click.argument('port', required=True)
 def create(port):
-    """Create stubs from a pyboard"""
+    """Create stubs from a pyboard
+
+    MicropyCli uses Josverl's micropython-stubber for stub creation.
+    For more info,
+    checkout his git repo @ https://github.com/Josverl/micropython-stubber
+    """
     return mp.create_stubs(port)
 
 

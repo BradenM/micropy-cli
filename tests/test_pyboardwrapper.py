@@ -3,6 +3,7 @@
 import pytest
 
 from micropy.utils import PyboardWrapper
+from micropy.utils.pybwrapper import PyboardError
 
 
 @pytest.fixture
@@ -47,7 +48,7 @@ def test_pyboard_copy_dir(mocker, connect_mock, root_mock, tmp_path):
     dest_path.mkdir()
     pyb = PyboardWrapper("/dev/PORT")
     out_dir = pyb.copy_dir('/foobar/bar', dest_path)
-    assert out_dir == dest_path / 'bar'
+    assert out_dir == dest_path
     expected_rsync = {
         "recursed": True,
         "mirror": False,
@@ -64,11 +65,13 @@ def test_pyboard_run(mocker, connect_mock, tmp_path):
     """should execute script"""
     tmp_script = tmp_path / 'script.py'
     pyb_mock = mocker.patch.object(PyboardWrapper, 'pyboard')
-    pyb_mock.execfile.return_value = b"abc"
+    pyb_mock.execfile.side_effect = [b"abc", PyboardError]
     pyb = PyboardWrapper("/dev/PORT")
     result = pyb.run(tmp_script)
     assert result == "abc"
     pyb_mock.execfile.assert_called_once_with(tmp_script)
+    with pytest.raises(Exception):
+        pyb.run(tmp_script)
 
 
 def test_pyboard_attr(mocker, connect_mock):

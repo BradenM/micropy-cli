@@ -41,11 +41,13 @@ class StubManager:
         """Loads a stub"""
         try:
             self.validate(path)
-        except StubValidationError:
+        except StubValidationError as e:
+            self.log.debug(f"{path.name} failed to validate: {e.message}")
             pass
         else:
             stub = Stub(path, *args, **kwargs)
             self._loaded.add(stub)
+            self.log.debug(f"Loaded: {stub}")
             return stub
 
     def validate(self, path):
@@ -83,11 +85,6 @@ class StubManager:
         dirs = dir_path.iterdir()
         stubs = [self._load(d, *args, **kwargs) for d in dirs]
         return stubs
-
-    def add_from(self, source_dir, dest_dir):
-        """Add all stubs in a directory"""
-        dest_path = Path(str(dest_dir)).resolve()
-        return self.load_from(source_dir, copy_to=dest_dir)
 
     def add(self, source, dest=None):
         """Add stub(s) from source
@@ -145,13 +142,15 @@ class Stub:
         return self
 
     def __eq__(self, other):
-        return self.name == other.name
+        return self.name == getattr(other, 'name', None)
 
     def __hash__(self):
         return hash(self.name)
 
     def __repr__(self):
-        return f"Stub(machine={self.machine}, nodename={self.nodename}, release={self.release}, sysname={self.sysname}, version={self.version})"
+        return (f"Stub(machine={self.machine}, nodename={self.nodename},"
+                f" release={self.release}, sysname={self.sysname},"
+                f" version={self.version})")
 
     def __str__(self):
         return self.name
