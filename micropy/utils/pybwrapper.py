@@ -91,7 +91,7 @@ class PyboardWrapper:
                 out_bytes = self.pyboard.execfile(file_path)
             except PyboardError as e:
                 self.log.debug(f"Failed to run script on pyboard: {str(e)}")
-                raise Exception(e.message)
+                raise Exception(str(e))
             out = str(out_bytes, 'utf-8')
             return out
 

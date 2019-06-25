@@ -5,9 +5,11 @@
 import click
 import questionary as prompt
 from questionary import Choice
+from pathlib import Path
 
 from micropy.main import MicroPy
 from micropy.project import Project
+from micropy.exceptions import StubError
 
 mp = MicroPy()
 
@@ -41,7 +43,15 @@ def init(project_name=""):
     exists=True, file_okay=False, resolve_path=True))
 def add(path):
     """Add stubs"""
-    return mp.add_stub(path)
+    stub_path = Path(str(path))
+    try:
+        mp.log.info(f"Adding stub from $[{stub_path}]")
+        mp.STUBS.validate(stub_path)
+        stub = mp.STUBS.add(stub_path)
+    except StubError as e:
+        mp.log.error(f"{stub_path.name} is not a valid stub!")
+    else:
+        mp.log.success(f"{stub.name} added!")
 
 
 @stubs.command()

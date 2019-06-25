@@ -142,7 +142,7 @@ class Stub:
         return self
 
     def __eq__(self, other):
-        return self.name == other.name
+        return self.name == getattr(other, 'name', None)
 
     def __hash__(self):
         return hash(self.name)
