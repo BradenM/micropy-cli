@@ -29,10 +29,12 @@ class Log:
         _self.loggers.append(logger)
         return logger
 
-    def get_logger(self, service_name):
+    @classmethod
+    def get_logger(cls, service_name):
         """Retrieves a child logger by service name"""
+        _self = cls()
         logger = next(
-            (i for i in self.loggers if i.service_name == service_name))
+            (i for i in _self.loggers if i.service_name == service_name))
         return logger
 
 
@@ -122,7 +124,8 @@ class ServiceLog:
         """
         color = kwargs.pop('fg', self.base_color)
         title = style(
-            f"[{self.service_name}] \u276f", fg=color, **kwargs)
+            f"{self.service_name}", fg=color, **kwargs)
+        title = f"{title}{style(' ‣', fg=color)}"
         if self.parent is not None:
             title = f"{self.parent.get_service(bold=True)} {title}"
         return title

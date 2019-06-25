@@ -27,7 +27,7 @@ class PyboardWrapper:
         self.port = port
         self.rsh = rsh
         self.rsh.ASCII_XFER = False
-        self.log = Log().add_logger('PyboardWrapper')
+        self.log = Log.add_logger('PyboardWrapper')
         if connect:
             return self.connect()
 

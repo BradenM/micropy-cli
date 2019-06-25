@@ -19,7 +19,7 @@ class MicroPy:
     STUBS = None
 
     def __init__(self):
-        self.log = Log().get_logger('MicroPy')
+        self.log = Log.get_logger('MicroPy')
         self.setup()
 
     def setup(self):
