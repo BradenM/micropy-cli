@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from micropy import main
+from micropy.stubs import stubs
+from pathlib import Path
 
 
 def test_setup(mock_micropy_path):
@@ -12,6 +14,9 @@ def test_setup(mock_micropy_path):
     print("MP Content:", list(mp.FILES.iterdir()))
     assert expect_mp_dir.exists()
     assert expect_stubs_dir.exists()
+    # Test after inital setup
+    mp_ = main.MicroPy()
+    assert len(mp_.STUBS) == len(mp.STUBS)
 
 
 def test_initial_stubs(mock_micropy_path):
@@ -35,3 +40,19 @@ def test_add_stub(mock_micropy, shared_datadir):
     assert stub in list(mock_micropy.STUBS)
     assert stub.path in mock_micropy.STUB_DIR.iterdir()
     assert stub.path.exists()
+
+
+def test_create_stub(mock_micropy_path, mocker, shared_datadir):
+    """should create and add stubs"""
+    mock_pyb = mocker.patch("micropy.main.PyboardWrapper")
+    mock_pyb.return_value.copy_dir.return_value = Path(str(shared_datadir))
+    mock_pyb.side_effect = [SystemExit,
+                            mock_pyb.return_value, mock_pyb.return_value]
+    mp = main.MicroPy()
+    stub = mp.create_stubs("/dev/PORT")
+    assert stub is None
+    mock_pyb.return_value.run.side_effect = [Exception, mocker.ANY]
+    stub = mp.create_stubs("/dev/PORT")
+    assert stub is None
+    stub = mp.create_stubs("/dev/PORT")
+    assert isinstance(stub, stubs.Stub)

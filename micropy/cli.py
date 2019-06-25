@@ -56,7 +56,12 @@ def list():
 @stubs.command()
 @click.argument('port', required=True)
 def create(port):
-    """Create stubs from a pyboard"""
+    """Create stubs from a pyboard
+
+    MicropyCli uses Josverl's micropython-stubber for stub creation.
+    For more info,
+    checkout his git repo @ https://github.com/Josverl/micropython-stubber
+    """
     return mp.create_stubs(port)
 
 

@@ -5,11 +5,9 @@
 import tempfile
 from pathlib import Path
 
-from rshell import main as rsh
-
 from micropy.stubs import StubManager
-from micropy.exceptions import StubValidationError
 from micropy.logger import Log
+from micropy.utils import PyboardWrapper
 
 
 class MicroPy:
@@ -43,40 +41,38 @@ class MicroPy:
             return self.STUBS
 
     def create_stubs(self, port):
-        """Create stubs from a pyboard
+        """Create and add stubs from Pyboard
 
-        :param str port: port of pyboard
+        Args:
+            port (str): Port of Pyboard
 
+        Returns:
+            Stub: generated stub
         """
-        create_script = self.STUBBER / 'createstubs.py'
-        stubber_logger = self.STUBBER / 'lib' / 'logging.py'
-        self.log.info(f"Connecting to PyBoard @ $[{port}]...")
-        rsh.ASCII_XFER = False
-        rsh.connect(port)
+        # TODO: Probably move this functionality to cli module
+        self.log.info(f"Connecting to Pyboard @ $[{port}]...")
+        try:
+            pyb = PyboardWrapper(port)
+        except SystemExit:
+            self.log.error(
+                f"Failed to connect, are you sure $[{port}] is correct?")
+            return None
         self.log.success("Connected!")
-        dev = rsh.DEVS[0]
-        self.log.info("Uploading $[createstubs.py]...")
-        rsh.cp(str(create_script.absolute()),
-               f"{dev.name_path}/{create_script.name}")
-        rsh.cp(str(stubber_logger.absolute()),
-               f"{dev.name_path}/{stubber_logger.name}")
+        # TODO: determine which script to use based on device
+        script_path = self.STUBBER / 'minified.py'
+        self.log.info("Executing stubber on pyboard...")
+        try:
+            pyb.run(script_path)
+        except Exception as e:
+            # TODO: Handle more usage cases
+            self.log.error(f"Failed to execute script: {str(e)}")
+            return None
         self.log.success("Done!")
-        self.log.info("Executing $[createstubs.py]")
-        pyb = dev.pyb
-        pyb.enter_raw_repl()
-        pyb.exec("import createstubs")
-        pyb.exit_raw_repl()
-        self.log.success("Done!")
-        self.log.info("Downloading Stubs...")
-        stub_name = rsh.auto(
-            rsh.listdir_stat, f'{dev.name_path}/stubs',
-            show_hidden=False)[0][0]
+        self.log.info("Copying stubs...")
         with tempfile.TemporaryDirectory() as tmpdir:
-            rsh.rsync(
-                f"{dev.name_path}/stubs", tmpdir, recursed=True, mirror=False,
-                dry_run=False, print_func=lambda * args: None,
-                sync_hidden=False)
-            stub_path = Path(tmpdir) / stub_name
-            self.add_stub(stub_path)
-        self.log.success("Done!")
-        return self.list_stubs()
+            out_dir = pyb.copy_dir("/stubs", tmpdir)
+            stub_path = next(out_dir.iterdir())
+            self.log.info(f"Copied Stubs: $[{stub_path.name}]")
+            stub = self.STUBS.add(stub_path)
+        self.log.success(f"Added {stub.name} to stubs!")
+        return stub
