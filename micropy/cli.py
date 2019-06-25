@@ -15,6 +15,7 @@ mp = MicroPy()
 
 
 @click.group()
+@click.version_option()
 def cli():
     """CLI Application for creating/managing Micropython Projects."""
     pass
