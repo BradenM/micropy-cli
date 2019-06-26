@@ -3,6 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/micropy-cli.svg?style=popout-square)](https://pypi.org/project/micropy-cli/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/micropy-cli.svg?style=popout-square)](https://pypi.org/project/micropy-cli/)
 [![Travis (.com)](https://img.shields.io/travis/com/BradenM/micropy-cli/master.svg?style=popout-square)](https://travis-ci.com/BradenM/micropy-cli)
+[![Coverage Status](https://coveralls.io/repos/github/BradenM/micropy-cli/badge.svg)](https://coveralls.io/github/BradenM/micropy-cli)
 
 
 Command line Application for automating Micropython project creation in Visual Studio Code.
