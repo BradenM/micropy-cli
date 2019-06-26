@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from micropy import main
-from micropy.stubs import stubs
 from pathlib import Path
 from shutil import copytree
+
+from micropy import main
+from micropy.stubs import stubs
 
 
 def test_setup(mock_micropy_path):

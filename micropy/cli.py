@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 
 """MicropyCli Console Entrypoint"""
-import click
 import sys
-import questionary as prompt
-from questionary import Choice
 from pathlib import Path
 
+import click
+import questionary as prompt
+from questionary import Choice
+
+from micropy.exceptions import StubError
 from micropy.main import MicroPy
 from micropy.project import Project
-from micropy.exceptions import StubError
 
 mp = MicroPy()
 

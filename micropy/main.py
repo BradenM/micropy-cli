@@ -5,8 +5,8 @@
 import tempfile
 from pathlib import Path
 
-from micropy.stubs import StubManager
 from micropy.logger import Log
+from micropy.stubs import StubManager
 from micropy.utils import PyboardWrapper
 
 

@@ -43,7 +43,6 @@ class StubManager:
             self.validate(path)
         except StubValidationError as e:
             self.log.debug(f"{path.name} failed to validate: {e.message}")
-            pass
         else:
             stub = Stub(path, *args, **kwargs)
             self._loaded.add(stub)
