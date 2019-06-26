@@ -3,6 +3,7 @@
 
 """MicropyCli Console Entrypoint"""
 import click
+import sys
 import questionary as prompt
 from questionary import Choice
 from pathlib import Path
@@ -18,7 +19,6 @@ mp = MicroPy()
 @click.version_option()
 def cli():
     """CLI Application for creating/managing Micropython Projects."""
-    pass
 
 
 @cli.group()
@@ -50,7 +50,9 @@ def add(path):
         mp.STUBS.validate(stub_path)
         stub = mp.STUBS.add(stub_path)
     except StubError:
-        mp.log.error(f"{stub_path.name} is not a valid stub!")
+        msg = f"{stub_path.name} is not a valid stub!"
+        mp.log.error(msg)
+        sys.exit(1)
     else:
         mp.log.success(f"{stub.name} added!")
 
