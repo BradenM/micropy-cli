@@ -1,3 +1,17 @@
+<a name="v0.3.0"></a>
+## v0.3.0 (2019-06-26)
+
+
+#### Features
+
+* **cli:**  Version Flag ([0f9abf1c](0f9abf1c))
+* **log:**  New Cli Output Style, Log Class Methods ([0b257e6f](0b257e6f))
+* **pyb:**  PyboardWrapper Utility (#13) ([5f7d2cfe](5f7d2cfe))
+* **stubs:**  Stub Manager (#5) ([097b4529](097b4529))
+* **utils:**  Utils Module and Validator Utility  (#4) ([be2c9c67](be2c9c67))
+
+
+
 <a name="v0.2.0"></a>
 ## v0.2.0 (2019-06-14)
 
