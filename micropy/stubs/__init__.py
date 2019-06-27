@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
-"""Module for stub handling."""
+"""
+micropy.stubs
+~~~~~~~~~~~~~~
+
+This module contains all functionality relating
+to stub files/frozen modules and their usage in MicropyCli
+"""
 
 from .stubs import StubManager
 
