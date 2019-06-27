@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+"""
+micropy.utils.pybwrapper
+~~~~~~~~~~~~~~
+
+This module contains utility functionality related
+to communication with micropython devices
+"""
+
 from contextlib import contextmanager
 from pathlib import Path
 

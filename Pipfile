@@ -30,3 +30,4 @@ rshell = "*"
 jsonschema = "*"
 colorama = {version = "*",sys_platform = "== 'win32'"}
 jinja2 = "*"
+requests = "*"
