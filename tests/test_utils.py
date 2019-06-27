@@ -7,14 +7,6 @@ from requests.exceptions import ConnectionError, HTTPError, InvalidURL
 
 from micropy import utils
 
-test_urls = {
-    "valid": "http://www.google.com",
-    "valid_https": "https://www.google.com",
-    "invalid": "/foobar/bar/foo",
-    "invalid_file": "file:///foobar/bar/foo",
-    "bad_resp": "http://www.google.com/XYZ/ABC/BADRESP"
-}
-
 
 @pytest.fixture
 def schema(datadir):
@@ -39,7 +31,7 @@ def test_fail_validate(schema):
         val.validate(fail_file)
 
 
-def test_is_url():
+def test_is_url(test_urls):
     """should respond true/false for url"""
     u = test_urls
     assert utils.is_url(u['valid'])
@@ -48,7 +40,7 @@ def test_is_url():
     assert not utils.is_url(u['invalid_file'])
 
 
-def test_ensure_valid_url(mocker):
+def test_ensure_valid_url(mocker, test_urls):
     """should ensure url is valid"""
     u = test_urls
     with pytest.raises(InvalidURL):
@@ -78,3 +70,23 @@ def test_ensure_existing_dir(tmp_path):
     assert result == tmp_path
     assert result.exists()
     assert result.is_dir()
+
+
+def test_is_downloadable(mocker, test_urls):
+    """should check if url can be downloaded from"""
+    u = test_urls
+    uheaders = u["headers"]
+    mock_head = mocker.patch.object(requests, "head")
+    head_mock_val = mocker.PropertyMock(
+        side_effect=[uheaders["not_download"],
+                     uheaders["can_download"]])
+    type(mock_head.return_value).headers = head_mock_val
+    assert not utils.is_downloadable(u["valid"])
+    assert utils.is_downloadable(u["valid"])
+
+
+def test_get_url_filename(test_urls):
+    """should return filename"""
+    filename = "foobar.tar.gz"
+    result = utils.get_url_filename(test_urls["download"])
+    assert result == filename

@@ -50,3 +50,22 @@ def mock_cwd(monkeypatch, tmp_path):
     monkeypatch.setattr(Path, 'cwd', _mock_cwd)
     monkeypatch.setattr(Path, 'resolve', _mock_resolve)
     return tmp_path
+
+
+@pytest.fixture(scope="session")
+def test_urls():
+    def test_headers(type): return {
+        "content-type": type
+    }
+    return {
+        "valid": "http://www.google.com",
+        "valid_https": "https://www.google.com",
+        "invalid": "/foobar/bar/foo",
+        "invalid_file": "file:///foobar/bar/foo",
+        "bad_resp": "http://www.google.com/XYZ/ABC/BADRESP",
+        "download": "https://www.somewebsite.com/foobar.tar.gz",
+        "headers": {
+            "can_download": test_headers("application/gzip"),
+            "not_download": test_headers("text/plain")
+        }
+    }

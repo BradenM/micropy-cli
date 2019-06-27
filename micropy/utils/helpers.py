@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-micropy.utils.utils
+micropy.utils.helpers
 ~~~~~~~~~~~~~~
 
 This module contains generic utility helpers
@@ -11,8 +11,12 @@ used by MicropyCli
 from pathlib import Path
 
 import requests
-from requests.compat import urlparse
-from requests.exceptions import ConnectionError, HTTPError, InvalidURL
+from requests import exceptions as reqexc
+from requests import utils as requtil
+
+__all__ = ["is_url", "get_url_filename",
+           "ensure_existing_dir", "ensure_valid_url",
+           "is_downloadable"]
 
 
 def is_url(url):
@@ -24,7 +28,7 @@ def is_url(url):
     Returns:
         bool: True if arg url is a valid url
     """
-    scheme = urlparse(str(url)).scheme
+    scheme = requtil.urlparse(str(url)).scheme
     return scheme in ('http', 'https',)
 
 
@@ -43,16 +47,13 @@ def ensure_valid_url(url):
         str: valid url
     """
     if not is_url(url):
-        raise InvalidURL(f"{url} is not a valid url!")
+        raise reqexc.InvalidURL(f"{url} is not a valid url!")
     try:
         resp = requests.head(url)
-    except ConnectionError as e:
+    except reqexc.ConnectionError as e:
         raise e
     else:
-        code = resp.status_code
-        if not code == 200:
-            msg = f"{url} ({code}) did not respond with OK <200>"
-            raise HTTPError(msg)
+        resp.raise_for_status()
     return url
 
 
@@ -79,3 +80,34 @@ def ensure_existing_dir(path):
     if not path.is_dir():
         raise NotADirectoryError(f"{_path} is not a directory!")
     return path
+
+
+def is_downloadable(url):
+    """Checks if the url can be downloaded from
+
+    Args:
+        url (str): url to check
+
+    Returns:
+        bool: True if contains a downloadable resource
+    """
+    headers = requests.head(url).headers
+    content_type = headers.get("content-type").lower()
+    ctype = content_type.split("/")
+    if any(t in ('text', 'html',) for t in ctype):
+        return False
+    return True
+
+
+def get_url_filename(url):
+    """Parse filename from url
+
+    Args:
+        url (str): url to parse
+
+    Returns:
+        str: filename of url
+    """
+    path = requtil.urlparse(url).path
+    file_name = Path(path).name
+    return file_name
