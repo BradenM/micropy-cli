@@ -87,6 +87,6 @@ def test_is_downloadable(mocker, test_urls):
 
 def test_get_url_filename(test_urls):
     """should return filename"""
-    filename = "foobar.tar.gz"
+    filename = "archive_test_stub.tar.gz"
     result = utils.get_url_filename(test_urls["download"])
     assert result == filename

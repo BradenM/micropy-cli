@@ -63,7 +63,7 @@ def test_urls():
         "invalid": "/foobar/bar/foo",
         "invalid_file": "file:///foobar/bar/foo",
         "bad_resp": "http://www.google.com/XYZ/ABC/BADRESP",
-        "download": "https://www.somewebsite.com/foobar.tar.gz",
+        "download": "https://www.somewebsite.com/archive_test_stub.tar.gz",
         "headers": {
             "can_download": test_headers("application/gzip"),
             "not_download": test_headers("text/plain")
