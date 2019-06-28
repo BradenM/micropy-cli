@@ -33,12 +33,7 @@ class MicroPy:
         self.log.debug(f"Creating .micropy directory @ {self.FILES}")
         self.FILES.mkdir(exist_ok=True)
         self.STUB_DIR.mkdir()
-        initial_stubs_dir = self.STUBBER / 'stubs'
-        self.log.debug("Adding stubs from Josverl/micropython-stubber")
-        with self.log.silent():
-            self.STUBS = StubManager(resource=self.STUB_DIR)
-            self.STUBS.add(initial_stubs_dir)
-            return self.STUBS
+        return self.setup()
 
     def create_stubs(self, port):
         """Create and add stubs from Pyboard
