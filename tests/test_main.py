@@ -37,7 +37,7 @@ def test_create_stub(mock_micropy_path, mocker, shared_datadir, tmp_path):
     tmp_stub_path.mkdir()
     copytree(str(shared_datadir / 'esp8266_test_stub'),
              str(tmp_stub_path / 'esp8266_test_stub'))
-    mock_pyb = mocker.patch("micropy.main.PyboardWrapper")
+    mock_pyb = mocker.patch("micropy.main.utils.PyboardWrapper")
     mock_pyb.return_value.copy_dir.return_value = Path(str(tmp_stub_path))
     mock_pyb.side_effect = [SystemExit,
                             mock_pyb.return_value, mock_pyb.return_value]

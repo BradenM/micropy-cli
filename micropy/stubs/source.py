@@ -69,6 +69,20 @@ class StubRepo:
         self.synced = True
         return self._load(data.content)
 
+    @classmethod
+    def from_json(cls, content):
+        """Create StubRepo Instances from JSON file
+
+        Args:
+            file_obj (str or bytes): json content
+
+        Returns:
+            iterable of created repos
+        """
+        data = json.loads(content)
+        repos = iter(cls(**r) for r in data)
+        return repos
+
 
 class StubSource:
     """Abstract Base Class for Stub Sources"""

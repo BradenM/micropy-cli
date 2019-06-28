@@ -53,8 +53,8 @@ def test_source_ready(shared_datadir, test_urls, tmp_path, mocker,
         assert str(source_path) == str(expected_path)
 
 
-def test_repo_resolve(test_urls, shared_datadir, mocker):
-    test_source = shared_datadir / 'test_source.json'
+def test_repo_fetch(test_urls, shared_datadir, mocker):
+    test_source = shared_datadir / 'test_repo.json'
     mock_get = mocker.patch.object(source.requests, 'get')
     test_bytes = test_source.open('rb').read()
     content_val = mocker.PropertyMock(return_value=test_bytes)
@@ -75,3 +75,14 @@ def test_repo_resolve(test_urls, shared_datadir, mocker):
     get_source_mock.assert_called_once_with(
         "https://testsource.com/packages/esp8266-micropython-1.9.4.tar.gz")
     assert len(repo.packages) == 1
+
+
+def test_repo_from_json(shared_datadir, mocker):
+    mocker.patch.object(source.utils, "ensure_valid_url",
+                        return_value="https://testsource.com")
+    test_sources = shared_datadir / 'test_sources.json'
+    content = test_sources.read_text()
+    repos = source.StubRepo.from_json(content)
+    assert next(repos).name == "Test Repo"
+    with pytest.raises(StopIteration):
+        next(repos)
