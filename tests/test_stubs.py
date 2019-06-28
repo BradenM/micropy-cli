@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from pathlib import Path
+
 import pytest
 
 from micropy import exceptions, stubs
@@ -12,12 +14,17 @@ def test_stub_validation(shared_datadir):
     manager.validate(stub_path)
 
 
-def test_bad_stub_validation(shared_datadir):
+def test_bad_stub_validation(shared_datadir, mocker):
     """should fail validation"""
-    stub_path = shared_datadir / 'esp8266_invalid_stub'
+    stub_path = shared_datadir / 'esp8266_test_stub'
     manager = stubs.StubManager()
+    mock_validate = mocker.patch.object(stubs.stubs.utils, "Validator")
+    mock_validate.return_value.validate.side_effect = [
+        Exception, FileNotFoundError]
     with pytest.raises(exceptions.StubValidationError):
         manager.validate(stub_path)
+    with pytest.raises(exceptions.StubValidationError):
+        manager.validate(Path("/foobar/foo"))
 
 
 def test_bad_stub(tmp_path):
@@ -30,19 +37,24 @@ def test_valid_stub(shared_datadir):
     """should have all attributes"""
     stub_path = shared_datadir / 'esp8266_test_stub'
     stub = stubs.stubs.Stub(stub_path)
-    expect_module = {
-        "file": "/stubs/esp8266_test_stub/micropython.py",
-        "module": "micropython"
+    stub_2 = stubs.stubs.Stub(stub_path)
+    assert stub == stub_2
+    expect_device = {
+        "nodename": "esp8266",
+        "machine": "ESP module with ESP8266",
+        "sysname": "esp8266",
+        "release": "v1.9.4-8-ga9a3caad0 on 2018-05-11"
     }
+    expect_repr = ("Stub(sysname=esp8266, firmware=micropython, version=1.9.4,"
+                   f" path={stub_path})")
     assert stub.path.exists()
-    assert stub.nodename == "esp8266"
-    assert stub.release == "2.2.0-dev(9422289)"
-    assert stub.version == "v1.9.4-8-ga9a3caad0 on 2018-05-11"
-    assert stub.machine == "ESP module with ESP8266"
-    assert stub.sysname == "esp8266"
-    assert stub.name == "esp8266@v1.9.4-8-ga9a3caad0 on 2018-05-11"
-    assert expect_module in stub.modules
-    assert str(stub) == "esp8266@v1.9.4-8-ga9a3caad0 on 2018-05-11"
+    assert stub.stubs.exists()
+    assert stub.frozen.exists()
+    assert stub.version == "1.9.4"
+    assert stub.device == expect_device
+    assert repr(stub) == expect_repr
+    assert stub.firmware == "micropython"
+    assert str(stub) == "esp8266-micropython-1.9.4"
 
 
 def test_add_single_stub(shared_datadir, tmp_path):
@@ -58,7 +70,7 @@ def test_add_stubs_from_dir(datadir, tmp_path):
     """should add all valid stubs in directory"""
     manager = stubs.StubManager()
     manager.add(datadir, dest=tmp_path)
-    assert len(manager) == 2
+    assert len(manager) == 1
     assert len(list(tmp_path.iterdir())) - 1 == len(manager)
 
 
@@ -66,7 +78,7 @@ def test_add_with_resource(datadir, tmp_path):
     """should not require dest kwarg"""
     manager = stubs.StubManager(resource=tmp_path)
     manager.add(datadir)
-    assert len(manager) == 2
+    assert len(manager) == 1
     # Subtract 1 cause tmp_path has datadir in it for some unrelated reason
     # as in, before adding stubs
     assert len(list(tmp_path.iterdir())) - 1 == len(manager)
