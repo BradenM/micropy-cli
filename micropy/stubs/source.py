@@ -10,6 +10,7 @@ and their location.
 
 
 import io
+import json
 import shutil
 import tarfile
 import tempfile
@@ -21,6 +22,49 @@ import requests
 
 from micropy import utils
 from micropy.logger import Log
+
+
+class StubRepo:
+    """Represents a remote repository for stubs
+
+    Args:
+        name (str): Repo Name
+        location (str): Valid url
+        ref (str): path to repo definition file
+    """
+
+    def __init__(self, name, location, ref):
+        self.packages = set()
+        self.name = name
+        self.location = utils.ensure_valid_url(location)
+        self.ref = ref
+        self.resolve()
+
+    def _load(self, content):
+        """Loads packages from def file
+
+        Args:
+            content (str or bytes): json data to load
+
+        Returns:
+            set of available packages
+        """
+        data = json.loads(content)
+        packages = data['packages']
+        for pkg in packages:
+            source = get_source(pkg['url'])
+            self.packages.add(source)
+        return self.packages
+
+    def resolve(self):
+        """Retrieves repo information
+
+        Returns:
+            set: available packages
+        """
+        url = f"{self.location}/{self.ref}"
+        data = requests.get(url)
+        return self._load(data.content)
 
 
 class StubSource:
