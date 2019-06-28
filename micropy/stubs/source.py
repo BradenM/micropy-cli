@@ -38,7 +38,7 @@ class StubRepo:
         self.name = name
         self.location = utils.ensure_valid_url(location)
         self.ref = ref
-        self.resolve()
+        self.synced = False
 
     def _load(self, content):
         """Loads packages from def file
@@ -56,14 +56,17 @@ class StubRepo:
             self.packages.add(source)
         return self.packages
 
-    def resolve(self):
-        """Retrieves repo information
+    def fetch(self):
+        """Fetch repo info
 
         Returns:
             set: available packages
         """
+        if self.synced:
+            return self.packages
         url = f"{self.location}/{self.ref}"
         data = requests.get(url)
+        self.synced = True
         return self._load(data.content)
 
 

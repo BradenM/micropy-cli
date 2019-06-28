@@ -67,6 +67,8 @@ def test_repo_resolve(test_urls, shared_datadir, mocker):
     get_source_mock = mocker.patch.object(source, "get_source")
 
     repo = source.StubRepo(**source_def)
+    repo.fetch()
+    repo.fetch()  # Should only fetch once
     assert repo.name == "Test Repo"
     assert repo.location == source_def['location']
     assert repo.ref == "repo.json"
