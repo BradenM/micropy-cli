@@ -1,0 +1,15 @@
+{
+    "source": {
+        "name": "Test Repo",
+        "location": "https://testsource.com",
+        "ref": "repo.json"
+    },
+    "packages": [
+        {
+            "firmware": "micropython",
+            "device": "esp8266",
+            "version": "1.9.4",
+            "url": "https://testsource.com/packages/esp8266-micropython-1.9.4.tar.gz"
+        }
+    ]
+}
