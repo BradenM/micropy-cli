@@ -4,9 +4,9 @@ import json
 from pathlib import Path
 from shutil import copytree
 
+from micropy import utils
 from micropy.exceptions import StubValidationError
 from micropy.logger import Log
-from micropy.utils import Validator
 
 
 class StubManager:
@@ -52,13 +52,13 @@ class StubManager:
     def validate(self, path):
         """Validates stubs"""
         self.log.debug(f"Validating: {path}")
-        stub_info = path / 'modules.json'
-        val = Validator(self._schema)
+        stub_info = path / 'info.json'
+        val = utils.Validator(self._schema)
         try:
             val.validate(stub_info)
         except FileNotFoundError:
             raise StubValidationError(
-                path, [f"{path.name} contains no modules.json file!"])
+                path, [f"{path.name} contains no info file!"])
         except Exception as e:
             raise StubValidationError(path, str(e))
 
@@ -117,18 +117,18 @@ class Stub:
     def __init__(self, path, copy_to=None, **kwargs):
         self.path = path.absolute()
         self.log = Log.add_logger('Stubs', 'yellow')
-        module = self.path / 'modules.json'
-        info = json.load(module.open())
-        device = info.pop(0)
-        self.modules = info
-        if info[0].get('stubber', None) is None:
-            self.modules = info[1:]
-        self.machine = device.get('machine')
-        self.nodename = device.get('nodename')
-        self.release = device.get('release')
-        self.sysname = device.get('sysname')
-        self.version = device.get('version')
-        self.name = f"{self.sysname}@{self.version}"
+        ref = self.path / 'info.json'
+        info = json.load(ref.open())
+
+        self.stubs = self.path / 'stubs'
+        self.frozen = self.path / 'frozen'
+
+        self.firmware = info.get("firmware")
+        self.device = info.get("device")
+        self.version = info.get('version')
+
+        self.name = (
+            f"{self.device['sysname']}-{self.firmware}-{self.version}")
         if copy_to is not None:
             self.copy_to(copy_to)
 
@@ -147,9 +147,9 @@ class Stub:
         return hash(self.name)
 
     def __repr__(self):
-        return (f"Stub(machine={self.machine}, nodename={self.nodename},"
-                f" release={self.release}, sysname={self.sysname},"
-                f" version={self.version})")
+        sysname = self.device['sysname']
+        return (f"Stub(sysname={sysname}, firmware={self.firmware},"
+                f" version={self.version}, path={self.path})")
 
     def __str__(self):
         return self.name
