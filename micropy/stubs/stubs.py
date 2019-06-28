@@ -24,9 +24,10 @@ class StubManager:
     """
     _schema = Path(__file__).parent / 'schema.json'
 
-    def __init__(self, resource=None):
+    def __init__(self, resource=None, repos=None):
         self._loaded = set()
         self.resource = resource
+        self.repos = repos
         self.log = Log.add_logger('Stubs', 'yellow')
         if self.resource:
             self.load_from(resource)
