@@ -19,7 +19,6 @@ from functools import partial
 from pathlib import Path
 
 import requests
-
 from micropy import utils
 from micropy.logger import Log
 
@@ -52,7 +51,8 @@ class StubRepo:
         data = json.loads(content)
         packages = data['packages']
         for pkg in packages:
-            source = get_source(pkg['url'])
+            location = pkg.pop("url")
+            source = get_source(location, **pkg)
             self.packages.add(source)
         return self.packages
 
@@ -87,8 +87,11 @@ class StubRepo:
 class StubSource:
     """Abstract Base Class for Stub Sources"""
 
-    def __init__(self, location):
+    def __init__(self, location, **kwargs):
         self.location = location
+        self.firmware = kwargs.get("firmware", "Unknown")
+        self.device = kwargs.get("device", "Unknown")
+        self.version = kwargs.get("version", "Unknown")
         _name = self.__class__.__name__
         self.log = Log.add_logger(_name)
 
@@ -114,6 +117,9 @@ class StubSource:
         if teardown:
             teardown()
 
+    def __str__(self):
+        return f"{self.device}-{self.firmware}-{self.version}"
+
 
 class LocalStubSource(StubSource):
     """Stub Source Subclass for local locations
@@ -125,9 +131,9 @@ class LocalStubSource(StubSource):
         obj: Instance of LocalStubSource
     """
 
-    def __init__(self, path):
+    def __init__(self, path, **kwargs):
         location = utils.ensure_existing_dir(path)
-        return super().__init__(location)
+        return super().__init__(location, **kwargs)
 
 
 class RemoteStubSource(StubSource):
@@ -140,9 +146,9 @@ class RemoteStubSource(StubSource):
         obj: Instance of RemoteStubSource
     """
 
-    def __init__(self, url):
+    def __init__(self, url, **kwargs):
         location = utils.ensure_valid_url(url)
-        return super().__init__(location)
+        return super().__init__(location, **kwargs)
 
     def _unpack_archive(self, file_bytes, path):
         """Unpack archive from bytes buffer

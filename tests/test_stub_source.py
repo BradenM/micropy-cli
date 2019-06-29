@@ -3,7 +3,6 @@
 import json
 
 import pytest
-
 from micropy.stubs import source
 
 
@@ -23,6 +22,13 @@ def test_get_source(shared_datadir, test_urls):
     assert isinstance(local_stub, source.LocalStubSource)
     remote_stub = source.get_source(test_urls['valid'])
     assert isinstance(remote_stub, source.RemoteStubSource)
+    source_kwargs = {
+        "firmware": "micropython",
+        "device": "esp32",
+        "version": "1.11.0"
+    }
+    stub_source = source.get_source(test_urls['valid'], **source_kwargs)
+    assert str(stub_source) == "esp32-micropython-1.11.0"
 
 
 def test_source_ready(shared_datadir, test_urls, tmp_path, mocker,
@@ -65,7 +71,11 @@ def test_repo_fetch(test_urls, shared_datadir, mocker):
                         return_value=source_def['location'])
 
     get_source_mock = mocker.patch.object(source, "get_source")
-
+    expect_kwargs = {
+        "firmware": "micropython",
+        "device": "esp8266",
+        "version": "1.9.4",
+    }
     repo = source.StubRepo(**source_def)
     repo.fetch()
     repo.fetch()  # Should only fetch once
@@ -73,7 +83,8 @@ def test_repo_fetch(test_urls, shared_datadir, mocker):
     assert repo.location == source_def['location']
     assert repo.ref == "repo.json"
     get_source_mock.assert_called_once_with(
-        "https://testsource.com/packages/esp8266-micropython-1.9.4.tar.gz")
+        "https://testsource.com/packages/esp8266-micropython-1.9.4.tar.gz", **
+        expect_kwargs)
     assert len(repo.packages) == 1
 
 
