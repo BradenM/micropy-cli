@@ -59,8 +59,10 @@ class CodeTemplate(Template):
     @property
     def context(self):
         """VScode Config Context"""
-        stubs = [str(s.path) for s in self.stubs]
-        stub_paths = json.dumps(stubs)
+        paths = [str(s.frozen) for s in self.stubs]
+        stubs = [str(s.stubs) for s in self.stubs]
+        paths.extend(stubs)
+        stub_paths = json.dumps(paths)
         ctx = {
             "stubs": self.stubs,
             "paths": stub_paths
