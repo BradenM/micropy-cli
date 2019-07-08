@@ -1,0 +1,69 @@
+{
+    "type": "object",
+    "required": ["firmware", "modules"],
+    "properties": {
+        "firmware": {
+            "type": "object",
+            "required": [
+                "machine",
+                "firmware",
+                "nodename",
+                "version",
+                "sysname"
+            ],
+            "properties": {
+                "machine": {
+                    "type": "string"
+                },
+                "firmware": {
+                    "type": "string"
+                },
+                "nodename": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string",
+                    "examples": ["1.11.0", "0.1.1-alpha"],
+                    "pattern": "^((([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)$"
+                },
+                "release": {
+                    "type": "string"
+                },
+                "sysname": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "stubber": {
+            "$id": "#/properties/stubber",
+            "type": "object",
+            "title": "The Stubber Schema",
+            "required": ["version"],
+            "properties": {
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "modules": {
+            "$id": "#/properties/modules",
+            "type": "array",
+            "title": "The Modules Schema",
+            "items": {
+                "type": "object",
+                "required": ["file", "module"],
+                "properties": {
+                    "file": {
+                        "type": "string"
+                    },
+                    "module": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
