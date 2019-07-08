@@ -20,6 +20,7 @@ from pathlib import Path
 
 import requests
 
+import micropy.exceptions as exc
 from micropy import utils
 from micropy.logger import Log
 
@@ -32,42 +33,79 @@ class StubRepo:
         location (str): Valid url
         ref (str): path to repo definition file
     """
+    repos = set()
 
-    def __init__(self, name, location, ref):
-        self.packages = set()
+    def __init__(self, name, location, path):
         self.name = name
+        self.path = path
         self.location = utils.ensure_valid_url(location)
-        self.ref = ref
-        self.synced = False
+        self.repos.add(self)
 
-    def _load(self, content):
-        """Loads packages from def file
+    def has_package(self, name):
+        """Checks if package is available in repo
 
         Args:
-            content (str or bytes): json data to load
+            name (str): name of package
 
         Returns:
-            set of available packages
+            bool: True if package is available
+        """
+        url = self.get_url(name)
+        return utils.is_downloadable(url)
+
+    def get_url(self, path):
+        """Returns formatted url to provided path
+
+        Args:
+            path (str): path to format
+
+        Returns:
+            str: formatted url
+        """
+        url = f"{self.location}/{self.path}/{path}.tar.gz"
+        return url
+
+    @classmethod
+    def resolve_package(cls, name):
+        """Attempts to resolve package from all repos
+
+        Args:
+            name (str): package to resolve
+
+        Raises:
+            StubNotFound: Package could not be resolved
+
+        Returns:
+            str: url to package
+        """
+        results = (r for r in cls.repos if r.has_package(name))
+        try:
+            repo = next(results)
+        except StopIteration:
+            raise exc.StubNotFound(name)
+        else:
+            pkg_url = repo.get_url(name)
+            return pkg_url
+
+    @classmethod
+    def from_json(cls, content):
+        """Create StubRepo Instances from JSON file
+
+        Args:
+            file_obj (str or bytes): json content
+
+        Returns:
+            iterable of created repos
         """
         data = json.loads(content)
-        packages = data['packages']
-        for pkg in packages:
-            source = get_source(pkg['url'])
-            self.packages.add(source)
-        return self.packages
+        repos = [cls(**r) for r in data]
+        return repos
 
-    def fetch(self):
-        """Fetch repo info
+    def __eq__(self, other):
+        return self.location == getattr(other, 'location', None)
 
-        Returns:
-            set: available packages
-        """
-        if self.synced:
-            return self.packages
-        url = f"{self.location}/{self.ref}"
-        data = requests.get(url)
-        self.synced = True
-        return self._load(data.content)
+    def __hash__(self):
+        return hash(self.location)
 
 
 class StubSource:
@@ -100,6 +138,10 @@ class StubSource:
         if teardown:
             teardown()
 
+    def __str__(self):
+        _name = self.__class__.__name__
+        return f"<{_name}@{self.location}>"
+
 
 class LocalStubSource(StubSource):
     """Stub Source Subclass for local locations
@@ -111,9 +153,9 @@ class LocalStubSource(StubSource):
         obj: Instance of LocalStubSource
     """
 
-    def __init__(self, path):
+    def __init__(self, path, **kwargs):
         location = utils.ensure_existing_dir(path)
-        return super().__init__(location)
+        return super().__init__(location, **kwargs)
 
 
 class RemoteStubSource(StubSource):
@@ -126,8 +168,8 @@ class RemoteStubSource(StubSource):
         obj: Instance of RemoteStubSource
     """
 
-    def __init__(self, url):
-        location = utils.ensure_valid_url(url)
+    def __init__(self, name):
+        location = StubRepo.resolve_package(name)
         return super().__init__(location)
 
     def _unpack_archive(self, file_bytes, path):
@@ -143,7 +185,7 @@ class RemoteStubSource(StubSource):
         """
         tar_bytes_obj = io.BytesIO(file_bytes)
         with tarfile.open(fileobj=tar_bytes_obj, mode="r:gz") as tar:
-            tar.extractall(path)
+            tar.extractall(path.parent)
         return path
 
     def ready(self):
@@ -176,6 +218,9 @@ def get_source(location, **kwargs):
     Returns:
         obj: Either Local or Remote StubSource Instance
     """
-    if utils.is_url(location):
+    try:
+        utils.ensure_existing_dir(location)
+    except NotADirectoryError:
         return RemoteStubSource(location, **kwargs)
-    return LocalStubSource(location, **kwargs)
+    else:
+        return LocalStubSource(location, **kwargs)

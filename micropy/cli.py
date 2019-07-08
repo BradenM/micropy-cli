@@ -3,13 +3,12 @@
 
 """MicropyCli Console Entrypoint"""
 import sys
-from pathlib import Path
 
 import click
 import questionary as prompt
 from questionary import Choice
 
-from micropy.exceptions import StubError
+import micropy.exceptions as exc
 from micropy.main import MicroPy
 from micropy.project import Project
 
@@ -41,21 +40,20 @@ def init(project_name=""):
 
 
 @stubs.command()
-@click.argument('path', required=True, type=click.Path(
-    exists=True, file_okay=False, resolve_path=True))
-def add(path):
-    """Add stubs"""
-    stub_path = Path(str(path))
+@click.argument('stub_name', required=True)
+def add(stub_name):
+    """Add Stubs from package or path"""
+    mp.log.info(f"Adding {stub_name} to stubs...")
     try:
-        mp.log.info(f"Adding stub from $[{stub_path}]")
-        mp.STUBS.validate(stub_path)
-        stub = mp.STUBS.add(stub_path)
-    except StubError:
-        msg = f"{stub_path.name} is not a valid stub!"
-        mp.log.error(msg)
+        stub = mp.STUBS.add(stub_name)
+    except exc.StubValidationError:
+        mp.log.error(f"$[{stub_name}] is not a valid stub!")
+        sys.exit(1)
+    except exc.StubNotFound:
+        mp.log.error(f"$[{stub_name}] could not be found!")
         sys.exit(1)
     else:
-        mp.log.success(f"{stub.name} added!")
+        mp.log.success(f"{str(stub)} added!")
 
 
 @stubs.command()

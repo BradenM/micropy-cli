@@ -22,7 +22,8 @@ REQUIRED = [
     'rshell',
     'colorama ; platform_system=="Windows"',
     'jsonschema',
-    'jinja2'
+    'jinja2',
+    'requests'
 ]
 
 EXTRAS = {}

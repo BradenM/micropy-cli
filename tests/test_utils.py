@@ -82,6 +82,7 @@ def test_is_downloadable(mocker, test_urls):
                      uheaders["can_download"]])
     type(mock_head.return_value).headers = head_mock_val
     assert not utils.is_downloadable(u["valid"])
+    assert not utils.is_downloadable("not-a-real-url")
     assert utils.is_downloadable(u["valid"])
 
 
@@ -90,3 +91,12 @@ def test_get_url_filename(test_urls):
     filename = "archive_test_stub.tar.gz"
     result = utils.get_url_filename(test_urls["download"])
     assert result == filename
+
+
+def test_is_existing_dir(tmp_path):
+    bad_path = tmp_path / 'not-real-path'
+    is_file = tmp_path / 'file.txt'
+    is_file.touch()
+    assert not utils.is_existing_dir(bad_path)
+    assert not utils.is_existing_dir(is_file)
+    assert utils.is_existing_dir(tmp_path)

@@ -6,7 +6,8 @@
 class StubError(Exception):
     """Exception for any errors raised by stubs"""
 
-    def __init__(self, stub=None, message=None):
+    def __init__(self, message, stub=None):
+        super().__init__(message)
         self.stub = stub
         self.message = message
         if message is None:
@@ -24,3 +25,11 @@ class StubValidationError(StubError):
 
     def __str__(self):
         return self.message
+
+
+class StubNotFound(StubError):
+    """Raised when a stub cannot be found"""
+
+    def __init__(self, stub_name):
+        msg = f"{stub_name} is not available!"
+        return super().__init__(msg)

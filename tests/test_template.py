@@ -3,8 +3,9 @@
 import json
 
 import pylint.lint
+import pytest
 
-from micropy.project.template import TemplateProvider
+from micropy.project.template import Template, TemplateProvider
 
 
 def test_vscode_template(mock_micropy, tmp_path):
@@ -51,3 +52,13 @@ def test_generic_template(mock_micropy, tmp_path):
     out_content = expected_path.read_text()
     print(out_content)
     assert expected_content.strip() == out_content.strip()
+
+
+def test_no_context():
+    class BadTemplate(Template):
+        def __init__(self, template, **kwargs):
+            return super().__init__(template, **kwargs)
+
+    with pytest.raises(NotImplementedError):
+        x = BadTemplate('abc')
+        print(x.context)
