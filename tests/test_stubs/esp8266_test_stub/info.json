@@ -1,13 +1,22 @@
 {
-    "scope": "device",
-    "firmware": "micropython",
-    "version": "1.9.4",
-    "device": {
-        "nodename": "esp8266",
+    "firmware": {
         "machine": "ESP module with ESP8266",
+        "firmware": "esp8266 v1.9.4",
+        "nodename": "esp8266",
+        "version": "1.9.4",
+        "release": "2.2.0-dev(9422289)",
         "sysname": "esp8266",
-        "release": "v1.9.4-8-ga9a3caad0 on 2018-05-11"
+        "name": "micropython"
     },
-    "modules": [{ "name": "ntptime", "path": "modules/ntptime.py" }],
-    "stubs": [{ "name": "machine", "path": "stubs/machine.py" }]
+    "stubber": { "version": "1.2.0" },
+    "modules": [
+        {
+            "file": "/stubs/esp32_1_11_0/umqtt/robust.py",
+            "module": "umqtt.robust"
+        },
+        {
+            "file": "/stubs/esp32_1_11_0/umqtt/simple.py",
+            "module": "umqtt.simple"
+        }
+    ]
 }

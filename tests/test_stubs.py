@@ -39,11 +39,14 @@ def test_valid_stub(shared_datadir):
     stub = stubs.stubs.Stub(stub_path)
     stub_2 = stubs.stubs.Stub(stub_path)
     assert stub == stub_2
-    expect_device = {
-        "nodename": "esp8266",
+    expect_fware = {
         "machine": "ESP module with ESP8266",
+        "firmware": "esp8266 v1.9.4",
+        "nodename": "esp8266",
+        "version": "1.9.4",
+        "release": "2.2.0-dev(9422289)",
         "sysname": "esp8266",
-        "release": "v1.9.4-8-ga9a3caad0 on 2018-05-11"
+        "name": "micropython"
     }
     expect_repr = ("Stub(sysname=esp8266, firmware=micropython, version=1.9.4,"
                    f" path={stub_path})")
@@ -51,10 +54,12 @@ def test_valid_stub(shared_datadir):
     assert stub.stubs.exists()
     assert stub.frozen.exists()
     assert stub.version == "1.9.4"
-    assert stub.device == expect_device
+    assert stub.firmware == expect_fware
     assert repr(stub) == expect_repr
-    assert stub.firmware == "micropython"
+    assert stub.firmware_name == "micropython"
     assert str(stub) == "esp8266-micropython-1.9.4"
+    del stub.firmware['name']
+    assert stub.firmware_name == "esp8266 v1.9.4"
 
 
 def test_add_single_stub(shared_datadir, tmp_path):
