@@ -1,6 +1,6 @@
 [MASTER]
 # Loaded Stubs: {% for stub in stubs %} {{ stub }} {% endfor %}
-init-hook='import sys;{% for stub in stubs %}sys.path.insert(1, "{{ stub.path }}");{% endfor %}sys.path.insert(1,"./lib")'
+init-hook='import sys;{% for stub in stubs %}sys.path.insert(1, "{{ stub.frozen }}");sys.path.insert(1, "{{ stub.stubs }}");{% endfor %}sys.path.insert(1,"./lib")'
 
 [MESSAGES CONTROL]
 # Only show warnings with the listed confidence levels. Leave empty to show
