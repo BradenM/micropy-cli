@@ -19,6 +19,8 @@ from functools import partial
 from pathlib import Path
 
 import requests
+
+import micropy.exceptions as exc
 from micropy import utils
 from micropy.logger import Log
 
@@ -31,43 +33,59 @@ class StubRepo:
         location (str): Valid url
         ref (str): path to repo definition file
     """
+    repos = set()
 
-    def __init__(self, name, location, ref):
-        self.packages = set()
+    def __init__(self, name, location, path):
         self.name = name
+        self.path = path
         self.location = utils.ensure_valid_url(location)
-        self.ref = ref
-        self.synced = False
+        self.repos.add(self)
 
-    def _load(self, content):
-        """Loads packages from def file
+    def has_package(self, name):
+        """Checks if package is available in repo
 
         Args:
-            content (str or bytes): json data to load
+            name (str): name of package
 
         Returns:
-            set of available packages
+            bool: True if package is available
         """
-        data = json.loads(content)
-        packages = data['packages']
-        for pkg in packages:
-            location = pkg.pop("url")
-            source = get_source(location, **pkg)
-            self.packages.add(source)
-        return self.packages
+        url = self.get_url(name)
+        return utils.is_downloadable(url)
 
-    def fetch(self):
-        """Fetch repo info
+    def get_url(self, path):
+        """Returns formatted url to provided path
+
+        Args:
+            path (str): path to format
 
         Returns:
-            set: available packages
+            str: formatted url
         """
-        if self.synced:
-            return self.packages
-        url = f"{self.location}/{self.ref}"
-        data = requests.get(url)
-        self.synced = True
-        return self._load(data.content)
+        url = f"{self.location}/{self.path}/{path}.tar.gz"
+        return url
+
+    @classmethod
+    def resolve_package(cls, name):
+        """Attempts to resolve package from all repos
+
+        Args:
+            name (str): package to resolve
+
+        Raises:
+            StubNotFound: Package could not be resolved
+
+        Returns:
+            str: url to package
+        """
+        results = (r for r in cls.repos if r.has_package(name))
+        try:
+            repo = next(results)
+        except StopIteration:
+            raise exc.StubNotFound(name)
+        else:
+            pkg_url = repo.get_url(name)
+            return pkg_url
 
     @classmethod
     def from_json(cls, content):
@@ -83,15 +101,18 @@ class StubRepo:
         repos = iter(cls(**r) for r in data)
         return repos
 
+    def __eq__(self, other):
+        return self.location == getattr(other, 'location', None)
+
+    def __hash__(self):
+        return hash(self.location)
+
 
 class StubSource:
     """Abstract Base Class for Stub Sources"""
 
-    def __init__(self, location, **kwargs):
+    def __init__(self, location):
         self.location = location
-        self.firmware = kwargs.get("firmware", "Unknown")
-        self.device = kwargs.get("device", "Unknown")
-        self.version = kwargs.get("version", "Unknown")
         _name = self.__class__.__name__
         self.log = Log.add_logger(_name)
 
@@ -118,7 +139,8 @@ class StubSource:
             teardown()
 
     def __str__(self):
-        return f"{self.device}-{self.firmware}-{self.version}"
+        _name = self.__class__.__name__
+        return f"<{_name}@{self.location}>"
 
 
 class LocalStubSource(StubSource):
@@ -146,9 +168,9 @@ class RemoteStubSource(StubSource):
         obj: Instance of RemoteStubSource
     """
 
-    def __init__(self, url, **kwargs):
-        location = utils.ensure_valid_url(url)
-        return super().__init__(location, **kwargs)
+    def __init__(self, name):
+        location = StubRepo.resolve_package(name)
+        return super().__init__(location)
 
     def _unpack_archive(self, file_bytes, path):
         """Unpack archive from bytes buffer
@@ -196,6 +218,9 @@ def get_source(location, **kwargs):
     Returns:
         obj: Either Local or Remote StubSource Instance
     """
-    if utils.is_url(location):
+    try:
+        utils.ensure_existing_dir(location)
+    except NotADirectoryError:
         return RemoteStubSource(location, **kwargs)
-    return LocalStubSource(location, **kwargs)
+    else:
+        return LocalStubSource(location, **kwargs)

@@ -2,6 +2,6 @@
     {
         "name": "Micropy Stubs",
         "location": "https://micropy-stubs-prod.s3.amazonaws.com",
-        "ref": "repo.json"
+        "path": "packages"
     }
 ]
