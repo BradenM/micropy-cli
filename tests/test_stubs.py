@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from micropy import exceptions, stubs
+from micropy.stubs.stubs import Stub
 
 
 def test_stub_validation(shared_datadir):
@@ -100,3 +101,15 @@ def test_loads_from_resource(datadir):
     """should load from resource if provided"""
     manager = stubs.StubManager(resource=datadir)
     assert len(manager) == len(list(datadir.iterdir())) - 1
+
+
+def test_name_property(shared_datadir):
+    """should raise error if name is not overriden"""
+    test_stub = shared_datadir / 'esp8266_test_stub'
+
+    class ErrorStub(Stub):
+        def __init__(self, path, copy_to=None, **kwargs):
+            return super().__init__(path, copy_to=copy_to, **kwargs)
+    with pytest.raises(NotImplementedError):
+        x = ErrorStub(test_stub)
+        x.name

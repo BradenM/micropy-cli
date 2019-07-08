@@ -114,7 +114,7 @@ class StubManager:
 class Stub:
     """Abstract Parent for Stub Related Classes
 
-    Not Meant to be instantiated directly. Holds common code
+    Not Meant to be instantiated directly. Contains common logic
     between different types of Stubs (ex. Firmware vs Device)
 
     Raises:
