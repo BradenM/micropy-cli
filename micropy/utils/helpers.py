@@ -16,7 +16,7 @@ from requests import utils as requtil
 
 __all__ = ["is_url", "get_url_filename",
            "ensure_existing_dir", "ensure_valid_url",
-           "is_downloadable"]
+           "is_downloadable", "is_existing_dir"]
 
 
 def is_url(url):
@@ -82,6 +82,23 @@ def ensure_existing_dir(path):
     return path
 
 
+def is_existing_dir(path):
+    """Check if path is an existing directory
+
+    Args:
+        path (str): path to check
+
+    Returns:
+        bool: True if path exists and is a directory
+    """
+    try:
+        ensure_existing_dir(path)
+    except NotADirectoryError:
+        return False
+    else:
+        return True
+
+
 def is_downloadable(url):
     """Checks if the url can be downloaded from
 
@@ -91,10 +108,14 @@ def is_downloadable(url):
     Returns:
         bool: True if contains a downloadable resource
     """
+    try:
+        ensure_valid_url(url)
+    except Exception:
+        return False
     headers = requests.head(url).headers
     content_type = headers.get("content-type").lower()
     ctype = content_type.split("/")
-    if any(t in ('text', 'html',) for t in ctype):
+    if any(t in ('text', 'html', ) for t in ctype):
         return False
     return True
 

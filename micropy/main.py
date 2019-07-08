@@ -5,9 +5,9 @@
 import tempfile
 from pathlib import Path
 
+from micropy import data, utils
 from micropy.logger import Log
-from micropy.stubs import StubManager
-from micropy.utils import PyboardWrapper
+from micropy.stubs import StubManager, source
 
 
 class MicroPy:
@@ -17,6 +17,7 @@ class MicroPy:
     FILES = Path.home() / '.micropy'
     STUB_DIR = FILES / 'stubs'
     STUBS = None
+    REPOS = data.PATH / 'sources.json'
 
     def __init__(self):
         self.log = Log.get_logger('MicroPy')
@@ -27,7 +28,9 @@ class MicroPy:
         self.log.debug("\n---- MicropyCLI Session ----")
         self.log.debug("Loading stubs...")
         if self.STUB_DIR.exists():
-            self.STUBS = StubManager(resource=self.STUB_DIR)
+            repo_list = self.REPOS.read_text()
+            repos = source.StubRepo.from_json(repo_list)
+            self.STUBS = StubManager(resource=self.STUB_DIR, repos=repos)
             return self.STUBS
         self.log.debug("Running first time setup...")
         self.log.debug(f"Creating .micropy directory @ {self.FILES}")
@@ -47,7 +50,7 @@ class MicroPy:
         # TODO: Probably move this functionality to cli module
         self.log.info(f"Connecting to Pyboard @ $[{port}]...")
         try:
-            pyb = PyboardWrapper(port)
+            pyb = utils.PyboardWrapper(port)
         except SystemExit:
             self.log.error(
                 f"Failed to connect, are you sure $[{port}] is correct?")
