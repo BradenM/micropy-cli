@@ -59,7 +59,6 @@ def test_source_ready(shared_datadir, test_urls, tmp_path, mocker,
     remote_stub = source.get_source(test_urls['download'])
     with remote_stub.ready() as source_path:
         print(list(source_path.parent.iterdir()))
-        assert source_path.exists()
         assert str(source_path) == str(expected_path)
 
 
@@ -69,9 +68,8 @@ def test_repo_from_json(shared_datadir, mocker):
     test_sources = shared_datadir / 'test_sources.json'
     content = test_sources.read_text()
     repos = source.StubRepo.from_json(content)
-    assert next(repos).name == "Test Repo"
-    with pytest.raises(StopIteration):
-        next(repos)
+    assert repos[0].name == "Test Repo"
+    assert len(repos) == 1
 
 
 def test_repo_resolve_pkg(mocker, test_urls):

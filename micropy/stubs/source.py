@@ -98,7 +98,7 @@ class StubRepo:
             iterable of created repos
         """
         data = json.loads(content)
-        repos = iter(cls(**r) for r in data)
+        repos = [cls(**r) for r in data]
         return repos
 
     def __eq__(self, other):
@@ -185,7 +185,7 @@ class RemoteStubSource(StubSource):
         """
         tar_bytes_obj = io.BytesIO(file_bytes)
         with tarfile.open(fileobj=tar_bytes_obj, mode="r:gz") as tar:
-            tar.extractall(path)
+            tar.extractall(path.parent)
         return path
 
     def ready(self):

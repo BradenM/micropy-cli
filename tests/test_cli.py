@@ -3,7 +3,7 @@
 import pytest
 from click.testing import CliRunner
 
-from micropy import cli, exceptions
+from micropy import cli
 
 
 @pytest.fixture
@@ -52,12 +52,17 @@ def test_cli_stubs_add(mocker, shared_datadir, runner):
     test_stub = shared_datadir / 'esp8266_test_stub'
     test_invalid_stub = shared_datadir / 'esp8266_invalid_stub'
     mock_stubs = mocker.patch.object(cli.mp, "STUBS")
-    mock_stubs.validate.side_effect = [exceptions.StubError,
-                                       True]
+    mock_stubs.add.side_effect = [cli.exc.StubValidationError,
+                                  cli.exc.StubNotFound,
+                                  True]
+    mocker.spy(cli.sys, 'exit')
     result = runner.invoke(cli.add, [str(test_invalid_stub.resolve())])
+    assert cli.sys.exit.called_with(1)
+    assert result.exit_code == 1
+
+    result = runner.invoke(cli.add, ["not-real-stub"])
+    assert cli.sys.exit.called_with(1)
     assert result.exit_code == 1
 
     result = runner.invoke(cli.add, [str(test_stub.resolve())])
-    mock_stubs.add.assert_called_with(test_stub)
-    mock_stubs.validate.assert_called_with(test_stub)
     assert result.exit_code == 0

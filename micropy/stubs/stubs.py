@@ -7,6 +7,7 @@ from shutil import copytree
 from micropy import utils
 from micropy.exceptions import StubValidationError
 from micropy.logger import Log
+from micropy.stubs import source
 
 
 class StubManager:
@@ -38,21 +39,23 @@ class StubManager:
     def __len__(self):
         return len(self._loaded)
 
-    def _load(self, path, *args, **kwargs):
+    def _load(self, stub_source, *args, **kwargs):
         """Loads a stub"""
-        try:
-            self.validate(path)
-        except StubValidationError as e:
-            self.log.debug(f"{path.name} failed to validate: {e.message}")
-        else:
-            stub = Stub(path, *args, **kwargs)
-            self._loaded.add(stub)
-            self.log.debug(f"Loaded: {stub}")
-            return stub
+        with stub_source.ready() as src_path:
+            try:
+                self.validate(src_path)
+            except StubValidationError as e:
+                self.log.debug(f"{src_path.name} failed to validate: {e}")
+            else:
+                stub = Stub(src_path, *args, **kwargs)
+                self._loaded.add(stub)
+                self.log.debug(f"Loaded: {stub}")
+                return stub
 
     def validate(self, path):
         """Validates stubs"""
         self.log.debug(f"Validating: {path}")
+        path = Path(path).resolve()
         stub_info = path / 'info.json'
         val = utils.Validator(self._schema)
         try:
@@ -83,10 +86,11 @@ class StubManager:
         """Load all stubs in a directory"""
         dir_path = Path(str(directory)).resolve()
         dirs = dir_path.iterdir()
-        stubs = [self._load(d, *args, **kwargs) for d in dirs]
+        stubs = [self._load(source.get_source(d), *args, **kwargs)
+                 for d in dirs]
         return stubs
 
-    def add(self, source, dest=None):
+    def add(self, location, dest=None):
         """Add stub(s) from source
 
         Args:
@@ -97,14 +101,14 @@ class StubManager:
         Raises:
             TypeError: No resource or destination provided
         """
-        source_path = Path(str(source)).resolve()
         _dest = dest or self.resource
         if not _dest:
             raise TypeError("No Stub Destination Provided!")
         dest = Path(str(_dest)).resolve()
-        if not self.is_valid(source_path):
-            return self.load_from(source_path, copy_to=dest)
-        return self._load(source_path, copy_to=dest)
+        if utils.is_existing_dir(location) and not self.is_valid(location):
+            return self.load_from(location, copy_to=dest)
+        stub_source = source.get_source(location)
+        return self._load(stub_source, copy_to=dest)
 
 
 class Stub:
