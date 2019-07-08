@@ -47,7 +47,7 @@ class StubManager:
             except StubValidationError as e:
                 self.log.debug(f"{src_path.name} failed to validate: {e}")
             else:
-                stub = Stub(src_path, *args, **kwargs)
+                stub = DeviceStub(src_path, *args, **kwargs)
                 self._loaded.add(stub)
                 self.log.debug(f"Loaded: {stub}")
                 return stub
@@ -112,28 +112,22 @@ class StubManager:
 
 
 class Stub:
-    """Handles Stub Files
+    """Abstract Parent for Stub Related Classes
 
-    :param str path: path to stub
-    :param Optional[str] copy_to: directory to copy stub to if it validates
+    Not Meant to be instantiated directly. Holds common code
+    between different types of Stubs (ex. Firmware vs Device)
 
+    Raises:
+        NotImplementedError: name property is not implemented
+
+    Returns:
+        Instance of Stub
     """
 
     def __init__(self, path, copy_to=None, **kwargs):
-        self.path = path.absolute()
-        self.log = Log.add_logger('Stubs', 'yellow')
+        self.path = Path(path).resolve()
         ref = self.path / 'info.json'
-        info = json.load(ref.open())
-
-        self.stubs = self.path / 'stubs'
-        self.frozen = self.path / 'frozen'
-
-        self.firmware = info.get("firmware")
-        self.sysname = self.firmware.get('sysname')
-        self.version = self.firmware.get('version')
-
-        self.name = (
-            f"{self.sysname}-{self.firmware_name}-{self.version}")
+        self.info = json.load(ref.open())
         if copy_to is not None:
             self.copy_to(copy_to)
 
@@ -144,6 +138,41 @@ class Stub:
         copytree(self.path, dest)
         self.path = dest
         return self
+
+    @property
+    def name(self):
+        raise NotImplementedError
+
+    def __eq__(self, other):
+        return self.name == getattr(other, 'name', None)
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __str__(self):
+        return self.name
+
+
+class DeviceStub(Stub):
+    """Handles Device Specific Stubs
+
+    Args:
+        path (str): path to stub
+        copy_to (str, optional): Path to copy Stub to. Defaults to None.
+
+    Returns:
+        Device Stub Instance
+    """
+
+    def __init__(self, path, copy_to=None, **kwargs):
+        super().__init__(path, copy_to, **kwargs)
+
+        self.stubs = self.path / 'stubs'
+        self.frozen = self.path / 'frozen'
+
+        self.firmware = self.info.get("firmware")
+        self.sysname = self.firmware.get('sysname')
+        self.version = self.firmware.get('version')
 
     @property
     def firmware_name(self):
@@ -157,15 +186,11 @@ class Stub:
             fware = self.firmware.get('firmware')
         return fware
 
-    def __eq__(self, other):
-        return self.name == getattr(other, 'name', None)
-
-    def __hash__(self):
-        return hash(self.name)
+    @property
+    def name(self):
+        """Human friendly stub name"""
+        return f"{self.sysname}-{self.firmware_name}-{self.version}"
 
     def __repr__(self):
         return (f"Stub(sysname={self.sysname}, firmware={self.firmware_name},"
                 f" version={self.version}, path={self.path})")
-
-    def __str__(self):
-        return self.name

@@ -30,14 +30,14 @@ def test_bad_stub_validation(shared_datadir, mocker):
 def test_bad_stub(tmp_path):
     """should raise exception on invalid stub"""
     with pytest.raises(FileNotFoundError):
-        stubs.stubs.Stub(tmp_path)
+        stubs.stubs.DeviceStub(tmp_path)
 
 
 def test_valid_stub(shared_datadir):
     """should have all attributes"""
     stub_path = shared_datadir / 'esp8266_test_stub'
-    stub = stubs.stubs.Stub(stub_path)
-    stub_2 = stubs.stubs.Stub(stub_path)
+    stub = stubs.stubs.DeviceStub(stub_path)
+    stub_2 = stubs.stubs.DeviceStub(stub_path)
     assert stub == stub_2
     expect_fware = {
         "machine": "ESP module with ESP8266",
