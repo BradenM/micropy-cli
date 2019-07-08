@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from shutil import copytree
 
-from micropy import utils
+from micropy import data, utils
 from micropy.exceptions import StubValidationError
 from micropy.logger import Log
 from micropy.stubs import source
@@ -23,7 +23,7 @@ class StubManager:
     Returns:
         object: Instance of StubManager
     """
-    _schema = Path(__file__).parent / 'schema.json'
+    _schema = data.SCHEMAS / 'stubs.json'
 
     def __init__(self, resource=None, repos=None):
         self._loaded = set()
@@ -129,11 +129,11 @@ class Stub:
         self.frozen = self.path / 'frozen'
 
         self.firmware = info.get("firmware")
-        self.device = info.get("device")
-        self.version = info.get('version')
+        self.sysname = self.firmware.get('sysname')
+        self.version = self.firmware.get('version')
 
         self.name = (
-            f"{self.device['sysname']}-{self.firmware}-{self.version}")
+            f"{self.sysname}-{self.firmware_name}-{self.version}")
         if copy_to is not None:
             self.copy_to(copy_to)
 
@@ -145,6 +145,18 @@ class Stub:
         self.path = dest
         return self
 
+    @property
+    def firmware_name(self):
+        """Return an appropriate firmware name
+
+        Returns:
+            str: Name of Firmware
+        """
+        fware = self.firmware.get('name', None)
+        if not fware:
+            fware = self.firmware.get('firmware')
+        return fware
+
     def __eq__(self, other):
         return self.name == getattr(other, 'name', None)
 
@@ -152,8 +164,7 @@ class Stub:
         return hash(self.name)
 
     def __repr__(self):
-        sysname = self.device['sysname']
-        return (f"Stub(sysname={sysname}, firmware={self.firmware},"
+        return (f"Stub(sysname={self.sysname}, firmware={self.firmware_name},"
                 f" version={self.version}, path={self.path})")
 
     def __str__(self):

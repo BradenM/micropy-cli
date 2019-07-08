@@ -12,5 +12,6 @@ from pathlib import Path
 
 MOD_PATH = Path(__file__).parent
 PATH = MOD_PATH.resolve()
+SCHEMAS = PATH / 'schemas'
 
-__all__ = ["PATH"]
+__all__ = ["PATH", "SCHEMAS"]
