@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 
 from micropy import exceptions, stubs
-from micropy.stubs.stubs import Stub
 
 
 def test_stub_validation(shared_datadir):
@@ -24,7 +23,7 @@ def test_bad_stub_validation(shared_datadir, mocker):
         Exception, FileNotFoundError]
     with pytest.raises(exceptions.StubValidationError):
         manager.validate(stub_path)
-    with pytest.raises(exceptions.StubValidationError):
+    with pytest.raises(FileNotFoundError):
         manager.validate(Path("/foobar/foo"))
 
 
@@ -49,8 +48,8 @@ def test_valid_stub(shared_datadir):
         "sysname": "esp8266",
         "name": "micropython"
     }
-    expect_repr = ("Stub(sysname=esp8266, firmware=micropython, version=1.9.4,"
-                   f" path={stub_path})")
+    expect_repr = ("DeviceStub(sysname=esp8266, firmware=micropython,"
+                   f" version=1.9.4, path={stub_path})")
     assert stub.path.exists()
     assert stub.stubs.exists()
     assert stub.frozen.exists()
@@ -61,6 +60,32 @@ def test_valid_stub(shared_datadir):
     assert str(stub) == "esp8266-micropython-1.9.4"
     del stub.firmware['name']
     assert stub.firmware_name == "esp8266 v1.9.4"
+
+
+def test_valid_fware_stub(shared_datadir):
+    stub_path = shared_datadir / 'fware_test_stub'
+    stub = stubs.stubs.FirmwareStub(stub_path)
+    assert str(stub) == "MicroPython Official"
+    assert stub.frozen.exists()
+    assert repr(
+        stub) == ("FirmwareStub(firmware=micropython,"
+                  " repo=micropython/micropython)")
+
+
+def test_resolve_stub(shared_datadir):
+    """should resolve correct stub type"""
+    device_stub = shared_datadir / 'esp8266_test_stub'
+    fware_stub = shared_datadir / 'fware_test_stub'
+    invalid_stub = shared_datadir / 'esp8266_invalid_stub'
+    manager = stubs.StubManager()
+    stub_type = manager.resolve_stub(device_stub)
+    assert stub_type == stubs.stubs.DeviceStub
+    stub_type = manager.resolve_stub(fware_stub)
+    assert stub_type == stubs.stubs.FirmwareStub
+    with pytest.raises(FileNotFoundError):
+        manager.resolve_stub(Path('/foobar/foo'))
+    with pytest.raises(exceptions.StubValidationError):
+        manager.resolve_stub(invalid_stub)
 
 
 def test_add_single_stub(shared_datadir, tmp_path):
@@ -107,7 +132,7 @@ def test_name_property(shared_datadir):
     """should raise error if name is not overriden"""
     test_stub = shared_datadir / 'esp8266_test_stub'
 
-    class ErrorStub(Stub):
+    class ErrorStub(stubs.stubs.Stub):
         def __init__(self, path, copy_to=None, **kwargs):
             return super().__init__(path, copy_to=copy_to, **kwargs)
     with pytest.raises(NotImplementedError):
