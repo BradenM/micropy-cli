@@ -13,10 +13,11 @@ from pathlib import Path
 import requests
 from requests import exceptions as reqexc
 from requests import utils as requtil
+from tqdm import tqdm
 
 __all__ = ["is_url", "get_url_filename",
            "ensure_existing_dir", "ensure_valid_url",
-           "is_downloadable", "is_existing_dir"]
+           "is_downloadable", "is_existing_dir", "stream_download"]
 
 
 def is_url(url):
@@ -132,3 +133,25 @@ def get_url_filename(url):
     path = requtil.urlparse(url).path
     file_name = Path(path).name
     return file_name
+
+
+def stream_download(url, **kwargs):
+    """Stream download with tqdm progress bar
+
+    Args:
+        url (str): url to file
+
+    Returns:
+        bytearray: bytearray of content
+    """
+    stream = requests.get(url, stream=True)
+    content = bytearray()
+    total_size = int(stream.headers.get('content-length'))
+    block_size = 32*1024
+    bar_format = "{l_bar}{bar}| [{n_fmt}/{total_fmt} @ {rate_fmt}]"
+    with tqdm(total=total_size, unit='B', unit_scale=True, unit_divisor=1024,
+              smoothing=0.1, bar_format=bar_format, **kwargs) as pbar:
+        for block in stream.iter_content(block_size):
+            pbar.update(len(block))
+            content.extend(block)
+    return content

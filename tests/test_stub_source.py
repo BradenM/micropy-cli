@@ -40,12 +40,9 @@ def test_source_ready(shared_datadir, test_urls, tmp_path, mocker,
     test_parent = tmp_path / 'tmpdir'
     test_parent.mkdir()
     expected_path = (test_parent / 'archive_test_stub').resolve()
-    mocker.patch.object(source.utils, "ensure_valid_url",
-                        return_value=test_urls['download'])
     mocker.patch.object(source.tempfile, "mkdtemp", return_value=test_parent)
-    get_mock = mocker.patch.object(source.requests, "get")
-    content_mock_val = mocker.PropertyMock(return_value=test_archive)
-    type(get_mock.return_value).content = content_mock_val
+    mocker.patch.object(source.utils, "stream_download",
+                        return_value=test_archive)
     # Test Remote Stub
     remote_stub = source.get_source(test_urls['download'])
     with remote_stub.ready() as source_path:

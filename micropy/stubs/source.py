@@ -18,8 +18,6 @@ from contextlib import contextmanager
 from functools import partial
 from pathlib import Path
 
-import requests
-
 import micropy.exceptions as exc
 from micropy import utils
 from micropy.logger import Log
@@ -111,10 +109,10 @@ class StubRepo:
 class StubSource:
     """Abstract Base Class for Stub Sources"""
 
-    def __init__(self, location):
+    def __init__(self, location, log=None):
         self.location = location
         _name = self.__class__.__name__
-        self.log = Log.add_logger(_name)
+        self.log = log or Log.add_logger(_name)
 
     @contextmanager
     def ready(self, path=None, teardown=None):
@@ -169,9 +167,9 @@ class RemoteStubSource(StubSource):
         obj: Instance of RemoteStubSource
     """
 
-    def __init__(self, name):
+    def __init__(self, name, **kwargs):
         location = StubRepo.resolve_package(name)
-        return super().__init__(location)
+        return super().__init__(location, **kwargs)
 
     def _unpack_archive(self, file_bytes, path):
         """Unpack archive from bytes buffer
@@ -204,8 +202,9 @@ class RemoteStubSource(StubSource):
         tmp_path = Path(tmp_dir)
         filename = utils.get_url_filename(self.location).split(".tar.gz")[0]
         outpath = tmp_path / filename
-        resp = requests.get(self.location)
-        source_path = self._unpack_archive(resp.content, outpath)
+        content = utils.stream_download(
+            self.location, desc=f"{self.log.get_service()} {filename}")
+        source_path = self._unpack_archive(content, outpath)
         teardown = partial(shutil.rmtree, tmp_path)
         return super().ready(path=source_path, teardown=teardown)
 
