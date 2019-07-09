@@ -23,7 +23,8 @@ REQUIRED = [
     'colorama ; platform_system=="Windows"',
     'jsonschema',
     'jinja2',
-    'requests'
+    'requests',
+    'tqdm'
 ]
 
 EXTRAS = {}
