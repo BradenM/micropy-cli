@@ -23,9 +23,9 @@ class Log:
     def add_logger(cls, service_name, base_color="white", **kwargs):
         """Creates a new child ServiceLog instance"""
         _self = cls()
-        parent = kwargs.get("parent", _self.parent_logger)
+        parent = kwargs.pop("parent", _self.parent_logger)
         logger = ServiceLog(service_name, base_color,
-                            parent=parent)
+                            parent=parent, **kwargs)
         _self.loggers.append(logger)
         return logger
 
@@ -59,7 +59,8 @@ class ServiceLog:
         self.info_color = kwargs.get('info_color', 'white')
         self.accent_color = kwargs.get('accent_color', 'yellow')
         self.warn_color = kwargs.get('warn_color', 'green')
-        self.stdout = True
+        self.show_title = kwargs.get("show_title", True)
+        self.stdout = kwargs.get('stdout', True)
 
     @contextmanager
     def silent(self):
@@ -122,10 +123,12 @@ class ServiceLog:
         :rtype: str
 
         """
+        if not self.show_title:
+            return f"{self.parent.get_service(bold=True)}"
         color = kwargs.pop('fg', self.base_color)
         title = style(
             f"{self.service_name}", fg=color, **kwargs)
-        title = f"{title}{style(' ‣', fg=color)}"
+        title = f"{title}{style(' ', fg=color)}"
         if self.parent is not None:
             title = f"{self.parent.get_service(bold=True)} {title}"
         return title
@@ -214,7 +217,7 @@ class ServiceLog:
 
         """
         message = f"\u2714 {msg}"
-        return self.echo(message, log="info", fg='green')
+        return self.echo(message, log="info", fg='green', **kwargs)
 
     def debug(self, msg, **kwargs):
         """Prints message with debug formatting
