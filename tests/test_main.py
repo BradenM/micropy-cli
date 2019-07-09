@@ -3,6 +3,9 @@
 from pathlib import Path
 from shutil import copytree
 
+import pytest
+
+import micropy.exceptions as exc
 from micropy import main
 from micropy.stubs import stubs
 
@@ -23,16 +26,20 @@ def test_setup(mock_micropy_path):
 
 def test_add_stub(mock_micropy, shared_datadir):
     """Test Adding Valid Stub"""
+    fware_path = shared_datadir / 'fware_test_stub'
     stub_path = shared_datadir / 'esp8266_test_stub'
     stubs = mock_micropy.STUBS
+    fware_stub = stubs.add(fware_path, mock_micropy.STUB_DIR)
     stub = stubs.add(stub_path, mock_micropy.STUB_DIR)
     assert stub in list(mock_micropy.STUBS)
     assert stub.path in mock_micropy.STUB_DIR.iterdir()
     assert stub.path.exists()
+    assert fware_stub in list(mock_micropy.STUBS._firmware)
 
 
-def test_create_stub(mock_micropy_path, mocker, shared_datadir, tmp_path):
+def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     """should create and add stubs"""
+    mock_micropy.STUBS.add((shared_datadir / 'fware_test_stub'))
     tmp_stub_path = tmp_path / 'createtest'
     tmp_stub_path.mkdir()
     copytree(str(shared_datadir / 'esp8266_test_stub'),
@@ -49,3 +56,8 @@ def test_create_stub(mock_micropy_path, mocker, shared_datadir, tmp_path):
     assert stub is None
     stub = mp.create_stubs("/dev/PORT")
     assert isinstance(stub, stubs.DeviceStub)
+
+
+def test_stub_error():
+    with pytest.raises(exc.StubError):
+        raise exc.StubError(None)

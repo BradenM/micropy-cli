@@ -7,6 +7,16 @@ import pytest
 from micropy import exceptions, stubs
 
 
+@pytest.fixture
+def mock_fware(mocker, shared_datadir):
+    def mock_ready(self, *args, **kwargs):
+        fware_stub = shared_datadir / 'fware_test_stub'
+        return super().ready(path=fware_stub)
+    mock_remote = mocker.patch.object(
+        stubs.source, "RemoteStubSource").return_value
+    mock_remote.ready.return_value = mock_ready
+
+
 def test_stub_validation(shared_datadir):
     """should pass validation"""
     stub_path = shared_datadir / 'esp8266_test_stub'
@@ -90,6 +100,17 @@ def test_resolve_stub(shared_datadir):
         manager.resolve_stub(invalid_stub)
 
 
+def test_resolve_firmware(tmp_path, shared_datadir):
+    """should resolve firmware"""
+    device_stub = shared_datadir / 'esp8266_test_stub'
+    fware_stub_path = shared_datadir / 'fware_test_stub'
+    manager = stubs.StubManager(resource=tmp_path)
+    fware_stub = manager.add(fware_stub_path)
+    dev_stub = stubs.stubs.DeviceStub(device_stub)
+    resolved = manager.resolve_firmware(dev_stub)
+    assert fware_stub == resolved
+
+
 def test_add_single_stub(shared_datadir, tmp_path):
     """should add a single stub"""
     stub_path = shared_datadir / 'esp8266_test_stub'
@@ -112,7 +133,7 @@ def test_add_stubs_from_dir(datadir, tmp_path):
         manager._should_recurse(empty_path)
 
 
-def test_add_with_resource(datadir, tmp_path):
+def test_add_with_resource(datadir, mock_fware, tmp_path):
     """should not require dest kwarg"""
     manager = stubs.StubManager(resource=tmp_path)
     manager.add(datadir)
@@ -120,14 +141,14 @@ def test_add_with_resource(datadir, tmp_path):
     assert "esp8266_test_stub" in [p.name for p in tmp_path.iterdir()]
 
 
-def test_add_no_resource_no_dest(datadir):
+def test_add_no_resource_no_dest(datadir, mock_fware):
     """should fail with typeerror"""
     manager = stubs.StubManager()
     with pytest.raises(TypeError):
         manager.add(datadir)
 
 
-def test_loads_from_resource(datadir):
+def test_loads_from_resource(datadir, mock_fware):
     """should load from resource if provided"""
     manager = stubs.StubManager(resource=datadir)
     assert len(manager) == 2

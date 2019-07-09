@@ -6,15 +6,6 @@ from micropy.exceptions import StubError
 from micropy.stubs import source
 
 
-@pytest.yield_fixture
-def test_archive(shared_datadir):
-    archive = shared_datadir / 'archive_test_stub.tar.gz'
-    file_obj = archive.open('rb')
-    file_bytes = file_obj.read()
-    yield file_bytes
-    file_obj.close()
-
-
 @pytest.fixture
 def test_repo(test_urls, mocker):
     mocker.patch.object(source.utils, "is_downloadable",

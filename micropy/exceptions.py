@@ -18,9 +18,8 @@ class StubValidationError(StubError):
     """Raised when a stub fails validation"""
 
     def __init__(self, path, errors, *args, **kwargs):
-        errs = '\n'.join(errors)
         msg = (f"Stub at[{str(path)}] encountered"
-               f" the following validation errors: {errs}")
+               f" the following validation errors: {str(errors)}")
         super().__init__(message=msg, *args, **kwargs)
 
     def __str__(self):
