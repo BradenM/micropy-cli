@@ -20,7 +20,7 @@ class Project:
         self.path = Path(project_name).resolve()
         self.name = self.path.name
         self.stubs = stubs
-        self.log = Log.add_logger(self.name, 'cyan')
+        self.log = Log.add_logger(self.name, show_title=False)
         template_log = Log.add_logger("Templater", parent=self.log)
         self.provider = TemplateProvider(log=template_log)
         self.log.info(f"Initiating $[{self.name}]")

@@ -32,7 +32,7 @@ class StubManager:
         self._firmware = set()
         self.resource = resource
         self.repos = repos
-        self.log = Log.add_logger('Stubs', 'yellow')
+        self.log = Log.add_logger('Stubs', stdout=False, show_title=False)
         if self.resource:
             self.load_from(resource, strict=False, skip_firmware=True)
             for stub in self._loaded:
@@ -44,7 +44,18 @@ class StubManager:
     def __len__(self):
         return len(self._loaded)
 
-    def _load(self, stub_source, strict=True, *args, **kwargs):
+    def verbose_log(self, state):
+        """Enable Stub logging to stdout
+
+        Args:
+            state (bool): State to set
+
+        Returns:
+            bool: state
+        """
+        self.log.stdout = state
+        return state
+
     def _load(self, stub_source, strict=True, skip_firmware=False, **kwargs):
         """Loads a stub into StubManager
 
@@ -52,7 +63,8 @@ class StubManager:
             stub_source (StubSource): Stub Source Instance
             strict (bool, optional): Raise Exception if stub fails to resolve.
                 Defaults to True.
-            skip_firmware (bool, optional): Skip firmware resolution. Defaults to False
+            skip_firmware (bool, optional): Skip firmware resolution.
+                Defaults to False
 
         Raises:
             e: Exception raised by resolving failure
@@ -93,15 +105,22 @@ class StubManager:
                 FirmwareStub cannot be found
         """
         fware_name = stub.firmware_name
+        self.log.info(f"Detected Firmware: $[{fware_name}]")
         results = (f for f in self._firmware if f.firmware == fware_name)
         fware = next(results, None)
         if not fware:
             try:
+                self.log.info(
+                    "Firmware not found locally, attempting to install it...")
                 fware = self.add(fware_name)
             except Exception:
+                self.log.error("Failed to resolve firmware!")
                 return None
             else:
+                self.log.success(
+                    f"{fware_name} firmware added!", nl=True)
                 return fware
+        self.log.info(f"$[{fware_name}] is installed already.")
         return fware
 
     def validate(self, path, schema=None):
@@ -221,7 +240,8 @@ class StubManager:
         dest = Path(str(_dest)).resolve()
         if self._should_recurse(location):
             return self.load_from(location, strict=False, copy_to=dest)
-        stub_source = source.get_source(location)
+        self.log.info(f"Resolving source...")
+        stub_source = source.get_source(location, log=self.log)
         return self._load(stub_source, copy_to=dest)
 
 
