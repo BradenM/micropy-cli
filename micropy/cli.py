@@ -46,11 +46,11 @@ def add(stub_name):
     mp.log.info(f"Adding {stub_name} to stubs...")
     try:
         stub = mp.STUBS.add(stub_name)
-    except exc.StubValidationError:
-        mp.log.error(f"$[{stub_name}] is not a valid stub!")
-        sys.exit(1)
     except exc.StubNotFound:
         mp.log.error(f"$[{stub_name}] could not be found!")
+        sys.exit(1)
+    except exc.StubError:
+        mp.log.error(f"$[{stub_name}] is not a valid stub!")
         sys.exit(1)
     else:
         mp.log.success(f"{str(stub)} added!")

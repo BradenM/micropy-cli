@@ -5,7 +5,7 @@ from pathlib import Path
 from shutil import copytree
 
 from micropy import data, utils
-from micropy.exceptions import StubValidationError
+from micropy.exceptions import StubError, StubValidationError
 from micropy.logger import Log
 from micropy.stubs import source
 
@@ -15,9 +15,10 @@ class StubManager:
 
     Kwargs:
         resource (str): Default resource path
+        repos ([StubRepo]): Repos for Remote Stubs
 
     Raises:
-        StubValidationError: a stub is missing a def file
+        StubError: a stub is missing a def file
         StubValidationError: a stubs def file is not valid
 
     Returns:
@@ -28,11 +29,12 @@ class StubManager:
 
     def __init__(self, resource=None, repos=None):
         self._loaded = set()
+        self._firmware = set()
         self.resource = resource
         self.repos = repos
         self.log = Log.add_logger('Stubs', 'yellow')
         if self.resource:
-            self.load_from(resource)
+            self.load_from(resource, strict=False)
 
     def __iter__(self):
         return iter(self._loaded)
@@ -40,21 +42,76 @@ class StubManager:
     def __len__(self):
         return len(self._loaded)
 
-    def _load(self, stub_source, *args, **kwargs):
-        """Loads a stub"""
+    def _load(self, stub_source, strict=True, *args, **kwargs):
+        """Loads a stub into StubManager
+
+        Args:
+            stub_source (StubSource): Stub Source Instance
+            strict (bool, optional): Raise Exception if stub fails to resolve.
+                Defaults to True.
+
+        Raises:
+            e: Exception raised by resolving failure
+
+        Returns:
+            Stub: Instance of Stub
+        """
         with stub_source.ready() as src_path:
             try:
                 stub_type = self.resolve_stub(src_path)
             except Exception as e:
                 self.log.debug(f"{src_path.name} failed to validate: {e}")
+                if strict:
+                    raise e
             else:
+                if stub_type is FirmwareStub:
+                    fware = stub_type(src_path, *args, **kwargs)
+                    self._firmware.add(fware)
+                    self.log.debug(f"Firmware Loaded: {fware}")
+                    return fware
                 stub = stub_type(src_path, *args, **kwargs)
+                fware = self.resolve_firmware(stub)
+                if fware:
+                    stub.firmware = fware
                 self._loaded.add(stub)
                 self.log.debug(f"Loaded: {stub}")
                 return stub
 
+    def resolve_firmware(self, stub):
+        """Resolves FirmwareStub for DeviceStub instance
+
+        Args:
+            stub (DeviceStub): Stub to resolve
+
+        Returns:
+            FirmwareStub: Instance of FirmwareStub
+            NoneType: None if an appropriate
+                FirmwareStub cannot be found
+        """
+        fware_name = stub.firmware_name
+        results = (f for f in self._firmware if f.firmware == fware_name)
+        fware = next(results, None)
+        if not fware:
+            try:
+                fware = self.add(fware_name)
+            except Exception:
+                return None
+            else:
+                return fware
+        return fware
+
     def validate(self, path, schema=None):
-        """Validates stubs"""
+        """Validates given stub path against its schema
+
+        Args:
+            path (str): path to validate
+            schema (str, optional): Path to schema. Defaults to None.
+                If None, the DeviceStub schema is used.
+
+        Raises:
+            StubError: Raised if no info file can be found
+            StubValidationError: Raised if the info file fails validation
+        """
         self.log.debug(f"Validating: {path}")
         schema = schema or self._schema
         path = Path(path).resolve()
@@ -63,7 +120,7 @@ class StubManager:
         try:
             val.validate(stub_info)
         except FileNotFoundError:
-            raise FileNotFoundError(f"{path.name} contains no info file!")
+            raise StubError(f"{path.name} contains no info file!")
         except Exception as e:
             raise StubValidationError(path, str(e))
 
@@ -100,14 +157,21 @@ class StubManager:
             bool: True if stub is valid
         """
         try:
-            self.validate(path)
+            self.resolve_stub(path)
         except Exception:
             return False
         else:
             return True
 
     def load_from(self, directory, *args, **kwargs):
-        """Load all stubs in a directory"""
+        """Recursively loads stubs from a directory
+
+        Args:
+            directory (str): Path to load from
+
+        Returns:
+            [DeviceStub]: List of loaded Stubs
+        """
         dir_path = Path(str(directory)).resolve()
         dirs = dir_path.iterdir()
         stubs = [self._load(source.get_source(d), *args, **kwargs)
@@ -135,6 +199,7 @@ class StubManager:
         if len(info_glob) > 1:
             return True
         return False
+
     def add(self, location, dest=None):
         """Add stub(s) from source
 
@@ -151,7 +216,7 @@ class StubManager:
             raise TypeError("No Stub Destination Provided!")
         dest = Path(str(_dest)).resolve()
         if self._should_recurse(location):
-            return self.load_from(location, copy_to=dest)
+            return self.load_from(location, strict=False, copy_to=dest)
         stub_source = source.get_source(location)
         return self._load(stub_source, copy_to=dest)
 
@@ -227,6 +292,8 @@ class DeviceStub(Stub):
         Returns:
             str: Name of Firmware
         """
+        if isinstance(self.firmware, FirmwareStub):
+            return self.firmware.firmware
         fware = self.firmware.get('name', None)
         if not fware:
             fware = self.firmware.get('firmware')
