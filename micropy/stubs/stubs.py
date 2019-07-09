@@ -35,6 +35,8 @@ class StubManager:
         self.log = Log.add_logger('Stubs', 'yellow')
         if self.resource:
             self.load_from(resource, strict=False)
+            for stub in self._loaded:
+                stub.firmware = self.resolve_firmware(stub)
 
     def __iter__(self):
         return iter(self._loaded)
@@ -71,8 +73,7 @@ class StubManager:
                     return fware
                 stub = stub_type(src_path, *args, **kwargs)
                 fware = self.resolve_firmware(stub)
-                if fware:
-                    stub.firmware = fware
+                stub.firmware = fware
                 self._loaded.add(stub)
                 self.log.debug(f"Loaded: {stub}")
                 return stub
@@ -281,9 +282,10 @@ class DeviceStub(Stub):
         self.stubs = self.path / 'stubs'
         self.frozen = self.path / 'frozen'
 
-        self.firmware = self.info.get("firmware")
-        self.sysname = self.firmware.get('sysname')
-        self.version = self.firmware.get('version')
+        self.firm_info = self.info.get("firmware")
+        self.firmware = None
+        self.sysname = self.firm_info.get('sysname')
+        self.version = self.firm_info.get('version')
 
     @property
     def firmware_name(self):
@@ -294,9 +296,9 @@ class DeviceStub(Stub):
         """
         if isinstance(self.firmware, FirmwareStub):
             return self.firmware.firmware
-        fware = self.firmware.get('name', None)
+        fware = self.firm_info.get('name', None)
         if not fware:
-            fware = self.firmware.get('firmware')
+            fware = self.firm_info.get('firmware')
         return fware
 
     @property

@@ -59,9 +59,11 @@ class CodeTemplate(Template):
     @property
     def context(self):
         """VScode Config Context"""
-        paths = [str(s.frozen) for s in self.stubs]
-        stubs = [str(s.stubs) for s in self.stubs]
-        paths.extend(stubs)
+        frozen = [str(s.frozen) for s in self.stubs]
+        fware_mods = [str(s.firmware.frozen)
+                      for s in self.stubs if s.firmware is not None]
+        stub_paths = [str(s.stubs) for s in self.stubs]
+        paths = [*fware_mods, *frozen, *stub_paths]
         stub_paths = json.dumps(paths)
         ctx = {
             "stubs": self.stubs,
