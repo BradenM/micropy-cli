@@ -24,6 +24,7 @@ class StubManager:
         object: Instance of StubManager
     """
     _schema = data.SCHEMAS / 'stubs.json'
+    _firm_schema = data.SCHEMAS / 'firmware.json'
 
     def __init__(self, resource=None, repos=None):
         self._loaded = set()
@@ -43,28 +44,51 @@ class StubManager:
         """Loads a stub"""
         with stub_source.ready() as src_path:
             try:
-                self.validate(src_path)
-            except StubValidationError as e:
+                stub_type = self.resolve_stub(src_path)
+            except Exception as e:
                 self.log.debug(f"{src_path.name} failed to validate: {e}")
             else:
-                stub = DeviceStub(src_path, *args, **kwargs)
+                stub = stub_type(src_path, *args, **kwargs)
                 self._loaded.add(stub)
                 self.log.debug(f"Loaded: {stub}")
                 return stub
 
-    def validate(self, path):
+    def validate(self, path, schema=None):
         """Validates stubs"""
         self.log.debug(f"Validating: {path}")
+        schema = schema or self._schema
         path = Path(path).resolve()
         stub_info = path / 'info.json'
-        val = utils.Validator(self._schema)
+        val = utils.Validator(schema)
         try:
             val.validate(stub_info)
         except FileNotFoundError:
-            raise StubValidationError(
-                path, [f"{path.name} contains no info file!"])
+            raise FileNotFoundError(f"{path.name} contains no info file!")
         except Exception as e:
             raise StubValidationError(path, str(e))
+
+    def resolve_stub(self, path):
+        """Resolves appropriate stub type
+
+        Args:
+            path (str): path to stub
+
+        Returns:
+            cls: Appropriate class for stub
+        """
+        try:
+            self.validate(path)
+        except StubValidationError:
+            try:
+                self.validate(path, schema=self._firm_schema)
+            except Exception as e:
+                raise e
+            else:
+                return FirmwareStub
+        except Exception as e:
+            raise e
+        else:
+            return DeviceStub
 
     def is_valid(self, path):
         """Check if stub is valid without raising an exception
@@ -77,7 +101,7 @@ class StubManager:
         """
         try:
             self.validate(path)
-        except StubValidationError:
+        except Exception:
             return False
         else:
             return True
@@ -141,6 +165,7 @@ class Stub:
 
     @property
     def name(self):
+        """Human friendly stub name"""
         raise NotImplementedError
 
     def __eq__(self, other):
@@ -188,9 +213,35 @@ class DeviceStub(Stub):
 
     @property
     def name(self):
-        """Human friendly stub name"""
         return f"{self.sysname}-{self.firmware_name}-{self.version}"
 
     def __repr__(self):
-        return (f"Stub(sysname={self.sysname}, firmware={self.firmware_name},"
-                f" version={self.version}, path={self.path})")
+        return (f"DeviceStub(sysname={self.sysname}, firmware="
+                f"{self.firmware_name}, version={self.version}, "
+                f"path={self.path})")
+
+
+class FirmwareStub(Stub):
+    """Handles Firmware Specific Modules
+
+    Args:
+        path (str): path to stub
+        copy_to (str, optional): Path to copy Stub to. Defaults to None.
+
+    Returns:
+        FirmwareStub Instance
+    """
+
+    def __init__(self, path, copy_to=None, **kwargs):
+        super().__init__(path, copy_to=copy_to, **kwargs)
+
+        self.frozen = self.path / 'frozen'
+        self.repo = self.info.get('repo')
+        self.firmware = self.info.get('firmware')
+
+    @property
+    def name(self):
+        return self.info.get('name')
+
+    def __repr__(self):
+        return f"FirmwareStub(firmware={self.firmware}, repo={self.repo})"
