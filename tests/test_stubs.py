@@ -56,11 +56,11 @@ def test_valid_stub(shared_datadir):
     assert stub.stubs.exists()
     assert stub.frozen.exists()
     assert stub.version == "1.9.4"
-    assert stub.firmware == expect_fware
+    assert stub.firm_info == expect_fware
     assert repr(stub) == expect_repr
     assert stub.firmware_name == "micropython"
     assert str(stub) == "esp8266-micropython-1.9.4"
-    del stub.firmware['name']
+    del stub.firm_info['name']
     assert stub.firmware_name == "esp8266 v1.9.4"
 
 
