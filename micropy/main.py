@@ -57,7 +57,7 @@ class MicroPy:
             return None
         self.log.success("Connected!")
         # TODO: determine which script to use based on device
-        script_path = self.STUBBER / 'minified.py'
+        script_path = self.STUBBER / 'createstubs.py'
         self.log.info("Executing stubber on pyboard...")
         try:
             pyb.run(script_path)
@@ -71,6 +71,7 @@ class MicroPy:
             out_dir = pyb.copy_dir("/stubs", tmpdir)
             stub_path = next(out_dir.iterdir())
             self.log.info(f"Copied Stubs: $[{stub_path.name}]")
+            stub_path = self.STUBS.from_stubber(stub_path, out_dir)
             stub = self.STUBS.add(stub_path)
         self.log.success(f"Added {stub.name} to stubs!")
         return stub

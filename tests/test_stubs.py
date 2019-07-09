@@ -50,6 +50,7 @@ def test_valid_stub(shared_datadir):
     stub_path = shared_datadir / 'esp8266_test_stub'
     stub = stubs.stubs.DeviceStub(stub_path)
     stub_2 = stubs.stubs.DeviceStub(stub_path)
+    fware = stubs.stubs.FirmwareStub((shared_datadir / 'fware_test_stub'))
     assert stub == stub_2
     expect_fware = {
         "machine": "ESP module with ESP8266",
@@ -68,10 +69,13 @@ def test_valid_stub(shared_datadir):
     assert stub.version == "1.9.4"
     assert stub.firm_info == expect_fware
     assert repr(stub) == expect_repr
+    assert str(stub) == "esp8266-1.9.4"
     assert stub.firmware_name == "micropython"
-    assert str(stub) == "esp8266-micropython-1.9.4"
     del stub.firm_info['name']
     assert stub.firmware_name == "esp8266 v1.9.4"
+    stub.firmware = fware
+    assert stub.firmware_name == "micropython"
+    assert str(stub) == "esp8266-micropython-1.9.4"
 
 
 def test_valid_fware_stub(shared_datadir):

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import json
 from pathlib import Path
-from shutil import copytree
+from shutil import copytree, rmtree
 
 import pytest
 
@@ -42,20 +43,31 @@ def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     mock_micropy.STUBS.add((shared_datadir / 'fware_test_stub'))
     tmp_stub_path = tmp_path / 'createtest'
     tmp_stub_path.mkdir()
-    copytree(str(shared_datadir / 'esp8266_test_stub'),
-             str(tmp_stub_path / 'esp8266_test_stub'))
+    copytree(str(shared_datadir / 'stubber_test_stub'),
+             str(tmp_stub_path / 'stubber_test_stub'))
     mock_pyb = mocker.patch("micropy.main.utils.PyboardWrapper")
     mock_pyb.return_value.copy_dir.return_value = Path(str(tmp_stub_path))
     mock_pyb.side_effect = [SystemExit,
-                            mock_pyb.return_value, mock_pyb.return_value]
+                            mock_pyb.return_value, mock_pyb.return_value,
+                            mock_pyb.return_value]
     mp = main.MicroPy()
+    mocker.spy(mp.STUBS, 'add')
     stub = mp.create_stubs("/dev/PORT")
     assert stub is None
-    mock_pyb.return_value.run.side_effect = [Exception, mocker.ANY]
+    mock_pyb.return_value.run.side_effect = [Exception, mocker.ANY, mocker.ANY]
     stub = mp.create_stubs("/dev/PORT")
     assert stub is None
     stub = mp.create_stubs("/dev/PORT")
+    mp.STUBS.add.assert_any_call((tmp_stub_path / 'esp32-1.11.0'))
+    rmtree((tmp_stub_path / 'esp32-1.11.0'))
     assert isinstance(stub, stubs.DeviceStub)
+    # Test outpath with firmware
+    mod_path = tmp_stub_path / 'stubber_test_stub' / 'modules.json'
+    mod_data = json.load(mod_path.open())
+    mod_data['firmware']['name'] = 'micropython'
+    json.dump(mod_data, mod_path.open('w+'))
+    stub = mp.create_stubs("/dev/PORT")
+    mp.STUBS.add.assert_any_call((tmp_stub_path / 'esp32-micropython-1.11.0'))
 
 
 def test_stub_error():
