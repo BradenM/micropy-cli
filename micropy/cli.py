@@ -12,8 +12,6 @@ import micropy.exceptions as exc
 from micropy.main import MicroPy
 from micropy.project import Project
 
-mp = MicroPy()
-
 
 @click.group()
 @click.version_option()
@@ -30,6 +28,7 @@ def stubs():
 @click.argument('project_name', required=True)
 def init(project_name=""):
     """Create new Micropython Project"""
+    mp = MicroPy()
     mp.log.info("Creating New Project...")
     stubs = [Choice(str(s), value=s) for s in mp.STUBS]
     stub_choices = prompt.checkbox(
@@ -43,6 +42,7 @@ def init(project_name=""):
 @click.argument('stub_name', required=True)
 def add(stub_name):
     """Add Stubs from package or path"""
+    mp = MicroPy()
     mp.log.info(f"Adding {stub_name} to stubs...")
     try:
         stub = mp.STUBS.add(stub_name)
@@ -59,6 +59,7 @@ def add(stub_name):
 @stubs.command()
 def list():
     """Lists available stubs"""
+    mp = MicroPy()
     mp.log.info("$w[Available Stubs:]")
     for stub in mp.STUBS:
         mp.log.info(str(stub))
@@ -74,6 +75,7 @@ def create(port):
     For more info,
     checkout his git repo @ https://github.com/Josverl/micropython-stubber
     """
+    mp = MicroPy()
     return mp.create_stubs(port)
 
 
