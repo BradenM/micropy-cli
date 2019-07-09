@@ -12,6 +12,8 @@ def test_stub_validation(shared_datadir):
     stub_path = shared_datadir / 'esp8266_test_stub'
     manager = stubs.StubManager()
     manager.validate(stub_path)
+    assert manager.is_valid(stub_path)
+    assert not manager.is_valid(Path('/foobar/bar'))
 
 
 def test_bad_stub_validation(shared_datadir, mocker):
@@ -23,7 +25,7 @@ def test_bad_stub_validation(shared_datadir, mocker):
         Exception, FileNotFoundError]
     with pytest.raises(exceptions.StubValidationError):
         manager.validate(stub_path)
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(exceptions.StubError):
         manager.validate(Path("/foobar/foo"))
 
 
@@ -82,7 +84,7 @@ def test_resolve_stub(shared_datadir):
     assert stub_type == stubs.stubs.DeviceStub
     stub_type = manager.resolve_stub(fware_stub)
     assert stub_type == stubs.stubs.FirmwareStub
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(exceptions.StubError):
         manager.resolve_stub(Path('/foobar/foo'))
     with pytest.raises(exceptions.StubValidationError):
         manager.resolve_stub(invalid_stub)
@@ -101,18 +103,21 @@ def test_add_stubs_from_dir(datadir, tmp_path):
     """should add all valid stubs in directory"""
     manager = stubs.StubManager()
     manager.add(datadir, dest=tmp_path)
-    assert len(manager) == 1
+    assert len(manager) == 2
     assert len(list(tmp_path.iterdir())) - 1 == len(manager)
+    assert manager._should_recurse(datadir)
+    with pytest.raises(exceptions.StubError):
+        empty_path = tmp_path / 'empty'
+        empty_path.mkdir()
+        manager._should_recurse(empty_path)
 
 
 def test_add_with_resource(datadir, tmp_path):
     """should not require dest kwarg"""
     manager = stubs.StubManager(resource=tmp_path)
     manager.add(datadir)
-    assert len(manager) == 1
-    # Subtract 1 cause tmp_path has datadir in it for some unrelated reason
-    # as in, before adding stubs
-    assert len(list(tmp_path.iterdir())) - 1 == len(manager)
+    assert len(manager) == 2
+    assert "esp8266_test_stub" in [p.name for p in tmp_path.iterdir()]
 
 
 def test_add_no_resource_no_dest(datadir):
@@ -125,7 +130,7 @@ def test_add_no_resource_no_dest(datadir):
 def test_loads_from_resource(datadir):
     """should load from resource if provided"""
     manager = stubs.StubManager(resource=datadir)
-    assert len(manager) == len(list(datadir.iterdir())) - 1
+    assert len(manager) == 2
 
 
 def test_name_property(shared_datadir):
