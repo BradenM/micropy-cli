@@ -326,6 +326,8 @@ class DeviceStub(Stub):
 
     @property
     def name(self):
+        if not isinstance(self.firmware, FirmwareStub):
+            return f"{self.sysname}-{self.version}"
         return f"{self.sysname}-{self.firmware_name}-{self.version}"
 
     def __repr__(self):
