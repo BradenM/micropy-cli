@@ -8,14 +8,6 @@ import pytest
 from micropy.project.template import Template, TemplateProvider
 
 
-@pytest.fixture
-def mock_mp_stubs(mock_micropy, shared_datadir):
-    mock_micropy.STUBS.add((shared_datadir / 'esp8266_test_stub'))
-    mock_micropy.STUBS.add((shared_datadir / 'esp32_test_stub'))
-    mock_micropy.STUBS.add((shared_datadir / 'fware_test_stub'))
-    return mock_micropy
-
-
 def test_vscode_template(mock_mp_stubs, shared_datadir, tmp_path):
     stubs = list(mock_mp_stubs.STUBS)[:3]
     prov = TemplateProvider()

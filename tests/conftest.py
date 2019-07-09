@@ -69,3 +69,20 @@ def test_urls():
             "not_download": test_headers("text/plain")
         }
     }
+
+
+@pytest.fixture
+def mock_mp_stubs(mock_micropy, mocker, shared_datadir):
+    mock_micropy.STUBS.add((shared_datadir / 'fware_test_stub'))
+    mock_micropy.STUBS.add((shared_datadir / 'esp8266_test_stub'))
+    mock_micropy.STUBS.add((shared_datadir / 'esp32_test_stub'))
+    return mock_micropy
+
+
+@pytest.yield_fixture
+def test_archive(shared_datadir):
+    archive = shared_datadir / 'archive_test_stub.tar.gz'
+    file_obj = archive.open('rb')
+    file_bytes = file_obj.read()
+    yield file_bytes
+    file_obj.close()
