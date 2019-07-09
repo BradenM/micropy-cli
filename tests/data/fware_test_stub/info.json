@@ -1,0 +1,46 @@
+{
+    "scope": "firmware",
+    "name": "MicroPython Official",
+    "repo": "micropython/micropython",
+    "module_path": "ports/{}/modules",
+    "firmware": "micropython",
+    "excluded_modules": [
+        "_boot.py",
+        "inisetup.py",
+        "upip.py",
+        "upip_utarfile.py"
+    ],
+    "modules": ["utarfile", "utokenize"],
+    "devices": ["esp8266", "esp32"],
+    "path": "packages/micropython-official/info.json",
+    "versions": [
+        {
+            "version": "1.11.0",
+            "git_tag": "v1.11",
+            "sha": "6f75c4f3cd393131579db70cdf0b35d1fe5b95ab",
+            "latest": true,
+            "devices": ["esp8266", "esp32"]
+        },
+        {
+            "version": "1.10.0",
+            "git_tag": "v1.10",
+            "sha": "3e25d611ef3185b68558a20057d50b0d18dc67a0",
+            "latest": false,
+            "devices": ["esp8266", "esp32"]
+        },
+        {
+            "version": "1.9.4",
+            "git_tag": "v1.9.4",
+            "sha": "421b84af9968e582f324899934f52b3df60381ee",
+            "latest": false,
+            "devices": ["esp8266", "esp32"]
+        },
+        {
+            "version": "1.9.3",
+            "git_tag": "v1.9.3",
+            "sha": "fe45d78b1edd6d2202c3544797885cb0b12d4f03",
+            "latest": false,
+            "devices": ["esp8266"]
+        }
+    ]
+}
