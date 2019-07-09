@@ -34,7 +34,7 @@ class StubManager:
         self.repos = repos
         self.log = Log.add_logger('Stubs', 'yellow')
         if self.resource:
-            self.load_from(resource, strict=False)
+            self.load_from(resource, strict=False, skip_firmware=True)
             for stub in self._loaded:
                 stub.firmware = self.resolve_firmware(stub)
 
@@ -45,12 +45,14 @@ class StubManager:
         return len(self._loaded)
 
     def _load(self, stub_source, strict=True, *args, **kwargs):
+    def _load(self, stub_source, strict=True, skip_firmware=False, **kwargs):
         """Loads a stub into StubManager
 
         Args:
             stub_source (StubSource): Stub Source Instance
             strict (bool, optional): Raise Exception if stub fails to resolve.
                 Defaults to True.
+            skip_firmware (bool, optional): Skip firmware resolution. Defaults to False
 
         Raises:
             e: Exception raised by resolving failure
@@ -67,13 +69,14 @@ class StubManager:
                     raise e
             else:
                 if stub_type is FirmwareStub:
-                    fware = stub_type(src_path, *args, **kwargs)
+                    fware = stub_type(src_path, **kwargs)
                     self._firmware.add(fware)
                     self.log.debug(f"Firmware Loaded: {fware}")
                     return fware
-                stub = stub_type(src_path, *args, **kwargs)
-                fware = self.resolve_firmware(stub)
-                stub.firmware = fware
+                stub = stub_type(src_path, **kwargs)
+                if not skip_firmware:
+                    fware = self.resolve_firmware(stub)
+                    stub.firmware = fware
                 self._loaded.add(stub)
                 self.log.debug(f"Loaded: {stub}")
                 return stub
