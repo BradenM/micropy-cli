@@ -149,8 +149,14 @@ def stream_download(url, **kwargs):
     total_size = int(stream.headers.get('content-length'))
     block_size = 32*1024
     bar_format = "{l_bar}{bar}| [{n_fmt}/{total_fmt} @ {rate_fmt}]"
-    with tqdm(total=total_size, unit='B', unit_scale=True, unit_divisor=1024,
-              smoothing=0.1, bar_format=bar_format, **kwargs) as pbar:
+    tqdm_kwargs = {
+        "unit_scale": True,
+        "unit_divisor": 1024,
+        "smoothing": 0.1,
+        "bar_format": bar_format,
+    }
+    tqdm_kwargs.update(kwargs)
+    with tqdm(total=total_size, unit='B', **tqdm_kwargs) as pbar:
         for block in stream.iter_content(block_size):
             pbar.update(len(block))
             content.extend(block)

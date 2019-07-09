@@ -43,7 +43,8 @@ def init(project_name=""):
 def add(stub_name):
     """Add Stubs from package or path"""
     mp = MicroPy()
-    mp.log.info(f"Adding {stub_name} to stubs...")
+    mp.STUBS.verbose_log(True)
+    mp.log.info(f"Adding $[{stub_name}] to stubs...")
     try:
         stub = mp.STUBS.add(stub_name)
     except exc.StubNotFound:
