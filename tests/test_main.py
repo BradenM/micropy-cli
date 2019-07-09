@@ -48,4 +48,4 @@ def test_create_stub(mock_micropy_path, mocker, shared_datadir, tmp_path):
     stub = mp.create_stubs("/dev/PORT")
     assert stub is None
     stub = mp.create_stubs("/dev/PORT")
-    assert isinstance(stub, stubs.Stub)
+    assert isinstance(stub, stubs.DeviceStub)

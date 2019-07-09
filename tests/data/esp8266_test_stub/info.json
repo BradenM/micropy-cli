@@ -11,11 +11,11 @@
     "stubber": { "version": "1.2.0" },
     "modules": [
         {
-            "file": "/stubs/esp32_1_11_0/umqtt/robust.py",
+            "file": "/stubs/esp8266_1_9_4/umqtt/robust.py",
             "module": "umqtt.robust"
         },
         {
-            "file": "/stubs/esp32_1_11_0/umqtt/simple.py",
+            "file": "/stubs/esp8266_1_9_4/umqtt/simple.py",
             "module": "umqtt.simple"
         }
     ]

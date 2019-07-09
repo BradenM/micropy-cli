@@ -133,7 +133,8 @@ class StubSource:
             Resolved PathLike object to stub source
         """
         _path = path or self.location
-        path = Path(_path).resolve()
+        info_path = next(_path.rglob("info.json"), None)
+        path = Path(info_path.parent).resolve() if info_path else _path
         yield path
         if teardown:
             teardown()
