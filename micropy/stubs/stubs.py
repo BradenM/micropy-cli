@@ -114,6 +114,27 @@ class StubManager:
                  for d in dirs]
         return stubs
 
+    def _should_recurse(self, location):
+        """Checks for multiple stubs in a location
+
+        Args:
+            location (str): location of potential stub
+
+        Raises:
+            StubError: No info files could be found
+
+        Returns:
+            bool: True if multiple stubs are found
+        """
+        if not Path(location).exists():
+            return False
+        path = Path(location).resolve()
+        info_glob = list(path.rglob("info.json"))
+        if len(info_glob) == 0:
+            raise StubError(f"{path.name} contains no info file!")
+        if len(info_glob) > 1:
+            return True
+        return False
     def add(self, location, dest=None):
         """Add stub(s) from source
 
@@ -129,7 +150,7 @@ class StubManager:
         if not _dest:
             raise TypeError("No Stub Destination Provided!")
         dest = Path(str(_dest)).resolve()
-        if utils.is_existing_dir(location) and not self.is_valid(location):
+        if self._should_recurse(location):
             return self.load_from(location, copy_to=dest)
         stub_source = source.get_source(location)
         return self._load(stub_source, copy_to=dest)
