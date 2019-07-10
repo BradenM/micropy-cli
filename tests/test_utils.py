@@ -100,3 +100,16 @@ def test_is_existing_dir(tmp_path):
     assert not utils.is_existing_dir(bad_path)
     assert not utils.is_existing_dir(is_file)
     assert utils.is_existing_dir(tmp_path)
+
+
+def test_search_xml(mocker, shared_datadir, test_urls):
+    u = test_urls
+    test_xml = shared_datadir / 'test_source.xml'
+    mock_get = mocker.patch.object(requests, 'get')
+    with test_xml.open('rb') as f:
+        type(mock_get.return_value).content = f.read()
+    results = utils.search_xml(u['valid'], "Key")
+    assert sorted(results) == sorted([
+        "packages/esp32-micropython-1.10.0.tar.gz",
+        "packages/esp32-micropython-1.11.0.tar.gz"
+    ])

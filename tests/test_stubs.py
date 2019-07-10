@@ -168,3 +168,30 @@ def test_name_property(shared_datadir):
     with pytest.raises(NotImplementedError):
         x = ErrorStub(test_stub)
         x.name
+
+
+def test_stub_search(mocker, test_urls, shared_datadir, tmp_path, test_repo):
+    test_fware = shared_datadir / 'fware_test_stub'
+    test_stub = shared_datadir / 'esp8266_test_stub'
+    mock_results = [
+        "packages/esp8266-micropython-1.9.4.tar.gz",
+        "packages/esp32-micropython-1.11.0.tar.gz"
+    ]
+    mock_search = mocker.patch.object(stubs.source.utils, 'search_xml')
+    mock_search.return_value = mock_results
+    tmp_path = tmp_path / 'foobar'
+    tmp_path.mkdir()
+    manager = stubs.StubManager(resource=tmp_path, repos=[test_repo])
+    manager.add(test_fware)
+    print(manager._firmware)
+    print(list(manager))
+    manager.add(test_stub)
+    results = manager.search_remote("esp8266")
+    assert len(results) == 1
+    res = results[0]
+    assert res[0] == "esp8266-micropython-1.9.4"
+    assert res[1]
+    results = manager.search_remote("esp32")
+    res = results[0]
+    assert res[0] == "esp32-micropython-1.11.0"
+    assert not res[1]

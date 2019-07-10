@@ -72,3 +72,14 @@ def test_cli_stubs_add(mocker, mock_micropy, shared_datadir,
     result = runner.invoke(cli.add, [str(test_stub.resolve())])
     assert err_spy.call_count == 2
     assert result.exit_code == 0
+
+
+def test_cli_stubs_search(mock_mp_stubs, mocker, runner):
+    """should search stubs"""
+    mp_mock = mocker.patch.object(cli, "MicroPy").return_value
+    mp_mock.STUBS.search_remote.return_value = [
+        ("esp8266-micropython-1.11.0", True, ),
+        ("esp8266-micropython-1.10.0", False, )
+    ]
+    result = runner.invoke(cli.search, ["esp8266"])
+    assert result.exit_code == 0
