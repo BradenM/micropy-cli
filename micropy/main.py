@@ -56,10 +56,12 @@ class MicroPy:
                 f"Failed to connect, are you sure $[{port}] is correct?")
             return None
         self.log.success("Connected!")
-        # TODO: determine which script to use based on device
+        # TODO: minify script to prevent memory issues
         script_path = self.STUBBER / 'createstubs.py'
+        log_mod = self.STUBBER / 'lib' / 'logging.py'
         self.log.info("Executing stubber on pyboard...")
         try:
+            pyb.copy_file(log_mod)
             pyb.run(script_path)
         except Exception as e:
             # TODO: Handle more usage cases
