@@ -61,6 +61,19 @@ def test_pyboard_copy_dir(mocker, connect_mock, root_mock, tmp_path):
         expected_dir_path, str(dest_path), **expected_rsync)
 
 
+def test_pyboard_copy_file(mocker, connect_mock, root_mock, tmp_path):
+    """should copy file"""
+    mocked_cp = mocker.patch("rshell.main.cp")
+    pyb = PyboardWrapper("/dev/PORT")
+    # No Dest Test
+    out_file = pyb.copy_file("/foobar/file.py")
+    assert str(out_file) == "/mock/file.py"
+    mocked_cp.assert_called_once_with("/foobar/file.py", "/mock/file.py")
+    # With Dest
+    out_file = pyb.copy_file("file.py", "/foobar/file.py")
+    assert str(out_file) == "/mock/foobar/file.py"
+
+
 def test_pyboard_run(mocker, connect_mock, tmp_path):
     """should execute script"""
     tmp_script = tmp_path / 'script.py'

@@ -56,10 +56,12 @@ class MicroPy:
                 f"Failed to connect, are you sure $[{port}] is correct?")
             return None
         self.log.success("Connected!")
-        # TODO: determine which script to use based on device
-        script_path = self.STUBBER / 'minified.py'
+        # TODO: minify script to prevent memory issues
+        script_path = self.STUBBER / 'createstubs.py'
+        log_mod = self.STUBBER / 'lib' / 'logging.py'
         self.log.info("Executing stubber on pyboard...")
         try:
+            pyb.copy_file(log_mod)
             pyb.run(script_path)
         except Exception as e:
             # TODO: Handle more usage cases
@@ -71,6 +73,7 @@ class MicroPy:
             out_dir = pyb.copy_dir("/stubs", tmpdir)
             stub_path = next(out_dir.iterdir())
             self.log.info(f"Copied Stubs: $[{stub_path.name}]")
+            stub_path = self.STUBS.from_stubber(stub_path, out_dir)
             stub = self.STUBS.add(stub_path)
         self.log.success(f"Added {stub.name} to stubs!")
         return stub
