@@ -86,6 +86,23 @@ class PyboardWrapper:
             dev = rsh.find_serial_device_by_port(self.port)
             return getattr(dev, 'name_path', '/pyboard/')
 
+    def copy_file(self, source, dest=None):
+        """Copies file to pyboard
+
+        Args:
+            source (str): path to file
+            dest (str, optional): dest on pyboard. Defaults to None.
+                If None, file is copied to pyboard root.
+
+        Returns:
+            str: path to dest on pyboard
+        """
+        src_path = Path(source).resolve()
+        _dest = dest or src_path.name
+        dest = self._pyb_path(_dest)
+        self.rsh.cp(str(src_path), dest)
+        return dest
+
     def run(self, path):
         """Execute a local script on the pyboard
 

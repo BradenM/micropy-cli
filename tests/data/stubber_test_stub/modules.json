@@ -1,0 +1,17 @@
+{
+    "firmware": {
+        "machine": "ESP32 module with ESP32",
+        "firmware": "esp32 1.11.0",
+        "nodename": "esp32",
+        "version": "1.11.0",
+        "release": "1.11.0",
+        "sysname": "esp32"
+    },
+    "stubber": { "version": "1.2.0" },
+    "modules": [
+        {
+            "file": "/stubs/esp32_1_11_0/micropython.py",
+            "module": "micropython"
+        }
+    ]
+}
