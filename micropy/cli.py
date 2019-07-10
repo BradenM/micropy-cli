@@ -58,10 +58,23 @@ def add(stub_name):
 
 
 @stubs.command()
-def list():
-    """Lists available stubs"""
+@click.argument('query', required=True)
+def search(query):
+    """Search available Stubs"""
     mp = MicroPy()
-    mp.log.info("$w[Available Stubs:]")
+    mp.log.title(f"Searching Stub Repositories...")
+    results = mp.STUBS.search_remote(query)
+    mp.log.title(f"Results for $[{query}]:")
+    for pkg, installed in results:
+        name = f"{pkg} $B[(Installed)]" if installed else pkg
+        mp.log.info(name)
+
+
+@stubs.command()
+def list():
+    """List installed stubs"""
+    mp = MicroPy()
+    mp.log.title("Installed Stubs:")
     for stub in mp.STUBS:
         mp.log.info(str(stub))
     return mp.log.info(f"$[Total:] {len(mp.STUBS)}")

@@ -8,6 +8,7 @@ This module contains generic utility helpers
 used by MicropyCli
 """
 
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import requests
@@ -17,7 +18,8 @@ from tqdm import tqdm
 
 __all__ = ["is_url", "get_url_filename",
            "ensure_existing_dir", "ensure_valid_url",
-           "is_downloadable", "is_existing_dir", "stream_download"]
+           "is_downloadable", "is_existing_dir",
+           "stream_download", "search_xml"]
 
 
 def is_url(url):
@@ -161,3 +163,23 @@ def stream_download(url, **kwargs):
             pbar.update(len(block))
             content.extend(block)
     return content
+
+
+def search_xml(url, node):
+    """Search xml from url by node
+
+    Args:
+        url (str): url to xml
+        node (str): node to search for
+
+    Returns:
+        [str]: matching nodes
+    """
+    resp = requests.get(url)
+    xml = resp.content.decode("UTF-8")
+    root = ET.fromstring(xml)
+    root_ns = root.tag[1:root.tag.find('}')]
+    namespace = {'ns': root_ns}
+    _results = root.findall(f"./*/ns:{node}", namespace)
+    results = [k.text for k in _results]
+    return results

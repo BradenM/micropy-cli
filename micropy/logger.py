@@ -96,12 +96,15 @@ class ServiceLog:
         """
         msg_special = re.findall(r'\$(.*?)\[(.*?)\]', msg)
         color = accent_color or self.accent_color
+        special = {"fg": color, "bold": True}
         clean = msg
         for w in msg_special:
             if w[0] == 'w':
-                color = self.warn_color
+                special['fg'] = self.warn_color
+            if w[0] == 'B':
+                special.pop('fg')
             msg = msg.replace(f"${w[0]}[{w[1]}]", style(
-                w[1], fg=color))
+                w[1], **special))
             clean = msg.replace(f"${w[0]}[{w[1]}]", w[1])
         clean = clean.encode('ascii', 'ignore').decode('unicode_escape')
         return (msg, clean)
@@ -151,6 +154,9 @@ class ServiceLog:
             log_func = getattr(logging, log_attr)
             log_func(clean)
         if self.stdout:
+            if message[:1] == "\n":
+                message = message[1:]
+                secho("")
             secho(f"{service_title} ", nl=False)
             secho(message, **kwargs)
 
@@ -164,6 +170,15 @@ class ServiceLog:
 
         """
         return self.echo(msg, log="info", **kwargs)
+
+    def title(self, msg, **kwargs):
+        """Prints bolded info message
+
+        Args:
+            msg (str): Message
+
+        """
+        return self.info(f"\n{msg}", bold=True)
 
     def error(self, msg, exception=None, **kwargs):
         """Prints message with error formatting
