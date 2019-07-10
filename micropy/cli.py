@@ -67,14 +67,15 @@ def list():
     return mp.log.info(f"$[Total:] {len(mp.STUBS)}")
 
 
-@stubs.command()
+@stubs.command(short_help="Create Stubs from Pyboard")
 @click.argument('port', required=True)
 def create(port):
-    """Create stubs from a pyboard
+    """Create stubs from a pyboard at <PORT>
 
+    \b
     MicropyCli uses Josverl's micropython-stubber for stub creation.
-    For more info,
-    checkout his git repo @ https://github.com/Josverl/micropython-stubber
+    For more information, please visit the repository
+    at: https://github.com/Josverl/micropython-stubber
     """
     mp = MicroPy()
     return mp.create_stubs(port)
