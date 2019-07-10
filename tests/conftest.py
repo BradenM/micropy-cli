@@ -86,3 +86,12 @@ def test_archive(shared_datadir):
     file_bytes = file_obj.read()
     yield file_bytes
     file_obj.close()
+
+
+@pytest.fixture
+def test_repo(test_urls, mocker):
+    mocker.patch.object(micropy.stubs.source.utils, "is_downloadable",
+                        return_value=True)
+    repo = micropy.stubs.source.StubRepo(
+        "TestRepo", test_urls['valid'], "packages")
+    return repo

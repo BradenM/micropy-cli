@@ -278,6 +278,24 @@ class StubManager:
         copytree(path, stub_path)
         return out_stub
 
+    def search_remote(self, query):
+        """Search all repositories for query
+
+        Args:
+            query (str): query to search for
+
+        Returns:
+            [tuple]: List of result tuples. The first item
+                is the package name, and the second is a bool
+                based on whether the package is installed or not
+        """
+        results = []
+        installed = [str(s) for s in self._loaded]
+        for repo in self.repos:
+            for p in repo.search(query):
+                results.append((p, p in installed))
+        return sorted(results)
+
 
 class Stub:
     """Abstract Parent for Stub Related Classes

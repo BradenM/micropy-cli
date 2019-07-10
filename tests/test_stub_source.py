@@ -10,7 +10,7 @@ from micropy.stubs import source
 def test_repo(test_urls, mocker):
     mocker.patch.object(source.utils, "is_downloadable",
                         return_value=True)
-    repo = source.StubRepo("TestRepo", test_urls['valid'], "/packages")
+    repo = source.StubRepo("TestRepo", test_urls['valid'], "packages")
     return repo
 
 
@@ -69,3 +69,19 @@ def test_repo_resolve_pkg(mocker, test_urls):
     source.StubRepo("TestRepo", url, "packages")
     with pytest.raises(StubError):
         source.StubRepo.resolve_package("not-valid")
+
+
+def test_repo_search(mocker, test_urls):
+    url = test_urls['valid']
+    mocker.patch.object(source.utils, "ensure_valid_url",
+                        return_value=url)
+    repo = source.StubRepo("TestRepo", url, "packages")
+    mock_return = ["packages/one-pkg.tar.gz", "packages/two-pkg.tar.gz",
+                   "foobar-pkg"]
+    mocker.patch.object(source.utils, 'search_xml', return_value=mock_return)
+    results = repo.search("one")
+    assert len(results) == 1
+    assert "one-pkg" in results
+    results = repo.search("pkg")
+    assert len(results) == 2
+    assert sorted(results) == sorted(["one-pkg", "two-pkg"])
