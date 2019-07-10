@@ -63,6 +63,21 @@ class StubRepo:
         url = f"{self.location}/{self.path}/{path}.tar.gz"
         return url
 
+    def search(self, query):
+        """Searches repository packages
+
+        Args:
+            query (str): query to search by
+
+        Returns:
+            [str]: List of matching results
+        """
+        results = utils.search_xml(self.location, "Key")
+        pkgs = [Path(p).name for p in results if self.path in p]
+        pkg_names = [p.split(".tar.gz")[0] for p in pkgs]
+        results = set([p for p in pkg_names if query in p])
+        return results
+
     @classmethod
     def resolve_package(cls, name):
         """Attempts to resolve package from all repos
