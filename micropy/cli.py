@@ -19,32 +19,65 @@ def cli():
     """CLI Application for creating/managing Micropython Projects."""
 
 
-@cli.group()
+@cli.group(short_help="Manage Micropy Stubs")
 def stubs():
-    """Manage Stubs"""
+    """Manage Micropy Stubs
+
+    \b
+    Stub files are what enable linting,
+    Intellisense, Autocompletion, and more.
+
+    \b
+    To achieve the best results, you can install
+    stubs specific to your device/firmware using:
+
+        micropy stubs add <STUB_NAME>
+
+    For more info, please check micropy stubs add --help
+    """
 
 
-@cli.command()
+@cli.command(short_help="Create new Micropython Project")
 @click.argument('project_name', required=True)
 def init(project_name=""):
-    """Create new Micropython Project"""
+    """Create new Micropython Project
+
+    \b
+    When creating a new project, all files will be
+    placed under the generated <PROJECT_NAME> folder.
+    """
     mp = MicroPy()
-    mp.log.info("Creating New Project...")
+    mp.log.title("Creating New Project...")
     stubs = [Choice(str(s), value=s) for s in mp.STUBS]
     stub_choices = prompt.checkbox(
         "Which stubs would you like to use?", choices=stubs).ask()
     project = Project(project_name, stub_choices)
     proj_relative = project.create()
-    mp.log.info(f"Created $[{project.name}] at $w[./{proj_relative}]")
+    mp.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 
 
-@stubs.command()
+@stubs.command(short_help="Add Stubs from package or path")
 @click.argument('stub_name', required=True)
 def add(stub_name):
-    """Add Stubs from package or path"""
+    """Add Stubs from package or path
+
+    \b
+    In general, stub package names follow this schema:
+        <device>-<firmware>-<version>
+
+    \b
+    For example:
+        esp32-micropython-1.11.0
+
+    \b
+    You can search premade stub packages using:
+        micropy stubs search <QUERY>
+
+    Checkout the docs on Github for more info.
+    """
     mp = MicroPy()
     mp.STUBS.verbose_log(True)
-    mp.log.info(f"Adding $[{stub_name}] to stubs...")
+    mp.log.title(f"Adding $[{stub_name}] to stubs...")
     try:
         stub = mp.STUBS.add(stub_name)
     except exc.StubNotFound:
