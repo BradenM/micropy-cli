@@ -49,6 +49,11 @@ def init(project_name=""):
     mp = MicroPy()
     mp.log.title("Creating New Project...")
     stubs = [Choice(str(s), value=s) for s in mp.STUBS]
+    if not stubs:
+        mp.log.error("You don't have any stubs!")
+        mp.log.title(
+            "To add stubs to micropy, use $[micropy stubs add <STUB_NAME>]")
+        sys.exit(1)
     stub_choices = prompt.checkbox(
         "Which stubs would you like to use?", choices=stubs).ask()
     project = Project(project_name, stub_choices)
