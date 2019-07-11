@@ -81,7 +81,7 @@ def test_valid_stub(shared_datadir):
 def test_valid_fware_stub(shared_datadir):
     stub_path = shared_datadir / 'fware_test_stub'
     stub = stubs.stubs.FirmwareStub(stub_path)
-    assert str(stub) == "MicroPython Official"
+    assert str(stub) == "micropython"
     assert stub.frozen.exists()
     assert repr(
         stub) == ("FirmwareStub(firmware=micropython,"

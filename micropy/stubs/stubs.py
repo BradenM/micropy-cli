@@ -290,7 +290,7 @@ class StubManager:
                 based on whether the package is installed or not
         """
         results = []
-        installed = [str(s) for s in self._loaded]
+        installed = [str(s) for s in self._loaded.union(self._firmware)]
         for repo in self.repos:
             for p in repo.search(query):
                 results.append((p, p in installed))
@@ -408,7 +408,7 @@ class FirmwareStub(Stub):
 
     @property
     def name(self):
-        return self.info.get('name')
+        return self.firmware
 
     def __repr__(self):
         return f"FirmwareStub(firmware={self.firmware}, repo={self.repo})"
