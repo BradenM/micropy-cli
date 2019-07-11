@@ -13,7 +13,7 @@ DESCRIPTION = 'Command line Application for automating Micropython project \
 URL = 'https://github.com/BradenM/micropy-cli'
 AUTHOR = 'Braden Mars'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.3.0'  # Update via bumpversion
+VERSION = '1.0.0'  # Update via bumpversion
 
 # Required Packages
 REQUIRED = [

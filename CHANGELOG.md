@@ -1,3 +1,44 @@
+<a name="v1.0.0"></a>
+## v1.0.0 (2019-07-11)
+
+
+#### Performance
+
+* **cli:**  Only Instantiate MicroPy when needed ([865afd6b](865afd6b))
+
+#### Features
+
+* **cli:**
+  *  Search Available Stubs (#27) ([1622a619](1622a619))
+  *  Stream Downloads with Progress Bar ([b3d1401d](b3d1401d))
+  *  Minified Cli Output Style ([2435097d](2435097d))
+* **stubs:**
+  *  Updated micropython-stubber to latest ([d927e601](d927e601))
+  *  Update Stubs to Use New Stubber Schema (#23) ([f55b5da1](f55b5da1))
+  *  Update Stub Creation (#26) ([4f1f5bc2](4f1f5bc2))
+  *  Added Stub Stdout Verbosity ([65338667](65338667))
+  *  Add Firmware Frozen Modules to Templates ([5452756d](5452756d))
+  *  Implemented Local and Remote Stub Sources (#18) ([98ab23ef](98ab23ef))
+  *  Device Stubs Firmware Resolution (#25) ([b9a2357f](b9a2357f))
+  *  Add Device Frozen Modules to Templates (#24) ([218c41cb](218c41cb))
+  *  Add Stubs from Repositories (#21) ([df9fde52](df9fde52))
+  *  Replaced Stubs with Stub "Packages" ([8111618f](8111618f))
+  *  Stub Repositories (#20) ([58acfe70](58acfe70))
+* **util:**  Generic Utility Functions and Module Cleanup ([6e066547](6e066547))
+
+#### Bug Fixes
+
+* **cli:**
+  * Create Stubs Help Formatting ([4439ebe2](4439ebe2))
+  * Init Crashes if no Stubs are Loaded ([5547eb76](5547eb76))
+* **log:**  Output Highlight Bug, Cleanup ([fd6b2439](fd6b2439))
+* **stub:**  Stub Name without Firmware ([94f5f78c](94f5f78c))
+* **stubs:**
+  *  Firmware not showing as Installed in Stub Search ([db1f74aa](db1f74aa))
+  *  Fix Existing Firmware Reinstall ([5c8e0261](5c8e0261))
+
+
+
 <a name="v0.3.0"></a>
 ## v0.3.0 (2019-06-26)
 
