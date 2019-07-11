@@ -7,7 +7,7 @@ Its primary goal is to automate the process of creating a workspace complete wit
 * **Linting** compatible with Micropython
 * VSCode **Intellisense**
 * **Autocompletion**
-* Dependency Management
+* Dependency Management (_WIP_)
 * VCS Compatibility
 
 <!-- Command line Application for automating Micropython project creation in Visual Studio Code. -->
@@ -38,11 +38,12 @@ Usage: micropy [OPTIONS] COMMAND [ARGS]...
   CLI Application for creating/managing Micropython Projects.
 
 Options:
-  --help  Show this message and exit.
+  --version  Show the version and exit.
+  --help     Show this message and exit.
 
 Commands:
   init   Create new Micropython Project
-  stubs  Manage Stubs
+  stubs  Manage Micropy Stubs
 ```
 
 ### Creating a Project
@@ -55,32 +56,44 @@ Creating a new project folder is as simple as:
 
 ### Stub Management
 
-Micropy Comes Prebundled with stubs provided by [Josvel/micropython-stubber](https://github.com/Josverl/micropython-stubber). If your device/firmware combination isn't available, you can create them via one of the following methods.
+Stub files are the magic behind how micropy allows features such as linting, Intellisense, and autocompletion to work. To achieve the best results with MicropyCli, its important that you first add the appropriate stubs for the device/firmware your project uses.
+
+#### Adding Stubs
+
+Adding stubs to Micropy is a breeze. Simply run: `micropy stubs add <STUB_NAME>`
+By sourcing [micropy-stubs](https://github.com/BradenM/micropy-stubs), MicroPy has several premade stub packages to choose from.
+
+These packages generally use the following naming schema:
+
+`<device>-<firmware>-<version>`
+
+For example, running `micropy stubs add esp32-micropython-1.11.0` will install the following:
+* Micropython Specific Stubs
+* ESP32 Micropython v1.11 Device Specific Stubs
+* Frozen Modules for both device and firmware
+
+You can search stubs that are made available to Micropy via `micropy stubs search <QUERY>`
+
+Alternatively, using `micropy stubs add <PATH>`, you can manually add stubs to Micropy.
+For manual stub generation, please see [Josvel/micropython-stubber](https://github.com/Josverl/micropython-stubber).
 
 #### Creating Stubs
 
 Using `micropy stubs create <PORT/IP_ADDRESS>`, MicropyCli can automatically generate and add stubs from any Micropython device you have on hand. This can be done over both USB and WiFi.
 
-#### Adding Stubs
-
-Alternatively, using `micropy stubs add <PATH>`, you can manually add stubs to Micropy.
-For manual stub generation, please see [Josvel/micropython-stubber](https://github.com/Josverl/micropython-stubber).
 
 #### Viewing Stubs
 
-To preview stubs you have installed, simply run `micropy stubs list`.
-This will output all stubs available to MicropyCli in the format: `<device_name>@<firmware_version>`
+To list stubs you have installed, simply run `micropy stubs list`.
+
+To search for stubs for your device, use `micropy stubs search <QUERY>`.
 
 
-## Credit
+## Acknowledgements
 
 ### Micropython-Stubber
 [Josvel/micropython-stubber](https://github.com/Josverl/micropython-stubber)
 
 Josverl's Repo is full of information regarding Micropython compatibility with VSCode and more. To find out more about how this process works, take a look at it.
 
-Thanks to Josverl's research, MicropyCli can:
-* Generate stubs on a Pydevice
-* Come prebundled with popular stubs
-* Generate frozen modules
-* and much more
+micropy-cli and [micropy-stubs](https://github.com/BradenM/micropy-stubs) depend on micropython-stubber for its ability to generate frozen modules, create stubs on a pyboard, and more.
