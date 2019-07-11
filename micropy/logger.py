@@ -7,7 +7,7 @@ import re
 from contextlib import contextmanager
 from pathlib import Path
 
-from click import clear, confirm, prompt, secho, style
+from click import secho, style
 
 
 class Log:
@@ -98,16 +98,18 @@ class ServiceLog:
         color = accent_color or self.accent_color
         special = {"fg": color, "bold": True}
         clean = msg
+        _parts = re.split(r'\$.*?\[(.*?)\]', msg)
+        parts = [(p, None) for p in _parts]
         for w in msg_special:
             if w[0] == 'w':
                 special['fg'] = self.warn_color
             if w[0] == 'B':
                 special.pop('fg')
-            msg = msg.replace(f"${w[0]}[{w[1]}]", style(
-                w[1], **special))
+            sindex = _parts.index(w[1])
+            parts[sindex] = (w[1], special)
             clean = msg.replace(f"${w[0]}[{w[1]}]", w[1])
         clean = clean.encode('ascii', 'ignore').decode('unicode_escape')
-        return (msg, clean)
+        return (parts, clean)
 
     def get_parents(self, names=[]):
         """Retrieve all parents"""
@@ -154,11 +156,16 @@ class ServiceLog:
             log_func = getattr(logging, log_attr)
             log_func(clean)
         if self.stdout:
-            if message[:1] == "\n":
-                message = message[1:]
+            init_msg, init_style = message[0]
+            if init_msg[:1] == "\n":
+                message[0] = (init_msg[1:], init_style)
                 secho("")
             secho(f"{service_title} ", nl=False)
-            secho(message, **kwargs)
+            for msg in message:
+                text, mstyle = msg
+                mstyle = mstyle or kwargs
+                mstyle['nl'] = (msg == message[-1])
+                secho(text, **mstyle)
 
     def info(self, msg, **kwargs):
         """Prints message with info formatting
@@ -190,7 +197,7 @@ class ServiceLog:
 
         """
         self.echo(msg, log="error", title_color='red', title_bold=True,
-                  fg='red', underline=True, accent='red', **kwargs)
+                  fg='red', accent='red', **kwargs)
         if exception:
             return self.exception(exception)
 
@@ -248,43 +255,3 @@ class ServiceLog:
                 return self.debug(msg, **kwargs)
         self.echo(msg, log="debug")
         return msg
-
-    def prompt(self, msg, **kwargs):
-        """Prompts user with question.
-
-        :param msg:
-        :param **kwargs:
-        :return: prompt
-        :rtype: method
-
-        """
-        new_line = kwargs.pop('nl', False)
-        nl_default = kwargs.get('default', None)
-        msg = self.parse_msg(msg)
-        msg = msg + style(f"\n Press Enter to Use: [{nl_default}]", dim=True)\
-            if nl_default and len(nl_default) > 0 else msg
-        title = self.get_service()
-        suffix = style('\u27a4 ', fg=self.accent_color)
-        secho(f"{title} ", nl=False)
-        return prompt(msg + '\n' if new_line else msg,
-                      prompt_suffix=suffix, **kwargs)
-
-    def confirm(self, msg, **kwargs):
-        """Prompts confirmation from user.
-
-        :param msg:
-        :param **kwargs:
-        :return: click confirm
-        :rtype: method
-
-        """
-        msg = self.parse_msg(msg)
-        title = self.get_service()
-        suffix = style('\u27a4 ', fg=self.accent_color)
-        secho(f"{title} ", nl=False)
-        return confirm(
-            msg, show_default="[y/N] ", prompt_suffix=suffix, **kwargs)
-
-    def clear(self):
-        """Clears terminal screen"""
-        return clear()
