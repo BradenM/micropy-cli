@@ -19,6 +19,7 @@ def test_project_structure(mock_micropy, mock_cwd):
     proj.create()
     templ_files = sorted([i.name for i in (
         TemplateProvider.TEMPLATE_DIR).glob("**/*")])
-    proj_files = sorted([i.name for i in proj.path.glob("**/*")])
+    proj_files = sorted(
+        [i.name for i in proj.path.glob("**/*") if i.name != '.micropy'])
     print("Project Files:", proj_files)
     assert templ_files == proj_files
