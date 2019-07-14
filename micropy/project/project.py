@@ -6,6 +6,7 @@ from pathlib import Path
 
 from micropy.logger import Log
 from micropy.project.template import TemplateProvider
+from micropy.stubs import StubManager
 
 
 class Project:
@@ -18,8 +19,10 @@ class Project:
 
     def __init__(self, project_name, stubs, **kwargs):
         self.path = Path(project_name).resolve()
+        self.data = self.path / '.micropy'
         self.name = self.path.name
-        self.stubs = stubs
+        self._stubs = stubs
+        self.stubs = None
         self.log = Log.add_logger(self.name, show_title=False)
         template_log = Log.add_logger("Templater", parent=self.log)
         self.provider = TemplateProvider(log=template_log)
@@ -28,8 +31,15 @@ class Project:
     @property
     def context(self):
         """Get complete project context"""
+        frozen = [s.frozen for s in self.stubs]
+        fware_mods = [s.firmware.frozen
+                      for s in self.stubs if s.firmware is not None]
+        stub_paths = [s.stubs for s in self.stubs]
+        paths = [*fware_mods, *frozen, *stub_paths]
         return {
-            "stubs": self.stubs
+            "stubs": self.stubs,
+            "paths": paths,
+            "datadir": self.data
         }
 
     def render_all(self):
@@ -42,8 +52,10 @@ class Project:
 
     def create(self):
         """creates a new project"""
-        self.log.debug(f"Generated Project Context: {self.context}")
         self.log.info("Rendering Project files...")
+        self.data.mkdir(exist_ok=True, parents=True)
+        self.stubs = StubManager.resolve_subresource(self._stubs, self.data)
+        self.log.debug(f"Generated Project Context: {self.context}")
         self.render_all()
         self.log.success(f"Project Created!")
         return self.path.relative_to(Path.cwd())

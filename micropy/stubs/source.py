@@ -147,7 +147,7 @@ class StubSource:
         """
         _path = path or self.location
         info_path = next(_path.rglob("info.json"), None)
-        path = Path(info_path.parent).resolve() if info_path else _path
+        path = Path(info_path.parent) if info_path else _path
         yield path
         if teardown:
             teardown()
