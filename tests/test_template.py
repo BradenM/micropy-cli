@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+from pathlib import Path
 
 import pylint.lint
 import pytest
@@ -8,10 +9,23 @@ import pytest
 from micropy.project.template import Template, TemplateProvider
 
 
-def test_vscode_template(mock_mp_stubs, shared_datadir, tmp_path):
+@pytest.fixture
+def stub_context(mock_mp_stubs):
     stubs = list(mock_mp_stubs.STUBS)[:3]
+    stub_paths = [stub.stubs for stub in stubs]
+    frozen_paths = [stub.frozen for stub in stubs]
+    fware_paths = [stub.firmware.frozen for stub in stubs]
+    ctx_paths = [*stub_paths, *frozen_paths, *fware_paths]
+    return (stubs, (stub_paths, frozen_paths, fware_paths), ctx_paths)
+
+
+def test_vscode_template(stub_context, shared_datadir, tmp_path):
+    stubs, paths, ctx_paths = stub_context
     prov = TemplateProvider()
-    prov.render_to('vscode', tmp_path, stubs=stubs)
+    ctx_datadir = tmp_path / 'ctx_cata'
+    ctx_datadir.mkdir(exist_ok=True)
+    prov.render_to('vscode', tmp_path, stubs=stubs,
+                   paths=ctx_paths, datadir=ctx_datadir)
     expected_path = tmp_path / '.vscode' / 'settings.json'
     out_content = expected_path.read_text()
     print(out_content)
@@ -20,19 +34,22 @@ def test_vscode_template(mock_mp_stubs, shared_datadir, tmp_path):
         lines = [l.strip() for l in f.readlines() if l]
         valid = [l for l in lines if "//" not in l[:2]]
     # Valid JSON?
-    stub_paths = [str(stub.stubs) for stub in stubs]
-    frozen_paths = [str(stub.frozen) for stub in stubs]
-    fware_paths = [str(stub.firmware.frozen) for stub in stubs]
+    root = Path("${workspaceRoot}")
+    expect_paths = [str((root / p.relative_to(tmp_path)))
+                    for p in ctx_paths]
     content = json.loads("\n".join(valid))
-    assert sorted([*stub_paths, *frozen_paths, *fware_paths]) == sorted(
+    assert sorted(expect_paths) == sorted(
         content["python.autoComplete.extraPaths"])
     assert expected_path.exists()
 
 
-def test_pylint_template(mock_mp_stubs, tmp_path):
-    stubs = list(mock_mp_stubs.STUBS)[:3]
+def test_pylint_template(stub_context, tmp_path):
+    stubs, paths, ctx_paths = stub_context
+    ctx_datadir = tmp_path / 'ctx_cata'
+    ctx_datadir.mkdir(exist_ok=True)
     prov = TemplateProvider()
-    prov.render_to("pylint", tmp_path, stubs=stubs)
+    prov.render_to("pylint", tmp_path, stubs=stubs,
+                   paths=ctx_paths, datadir=ctx_datadir)
     expected_path = tmp_path / '.pylintrc'
     assert expected_path.exists()
     # Will Pylint load it?

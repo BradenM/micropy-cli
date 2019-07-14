@@ -195,3 +195,25 @@ def test_stub_search(mocker, test_urls, shared_datadir, tmp_path, test_repo):
     res = results[0]
     assert res[0] == "esp32-micropython-1.11.0"
     assert not res[1]
+
+
+def test_stub_resolve_link(mock_mp_stubs, tmp_path):
+    """should create DeviceStub from symlink"""
+    stub = list(mock_mp_stubs.STUBS)[0]
+    link_path = tmp_path / 'stub_symlink'
+    linked_stub = stubs.stubs.DeviceStub.resolve_link(stub, link_path)
+    assert stub == linked_stub
+    assert stub.path != linked_stub.path
+    assert linked_stub.path.is_symlink()
+    assert linked_stub.path.resolve() == stub.path
+
+
+def test_manager_resolve_subresource(mock_mp_stubs, tmp_path):
+    """should create StubManager from subresource symlinks"""
+    test_stubs = list(mock_mp_stubs.STUBS)[:2]
+    subresource = tmp_path / 'stub_subresource'
+    subresource.mkdir()
+    manager = stubs.StubManager.resolve_subresource(test_stubs, subresource)
+    linked_stub = list(manager)[0]
+    assert linked_stub.path.is_symlink()
+    assert linked_stub in list(mock_mp_stubs.STUBS)

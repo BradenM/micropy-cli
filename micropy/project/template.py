@@ -20,6 +20,8 @@ class Template:
     def __init__(self, template, **kwargs):
         self.template = template
         self.stubs = kwargs.get("stubs", None)
+        self.paths = kwargs.get("paths", None)
+        self.datadir = kwargs.get("datadir", None)
 
     @property
     def context(self):
@@ -59,11 +61,12 @@ class CodeTemplate(Template):
     @property
     def context(self):
         """VScode Config Context"""
-        frozen = [str(s.frozen) for s in self.stubs]
-        fware_mods = [str(s.firmware.frozen)
-                      for s in self.stubs if s.firmware is not None]
-        stub_paths = [str(s.stubs) for s in self.stubs]
-        paths = [*fware_mods, *frozen, *stub_paths]
+        _paths = self.paths
+        if self.datadir:
+            root = Path("${workspaceRoot}")
+            _paths = [(root / p.relative_to(self.datadir.parent))
+                      for p in self.paths]
+        paths = [str(p) for p in _paths]
         stub_paths = json.dumps(paths)
         ctx = {
             "stubs": self.stubs,
@@ -82,8 +85,11 @@ class PylintTemplate(Template):
     @property
     def context(self):
         """Pylint Config Context"""
+        if self.datadir:
+            paths = [p.relative_to(self.datadir.parent) for p in self.paths]
         ctx = {
-            "stubs": self.stubs
+            "stubs": self.stubs,
+            "paths": paths
         }
         return ctx
 

@@ -76,13 +76,13 @@ def ensure_existing_dir(path):
     Returns:
         object: pathlib.PurePath object
     """
-    _path = str(path)
-    path = Path(_path).resolve()
+    _path = Path(path)
+    path = _path.resolve()
     if not path.exists():
         raise NotADirectoryError(f"{_path} does not exist!")
     if not path.is_dir():
         raise NotADirectoryError(f"{_path} is not a directory!")
-    return path
+    return _path
 
 
 def is_existing_dir(path):

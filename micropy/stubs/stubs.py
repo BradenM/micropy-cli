@@ -296,6 +296,26 @@ class StubManager:
                 results.append((p, p in installed))
         return sorted(results)
 
+    @classmethod
+    def resolve_subresource(cls, stubs, subresource):
+        """Resolve or Create StubManager from list of stubs
+
+        Args:
+            stubs ([Stub]): List of stubs to use in subresource
+            subresource (str): path to subresource
+
+        Returns:
+            StubManager: StubManager with subresource stubs
+        """
+        for stub in stubs:
+            fware = stub.firmware
+            if fware:
+                link = subresource / fware.path.name
+                Stub.resolve_link(fware, link)
+            link = subresource / stub.path.name
+            Stub.resolve_link(stub, link)
+        return cls(resource=subresource)
+
 
 class Stub:
     """Abstract Parent for Stub Related Classes
@@ -311,7 +331,7 @@ class Stub:
     """
 
     def __init__(self, path, copy_to=None, **kwargs):
-        self.path = Path(path).resolve()
+        self.path = Path(path)
         ref = self.path / 'info.json'
         self.info = json.load(ref.open())
         if copy_to is not None:
@@ -322,8 +342,25 @@ class Stub:
         if not name:
             dest = Path(dest) / self.path.name
         copytree(self.path, dest)
-        self.path = dest
+        self.path = dest.resolve()
         return self
+
+    @classmethod
+    def resolve_link(cls, stub, link_path):
+        """Resolve or Create Stub Symlink
+
+        Args:
+            stub (Stub): stub to resolve
+            link_path (str): path to link
+
+        Returns:
+            Stub: Stub from symlink
+        """
+        fware = stub.firmware
+        if link_path.is_symlink():
+            return cls(link_path, firmware=fware)
+        link_path.symlink_to(stub.path, target_is_directory=True)
+        return cls(link_path, firmware=fware)
 
     @property
     def name(self):
@@ -358,7 +395,7 @@ class DeviceStub(Stub):
         self.frozen = self.path / 'frozen'
 
         self.firm_info = self.info.get("firmware")
-        self.firmware = None
+        self.firmware = kwargs.get("firmware", None)
         self.sysname = self.firm_info.get('sysname')
         self.version = self.firm_info.get('version')
 
