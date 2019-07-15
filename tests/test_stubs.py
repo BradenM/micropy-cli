@@ -94,14 +94,14 @@ def test_resolve_stub(shared_datadir):
     fware_stub = shared_datadir / 'fware_test_stub'
     invalid_stub = shared_datadir / 'esp8266_invalid_stub'
     manager = stubs.StubManager()
-    stub_type = manager.resolve_stub(device_stub)
+    stub_type = manager._get_stubtype(device_stub)
     assert stub_type == stubs.stubs.DeviceStub
-    stub_type = manager.resolve_stub(fware_stub)
+    stub_type = manager._get_stubtype(fware_stub)
     assert stub_type == stubs.stubs.FirmwareStub
     with pytest.raises(exceptions.StubError):
-        manager.resolve_stub(Path('/foobar/foo'))
+        manager._get_stubtype(Path('/foobar/foo'))
     with pytest.raises(exceptions.StubValidationError):
-        manager.resolve_stub(invalid_stub)
+        manager._get_stubtype(invalid_stub)
 
 
 def test_resolve_firmware(tmp_path, shared_datadir):
@@ -137,12 +137,22 @@ def test_add_stubs_from_dir(datadir, tmp_path):
         manager._should_recurse(empty_path)
 
 
-def test_add_with_resource(datadir, mock_fware, tmp_path):
+def test_add_with_resource(datadir, mock_fware, tmp_path, mocker):
     """should not require dest kwarg"""
-    manager = stubs.StubManager(resource=tmp_path)
+    resource = tmp_path / 'tmp_resource'
+    resource.mkdir()
+    load_spy = mocker.spy(stubs.StubManager, '_load')
+    manager = stubs.StubManager(resource=resource)
     manager.add(datadir)
     assert len(manager) == 2
-    assert "esp8266_test_stub" in [p.name for p in tmp_path.iterdir()]
+    assert "esp8266_test_stub" in [p.name for p in resource.iterdir()]
+    assert load_spy.call_count == 5
+    # Should not add any new stubs
+    assert manager.add(datadir)
+    assert load_spy.call_count == 5
+    # Should force load
+    assert manager.add(datadir, force=True)
+    assert load_spy.call_count == 10
 
 
 def test_add_no_resource_no_dest(datadir, mock_fware):
@@ -213,7 +223,7 @@ def test_manager_resolve_subresource(mock_mp_stubs, tmp_path):
     test_stubs = list(mock_mp_stubs.STUBS)[:2]
     subresource = tmp_path / 'stub_subresource'
     subresource.mkdir()
-    manager = stubs.StubManager.resolve_subresource(test_stubs, subresource)
+    manager = mock_mp_stubs.STUBS.resolve_subresource(test_stubs, subresource)
     linked_stub = list(manager)[0]
     assert linked_stub.path.is_symlink()
     assert linked_stub in list(mock_mp_stubs.STUBS)

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import json
+import shutil
 from pathlib import Path
-from shutil import copytree
 
 from micropy import data, utils
 from micropy.exceptions import StubError, StubValidationError
@@ -74,7 +74,7 @@ class StubManager:
         """
         with stub_source.ready() as src_path:
             try:
-                stub_type = self.resolve_stub(src_path)
+                stub_type = self._get_stubtype(src_path)
             except Exception as e:
                 self.log.debug(f"{src_path.name} failed to validate: {e}")
                 if strict:
@@ -120,7 +120,6 @@ class StubManager:
                 self.log.success(
                     f"{fware_name} firmware added!", nl=True)
                 return fware
-        self.log.info(f"$[{fware_name}] is installed already.")
         return fware
 
     def validate(self, path, schema=None):
@@ -147,7 +146,7 @@ class StubManager:
         except Exception as e:
             raise StubValidationError(path, str(e))
 
-    def resolve_stub(self, path):
+    def _get_stubtype(self, path):
         """Resolves appropriate stub type
 
         Args:
@@ -180,11 +179,35 @@ class StubManager:
             bool: True if stub is valid
         """
         try:
-            self.resolve_stub(path)
+            self._get_stubtype(path)
         except Exception:
             return False
         else:
             return True
+
+    def _check_existing(self, location):
+        """check if location is or contains an existing stub
+
+        Args:
+            location (str): name or path of Stub
+
+        Returns:
+            generator of existing stubs
+        """
+        try:
+            do_recurse = self._should_recurse(location)
+        except StubError:
+            yield
+        else:
+            if do_recurse:
+                for s in (self._check_existing(p) for p in location.iterdir()):
+                    yield next(s, None)
+            path_name = Path(location).name
+            stub = next((s for s in self._loaded if any(
+                t in (s.name, s.path.name) for t in
+                (path_name, location))), None)
+            if stub:
+                yield stub
 
     def load_from(self, directory, *args, **kwargs):
         """Recursively loads stubs from a directory
@@ -238,6 +261,11 @@ class StubManager:
         if not _dest:
             raise TypeError("No Stub Destination Provided!")
         dest = Path(str(_dest)).resolve()
+        stubs = [s for s in self._check_existing(location) if s is not None]
+        if any(stubs):
+            self.log.info(f"$[{stub}] is already installed!")
+            return stub
+        dest = Path(str(_dest)).resolve()
         if self._should_recurse(location):
             return self.load_from(location, strict=False, copy_to=dest)
         self.log.info(f"Resolving source...")
@@ -275,7 +303,7 @@ class StubManager:
         stub_path = out_stub / 'stubs'
         out_stub.mkdir(exist_ok=True, parents=True)
         json.dump(mod_data, info_file.open('w+'))
-        copytree(path, stub_path)
+        shutil.copytree(path, stub_path)
         return out_stub
 
     def search_remote(self, query):
@@ -341,7 +369,7 @@ class Stub:
         """Copy stub to a directory"""
         if not name:
             dest = Path(dest) / self.path.name
-        copytree(self.path, dest)
+        shutil.copytree(self.path, dest)
         self.path = dest.resolve()
         return self
 
