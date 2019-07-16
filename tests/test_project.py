@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import shutil
+
 from micropy import project
 from micropy.project.template import TemplateProvider
 
@@ -44,3 +46,23 @@ def test_project_load(mocker, shared_datadir):
     mock_mp.STUBS.resolve_subresource.assert_called_once_with(
         mocker.ANY, proj.data)
     assert proj.data.exists()
+
+
+def test_project_add_stub(mocker, shared_datadir, tmp_path):
+    """should add stub to project"""
+    mock_mp = mocker.patch.object(project.project, 'MicroPy').return_value
+    proj_path = tmp_path / 'tmp_project'
+    shutil.copytree((shared_datadir / 'project_test'), proj_path)
+    # Test Loaded
+    proj = project.Project.resolve(proj_path)
+    proj.add_stub("mock_stub")
+    mock_mp.STUBS.resolve_subresource.assert_called_with(
+        [mocker.ANY, mocker.ANY, mocker.ANY, "mock_stub"], proj.data)
+    shutil.rmtree(proj_path)
+    shutil.copytree((shared_datadir / 'project_test'), proj_path)
+    # Test Not loaded
+    proj = project.Project(proj_path, stub_manager=mock_mp.STUBS)
+    proj.add_stub("mock_stub")
+    mock_mp.STUBS.resolve_subresource.assert_called_with(
+        [mocker.ANY, mocker.ANY, mocker.ANY, "mock_stub"], proj.data)
+    assert mock_mp.STUBS.resolve_subresource.call_count == 3

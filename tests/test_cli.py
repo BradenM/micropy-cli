@@ -61,6 +61,9 @@ def test_cli_stubs_add(mocker, mock_micropy, shared_datadir,
     mocker.patch.object(cli, "MicroPy").return_value = mock_micropy
     mock_micropy.STUBS.add((shared_datadir / 'fware_test_stub'))
 
+    mock_proj = mocker.patch.object(cli, 'Project').return_value
+    mock_proj.exists.return_value = True
+
     mocker.spy(cli.sys, 'exit')
     err_spy = mocker.spy(mock_micropy.log, 'error')
     result = runner.invoke(cli.add, [str(test_invalid_stub.resolve())])
@@ -74,6 +77,7 @@ def test_cli_stubs_add(mocker, mock_micropy, shared_datadir,
     assert result.exit_code == 1
 
     result = runner.invoke(cli.add, [str(test_stub.resolve())])
+    assert mock_proj.add_stub.call_count == 1
     assert err_spy.call_count == 2
     assert result.exit_code == 0
 

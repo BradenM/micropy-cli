@@ -89,15 +89,20 @@ def add(stub_name, force=False):
     """
     mp = MicroPy()
     mp.STUBS.verbose_log(True)
-    mp.log.title(f"Adding $[{stub_name}] to stubs...")
+    proj = Project('.', stub_manager=mp.STUBS)
+    mp.log.title(f"Adding $[{stub_name}] to stubs")
     try:
-        mp.STUBS.add(stub_name, force=force)
+        stub = mp.STUBS.add(stub_name, force=force)
     except exc.StubNotFound:
         mp.log.error(f"$[{stub_name}] could not be found!")
         sys.exit(1)
     except exc.StubError:
         mp.log.error(f"$[{stub_name}] is not a valid stub!")
         sys.exit(1)
+    else:
+        if proj.exists():
+            mp.log.title(f"Adding $[{stub.name}] to $[{proj.name}]")
+            proj.add_stub(stub)
 
 
 @stubs.command()

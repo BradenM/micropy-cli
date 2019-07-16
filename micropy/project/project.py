@@ -22,6 +22,7 @@ class Project:
     """
 
     def __init__(self, path, stubs=None, stub_manager=None):
+        self._loaded = False
         self.path = Path(path).resolve()
         self.data = self.path / '.micropy'
         self.info_path = self.path / 'micropy.json'
@@ -47,8 +48,11 @@ class Project:
             else:
                 yield self.stub_manager.add(name)
 
-    def load(self, **kwargs):
+    def load(self, verbose=True, **kwargs):
         """Load existing project
+
+        Args:
+            verbose (bool): Log to stdout. Defaults to True.
 
         Returns:
             stubs: Project Stubs
@@ -56,13 +60,38 @@ class Project:
         data = json.loads(self.info_path.read_text())
         _stubs = data.get("stubs")
         self.name = data.get("name", self.name)
+        self.stubs = kwargs.get('stubs', self.stubs)
         self.stub_manager = kwargs.get("stub_manager", self.stub_manager)
-        self.stub_manager.verbose_log(True)
+        self.stub_manager.verbose_log(verbose)
         self.data.mkdir(exist_ok=True)
         stubs = list(self._load_stubs(_stubs))
-        self.stubs = list(
+        if self.stubs:
+            stubs.extend(self.stubs)
+        self.stubs = set(
             self.stub_manager.resolve_subresource(stubs, self.data))
-        self.log.success(f"\nProject Ready!")
+        self._loaded = True
+        if verbose:
+            self.log.success(f"\nProject Ready!")
+        return self.stubs
+
+    def add_stub(self, stub, **kwargs):
+        """Add stub to project
+
+        Args:
+            stub (Stub): Stub object to add
+
+        Returns:
+            [Stubs]: Project Stubs
+        """
+        loaded = self.stubs or []
+        stubs = [*loaded, stub]
+        self.log.info("Loading project...")
+        self.load(stubs=stubs, verbose=False, **kwargs)
+        self.log.info("Updating Project Info...")
+        self.to_json()
+        self.log.info(
+            f"Project Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
+        self.log.success("\nProject Updated!")
         return self.stubs
 
     def exists(self):
