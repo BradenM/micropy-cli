@@ -1,0 +1,7 @@
+{
+    "name": "NewProject",
+    "stubs": {
+        "esp32-micropython-1.11.0": "1.2.0",
+        "esp8266-micropython-1.11.0": "1.2.0"
+    }
+}

@@ -1,25 +1,44 @@
 # -*- coding: utf-8 -*-
 
-from micropy.project import Project
+from micropy import project
 from micropy.project.template import TemplateProvider
 
 
-def test_project_init(mock_micropy, mock_cwd):
+def test_project_init(mock_mp_stubs, mock_cwd):
     """Test project setup"""
-    proj_stubs = list(mock_micropy.STUBS)[:2]
-    proj = Project("ProjName", proj_stubs)
+    mp = mock_mp_stubs
+    proj_stubs = list(mp.STUBS)[:2]
+    proj = project.Project("ProjName", stubs=proj_stubs)
     assert proj.path == mock_cwd / 'ProjName'
     assert proj.name == 'ProjName'
 
 
-def test_project_structure(mock_micropy, mock_cwd):
+def test_project_structure(mock_mp_stubs, mock_cwd):
     """Test if project creates files"""
-    proj_stubs = list(mock_micropy.STUBS)[:2]
-    proj = Project("ProjName", proj_stubs)
+    mp = mock_mp_stubs
+    proj_stubs = list(mp.STUBS)[:2]
+    proj = project.Project("ProjName", stubs=proj_stubs,
+                           stub_manager=mp.STUBS)
     proj.create()
-    templ_files = sorted([i.name for i in (
-        TemplateProvider.TEMPLATE_DIR).glob("**/*")])
+    templ_files = [i.name for i in (
+        TemplateProvider.TEMPLATE_DIR).glob("**/*")]
     proj_files = sorted(
-        [i.name for i in proj.path.glob("**/*") if i.name != '.micropy'])
+        [i.name for i in proj.path.glob("**/*")])
+    expect_files = sorted([*templ_files, *[s.path.name for s in proj.stubs],
+                           *set([s.firmware.path.name for s in proj.stubs]),
+                           '.micropy', 'micropy.json'])
     print("Project Files:", proj_files)
-    assert templ_files == proj_files
+    print("Expect:", expect_files)
+    assert expect_files == proj_files
+
+
+def test_project_load(mocker, shared_datadir):
+    mock_mp = mocker.patch.object(project.project, 'MicroPy').return_value
+    proj_path = shared_datadir / 'project_test'
+    proj = project.Project.resolve(proj_path)
+    mock_mp.STUBS.add.assert_any_call("esp32-micropython-1.11.0")
+    mock_mp.STUBS.add.assert_any_call("esp8266-micropython-1.11.0")
+    assert mock_mp.STUBS.add.call_count == 2
+    mock_mp.STUBS.resolve_subresource.assert_called_once_with(
+        mocker.ANY, proj.data)
+    assert proj.data.exists()

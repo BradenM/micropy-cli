@@ -47,7 +47,8 @@ def test_cli_init(mocker, mock_micropy, shared_datadir, mock_prompt, runner):
     assert result.exit_code == 1
     mock_micropy.STUBS = ["stub"]
     result = runner.invoke(cli.init, ["TestProject"])
-    mock_project.assert_called_once_with("TestProject", ["stub"])
+    mock_project.assert_called_once_with(
+        "TestProject", stubs=["stub"], stub_manager=mock_micropy.STUBS)
     mock_project.return_value.create.assert_called_once()
     assert result.exit_code == 0
 
