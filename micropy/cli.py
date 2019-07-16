@@ -123,9 +123,12 @@ def list():
     """List installed stubs"""
     mp = MicroPy()
     mp.log.title("Installed Stubs:")
-    for stub in mp.STUBS:
-        mp.log.info(str(stub))
-    return mp.log.info(f"$[Total:] {len(mp.STUBS)}")
+    mp.log.info(f"Total: {len(mp.STUBS)}")
+    for firm, stubs in mp.STUBS.iter_by_firmware():
+        title = str(firm).capitalize()
+        mp.log.title(f"$[{title}]:")
+        for stub in stubs:
+            mp.log.info(str(stub))
 
 
 @stubs.command(short_help="Create Stubs from Pyboard")

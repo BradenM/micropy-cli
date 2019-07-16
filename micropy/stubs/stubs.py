@@ -44,6 +44,14 @@ class StubManager:
     def __len__(self):
         return len(self._loaded)
 
+    def iter_by_firmware(self):
+        """Iterate stubs sorted by firmware"""
+        for firm in self._firmware:
+            stubs = [s for s in self._loaded if s.firmware == firm]
+            yield (firm, stubs)
+        other = [s for s in self._loaded if s.firmware is None]
+        yield ("Unknown", other)
+
     def verbose_log(self, state):
         """Enable Stub logging to stdout
 
