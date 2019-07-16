@@ -330,8 +330,7 @@ class StubManager:
                 results.append((p, p in installed))
         return sorted(results)
 
-    @classmethod
-    def resolve_subresource(cls, stubs, subresource):
+    def resolve_subresource(self, stubs, subresource):
         """Resolve or Create StubManager from list of stubs
 
         Args:
@@ -345,10 +344,11 @@ class StubManager:
             fware = stub.firmware
             if fware:
                 link = subresource / fware.path.name
-                Stub.resolve_link(fware, link)
+                fware = FirmwareStub.resolve_link(fware, link)
             link = subresource / stub.path.name
-            Stub.resolve_link(stub, link)
-        return cls(resource=subresource)
+            stub = DeviceStub.resolve_link(stub, link)
+            stub.firmware = fware
+            yield stub
 
 
 class Stub:
@@ -427,6 +427,8 @@ class DeviceStub(Stub):
 
         self.stubs = self.path / 'stubs'
         self.frozen = self.path / 'frozen'
+        stubber = self.info.get("stubber")
+        self.stub_version = stubber.get("version")
 
         self.firm_info = self.info.get("firmware")
         self.firmware = kwargs.get("firmware", None)

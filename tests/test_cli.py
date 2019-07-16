@@ -47,7 +47,8 @@ def test_cli_init(mocker, mock_micropy, shared_datadir, mock_prompt, runner):
     assert result.exit_code == 1
     mock_micropy.STUBS = ["stub"]
     result = runner.invoke(cli.init, ["TestProject"])
-    mock_project.assert_called_once_with("TestProject", ["stub"])
+    mock_project.assert_called_once_with(
+        "TestProject", stubs=["stub"], stub_manager=mock_micropy.STUBS)
     mock_project.return_value.create.assert_called_once()
     assert result.exit_code == 0
 
@@ -59,6 +60,9 @@ def test_cli_stubs_add(mocker, mock_micropy, shared_datadir,
     test_invalid_stub = shared_datadir / 'esp8266_invalid_stub'
     mocker.patch.object(cli, "MicroPy").return_value = mock_micropy
     mock_micropy.STUBS.add((shared_datadir / 'fware_test_stub'))
+
+    mock_proj = mocker.patch.object(cli, 'Project').return_value
+    mock_proj.exists.return_value = True
 
     mocker.spy(cli.sys, 'exit')
     err_spy = mocker.spy(mock_micropy.log, 'error')
@@ -73,6 +77,7 @@ def test_cli_stubs_add(mocker, mock_micropy, shared_datadir,
     assert result.exit_code == 1
 
     result = runner.invoke(cli.add, [str(test_stub.resolve())])
+    assert mock_proj.add_stub.call_count == 1
     assert err_spy.call_count == 2
     assert result.exit_code == 0
 
