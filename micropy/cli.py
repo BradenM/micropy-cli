@@ -13,10 +13,15 @@ from micropy.main import MicroPy
 from micropy.project import Project
 
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click.version_option()
-def cli():
+@click.pass_context
+def cli(ctx):
     """CLI Application for creating/managing Micropython Projects."""
+    if ctx.invoked_subcommand is None:
+        proj = Project.resolve('.')
+        if not proj:
+            click.echo(ctx.get_help())
 
 
 @cli.group(short_help="Manage Micropy Stubs")
@@ -47,7 +52,7 @@ def init(project_name=""):
     placed under the generated <PROJECT_NAME> folder.
     """
     mp = MicroPy()
-    mp.log.title("Creating New Project...")
+    mp.log.title("Creating New Project")
     stubs = [Choice(str(s), value=s) for s in mp.STUBS]
     if not stubs:
         mp.log.error("You don't have any stubs!")
@@ -56,7 +61,7 @@ def init(project_name=""):
         sys.exit(1)
     stub_choices = prompt.checkbox(
         "Which stubs would you like to use?", choices=stubs).ask()
-    project = Project(project_name, stub_choices)
+    project = Project(project_name, stubs=stub_choices, stub_manager=mp.STUBS)
     proj_relative = project.create()
     mp.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 
@@ -86,7 +91,7 @@ def add(stub_name, force=False):
     mp.STUBS.verbose_log(True)
     mp.log.title(f"Adding $[{stub_name}] to stubs...")
     try:
-        stub = mp.STUBS.add(stub_name, force=force)
+        mp.STUBS.add(stub_name, force=force)
     except exc.StubNotFound:
         mp.log.error(f"$[{stub_name}] could not be found!")
         sys.exit(1)
