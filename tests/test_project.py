@@ -36,9 +36,11 @@ def test_project_load(mocker, shared_datadir):
     mock_mp = mocker.patch.object(project.project, 'MicroPy').return_value
     proj_path = shared_datadir / 'project_test'
     proj = project.Project.resolve(proj_path)
+    expect_custom = proj.path / '../esp32_test_stub'
     mock_mp.STUBS.add.assert_any_call("esp32-micropython-1.11.0")
     mock_mp.STUBS.add.assert_any_call("esp8266-micropython-1.11.0")
-    assert mock_mp.STUBS.add.call_count == 2
+    mock_mp.STUBS.add.assert_any_call(expect_custom)
+    assert mock_mp.STUBS.add.call_count == 3
     mock_mp.STUBS.resolve_subresource.assert_called_once_with(
         mocker.ANY, proj.data)
     assert proj.data.exists()

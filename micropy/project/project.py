@@ -34,6 +34,19 @@ class Project:
         template_log = Log.add_logger("Templater", parent=self.log)
         self.provider = TemplateProvider(log=template_log)
 
+    def _load_stubs(self, stubs):
+        """Loads stubs from info file
+
+        Args:
+            stub_list (dict): Dict of Stubs
+        """
+        for name, location in stubs.items():
+            _path = self.path / location
+            if Path(_path).exists():
+                yield self.stub_manager.add(_path)
+            else:
+                yield self.stub_manager.add(name)
+
     def load(self, **kwargs):
         """Load existing project
 
@@ -41,12 +54,12 @@ class Project:
             stubs: Project Stubs
         """
         data = json.loads(self.info_path.read_text())
-        _stubs = list(data.get("stubs"))
+        _stubs = data.get("stubs")
         self.name = data.get("name", self.name)
         self.stub_manager = kwargs.get("stub_manager", self.stub_manager)
         self.stub_manager.verbose_log(True)
         self.data.mkdir(exist_ok=True)
-        stubs = list(self.stub_manager.add(s) for s in _stubs)
+        stubs = list(self._load_stubs(_stubs))
         self.stubs = list(
             self.stub_manager.resolve_subresource(stubs, self.data))
         self.log.success(f"\nProject Ready!")
