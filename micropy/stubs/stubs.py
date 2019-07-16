@@ -246,13 +246,15 @@ class StubManager:
             return True
         return False
 
-    def add(self, location, dest=None):
+    def add(self, location, dest=None, force=False):
         """Add stub(s) from source
 
         Args:
             source (str): path to stub(s)
             dest (str, optional): path to copy stubs to.
                 Defaults to self.resource
+            force (bool, optional): overwrite existing stubs.
+                Defaults to False.
 
         Raises:
             TypeError: No resource or destination provided
@@ -263,9 +265,12 @@ class StubManager:
         dest = Path(str(_dest)).resolve()
         stubs = [s for s in self._check_existing(location) if s is not None]
         if any(stubs):
-            self.log.info(f"$[{stub}] is already installed!")
-            return stub
-        dest = Path(str(_dest)).resolve()
+            for stub in stubs:
+                if not force:
+                    self.log.info(f"$[{stub}] is already installed!")
+                    return stub
+                self.log.info(f"Uninstalling $[{stub.name}]...")
+                shutil.rmtree(stub.path)
         if self._should_recurse(location):
             return self.load_from(location, strict=False, copy_to=dest)
         self.log.info(f"Resolving source...")

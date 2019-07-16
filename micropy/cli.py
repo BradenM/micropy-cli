@@ -63,7 +63,9 @@ def init(project_name=""):
 
 @stubs.command(short_help="Add Stubs from package or path")
 @click.argument('stub_name', required=True)
-def add(stub_name):
+@click.option('-f', '--force', is_flag=True, default=False,
+              help="Overwrite Stub if it exists.")
+def add(stub_name, force=False):
     """Add Stubs from package or path
 
     \b
@@ -84,7 +86,7 @@ def add(stub_name):
     mp.STUBS.verbose_log(True)
     mp.log.title(f"Adding $[{stub_name}] to stubs...")
     try:
-        stub = mp.STUBS.add(stub_name)
+        stub = mp.STUBS.add(stub_name, force=force)
     except exc.StubNotFound:
         mp.log.error(f"$[{stub_name}] could not be found!")
         sys.exit(1)
