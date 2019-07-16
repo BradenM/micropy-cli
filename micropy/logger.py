@@ -7,7 +7,7 @@ import re
 from contextlib import contextmanager
 from pathlib import Path
 
-from click import secho, style
+import click
 
 
 class Log:
@@ -131,12 +131,25 @@ class ServiceLog:
         if not self.show_title:
             return f"{self.parent.get_service(bold=True)}"
         color = kwargs.pop('fg', self.base_color)
-        title = style(
+        title = click.style(
             f"{self.service_name}", fg=color, **kwargs)
-        title = f"{title}{style(' ', fg=color)}"
+        title = f"{title}{click.style(' ', fg=color)}"
         if self.parent is not None:
             title = f"{self.parent.get_service(bold=True)} {title}"
         return title
+
+    def iter_formatted(self, message, **kwargs):
+        """Iterate formatted message tuple into styled string
+
+        Args:
+            message (tuple): tuple as (msg, style)
+        """
+        if isinstance(message, str):
+            message, _ = self.parse_msg(message)
+        for msg in message:
+            text, mstyle = msg
+            mstyle = mstyle or kwargs
+            yield click.style(text, **mstyle)
 
     def echo(self, msg, **kwargs):
         """Prints msg to stdout
@@ -157,15 +170,21 @@ class ServiceLog:
             log_func(clean)
         if self.stdout:
             init_msg, init_style = message[0]
-            if init_msg[:1] == "\n":
-                message[0] = (init_msg[1:], init_style)
-                secho("")
-            secho(f"{service_title} ", nl=False)
-            for msg in message:
-                text, mstyle = msg
-                mstyle = mstyle or kwargs
-                mstyle['nl'] = (msg == message[-1])
-                secho(text, **mstyle)
+            first_part, nl_part, _ = init_msg.partition("\n")
+            fp_clean = first_part.encode(
+                'ascii', 'ignore').decode('unicode_escape')
+            if not fp_clean.strip() and nl_part == "\n":
+                init_msg = init_msg.replace("\n", "")
+                message[0] = (init_msg, init_style)
+                click.secho("")
+            click.secho(f"{service_title} ", nl=False)
+            post_nl = kwargs.pop('nl', None)
+            formatted = list(self.iter_formatted(message, **kwargs))
+            for msg in formatted:
+                do_nl = (msg == formatted[-1])
+                click.echo(msg, nl=do_nl)
+            if post_nl:
+                click.echo("")
 
     def info(self, msg, **kwargs):
         """Prints message with info formatting

@@ -217,8 +217,9 @@ class RemoteStubSource(StubSource):
         tmp_path = Path(tmp_dir)
         filename = utils.get_url_filename(self.location).split(".tar.gz")[0]
         outpath = tmp_path / filename
+        _file_name = "".join(self.log.iter_formatted(f"$B[{filename}]"))
         content = utils.stream_download(
-            self.location, desc=f"{self.log.get_service()} {filename}")
+            self.location, desc=f"{self.log.get_service()} {_file_name}")
         source_path = self._unpack_archive(content, outpath)
         teardown = partial(shutil.rmtree, tmp_path)
         return super().ready(path=source_path, teardown=teardown)

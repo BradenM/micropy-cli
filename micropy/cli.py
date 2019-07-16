@@ -93,8 +93,6 @@ def add(stub_name, force=False):
     except exc.StubError:
         mp.log.error(f"$[{stub_name}] is not a valid stub!")
         sys.exit(1)
-    else:
-        mp.log.success(f"{str(stub)} added!")
 
 
 @stubs.command()

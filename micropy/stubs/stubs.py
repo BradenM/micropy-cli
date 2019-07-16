@@ -90,6 +90,7 @@ class StubManager:
                     fware = self.resolve_firmware(stub)
                     stub.firmware = fware
                 self._loaded.add(stub)
+                self.log.success(f"{stub.name} added!")
                 self.log.debug(f"Loaded: {stub}")
                 return stub
 
@@ -118,7 +119,7 @@ class StubManager:
                 return None
             else:
                 self.log.success(
-                    f"{fware_name} firmware added!", nl=True)
+                    f"{fware_name} firmware added!")
                 return fware
         return fware
 
@@ -273,7 +274,7 @@ class StubManager:
                 shutil.rmtree(stub.path)
         if self._should_recurse(location):
             return self.load_from(location, strict=False, copy_to=dest)
-        self.log.info(f"Resolving source...")
+        self.log.info(f"\nResolving stub...")
         stub_source = source.get_source(location, log=self.log)
         return self._load(stub_source, copy_to=dest)
 
