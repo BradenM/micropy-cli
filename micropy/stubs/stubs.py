@@ -35,8 +35,9 @@ class StubManager:
         self.log = Log.add_logger('Stubs', stdout=False, show_title=False)
         if self.resource:
             self.load_from(resource, strict=False, skip_firmware=True)
-            for stub in self._loaded:
+            for stub in self._loaded.copy():
                 stub.firmware = self.resolve_firmware(stub)
+                self.load_from(resource, strict=False)
 
     def __iter__(self):
         return iter(self._loaded)
