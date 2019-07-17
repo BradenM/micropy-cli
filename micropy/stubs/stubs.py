@@ -44,8 +44,13 @@ class StubManager:
     def __len__(self):
         return len(self._loaded)
 
-    def iter_by_firmware(self):
-        """Iterate stubs sorted by firmware"""
+    def iter_by_firmware(self, stubs=None):
+        """Iterate stubs sorted by firmware
+
+        Args:
+            stubs ([Stub], optional): Sublist of Stubs to iterate over.
+                Defaults to None. If none, uses all installed stubs.
+        """
         for firm in self._firmware:
             stubs = [s for s in self._loaded if s.firmware == firm]
             yield (firm, stubs)

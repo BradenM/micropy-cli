@@ -24,6 +24,11 @@ def test_cli_micropy(runner):
 def test_stub_list(mock_mp_stubs, mocker, runner):
     """should list stubs"""
     mocker.patch.object(cli, "MicroPy").return_value = mock_mp_stubs
+    mock_project = mocker.patch.object(cli, "Project")
+    mock_project.resolve.return_value = mock_project.return_value
+    mock_proj = mock_project.return_value
+    mock_proj.name = "Test Project"
+    mock_proj.stubs = list(mock_mp_stubs.STUBS)[:2]
     result = runner.invoke(cli.list)
     stub_names = [str(s) for s in mock_mp_stubs.STUBS]
     assert result.exit_code == 0

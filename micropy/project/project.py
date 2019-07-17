@@ -157,11 +157,12 @@ class Project:
         return self.path.relative_to(Path.cwd())
 
     @classmethod
-    def resolve(cls, path):
+    def resolve(cls, path, verbose=True):
         """Returns project from path if it exists
 
         Args:
             path (str): Path to test
+            verbose (bool): Log to stdout. Defaults to True.
 
         Returns:
             (Project|None): Project if it exists
@@ -170,6 +171,7 @@ class Project:
         proj = cls(path)
         if proj.exists():
             micropy = MicroPy()
-            micropy.log.title(f"Loading Project")
-            proj.load(stub_manager=micropy.STUBS)
+            if verbose:
+                micropy.log.title(f"Loading Project")
+            proj.load(stub_manager=micropy.STUBS, verbose=verbose)
             return proj

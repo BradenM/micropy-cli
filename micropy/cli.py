@@ -121,14 +121,22 @@ def search(query):
 @stubs.command()
 def list():
     """List installed stubs"""
+    def print_stubs(stub_list):
+        for firm, stubs in stub_list:
+            title = str(firm).capitalize()
+            mp.log.title(f"$[{title}]:")
+            for stub in stubs:
+                mp.log.info(str(stub))
     mp = MicroPy()
     mp.log.title("Installed Stubs:")
     mp.log.info(f"Total: {len(mp.STUBS)}")
-    for firm, stubs in mp.STUBS.iter_by_firmware():
-        title = str(firm).capitalize()
-        mp.log.title(f"$[{title}]:")
-        for stub in stubs:
-            mp.log.info(str(stub))
+    print_stubs(mp.STUBS.iter_by_firmware())
+    proj = Project.resolve('.', verbose=False)
+    if proj:
+        mp.log.title(f"Stubs used in {proj.name}:")
+        mp.log.info(f"Total: {len(proj.stubs)}")
+        stubs = mp.STUBS.iter_by_firmware(stubs=proj.stubs)
+        print_stubs(stubs)
 
 
 @stubs.command(short_help="Create Stubs from Pyboard")
