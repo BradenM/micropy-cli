@@ -1,3 +1,13 @@
+<a name="v1.1.1"></a>
+### v1.1.1 (2019-07-17)
+
+
+#### Bug Fixes
+
+*   Temp Hotfix for False Stub Duplication ([49e4ad26](49e4ad26))
+
+
+
 <a name="v1.1.0"></a>
 ## v1.1.0 (2019-07-17)
 
