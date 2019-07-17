@@ -1,3 +1,27 @@
+<a name="v1.1.0"></a>
+## v1.1.0 (2019-07-17)
+
+
+#### Features
+
+* **cli:**
+  *  List Project Stubs if in Project Directory ([71eb0ce1](71eb0ce1))
+  *  Stubs now list by Firmware ([34271b9e](34271b9e))
+  *  Create Formatted Strings from Logger ([58ee3ec0](58ee3ec0))
+  *  Added --force flag when adding stubs ([618adbfc](618adbfc))
+* **project:**
+  *  Micropy Project Info File (#29) ([49420ca4](49420ca4), closes [#9](9))
+  *  Micropy Project Folder (#28) ([977ff1f8](977ff1f8))
+
+#### Bug Fixes
+
+* **cli:**
+  *  Stub List always prints Unknown ([52d20459](52d20459))
+  *  Made Stub Search Case Insensitive ([f7144c7e](f7144c7e))
+* **stubs:**  FileExistsError when adding existing Stub ([f9858f98](f9858f98))
+
+
+
 <a name="v1.0.0"></a>
 ## v1.0.0 (2019-07-11)
 
