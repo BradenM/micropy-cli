@@ -72,10 +72,11 @@ class StubRepo:
         Returns:
             [str]: List of matching results
         """
+        query = query.strip().lower()
         results = utils.search_xml(self.location, "Key")
         pkgs = [Path(p).name for p in results if self.path in p]
         pkg_names = [p.split(".tar.gz")[0] for p in pkgs]
-        results = set([p for p in pkg_names if query in p])
+        results = set([p for p in pkg_names if query in p.lower()])
         return results
 
     @classmethod
