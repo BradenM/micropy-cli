@@ -123,10 +123,11 @@ def list():
     """List installed stubs"""
     def print_stubs(stub_list):
         for firm, stubs in stub_list:
-            title = str(firm).capitalize()
-            mp.log.title(f"$[{title}]:")
-            for stub in stubs:
-                mp.log.info(str(stub))
+            if stubs:
+                title = str(firm).capitalize()
+                mp.log.title(f"$[{title}]:")
+                for stub in stubs:
+                    mp.log.info(str(stub))
     mp = MicroPy()
     mp.log.title("Installed Stubs:")
     mp.log.info(f"Total: {len(mp.STUBS)}")
