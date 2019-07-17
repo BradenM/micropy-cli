@@ -54,9 +54,34 @@ Creating a new project folder is as simple as:
 2. Selecting your target device/firmware
 3. Boom. Your workspace is ready.
 
+#### Micropy Project Environment
+
+When creating a project with `micropy-cli`, two special items are added:
+
+* A `.micropy/` folder
+* A `micropy.json` file
+
+The `.micropy/` contains symlinks from your project to your `$HOME/.micropy/stubs` folder. By doing this, micropy can reference the required stub files for your project as relative to it, rather than using absolute paths to `$HOME/.micropy`. How does this benefit you? Thanks to this feature, you can feel free to push common setting files such as `settings.json` and `.pylint.rc` to your remote git repository. This way, others who clone your repo can achieve a matching workspace in their local environment.
+
+> Note: The generated `.micropy/` folder should be *IGNORED* by your VCS. It is created locally for each environment via the `micropy.json` file.
+
+The `micropy.json` file contains information micropy needs in order to resolve your projects required files when other clone your repo. Think of it as a `package.json` for micropython.
+
+#### Cloning a Micropy Environment
+
+To setup a Micropy environment locally, simply:
+
+* Install `micropy-cli`
+* Navigate to the project directory
+* Execute `micropy`
+
+Micropy will automatically configure and install any stubs required a project thanks to its `micropy.json` file.
+
 ### Stub Management
 
 Stub files are the magic behind how micropy allows features such as linting, Intellisense, and autocompletion to work. To achieve the best results with MicropyCli, its important that you first add the appropriate stubs for the device/firmware your project uses.
+
+> Note: When working in a micropy project, all stub related commands will also be executed on the active project. (i.e if in a project and you run `micropy stubs add <stub-name>`, then that stub retrieved AND added to the active project.)
 
 #### Adding Stubs
 
