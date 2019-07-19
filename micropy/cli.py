@@ -62,7 +62,6 @@ def init(path, name=None, template=None):
     """
     mp = MicroPy()
     mp.log.title("Creating New Project")
-    print(template)
     if not path:
         path = Path.cwd()
         default_name = path.name
