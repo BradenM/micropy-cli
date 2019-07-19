@@ -1,3 +1,13 @@
+<a name="v1.1.2"></a>
+### v1.1.2 (2019-07-19)
+
+
+#### Bug Fixes
+
+* **stubs:**  Ensure Firmware Stubs Load First ([0c50d9ab](0c50d9ab))
+
+
+
 <a name="v1.1.1"></a>
 ### v1.1.1 (2019-07-17)
 
