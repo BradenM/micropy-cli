@@ -3,6 +3,7 @@
 """Module for handling jinja2 and MicroPy Templates"""
 
 import json
+from itertools import chain
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -96,7 +97,7 @@ class PylintTemplate(Template):
 
 class TemplateProvider:
     """Template Factory"""
-    _templates = {
+    _template_files = {
         'vscode': CodeTemplate,
         'pylint': PylintTemplate,
         'pymakr': "pymakr.conf",
@@ -105,8 +106,19 @@ class TemplateProvider:
     }
     ENVIRONMENT = None
     TEMPLATE_DIR = Path(__file__).parent / 'template'
+    TEMPLATES = {
+        'vscode': (['vscode'], ("VSCode Settings for "
+                                "Autocompletion/Intellisense")),
+        'pymakr': (['pymakr'], "Pymakr Configuration"),
+        'pylint': (['pylint'], "Pylint Micropython Settings"),
+        'bootstrap': (['main', 'boot'], "main.py & boot.py files")
+    }
 
-    def __init__(self, log=None):
+    def __init__(self, templates, log=None):
+        self.template_names = set(chain.from_iterable(
+            [self.TEMPLATES.get(t)[0] for t in templates]))
+        self.files = {k: v for k, v in self._template_files.items()
+                      if k in self.template_names}
         self.log = log or Log.add_logger('Templater')
         if self.__class__.ENVIRONMENT is None:
             loader = FileSystemLoader(str(self.TEMPLATE_DIR))
@@ -120,7 +132,7 @@ class TemplateProvider:
 
          :param str name: Template name to retrieve
          """
-        temp_def = self._templates.get(name)
+        temp_def = self.files.get(name)
         file_attr = getattr(temp_def, "FILENAME", None)
         filename = temp_def if file_attr is None else file_attr
         temp_cls = GenericTemplate if file_attr is None else temp_def
@@ -148,4 +160,4 @@ class TemplateProvider:
     @property
     def templates(self):
         """returns all template names"""
-        return self._templates.keys()
+        return self.files.keys()

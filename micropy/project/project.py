@@ -15,25 +15,32 @@ class Project:
 
     Args:
         path (str): Path to project
+        name (str, optional): Name of project.
+            Defaults to None. If none, path name is used.
         stubs (Stub, optional): List of Stubs to use.
             Defaults to None.
         stub_manager (StubManager, optional): StubManager to source stubs.
                 Defaults to None.
     """
 
-    def __init__(self, path, stubs=None, stub_manager=None):
+    TEMPLATES = TemplateProvider.TEMPLATES
+
+    def __init__(self, path, name=None, templates=[], stubs=None,
+                 stub_manager=None):
         self._loaded = False
         self.path = Path(path).absolute()
         self.data = self.path / '.micropy'
         self.info_path = self.path / 'micropy.json'
         self.stub_manager = stub_manager
 
-        self.name = self.path.name
+        self.name = name or self.path.name
         self.stubs = stubs
 
         self.log = Log.add_logger(self.name, show_title=False)
         template_log = Log.add_logger("Templater", parent=self.log)
-        self.provider = TemplateProvider(log=template_log)
+        self.provider = None
+        if templates:
+            self.provider = TemplateProvider(templates, log=template_log)
 
     def _load_stubs(self, stubs):
         """Loads stubs from info file
@@ -138,20 +145,23 @@ class Project:
         self.log.info("Populating Stub info...")
         for t in self.provider.templates:
             self.provider.render_to(t, self.path, **self.context)
+            _name = t.capitalize()
+            self.log.info(f"$[{_name}] template generated!")
         self.log.success("Stubs Injected!")
         return self.context
 
     def create(self):
         """creates a new project"""
-        self.log.title(f"Initiating $[{self.name}]...")
+        self.log.title(f"Initiating $[{self.name}]")
         self.data.mkdir(exist_ok=True, parents=True)
         self.stubs = list(
             self.stub_manager.resolve_subresource(self.stubs, self.data))
         self.log.info(
             f"Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
         self.log.debug(f"Generated Project Context: {self.context}")
-        self.log.info("Rendering Templates...")
-        self.render_all()
+        if self.provider:
+            self.log.title("Rendering Templates")
+            self.render_all()
         self.to_json()
         self.log.success(f"Project Created!")
         return self.path.relative_to(Path.cwd())
