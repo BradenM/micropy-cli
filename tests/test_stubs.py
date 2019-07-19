@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import shutil
 from pathlib import Path
 
 import pytest
@@ -227,3 +228,24 @@ def test_manager_resolve_subresource(mock_mp_stubs, tmp_path):
     linked_stub = list(manager)[0]
     assert linked_stub.path.is_symlink()
     assert linked_stub in list(mock_mp_stubs.STUBS)
+
+
+def test_load_firmware_first(mocker, tmp_path, shared_datadir):
+    """should always load firmware first"""
+    mock_manager = mocker.patch.object(stubs.StubManager, "_load")
+    mock_iterdir = mocker.patch.object(stubs.stubs.Path, 'iterdir')
+    # mock_mgr = mock_manager.return_value
+    tmp_path = tmp_path / 'fware_first_test'
+    tmp_resource = tmp_path / 'tmp_resource'
+    tmp_resource.mkdir(parents=True)
+    test_stub = shared_datadir / 'esp32_test_stub'
+    test_fware = shared_datadir / 'fware_test_stub'
+    # Ensure Firmware loads first, regardless of how Path.iterdir() orders it
+    shutil.copytree(test_stub, (tmp_path / '99_esp32_test_stub'))
+    shutil.copytree(test_fware, (tmp_path / '00_fware_test_stub'))
+    mock_iterdir.return_value = (test_stub, test_fware)
+    manager = stubs.StubManager(resource=tmp_resource)
+    manager.load_from(tmp_path)
+    # Get First call args
+    fargs, _ = mock_manager.call_args_list[0]
+    assert fargs[0].location == test_fware

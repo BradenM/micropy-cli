@@ -34,10 +34,7 @@ class StubManager:
         self.repos = repos
         self.log = Log.add_logger('Stubs', stdout=False, show_title=False)
         if self.resource:
-            self.load_from(resource, strict=False, skip_firmware=True)
-            for stub in self._loaded.copy():
-                stub.firmware = self.resolve_firmware(stub)
-                self.load_from(resource, strict=False)
+            self.load_from(resource, strict=False)
 
     def __iter__(self):
         return iter(self._loaded)
@@ -70,15 +67,13 @@ class StubManager:
         self.log.stdout = state
         return state
 
-    def _load(self, stub_source, strict=True, skip_firmware=False, **kwargs):
+    def _load(self, stub_source, strict=True, **kwargs):
         """Loads a stub into StubManager
 
         Args:
             stub_source (StubSource): Stub Source Instance
             strict (bool, optional): Raise Exception if stub fails to resolve.
                 Defaults to True.
-            skip_firmware (bool, optional): Skip firmware resolution.
-                Defaults to False
 
         Raises:
             e: Exception raised by resolving failure
@@ -100,9 +95,8 @@ class StubManager:
                     self.log.debug(f"Firmware Loaded: {fware}")
                     return fware
                 stub = stub_type(src_path, **kwargs)
-                if not skip_firmware:
-                    fware = self.resolve_firmware(stub)
-                    stub.firmware = fware
+                fware = self.resolve_firmware(stub)
+                stub.firmware = fware
                 self._loaded.add(stub)
                 self.log.success(f"{stub.name} added!")
                 self.log.debug(f"Loaded: {stub}")
@@ -235,8 +229,16 @@ class StubManager:
         """
         dir_path = Path(str(directory)).resolve()
         dirs = dir_path.iterdir()
-        stubs = [self._load(source.get_source(d), *args, **kwargs)
-                 for d in dirs]
+        sources = [source.get_source(d) for d in dirs]
+        stubs = []
+        for stub in sources.copy():
+            if self.is_valid(stub.location):
+                stub_type = self._get_stubtype(stub.location)
+                if stub_type is FirmwareStub:
+                    sources.remove(stub)
+                    self._load(stub, *args, **kwargs)
+        stubs.extend([self._load(s, *args, **kwargs)
+                      for s in sources])
         return stubs
 
     def _should_recurse(self, location):
