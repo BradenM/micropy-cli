@@ -108,7 +108,7 @@ class ServiceLog:
             sindex = _parts.index(w[1])
             parts[sindex] = (w[1], special)
             clean = msg.replace(f"${w[0]}[{w[1]}]", w[1])
-        clean = clean.encode('ascii', 'ignore').decode('unicode_escape')
+        clean = clean.encode('ascii', 'ignore').decode('utf-8')
         return (parts, clean)
 
     def get_parents(self, names=[]):
