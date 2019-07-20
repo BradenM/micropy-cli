@@ -10,7 +10,8 @@ def test_project_init(mock_mp_stubs, mock_cwd):
     """Test project setup"""
     mp = mock_mp_stubs
     proj_stubs = list(mp.STUBS)[:2]
-    proj = project.Project("ProjName", stubs=proj_stubs)
+    proj_path = mock_cwd / "ProjName"
+    proj = project.Project(proj_path, stubs=proj_stubs)
     assert proj.path == mock_cwd / 'ProjName'
     assert proj.name == 'ProjName'
 
@@ -19,7 +20,8 @@ def test_project_structure(mock_mp_stubs, mock_cwd):
     """Test if project creates files"""
     mp = mock_mp_stubs
     proj_stubs = list(mp.STUBS)[:2]
-    proj = project.Project("ProjName", stubs=proj_stubs,
+    proj_path = mock_cwd / "ProjName"
+    proj = project.Project(proj_path, stubs=proj_stubs,
                            stub_manager=mp.STUBS)
     proj.create()
     templ_files = [i.name for i in (

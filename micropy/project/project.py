@@ -23,7 +23,7 @@ class Project:
 
     def __init__(self, path, stubs=None, stub_manager=None):
         self._loaded = False
-        self.path = Path(path).resolve()
+        self.path = Path(path).absolute()
         self.data = self.path / '.micropy'
         self.info_path = self.path / 'micropy.json'
         self.stub_manager = stub_manager
