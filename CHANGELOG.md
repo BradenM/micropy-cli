@@ -1,3 +1,14 @@
+<a name="v1.1.3"></a>
+### v1.1.3 (2019-07-20)
+
+
+#### Bug Fixes
+
+*   ValueError raised after Creating Project in Windows (#33) ([ac1c0f73](ac1c0f73))
+*   Unicode Error raised when logging on Windows (#32) ([2eb5a456](2eb5a456), closes [#31](31))
+
+
+
 <a name="v1.1.2"></a>
 ### v1.1.2 (2019-07-19)
 
