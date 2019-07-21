@@ -21,7 +21,7 @@ def stub_context(mock_mp_stubs):
 
 def test_vscode_template(stub_context, shared_datadir, tmp_path):
     stubs, paths, ctx_paths = stub_context
-    prov = TemplateProvider()
+    prov = TemplateProvider(['vscode'])
     ctx_datadir = tmp_path / 'ctx_cata'
     ctx_datadir.mkdir(exist_ok=True)
     prov.render_to('vscode', tmp_path, stubs=stubs,
@@ -47,7 +47,7 @@ def test_pylint_template(stub_context, tmp_path):
     stubs, paths, ctx_paths = stub_context
     ctx_datadir = tmp_path / 'ctx_cata'
     ctx_datadir.mkdir(exist_ok=True)
-    prov = TemplateProvider()
+    prov = TemplateProvider(['pylint'])
     prov.render_to("pylint", tmp_path, stubs=stubs,
                    paths=ctx_paths, datadir=ctx_datadir)
     expected_path = tmp_path / '.pylintrc'
@@ -63,7 +63,7 @@ def test_pylint_template(stub_context, tmp_path):
 
 
 def test_generic_template(mock_mp_stubs, tmp_path):
-    prov = TemplateProvider()
+    prov = TemplateProvider(['bootstrap', 'pymakr'])
     prov.render_to('boot', tmp_path)
     expected_path = tmp_path / 'src' / 'boot.py'
     assert expected_path.exists()

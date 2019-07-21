@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from pathlib import Path
+
 import pytest
 from click.testing import CliRunner
 
@@ -51,11 +53,18 @@ def test_cli_init(mocker, mock_micropy, shared_datadir, mock_prompt, runner):
     result = runner.invoke(cli.init, ["TestProject"])
     assert result.exit_code == 1
     mock_micropy.STUBS = ["stub"]
-    result = runner.invoke(cli.init, ["TestProject"])
+    result = runner.invoke(cli.init, ["TestProject", "-t", "vscode"])
     mock_project.assert_called_once_with(
-        "TestProject", stubs=["stub"], stub_manager=mock_micropy.STUBS)
+        "TestProject", stubs=["stub"], stub_manager=mock_micropy.STUBS,
+        name=None, templates=('vscode', ))
     mock_project.return_value.create.assert_called_once()
     assert result.exit_code == 0
+    ptext_mock = mocker.patch.object(cli.prompt, 'text').return_value
+    ptext_mock.ask.return_value = "ProjectName"
+    result = runner.invoke(cli.init, ["-t", "vscode"])
+    mock_project.assert_called_with(
+        Path.cwd(), stubs=["stub"], stub_manager=mock_micropy.STUBS,
+        name="ProjectName", templates=('vscode', ))
 
 
 def test_cli_stubs_add(mocker, mock_micropy, shared_datadir,

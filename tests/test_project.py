@@ -21,7 +21,8 @@ def test_project_structure(mock_mp_stubs, mock_cwd):
     mp = mock_mp_stubs
     proj_stubs = list(mp.STUBS)[:2]
     proj_path = mock_cwd / "ProjName"
-    proj = project.Project(proj_path, stubs=proj_stubs,
+    templates = ['vscode', 'pylint', 'bootstrap', 'pymakr']
+    proj = project.Project(proj_path, templates=templates, stubs=proj_stubs,
                            stub_manager=mp.STUBS)
     proj.create()
     templ_files = [i.name for i in (

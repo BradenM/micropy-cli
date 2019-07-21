@@ -3,6 +3,7 @@
 
 """MicropyCli Console Entrypoint"""
 import sys
+from pathlib import Path
 
 import click
 import questionary as prompt
@@ -43,8 +44,16 @@ def stubs():
 
 
 @cli.command(short_help="Create new Micropython Project")
-@click.argument('project_name', required=True)
-def init(project_name=""):
+@click.argument('path', required=False, default=None)
+@click.option('--name', '-n', required=False, default=None,
+              help="Project Name. Defaults to Path name.")
+@click.option('--template', '-t',
+              type=click.Choice(Project.TEMPLATES.keys()),
+              multiple=True,
+              required=False,
+              help=("Templates to generate for project."
+                    " Multiple options can be passed."))
+def init(path, name=None, template=None):
     """Create new Micropython Project
 
     \b
@@ -53,6 +62,16 @@ def init(project_name=""):
     """
     mp = MicroPy()
     mp.log.title("Creating New Project")
+    if not path:
+        path = Path.cwd()
+        default_name = path.name
+        prompt_name = prompt.text("Project Name", default=default_name).ask()
+        name = prompt_name.strip()
+    if not template:
+        templ_choices = [Choice(str(val[1]), value=t)
+                         for t, val in Project.TEMPLATES.items()]
+        template = prompt.checkbox(
+            f"Choose any Templates to Generate", choices=templ_choices).ask()
     stubs = [Choice(str(s), value=s) for s in mp.STUBS]
     if not stubs:
         mp.log.error("You don't have any stubs!")
@@ -60,8 +79,12 @@ def init(project_name=""):
             "To add stubs to micropy, use $[micropy stubs add <STUB_NAME>]")
         sys.exit(1)
     stub_choices = prompt.checkbox(
-        "Which stubs would you like to use?", choices=stubs).ask()
-    project = Project(project_name, stubs=stub_choices, stub_manager=mp.STUBS)
+        f"Which stubs would you like to use?", choices=stubs).ask()
+    project = Project(path,
+                      name=name,
+                      templates=template,
+                      stubs=stub_choices,
+                      stub_manager=mp.STUBS)
     proj_relative = project.create()
     mp.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 
