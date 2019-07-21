@@ -16,10 +16,12 @@ from requests import exceptions as reqexc
 from requests import utils as requtil
 from tqdm import tqdm
 
+from micropy.lib.stubber.runOnPc import make_stub_files as stubgen
+
 __all__ = ["is_url", "get_url_filename",
            "ensure_existing_dir", "ensure_valid_url",
            "is_downloadable", "is_existing_dir",
-           "stream_download", "search_xml"]
+           "stream_download", "search_xml", "generate_stub"]
 
 
 def is_url(url):
@@ -183,3 +185,33 @@ def search_xml(url, node):
     _results = root.findall(f"./*/ns:{node}", namespace)
     results = [k.text for k in _results]
     return results
+
+
+def generate_stub(path, log_func=None):
+    """Create Stub from local .py file.
+
+    Args:
+        path (str): Path to file
+        log_func (func, optional): Callback function for logging.
+            Defaults to None.
+
+    Returns:
+        tuple: Tuple of file path and generated stub path.
+    """
+    mod_path = Path(stubgen.__file__).parent
+    # Monkeypatch print to prevent or wrap output
+    stubgen.print = lambda *args: None
+    if log_func:
+        stubgen.print = log_func
+    cfg_path = (mod_path / 'make_stub_files.cfg').absolute()
+    ctrl = stubgen.StandAloneMakeStubFile()
+    ctrl.update_flag = True
+    ctrl.config_fn = str(cfg_path)
+    file_path = Path(path).absolute()
+    stubbed_path = file_path.with_suffix('.pyi')
+    ctrl.files = [file_path]
+    ctrl.silent = True
+    ctrl.scan_options()
+    ctrl.run()
+    files = (file_path, stubbed_path)
+    return files

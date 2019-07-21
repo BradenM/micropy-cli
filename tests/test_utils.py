@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 import pytest
 import requests
 from jsonschema import ValidationError
@@ -113,3 +114,18 @@ def test_search_xml(mocker, shared_datadir, test_urls):
         "packages/esp32-micropython-1.10.0.tar.gz",
         "packages/esp32-micropython-1.11.0.tar.gz"
     ])
+
+
+def test_generate_stub(shared_datadir, tmp_path, mocker):
+    mock_stubber = mocker.patch.object(
+        utils.helpers.stubgen, 'StandAloneMakeStubFile').return_value
+    expect_path = tmp_path / 'foo.py'
+    expect_path.touch()
+    result = utils.generate_stub(expect_path)
+    mock_stubber.run.assert_called_once()
+    assert result == (expect_path, expect_path.with_suffix('.pyi'))
+    # Test print monkeypatch
+    print_mock = mocker.Mock(return_value=None)
+    result = utils.generate_stub(expect_path, log_func=print_mock)
+    utils.helpers.stubgen.print("hi")
+    assert print_mock.call_count >= 1
