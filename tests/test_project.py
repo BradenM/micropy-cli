@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import shutil
+from pathlib import Path
 
 from micropy import project
 from micropy.project.template import TemplateProvider
@@ -39,6 +40,12 @@ def test_project_structure(mock_mp_stubs, mock_cwd):
 
 def test_project_load(mocker, shared_datadir):
     mock_mp = mocker.patch.object(project.project, 'MicroPy').return_value
+    mock_utils = mocker.patch.object(project.project, 'utils')
+    mock_shutil = mocker.patch.object(project.project, 'shutil')
+    mock_utils.extract_tarbytes.return_value.rglob.return_value = (
+        Path("foobar.py"), Path("setup.py"))
+    mock_utils.generate_stub.return_value = (Path(
+        "foobar.py"), Path("foobar.pyi"))
     proj_path = shared_datadir / 'project_test'
     proj = project.Project.resolve(proj_path)
     expect_custom = proj.path / '../esp32_test_stub'
@@ -49,11 +56,15 @@ def test_project_load(mocker, shared_datadir):
     mock_mp.STUBS.resolve_subresource.assert_called_once_with(
         mocker.ANY, proj.data)
     assert proj.data.exists()
+    assert mock_shutil.copy2.call_count == 2
+    mock_shutil.copy2.assert_called_with(
+        Path("foobar.pyi"), (proj.pkg_data / "foobar.pyi"))
 
 
 def test_project_add_stub(mocker, shared_datadir, tmp_path):
     """should add stub to project"""
     mock_mp = mocker.patch.object(project.project, 'MicroPy').return_value
+    mocker.patch.object(project.project, 'utils')
     proj_path = tmp_path / 'tmp_project'
     shutil.copytree((shared_datadir / 'project_test'), proj_path)
     # Test Loaded
