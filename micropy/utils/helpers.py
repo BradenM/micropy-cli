@@ -8,6 +8,8 @@ This module contains generic utility helpers
 used by MicropyCli
 """
 
+import io
+import tarfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -21,7 +23,9 @@ from micropy.lib.stubber.runOnPc import make_stub_files as stubgen
 __all__ = ["is_url", "get_url_filename",
            "ensure_existing_dir", "ensure_valid_url",
            "is_downloadable", "is_existing_dir",
-           "stream_download", "search_xml", "generate_stub"]
+           "stream_download", "search_xml",
+           "generate_stub", "get_package_meta",
+           "extract_tarbytes"]
 
 
 def is_url(url):
@@ -215,3 +219,43 @@ def generate_stub(path, log_func=None):
     ctrl.run()
     files = (file_path, stubbed_path)
     return files
+
+
+def get_package_meta(name, spec=None):
+    """Retrieve package metadata from PyPi
+
+    Args:
+        name (str): Name of Package
+        spec (str, optional): Optional version spec.
+            Defaults to None. If none, returns latest.
+
+    Returns:
+        dict: Dictionary of Metadata
+    """
+    url = f"https://pypi.org/pypi/{name}/json"
+    resp = requests.get(url)
+    data = resp.json()
+    releases = data['releases']
+    # Latest version
+    spec_data = list(releases.items())[-1][1]
+    if spec and spec != '*':
+        spec_data = releases[spec]
+    # Find .tar.gz meta
+    tar_meta = next((i for i in spec_data if ".tar.gz" in Path(i['url']).name))
+    return tar_meta
+
+
+def extract_tarbytes(file_bytes, path):
+    """Extract tarfile as bytes
+
+    Args:
+        file_bytes (bytearray): Bytes of file to extract
+        path (str): Path to extract it to
+
+    Returns:
+        path: destination path
+    """
+    tar_bytes_obj = io.BytesIO(file_bytes)
+    with tarfile.open(fileobj=tar_bytes_obj, mode="r:gz") as tar:
+        tar.extractall(path)
+    return path
