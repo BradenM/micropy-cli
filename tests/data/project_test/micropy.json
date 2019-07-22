@@ -4,5 +4,11 @@
         "esp32-micropython-1.11.0": "1.2.0",
         "esp8266-micropython-1.11.0": "1.2.0",
         "custom-stub": "../esp32_test_stub"
+    },
+    "packages": {
+        "some_pkg": "*"
+    },
+    "dev-packages": {
+        "dev_pkg": "*"
     }
 }

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+import io
+
 import pytest
 import requests
 from jsonschema import ValidationError
@@ -129,3 +131,48 @@ def test_generate_stub(shared_datadir, tmp_path, mocker):
     result = utils.generate_stub(expect_path, log_func=print_mock)
     utils.helpers.stubgen.print("hi")
     assert print_mock.call_count >= 1
+
+
+def test_get_package_meta(mocker):
+    """should get package meta"""
+    mock_req = mocker.patch.object(utils.helpers, 'requests')
+    mock_data = {
+        "releases": {
+            "0.0.0": [
+                {
+                    "url": "early-version.tar.gz"
+                }
+            ],
+            "0.1.0":  [
+                {
+                    "url": "do-not-return-me",
+                },
+                {
+                    "url": "return-me.tar.gz"
+                }
+            ],
+        }
+    }
+    mock_req.get.return_value.json.return_value = mock_data
+    result = utils.get_package_meta("foobar")
+    assert result == {
+        "url": "return-me.tar.gz"
+    }
+    mock_req.get.assert_called_once_with("https://pypi.org/pypi/foobar/json")
+    result = utils.get_package_meta("foobar", spec="0.0.0")
+    assert result == {
+        "url": "early-version.tar.gz"
+    }
+
+
+def test_extract_tarbytes(mocker):
+    """should extract tar file from memory"""
+    test_bytes = bytearray("foobar", "utf-8")
+    mock_io = mocker.patch.object(utils.helpers.io, "BytesIO")
+    mock_io.return_value = io.BytesIO(test_bytes)
+    mock_tarfile = mocker.patch.object(utils.helpers, 'tarfile')
+    mock_tar = mock_tarfile.open.return_value.__enter__.return_value
+    utils.extract_tarbytes(test_bytes, "foobar")
+    mock_tarfile.open.assert_called_once_with(
+        fileobj=io.BytesIO(test_bytes), mode="r:gz")
+    mock_tar.extractall.assert_called_once_with("foobar")
