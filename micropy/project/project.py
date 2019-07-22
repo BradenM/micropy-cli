@@ -3,8 +3,11 @@
 """Hosts functionality relating to generation of user projects."""
 
 import json
+import shutil
+import tempfile
 from pathlib import Path
 
+from micropy import utils
 from micropy.logger import Log
 from micropy.main import MicroPy
 from micropy.project.template import TemplateProvider
@@ -30,17 +33,51 @@ class Project:
         self._loaded = False
         self.path = Path(path).absolute()
         self.data = self.path / '.micropy'
+        self.cache = self.data / '.cache'
         self.info_path = self.path / 'micropy.json'
         self.stub_manager = stub_manager
 
         self.name = name or self.path.name
         self.stubs = stubs
 
+        self.packages = {}
+        self.dev_packages = {}
+        self.pkg_data = self.data / self.name
+
         self.log = Log.add_logger(self.name, show_title=False)
         template_log = Log.add_logger("Templater", parent=self.log)
         self.provider = None
         if templates:
             self.provider = TemplateProvider(templates, log=template_log)
+
+    def _set_cache(self, key, value):
+        """Set key in Project cache
+
+        Args:
+            key (str): Key to set
+            value (obj): Value to set
+        """
+        if not self.cache.exists():
+            self.cache.write_text("{}")
+        data = json.loads(self.cache.read_text())
+        data[key] = value
+        with self.cache.open('w+') as f:
+            json.dump(data, f)
+
+    def _get_cache(self, key):
+        """Retrieve value from Project Cache
+
+        Args:
+            key (str): Key to retrieve
+
+        Returns:
+            obj: Value at key
+        """
+        if not self.cache.exists():
+            return None
+        data = json.loads(self.cache.read_text())
+        value = data.pop(key, None)
+        return value
 
     def _load_stubs(self, stubs):
         """Loads stubs from info file
@@ -55,6 +92,42 @@ class Project:
             else:
                 yield self.stub_manager.add(name)
 
+    def _fetch_package(self, url):
+        """Fetch and stub package at url
+
+        Args:
+            url (str): URL to fetch
+
+        Returns:
+            Path: path to package
+        """
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            content = utils.stream_download(url)
+            pkg_path = utils.extract_tarbytes(content, tmp_path)
+            ignore = ['setup.py', '__', 'test_']
+            py_files = [f for f in pkg_path.rglob(
+                "*.py") if not any(i in f.name for i in ignore)]
+            stubs = [utils.generate_stub(f) for f in py_files]
+            for file, stub in stubs:
+                shutil.copy2(file, (self.pkg_data / file.name))
+                shutil.copy2(stub, (self.pkg_data / stub.name))
+
+    def load_packages(self):
+        """Retrieves and stubs project requirements"""
+        pkg_keys = set(self.packages.keys())
+        pkg_cache = self._get_cache('pkg_loaded')
+        new_pkgs = pkg_keys.copy()
+        if pkg_cache:
+            new_pkgs = new_pkgs - set(pkg_cache)
+        pkgs = [(name, s)
+                for name, s in self.packages.items() if name in new_pkgs]
+        for name, spec in pkgs:
+            meta = utils.get_package_meta(name, spec=spec)
+            tar_url = meta['url']
+            self._fetch_package(tar_url)
+        self._set_cache('pkg_loaded', list(pkg_keys))
+
     def load(self, verbose=True, **kwargs):
         """Load existing project
 
@@ -67,6 +140,8 @@ class Project:
         data = json.loads(self.info_path.read_text())
         _stubs = data.get("stubs")
         self.name = data.get("name", self.name)
+        self.packages = data.get("packages", self.packages)
+        self.dev_packages = data.get("dev-packages", self.packages)
         self.stubs = kwargs.get('stubs', self.stubs)
         self.stub_manager = kwargs.get("stub_manager", self.stub_manager)
         self.stub_manager.verbose_log(verbose)
@@ -76,6 +151,8 @@ class Project:
             stubs.extend(self.stubs)
         self.stubs = set(
             self.stub_manager.resolve_subresource(stubs, self.data))
+        self.pkg_data.mkdir(exist_ok=True)
+        self.load_packages()
         self._loaded = True
         if verbose:
             self.log.success(f"\nProject Ready!")
@@ -122,7 +199,7 @@ class Project:
         return {
             "stubs": self.stubs,
             "paths": paths,
-            "datadir": self.data
+            "datadir": self.data,
         }
 
     @property
@@ -132,6 +209,8 @@ class Project:
         return {
             "name": self.name,
             "stubs": stubs,
+            "packages": self.packages,
+            "dev-packages": self.dev_packages
         }
 
     def to_json(self):
