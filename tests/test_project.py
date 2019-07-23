@@ -80,3 +80,29 @@ def test_project_add_stub(mocker, shared_datadir, tmp_path):
     mock_mp.STUBS.resolve_subresource.assert_called_with(
         [mocker.ANY, mocker.ANY, mocker.ANY, "mock_stub"], proj.data)
     assert mock_mp.STUBS.resolve_subresource.call_count == 3
+
+
+def test_project_add_pkg(mocker, shared_datadir, tmp_path):
+    """should add package to requirements"""
+    mock_mp = mocker.patch.object(project.project, "MicroPy").return_value
+    mocker.patch.object(project.project, 'utils')
+    proj_path = tmp_path / 'tmp_project'
+    shutil.copytree((shared_datadir / 'project_test'), proj_path)
+    proj = project.Project.resolve(proj_path)
+    proj.add_package('mock_pkg')
+    assert proj.packages['mock_pkg'] == "*"
+    assert proj.add_package('mock_pkg') is None
+    # Test dev
+    proj.add_package('another_pkg==1.0.0', dev=True)
+    assert proj.dev_packages['another_pkg'] == '==1.0.0'
+    # Test Context
+    expect_proj_stubs = proj_path / '.micropy' / "NewProject"
+    mock_manager = mock_mp.STUBS
+    mock_manager.resolve_subresource.return_value = [mocker.MagicMock()]
+    mock_update = mocker.patch.object(
+        project.project.TemplateProvider, 'update')
+    proj = project.Project(
+        proj_path, stub_manager=mock_manager, name="NewProject")
+    proj.load()
+    assert expect_proj_stubs in proj.context['paths']
+    mock_update.assert_called_with('vscode', proj.path, **proj.context)

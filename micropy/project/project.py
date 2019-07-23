@@ -109,7 +109,10 @@ class Project:
         """
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
-            content = utils.stream_download(url)
+            file_name = utils.get_url_filename(url)
+            _file_name = "".join(self.log.iter_formatted(f"$B[{file_name}]"))
+            content = utils.stream_download(
+                url, desc=f"{self.log.get_service()} {_file_name}")
             pkg_path = utils.extract_tarbytes(content, tmp_path)
             ignore = ['setup.py', '__', 'test_']
             py_files = [f for f in pkg_path.rglob(
@@ -187,6 +190,29 @@ class Project:
             f"Project Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
         self.log.success("\nProject Updated!")
         return self.stubs
+
+    def add_package(self, package, dev=False):
+        """Add requirement to project
+
+        Args:
+            package (str): package name/spec
+            dev (bool, optional): Flag requirement as dev. Defaults to False.
+
+        Returns:
+            dict: Dictionary of packages
+        """
+        pkg = next(requirements.parse(package))
+        self.log.info(f"Adding $[{pkg.name}] to requirements...")
+        packages = self.dev_packages if dev else self.packages
+        if packages.get(pkg.name, None):
+            self.log.error(f"$[{package}] is already installed!")
+            return None
+        specs = "".join(next(iter(pkg.specs))) if pkg.specs else "*"
+        packages[pkg.name] = specs
+        self.to_json()
+        self.load_packages()
+        self.log.success("Package installed!")
+        return packages
 
     def exists(self):
         """Whether this project exists

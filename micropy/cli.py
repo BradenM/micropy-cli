@@ -89,6 +89,39 @@ def init(path, name=None, template=None):
     mp.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 
 
+@cli.command(short_help="Install Project Requirements")
+@click.argument('packages', nargs=-1)
+@click.option('-d', '--dev', is_flag=True, default=False,
+              help=("Adds Package to dev requirements,"
+                    " but does not install stubs for it."))
+def install(packages, dev=False):
+    """Install Packages as Project Requirements
+
+    \b
+    Installing a package via micropy will stub it, enabling
+    intellisense, autocompletion, and linting for it.
+
+    \b
+    If the --dev flag is passed, then the packages are only
+    added to micropy.json. They are not stubbed.
+
+    \b
+    You can import installed packages just as you would
+    on your actual device:
+        \b
+        # main.py
+        import <package_name>
+    """
+    mp = MicroPy()
+    project = Project.resolve('.')
+    if not project:
+        mp.log.error("You are not currently in an active project!")
+        sys.exit(1)
+    mp.log.title("Installing Packages")
+    for pkg in packages:
+        project.add_package(pkg, dev=dev)
+
+
 @stubs.command(short_help="Add Stubs from package or path")
 @click.argument('stub_name', required=True)
 @click.option('-f', '--force', is_flag=True, default=False,

@@ -32,3 +32,4 @@ colorama = {version = "*",sys_platform = "== 'win32'"}
 jinja2 = "*"
 requests = "*"
 tqdm = "*"
+requirements-parser = "*"
