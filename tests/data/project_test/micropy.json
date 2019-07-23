@@ -5,6 +5,9 @@
         "esp8266-micropython-1.11.0": "1.2.0",
         "custom-stub": "../esp32_test_stub"
     },
+    "config": {
+        "vscode": true
+    },
     "packages": {
         "some_pkg": "*"
     },

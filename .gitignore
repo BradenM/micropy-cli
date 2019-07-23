@@ -129,3 +129,4 @@ dmypy.json
 .vscode
 !micropy/project/template/**/*
 !micropy/lib
+!tests/data/project_test/**/*

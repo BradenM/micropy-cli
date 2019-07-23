@@ -1,0 +1,31 @@
+{
+    "python.linting.enabled": true,
+
+    // Loaded Stubs:  esp32-micropython-1.11.0  esp8266-micropython-1.11.0
+    "python.autoComplete.extraPaths": [
+        "${workspaceRoot}/.micropy/micropython/frozen",
+        "${workspaceRoot}/.micropy/micropython/frozen",
+        "${workspaceRoot}/.micropy/esp32-micropython-1.11.0/frozen",
+        "${workspaceRoot}/.micropy/esp8266-micropython-1.11.0/frozen",
+        "${workspaceRoot}/.micropy/esp32-micropython-1.11.0/stubs",
+        "${workspaceRoot}/.micropy/esp8266-micropython-1.11.0/stubs"
+    ],
+    "python.autoComplete.typeshedPaths": [
+        "${workspaceRoot}/.micropy/micropython/frozen",
+        "${workspaceRoot}/.micropy/micropython/frozen",
+        "${workspaceRoot}/.micropy/esp32-micropython-1.11.0/frozen",
+        "${workspaceRoot}/.micropy/esp8266-micropython-1.11.0/frozen",
+        "${workspaceRoot}/.micropy/esp32-micropython-1.11.0/stubs",
+        "${workspaceRoot}/.micropy/esp8266-micropython-1.11.0/stubs"
+    ],
+    "python.analysis.typeshedPaths": [
+        "${workspaceRoot}/.micropy/micropython/frozen",
+        "${workspaceRoot}/.micropy/micropython/frozen",
+        "${workspaceRoot}/.micropy/esp32-micropython-1.11.0/frozen",
+        "${workspaceRoot}/.micropy/esp8266-micropython-1.11.0/frozen",
+        "${workspaceRoot}/.micropy/esp32-micropython-1.11.0/stubs",
+        "${workspaceRoot}/.micropy/esp8266-micropython-1.11.0/stubs"
+    ],
+
+    "python.linting.pylintEnabled": true
+}
