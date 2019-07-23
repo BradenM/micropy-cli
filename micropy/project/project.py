@@ -7,6 +7,8 @@ import shutil
 import tempfile
 from pathlib import Path
 
+import requirements
+
 from micropy import utils
 from micropy.logger import Log
 from micropy.main import MicroPy
@@ -44,10 +46,14 @@ class Project:
         self.dev_packages = {}
         self.pkg_data = self.data / self.name
 
+        self.config = {'vscode': False, 'pylint': False}
         self.log = Log.add_logger(self.name, show_title=False)
         template_log = Log.add_logger("Templater", parent=self.log)
         self.provider = None
         if templates:
+            for key in self.config:
+                if key in templates:
+                    self.config[key] = True
             self.provider = TemplateProvider(templates, log=template_log)
 
     def _set_cache(self, key, value):
@@ -126,6 +132,7 @@ class Project:
             meta = utils.get_package_meta(name, spec=spec)
             tar_url = meta['url']
             self._fetch_package(tar_url)
+        self.update_all()
         self._set_cache('pkg_loaded', list(pkg_keys))
 
     def load(self, verbose=True, **kwargs):
@@ -140,6 +147,9 @@ class Project:
         data = json.loads(self.info_path.read_text())
         _stubs = data.get("stubs")
         self.name = data.get("name", self.name)
+        self.config = data.get("config", self.config)
+        templates = [k for k, v in self.config.items() if v]
+        self.provider = TemplateProvider(templates)
         self.packages = data.get("packages", self.packages)
         self.dev_packages = data.get("dev-packages", self.packages)
         self.stubs = kwargs.get('stubs', self.stubs)
@@ -196,6 +206,8 @@ class Project:
                           for s in self.stubs if s.firmware is not None]
             stub_paths = [s.stubs for s in self.stubs]
             paths = [*fware_mods, *frozen, *stub_paths]
+            if self.pkg_data.exists():
+                paths.append(self.pkg_data)
         return {
             "stubs": self.stubs,
             "paths": paths,
@@ -209,6 +221,7 @@ class Project:
         return {
             "name": self.name,
             "stubs": stubs,
+            "config": self.config,
             "packages": self.packages,
             "dev-packages": self.dev_packages
         }
@@ -216,7 +229,7 @@ class Project:
     def to_json(self):
         """Dumps project to data file"""
         with self.info_path.open('w+') as f:
-            data = json.dumps(self.info)
+            data = json.dumps(self.info, indent=4)
             f.write(data)
 
     def render_all(self):
@@ -227,6 +240,12 @@ class Project:
             _name = t.capitalize()
             self.log.info(f"$[{_name}] template generated!")
         self.log.success("Stubs Injected!")
+        return self.context
+
+    def update_all(self):
+        """Updates all project files"""
+        for t in self.provider.templates:
+            self.provider.update(t, self.path, **self.context)
         return self.context
 
     def create(self):
