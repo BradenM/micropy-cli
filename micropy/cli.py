@@ -102,6 +102,10 @@ def install(packages, dev=False):
     intellisense, autocompletion, and linting for it.
 
     \b
+    If no packages are passed and a requirements.txt file is found,
+    then micropy will install all packages listed in it.
+
+    \b
     If the --dev flag is passed, then the packages are only
     added to micropy.json. They are not stubbed.
 
@@ -117,6 +121,14 @@ def install(packages, dev=False):
     if not project:
         mp.log.error("You are not currently in an active project!")
         sys.exit(1)
+    if not packages:
+        mp.log.title("Installing all Requirements")
+        reqs = project.add_from_requirements()
+        if not reqs:
+            mp.log.error("No requirements.txt file found!")
+            sys.exit(1)
+        mp.log.success("\nRequirements Installed!")
+        sys.exit(0)
     mp.log.title("Installing Packages")
     for pkg in packages:
         project.add_package(pkg, dev=dev)
