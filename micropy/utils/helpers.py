@@ -14,6 +14,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import requests
+import requirements
+from packaging import version
 from requests import exceptions as reqexc
 from requests import utils as requtil
 from tqdm import tqdm
@@ -25,7 +27,7 @@ __all__ = ["is_url", "get_url_filename",
            "is_downloadable", "is_existing_dir",
            "stream_download", "search_xml",
            "generate_stub", "get_package_meta",
-           "extract_tarbytes"]
+           "extract_tarbytes", "iter_requirements"]
 
 
 def is_url(url):
@@ -221,6 +223,18 @@ def generate_stub(path, log_func=None):
     return files
 
 
+def iter_requirements(path):
+    """Iterate requirements from a requirements.txt file
+
+    Args:
+        path (str): path to file
+    """
+    req_path = Path(path).absolute()
+    with req_path.open('r') as rfile:
+        for req in requirements.parse(rfile):
+            yield req
+
+
 def get_package_meta(name, spec=None):
     """Retrieve package metadata from PyPi
 
@@ -232,14 +246,25 @@ def get_package_meta(name, spec=None):
     Returns:
         dict: Dictionary of Metadata
     """
+    def _iter_compare(in_val, comp_to, operator):
+        for t in comp_to:
+            state = eval(f"in_val {operator} t")
+            if state:
+                yield t
     url = f"https://pypi.org/pypi/{name}/json"
     resp = requests.get(url)
     data = resp.json()
+    pkg_name = f"{name}{spec}" if spec and spec != "*" else name
+    pkg = next(requirements.parse(pkg_name))
     releases = data['releases']
     # Latest version
     spec_data = list(releases.items())[-1][1]
-    if spec and spec != '*':
-        spec_data = releases[spec]
+    if pkg.specs and spec != '*':
+        spec_comp, spec_v = pkg.specs[0]
+        spec_v = version.parse(spec_v)
+        rel_versions = [version.parse(k) for k in releases.keys()]
+        spec_key = str(next(_iter_compare(spec_v, rel_versions, spec_comp)))
+        spec_data = releases[spec_key]
     # Find .tar.gz meta
     tar_meta = next((i for i in spec_data if ".tar.gz" in Path(i['url']).name))
     return tar_meta

@@ -42,6 +42,8 @@ class Project:
         self.name = name or self.path.name
         self.stubs = stubs
 
+        self.requirements = self.path / 'requirements.txt'
+        self.dev_requirements = self.path / 'dev-requirements.txt'
         self.packages = {}
         self.dev_packages = {}
         self.pkg_data = self.data / self.name
@@ -220,6 +222,33 @@ class Project:
         self.load_packages()
         self.log.success("Package installed!")
         return packages
+
+    def _add_pkgs_from_file(self, path, **kwargs):
+        """Add packages listed in a file
+
+        Args:
+            path (str): path to file
+
+        Returns:
+            list of added reqs
+        """
+        if not path.exists():
+            return []
+        reqs = list(utils.iter_requirements(path))
+        for req in reqs:
+            self.add_package(req.line, **kwargs)
+        return reqs
+
+    def add_from_requirements(self):
+        """Add all packages in requirements.txt files
+
+        Returns:
+            List of all added requirements
+        """
+        reqs = self._add_pkgs_from_file(self.requirements)
+        dev_reqs = self._add_pkgs_from_file(self.dev_requirements, dev=True)
+        all_reqs = [*reqs, *dev_reqs]
+        return all_reqs if all_reqs else None
 
     def exists(self):
         """Whether this project exists
