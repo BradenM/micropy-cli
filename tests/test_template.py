@@ -41,9 +41,26 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path):
     assert sorted(expect_paths) == sorted(
         content["python.autoComplete.extraPaths"])
     assert expected_path.exists()
+    # Test Update
+    ctx_paths.append((tmp_path / "foobar" / "foo.py"))
+    prov.update('vscode', tmp_path, stubs=stubs, paths=ctx_paths,
+                datadir=ctx_datadir)
+    content = json.loads(expected_path.read_text())
+    expect_paths.append(
+        str((root / (tmp_path / "foobar" / "foo.py").relative_to(tmp_path))))
+    assert sorted(expect_paths) == sorted(
+        content["python.autoComplete.extraPaths"])
 
 
 def test_pylint_template(stub_context, tmp_path):
+    def test_pylint_load():
+        try:
+            lint_args = ["--rcfile", str(expected_path.absolute())]
+            pylint.lint.Run(lint_args)
+        except SyntaxError:
+            pytest.fail(str(SyntaxError))  # noqa
+        except:  # noqa
+            pass
     stubs, paths, ctx_paths = stub_context
     ctx_datadir = tmp_path / 'ctx_cata'
     ctx_datadir.mkdir(exist_ok=True)
@@ -53,13 +70,16 @@ def test_pylint_template(stub_context, tmp_path):
     expected_path = tmp_path / '.pylintrc'
     assert expected_path.exists()
     # Will Pylint load it?
-    try:
-        lint_args = ["--rcfile", str(expected_path.absolute())]
-        pylint.lint.Run(lint_args)
-    except SyntaxError:
-        pytest.fail(str(SyntaxError))  # noqa
-    except:  # noqa
-        pass
+    test_pylint_load()
+    # Test Update
+    new_path = (tmp_path / '.micropy' / 'foobar' / 'foo')
+    ctx_paths.append(new_path)
+    prov.update("pylint", tmp_path, stubs=stubs,
+                paths=ctx_paths, datadir=ctx_datadir)
+    init_hook = expected_path.read_text().splitlines(True)[2]
+    hook_imports = init_hook.split(";")
+    assert 'sys.path.insert(1, ".micropy/foobar/foo")' in hook_imports
+    test_pylint_load()
 
 
 def test_generic_template(mock_mp_stubs, tmp_path):
@@ -71,6 +91,8 @@ def test_generic_template(mock_mp_stubs, tmp_path):
     out_content = expected_path.read_text()
     print(out_content)
     assert expected_content.strip() == out_content.strip()
+    templ = prov.get('boot')
+    assert templ.update(tmp_path) is None
 
 
 def test_no_context():
