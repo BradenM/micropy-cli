@@ -18,7 +18,7 @@ pytest-runner = "*"
 tox-pyenv = "*"
 pytest-mock = "*"
 pytest-datadir = "*"
-tox = "==3.7.0"
+tox = "*"
 micropy-cli = {editable = true,path = "."}
 wheel = "*"
 coveralls = "*"
