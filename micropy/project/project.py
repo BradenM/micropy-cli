@@ -288,6 +288,29 @@ class Project:
             "dev-packages": self.dev_packages
         }
 
+    def _dump_requirements(self, packages, path):
+        """Dumps packages to file at path
+
+        Args:
+            packages (dict): dict of packages to dump
+            path (str): path to fiel
+        """
+        if not path.exists():
+            path.touch()
+        pkgs = [(f"{name}{spec}" if spec and spec != "*" else name)
+                for name, spec in packages.items()]
+        with path.open('r+') as f:
+            content = [c.strip() for c in f.readlines() if c.strip() != '']
+            _lines = sorted(set(pkgs) | set(content))
+            lines = [l + "\n" for l in _lines]
+            f.seek(0)
+            f.writelines(lines)
+
+    def to_requirements(self):
+        """Dumps requirements to .txt files"""
+        self._dump_requirements(self.packages, self.requirements)
+        self._dump_requirements(self.dev_packages, self.dev_requirements)
+
     def to_json(self):
         """Dumps project to data file"""
         with self.info_path.open('w+') as f:
@@ -306,6 +329,7 @@ class Project:
 
     def update_all(self):
         """Updates all project files"""
+        self.to_requirements()
         for t in self.provider.templates:
             self.provider.update(t, self.path, **self.context)
         return self.context

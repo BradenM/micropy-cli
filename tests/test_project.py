@@ -100,7 +100,7 @@ def test_project_load(mocker, shared_datadir, mock_pkg):
 
 def test_project_add_stub(mocker, shared_datadir, tmp_path, mock_pkg):
     """should add stub to project"""
-    mocker.patch.object(project.project, 'MicroPy').return_value
+    mock_mp = mocker.patch.object(project.project, 'MicroPy').return_value
     proj_path = tmp_path / 'tmp_project'
     shutil.copytree((shared_datadir / 'project_test'), proj_path)
     # Test Loaded
@@ -129,6 +129,9 @@ def test_project_add_pkg(mocker, mock_proj_dir, shared_datadir, tmp_path,
     # Test dev
     proj.add_package('another_pkg==1.0.0', dev=True)
     assert proj.dev_packages['another_pkg'] == '==1.0.0'
+    # Test requirements.txt
+    lines = proj.requirements.read_text().splitlines()
+    assert "mock_pkg" in lines
     # Test Context
     expect_proj_stubs = mock_proj_dir / '.micropy' / "NewProject"
     mock_manager = mock_mp.STUBS
@@ -144,10 +147,15 @@ def test_project_add_pkg(mocker, mock_proj_dir, shared_datadir, tmp_path,
 
 def test_project_add_requirements(mocker, mock_proj_dir, mock_pkg):
     """should add from requirements.txt"""
-    mock_mp = mocker.patch.object(project.project, "MicroPy").return_value
+    mocker.patch.object(project.project, "MicroPy").return_value
     proj = project.Project.resolve(mock_proj_dir)
     # Assert no reqs file
-    assert proj.add_from_requirements() is None
+    _reqspath = (proj.requirements, proj.dev_requirements)
+    proj.requirements = Path('foobar')
+    proj.dev_requirements = Path('foobar')
+    added = proj.add_from_requirements()
+    assert added is None
+    proj.requirements, proj.dev_requirements = _reqspath
     tmp_reqs = proj.path / 'requirements.txt'
     tmp_reqs.touch()
     tmp_reqs.write_text("micropy-cli==1.0.0")
