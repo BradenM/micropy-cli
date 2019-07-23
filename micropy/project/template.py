@@ -29,6 +29,72 @@ class Template:
         """Context for template"""
         raise NotImplementedError
 
+    def iter_clean(self, data=None):
+        """Yields cleaned data
+
+        Args:
+            data (str, optional): Alternative data to clean.
+                Defaults to None. If none, uses template render.
+        """
+        render = data or self.template.render(self.context)
+        for line in render.splitlines(True):
+            _line = line.strip()
+            if not _line.startswith("//"):
+                yield line
+
+    def update(self, root):
+        """Update Template File
+
+        Args:
+            root (str): Path to project root
+
+        Raises:
+            NotImplementedError: Raised if Subclass has not Implemented Update
+
+        Returns:
+            func: Template Update Func
+        """
+        update_func = getattr(self, 'update_method', None)
+        update_kwargs = getattr(self, 'update_kwargs', {})
+        if not update_func:
+            return None
+        path = root / self.FILENAME
+        return update_func(path, **update_kwargs)
+
+    def update_as_json(self, path):
+        """Update template file as JSON
+
+        Args:
+            path (str): File path to update
+        """
+        render = json.loads("".join(self.iter_clean()))
+        data = json.loads("".join(self.iter_clean(path.read_text())))
+        data.update(render)
+        with path.open('w+') as f:
+            json.dump(data, f, indent=4)
+
+    def update_as_text(self, path, by_contains=None):
+        """Update template file as text
+
+        Args:
+            path (str): file path to update.
+            by_contains ([str], optional): Update lines that contain a string.
+             Defaults to None.
+        """
+        r_lines = list(self.iter_clean())
+        upd_lines = []
+        if by_contains:
+            upd_lines = [r_lines.index(l) for l in r_lines if any(
+                i in l for i in by_contains)]
+        with path.open('r+') as f:
+            c_lines = self.iter_clean(f.read())
+            f.seek(0)
+            for it, line in enumerate(c_lines):
+                _line = line
+                if it in upd_lines:
+                    _line = r_lines[it]
+                f.write(_line)
+
     def render_stream(self):
         """Returns template stream from context"""
         stream = self.template.stream(self.context)
@@ -57,6 +123,7 @@ class CodeTemplate(Template):
     FILENAME = ".vscode/settings.json"
 
     def __init__(self, *args, **kwargs):
+        self.update_method = self.update_as_json
         super().__init__(*args, **kwargs)
 
     @property
@@ -71,7 +138,7 @@ class CodeTemplate(Template):
         stub_paths = json.dumps(paths)
         ctx = {
             "stubs": self.stubs,
-            "paths": stub_paths
+            "paths": stub_paths,
         }
         return ctx
 
@@ -81,6 +148,8 @@ class PylintTemplate(Template):
     FILENAME = ".pylintrc"
 
     def __init__(self, *args, **kwargs):
+        self.update_method = self.update_as_text
+        self.update_kwargs = {'by_contains': ['sys.path.insert']}
         super().__init__(*args, **kwargs)
 
     @property
@@ -148,7 +217,7 @@ class TemplateProvider:
          :param str name: Template Name to render
          :param pathlib.Path: Path object of Target Parent Directory
          """
-        template = self.get(name, *args, **kwargs)
+        template = self.get(name, **kwargs)
         self.log.debug(f"Loaded: {str(template)}")
         parent_dir.mkdir(exist_ok=True)
         out_dir = parent_dir / template.FILENAME
@@ -156,6 +225,22 @@ class TemplateProvider:
         self.log.debug(f"Rendered: {name} to {str(out_dir)}")
         stream = template.render_stream()
         return stream.dump(str(out_dir))
+
+    def update(self, name, root_dir, **kwargs):
+        """Update existing Template
+
+        Args:
+            name (str): Template name
+            root_dir (str): Path to project root
+
+        Returns:
+            Template: Updated Template Instance
+        """
+        template = self.get(name, **kwargs)
+        self.log.debug(f"Loaded: {str(template)}")
+        template.update(root_dir)
+        self.log.debug(f"Updated: {str(template)}")
+        return template
 
     @property
     def templates(self):
