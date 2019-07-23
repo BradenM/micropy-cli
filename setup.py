@@ -24,7 +24,8 @@ REQUIRED = [
     'jsonschema',
     'jinja2',
     'requests',
-    'tqdm'
+    'tqdm',
+    'requirements-parser'
 ]
 
 EXTRAS = {}

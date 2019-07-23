@@ -105,3 +105,18 @@ def test_cli_stubs_search(mock_mp_stubs, mocker, runner):
     ]
     result = runner.invoke(cli.search, ["esp8266"])
     assert result.exit_code == 0
+
+
+def test_cli_install(mocker, runner):
+    """should install packages"""
+    mock_project = mocker.patch.object(cli, 'Project')
+    mock_proj = mock_project.return_value
+    mock_project.resolve.return_value = mock_proj
+
+    result = runner.invoke(cli.install, ["package", "--dev"])
+    assert result.exit_code == 0
+    mock_proj.add_package.assert_called_once_with("package", dev=True)
+
+    mock_project.resolve.return_value = None
+    result = runner.invoke(cli.install, ["package"])
+    assert result.exit_code == 1
