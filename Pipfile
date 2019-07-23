@@ -22,6 +22,7 @@ tox = "==3.7.0"
 micropy-cli = {editable = true,path = "."}
 wheel = "*"
 coveralls = "*"
+docutils = "==0.15"
 
 [packages]
 click = "*"
