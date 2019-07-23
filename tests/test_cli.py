@@ -112,11 +112,17 @@ def test_cli_install(mocker, runner):
     mock_project = mocker.patch.object(cli, 'Project')
     mock_proj = mock_project.return_value
     mock_project.resolve.return_value = mock_proj
-
+    # Test Normal
     result = runner.invoke(cli.install, ["package", "--dev"])
     assert result.exit_code == 0
     mock_proj.add_package.assert_called_once_with("package", dev=True)
-
+    # Test from requirements
+    result = runner.invoke(cli.install, "")
+    assert result.exit_code == 0
+    mock_proj.add_from_requirements.return_value = None
+    result = runner.invoke(cli.install, "")
+    assert result.exit_code == 1
+    # Test no project found
     mock_project.resolve.return_value = None
     result = runner.invoke(cli.install, ["package"])
     assert result.exit_code == 1

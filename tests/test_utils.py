@@ -159,7 +159,7 @@ def test_get_package_meta(mocker):
         "url": "return-me.tar.gz"
     }
     mock_req.get.assert_called_once_with("https://pypi.org/pypi/foobar/json")
-    result = utils.get_package_meta("foobar", spec="0.0.0")
+    result = utils.get_package_meta("foobar", spec="==0.0.0")
     assert result == {
         "url": "early-version.tar.gz"
     }
@@ -176,3 +176,13 @@ def test_extract_tarbytes(mocker):
     mock_tarfile.open.assert_called_once_with(
         fileobj=io.BytesIO(test_bytes), mode="r:gz")
     mock_tar.extractall.assert_called_once_with("foobar")
+
+
+def test_iter_requirements(mocker, tmp_path):
+    """should iter requirements"""
+    tmp_file = tmp_path / 'tmp_reqs.txt'
+    tmp_file.touch()
+    tmp_file.write_text("micropy-cli==1.0.0")
+    result = next(utils.iter_requirements(tmp_file))
+    assert result.name == "micropy-cli"
+    assert result.specs == [('==', "1.0.0")]
