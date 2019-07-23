@@ -114,10 +114,15 @@ class Project:
             content = utils.stream_download(
                 url, desc=f"{self.log.get_service()} {_file_name}")
             pkg_path = utils.extract_tarbytes(content, tmp_path)
-            ignore = ['setup.py', '__', 'test_']
+            ignore = ['setup.py', '__version__', 'test_']
+            pkg_init = next(pkg_path.rglob("__init__.py"), None)
             py_files = [f for f in pkg_path.rglob(
                 "*.py") if not any(i in f.name for i in ignore)]
             stubs = [utils.generate_stub(f) for f in py_files]
+            if pkg_init:
+                data_path = self.pkg_data / pkg_init.parent.name
+                shutil.copytree(pkg_init.parent, data_path)
+                return data_path
             for file, stub in stubs:
                 shutil.copy2(file, (self.pkg_data / file.name))
                 shutil.copy2(stub, (self.pkg_data / stub.name))
@@ -131,6 +136,8 @@ class Project:
             new_pkgs = new_pkgs - set(pkg_cache)
         pkgs = [(name, s)
                 for name, s in self.packages.items() if name in new_pkgs]
+        if pkgs and not self._loaded:
+            self.log.title("Fetching Requirements")
         for name, spec in pkgs:
             meta = utils.get_package_meta(name, spec=spec)
             tar_url = meta['url']
