@@ -210,7 +210,8 @@ def list():
 
 @stubs.command(short_help="Create Stubs from Pyboard")
 @click.argument('port', required=True)
-def create(port):
+@click.option('-v', '--verbose', is_flag=True, default=False, help="Enable verbose output")
+def create(port, verbose=False):
     """Create stubs from a pyboard at <PORT>
 
     \b
@@ -219,7 +220,7 @@ def create(port):
     at: https://github.com/Josverl/micropython-stubber
     """
     mp = MicroPy()
-    return mp.create_stubs(port)
+    return mp.create_stubs(port, verbose=verbose)
 
 
 if __name__ == "__main__":
