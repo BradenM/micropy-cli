@@ -2,10 +2,12 @@
 
 """Main Module"""
 
+import sys
 import tempfile
 from pathlib import Path
 
 from micropy import data, utils
+from micropy.lib.stubber import process as stubber
 from micropy.logger import Log
 from micropy.stubs import StubManager, source
 
@@ -47,8 +49,7 @@ class MicroPy:
         Returns:
             Stub: generated stub
         """
-        # TODO: Probably move this functionality to cli module
-        self.log.info(f"Connecting to Pyboard @ $[{port}]...")
+        self.log.title(f"Connecting to Pyboard @ $[{port}]")
         try:
             pyb = utils.PyboardWrapper(port)
         except SystemExit:
@@ -56,13 +57,19 @@ class MicroPy:
                 f"Failed to connect, are you sure $[{port}] is correct?")
             return None
         self.log.success("Connected!")
-        # TODO: minify script to prevent memory issues
-        script_path = self.STUBBER / 'createstubs.py'
-        log_mod = self.STUBBER / 'lib' / 'logging.py'
+        try:
+            script = stubber.minify_script()
+        except AttributeError:
+            self.log.error("\nPyminifier not found!")
+            self.log.info(
+                "For device stub creation, micropy-cli depends on $B[pyminifer].")
+            self.log.info(
+                "Please install via: $[pip install pyminifer] and try again.")
+            sys.exit(1)
         self.log.info("Executing stubber on pyboard...")
         try:
-            pyb.copy_file(log_mod)
-            pyb.run(script_path)
+            pyb.run(script,
+                    format_output=lambda x: x.split("to file:")[0].strip())
         except Exception as e:
             # TODO: Handle more usage cases
             self.log.error(f"Failed to execute script: {str(e)}")

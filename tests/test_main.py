@@ -70,6 +70,21 @@ def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     mp.STUBS.add.assert_any_call((tmp_stub_path / 'esp32-micropython-1.11.0'))
 
 
+def test_create_stubs_pymin_check(mocker, mock_mp_stubs):
+    """should exit without pymin"""
+    mocker.patch("micropy.main.utils.PyboardWrapper")
+    mocker.patch.object(mock_mp_stubs, 'STUBS')
+    mock_stubber = mocker.patch.object(main, "stubber")
+    mock_exit = mocker.spy(main.sys, 'exit')
+    mock_stubber.minify_script.side_effect = [AttributeError, mocker.ANY]
+    # Should exit
+    with pytest.raises(SystemExit):
+        mock_mp_stubs.create_stubs("/dev/PORT")
+    # Should continue
+    mock_mp_stubs.create_stubs("/dev/PORT")
+    mock_exit.assert_called_once_with(1)
+
+
 def test_stub_error():
     with pytest.raises(exc.StubError):
         raise exc.StubError(None)
