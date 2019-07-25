@@ -25,7 +25,8 @@ REQUIRED = [
     'jinja2',
     'requests',
     'tqdm',
-    'requirements-parser'
+    'requirements-parser',
+    'packaging'
 ]
 
 EXTRAS = {}
