@@ -23,6 +23,7 @@ micropy-cli = {editable = true,path = "."}
 wheel = "*"
 coveralls = "*"
 docutils = "==0.15"
+zipp = {editable = true,extras = ["create_stubs"],path = "."}
 
 [packages]
 click = "*"
