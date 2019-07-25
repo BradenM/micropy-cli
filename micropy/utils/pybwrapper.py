@@ -30,14 +30,15 @@ class PyboardWrapper:
         connect (bool): Connect on init. Defaults to True
     """
 
-    def __init__(self, port, connect=True):
+    def __init__(self, port, connect=True, verbose=False):
         self.connected = False
         self.port = port
         self.rsh = rsh
         self.rsh.ASCII_XFER = False
-        self.rsh.QUIET = True
+        self.rsh.QUIET = not verbose
         self.log = Log.add_logger('Pyboard', 'bright_white')
         self._outline = []
+        self.format_output = None
         if connect:
             return self.connect()
 

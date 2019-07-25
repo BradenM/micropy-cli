@@ -40,7 +40,7 @@ class MicroPy:
         self.STUB_DIR.mkdir()
         return self.setup()
 
-    def create_stubs(self, port):
+    def create_stubs(self, port, verbose=False):
         """Create and add stubs from Pyboard
 
         Args:
@@ -51,7 +51,7 @@ class MicroPy:
         """
         self.log.title(f"Connecting to Pyboard @ $[{port}]")
         try:
-            pyb = utils.PyboardWrapper(port)
+            pyb = utils.PyboardWrapper(port, verbose=verbose)
         except SystemExit:
             self.log.error(
                 f"Failed to connect, are you sure $[{port}] is correct?")
@@ -62,9 +62,11 @@ class MicroPy:
         except AttributeError:
             self.log.error("\nPyminifier not found!")
             self.log.info(
-                "For device stub creation, micropy-cli depends on $B[pyminifer].")
+                ("For device stub creation, micropy-cli depends"
+                 " on $B[pyminifer]."))
             self.log.info(
-                "Please install via: $[pip install pyminifer] and try again.")
+                ("Please install via: $[pip install micropy-cli[create_stubs]]"
+                 " and try again."))
             sys.exit(1)
         self.log.info("Executing stubber on pyboard...")
         try:
