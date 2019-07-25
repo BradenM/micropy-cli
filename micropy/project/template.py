@@ -12,9 +12,13 @@ from micropy.logger import Log
 
 
 class Template:
-    """Generic Template Builder
+    """Base Template Builder Class
 
-    :param jinja2.Template template: Jinja Template Instance
+    Args:
+        template (jinja2.Template): Jinja2 Template Instance
+
+    Raises:
+        NotImplementedError: Method must be overriden by subclass
     """
     FILENAME = None
 
@@ -184,6 +188,13 @@ class TemplateProvider:
     }
 
     def __init__(self, templates, log=None):
+        """Template Factory
+
+        Args:
+            templates ([str]): List of Templates to use
+            log (callable, optional): Log instance to use.
+                Defaults to None. If none, creates a new one.
+        """
         self.template_names = set(chain.from_iterable(
             [self.TEMPLATES.get(t)[0] for t in templates]))
         self.files = {k: v for k, v in self._template_files.items()
@@ -199,8 +210,12 @@ class TemplateProvider:
     def get(self, name, *args, **kwargs):
         """Retrieve appropriate Template instance by name
 
-         :param str name: Template name to retrieve
-         """
+        Args:
+            name (str): Name of template
+
+        Returns:
+            Template: Template instance
+        """
         temp_def = self.files.get(name)
         file_attr = getattr(temp_def, "FILENAME", None)
         filename = temp_def if file_attr is None else file_attr
@@ -214,9 +229,10 @@ class TemplateProvider:
     def render_to(self, name, parent_dir, *args, **kwargs):
         """Renders Template to a file under parent directory
 
-         :param str name: Template Name to render
-         :param pathlib.Path: Path object of Target Parent Directory
-         """
+        Args:
+            name (str): Name of template
+            parent_dir (str): Path to root dir
+        """
         template = self.get(name, **kwargs)
         self.log.debug(f"Loaded: {str(template)}")
         parent_dir.mkdir(exist_ok=True)
