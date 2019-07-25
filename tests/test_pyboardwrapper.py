@@ -77,12 +77,17 @@ def test_pyboard_copy_file(mocker, connect_mock, root_mock, tmp_path):
 def test_pyboard_run(mocker, connect_mock, tmp_path):
     """should execute script"""
     tmp_script = tmp_path / 'script.py'
+    tmp_script.touch()
+    tmp_string = tmp_script.open('r').read()
     pyb_mock = mocker.patch.object(PyboardWrapper, 'pyboard')
-    pyb_mock.execfile.side_effect = [b"abc", PyboardError]
+    pyb_mock.exec_raw.side_effect = [
+        (b"abc", None), (b"abc", None), PyboardError]
     pyb = PyboardWrapper("/dev/PORT")
     result = pyb.run(tmp_script)
     assert result == "abc"
-    pyb_mock.execfile.assert_called_once_with(tmp_script)
+    # Should work as string
+    result = pyb.run(tmp_string)
+    assert result == "abc"
     with pytest.raises(Exception):
         pyb.run(tmp_script)
 

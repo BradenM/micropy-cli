@@ -35,7 +35,9 @@ class PyboardWrapper:
         self.port = port
         self.rsh = rsh
         self.rsh.ASCII_XFER = False
-        self.log = Log.add_logger('PyboardWrapper')
+        self.rsh.QUIET = True
+        self.log = Log.add_logger('Pyboard', 'bright_white')
+        self._outline = []
         if connect:
             return self.connect()
 
@@ -103,21 +105,68 @@ class PyboardWrapper:
         self.rsh.cp(str(src_path), dest)
         return dest
 
-    def run(self, path):
+    def _output(self, data):
+        """Yields everything up to a newline
+
+        Args:
+            data (str): Anything to yield before newline
+        """
+        if data == "\n":
+            line = "".join(self._outline)
+            self._outline = []
+            yield line
+        self._outline.append(data)
+
+    def _consumer(self, char):
+        """Pyboard data consumer
+
+        When a full line of output is detected,
+        it is formatted then logged to stdout
+        and log file.
+
+        Args:
+            char (byte): Byte from PyBoard
+
+        Returns:
+            str: Converted char
+        """
+        char = char.decode('utf-8')
+        line = next(self._output(char), None)
+        if line:
+            if self.format_output:
+                line = self.format_output(line)
+            self.log.info(line)
+        return char
+
+    def _exec(self, command):
+        """Execute bytes on pyboard"""
+        ret, ret_err = self.pyboard.exec_raw(
+            command, data_consumer=self._consumer)
+        if ret_err:
+            raise PyboardError('exception', ret, ret_err)
+        return ret
+
+    def run(self, file, format_output=None):
         """Execute a local script on the pyboard
 
         Args:
-            path (str): path to file
+            file (str): path to file or string to run
+            format_output (callable, optional): Callback to format output.
+                Defaults to None. If none, uses print.
         """
-        # TODO: Better Exception handling
-        file_path = Path(str(path)).resolve()
+        self.format_output = format_output
+        try:
+            with file.open('rb') as f:
+                pyfile = f.read()
+        except AttributeError:
+            pyfile = file.encode('utf-8')
         with self.repl():
             try:
-                out_bytes = self.pyboard.execfile(file_path)
+                out_bytes = self._exec(pyfile)
             except PyboardError as e:
                 self.log.debug(f"Failed to run script on pyboard: {str(e)}")
                 raise Exception(str(e))
-            out = str(out_bytes, 'utf-8')
+            out = out_bytes.decode('utf-8')
             return out
 
     def list_dir(self, path):
