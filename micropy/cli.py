@@ -210,7 +210,8 @@ def list():
 
 @stubs.command(short_help="Create Stubs from Pyboard")
 @click.argument('port', required=True)
-@click.option('-v', '--verbose', is_flag=True, default=False, help="Enable verbose output")
+@click.option('-v', '--verbose', is_flag=True, default=False,
+              help="Enable verbose output")
 def create(port, verbose=False):
     """Create stubs from a pyboard at <PORT>
 
