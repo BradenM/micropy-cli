@@ -29,7 +29,9 @@ REQUIRED = [
     'packaging'
 ]
 
-EXTRAS = {}
+EXTRAS = {
+    'create_stubs': ['pyminifier==2.1']
+}
 
 
 here = os.path.abspath(os.path.dirname(__file__))
