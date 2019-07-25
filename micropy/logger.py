@@ -159,7 +159,7 @@ class ServiceLog:
 
         """
         title_color = kwargs.pop('title_color', self.base_color)
-        title_bold = kwargs.pop('title_bold', self.parent is None)
+        title_bold = kwargs.pop('title_bold', True)
         accent_color = kwargs.pop('accent', self.accent_color)
         service_title = self.get_service(fg=title_color, bold=title_bold)
         message, clean = self.parse_msg(msg, accent_color)
