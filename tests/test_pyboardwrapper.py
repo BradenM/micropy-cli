@@ -2,7 +2,7 @@
 
 import pytest
 
-from micropy.utils import PyboardWrapper
+from micropy.utils import PyboardWrapper, pybwrapper
 from micropy.utils.pybwrapper import PyboardError
 
 
@@ -81,7 +81,7 @@ def test_pyboard_run(mocker, connect_mock, tmp_path):
     tmp_string = tmp_script.open('r').read()
     pyb_mock = mocker.patch.object(PyboardWrapper, 'pyboard')
     pyb_mock.exec_raw.side_effect = [
-        (b"abc", None), (b"abc", None), PyboardError]
+        (b"abc", None), (b"abc", None), (b"", PyboardError)]
     pyb = PyboardWrapper("/dev/PORT")
     result = pyb.run(tmp_script)
     assert result == "abc"
@@ -112,3 +112,18 @@ def test_pyboard_root(mocker, connect_mock):
     pyb = PyboardWrapper("/dev/PORT2", connect=False)
     pyb.pyb_root
     find_mock.assert_called_once()
+
+
+def test_pyboard_output(mocker):
+    """should consume till a newline"""
+    line_bytes = list("a line to consume\n")
+    mocker.patch.object(pybwrapper, 'Log')
+    pyb = pybwrapper.PyboardWrapper('/dev/foo', connect=False)
+    for char in line_bytes:
+        pyb._consumer(char.encode('utf-8'))
+    pyb.log.info.assert_called_once_with("a line to consume")
+    # Test format output
+    pyb.format_output = lambda val: val.replace('line', 'string')
+    for char in line_bytes:
+        pyb._consumer(char.encode('utf-8'))
+    pyb.log.info.assert_called_with("a string to consume")

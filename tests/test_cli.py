@@ -42,7 +42,7 @@ def test_stub_create(mocker, runner):
     """should call create_stubs"""
     mock_mp = mocker.patch.object(cli, "MicroPy").return_value
     result = runner.invoke(cli.create, ["/dev/PORT"])
-    mock_mp.create_stubs.assert_called_once_with("/dev/PORT")
+    mock_mp.create_stubs.assert_called_once_with("/dev/PORT", verbose=False)
     assert result.exit_code == 0
 
 
