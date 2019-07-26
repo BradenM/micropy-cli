@@ -3,7 +3,6 @@
     "required": [
         "name",
         "repo",
-        "module_path",
         "firmware",
         "modules",
         "devices",
@@ -20,7 +19,7 @@
             "type": "string"
         },
         "module_path": {
-            "type": "string"
+            "type": ["string", "array"]
         },
         "firmware": {
             "type": "string"

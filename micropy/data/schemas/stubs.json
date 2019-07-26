@@ -22,9 +22,7 @@
                     "type": "string"
                 },
                 "version": {
-                    "type": "string",
-                    "examples": ["1.11.0", "0.1.1-alpha"],
-                    "pattern": "^((([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)$"
+                    "type": "string"
                 },
                 "release": {
                     "type": "string"
