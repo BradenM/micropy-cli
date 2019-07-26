@@ -7,13 +7,12 @@ Its primary goal is to automate the process of creating a workspace complete wit
 * **Linting** compatible with Micropython
 * VSCode **Intellisense**
 * **Autocompletion**
-* Dependency Management (_WIP_)
+* Dependency Management
 * VCS Compatibility
 
-<!-- Command line Application for automating Micropython project creation in Visual Studio Code. -->
 
 <p align='center'>
-    <img width='725' src='.github/img/micropy.svg' alt="Micropy Demo SVG">
+    <img width='95%' src='.github/img/micropy.svg' alt="Micropy Demo SVG">
 </p>
 
 [pypi-img]: https://img.shields.io/pypi/v/micropy-cli.svg?style=popout-square
@@ -42,8 +41,9 @@ Options:
   --help     Show this message and exit.
 
 Commands:
-  init   Create new Micropython Project
-  stubs  Manage Micropy Stubs
+  init     Create new Micropython Project
+  install  Install Project Requirements
+  stubs    Manage Micropy Stubs
 ```
 
 ### Creating a Project
@@ -51,8 +51,14 @@ Commands:
 Creating a new project folder is as simple as:
 
 1. Executing `micropy init <PROJECT NAME>`
-2. Selecting your target device/firmware
-3. Boom. Your workspace is ready.
+2. Selecting which templates to use
+3. Selecting your target device/firmware
+4. Boom. Your workspace is ready.
+
+<p align='center'>
+    <img src='https://github.com/BradenM/micropy-cli/raw/master/.github/img/demo.gif' alt="Micropy Demo">
+</p>
+
 
 #### Micropy Project Environment
 
@@ -75,7 +81,51 @@ To setup a Micropy environment locally, simply:
 * Navigate to the project directory
 * Execute `micropy`
 
-Micropy will automatically configure and install any stubs required a project thanks to its `micropy.json` file.
+Micropy will automatically configure and install any stubs required by a project thanks to its `micropy.json` file.
+
+### Project Dependencies
+
+While all modules that are included in your targeted micropython firmware are available with autocompletion, intellisense, and linting, most projects require external dependencies.
+
+Currently, handling dependencies with micropython is a bit tricky. Maybe you can install a cpython version of your requirement? Maybe you could just copy and paste it? What if it needs to be frozen?
+
+Micropy handles all these issues for you automatically. Not only does it track your project's dependencies, it keeps both `requirements.txt` and `dev-requirements.txt` updated, enables autocompletion/intellisense for each dep, and allows you to import them just as you would on your device.
+
+This allows you to include your requirement however you want, whether that be as a frozen module in your custom built firmware, or simply in the `/lib` folder on your device.
+
+#### Installing Packages
+
+To add a package as a requirement for your project, run:
+
+`micropy install <PACKAGE_NAMES>`
+
+while in your project's root directory.
+
+This will automatically execute the following:
+
+* Source `PACKAGE_NAMES` from pypi, as a url, or a local path
+* Retrieve the module/package and stub it, adding it to your local `.micropy` folder.
+* Add requirement to your `micropy.json`
+* Update `requirements.txt`
+
+To install dev packages that are not needed on your device, but are needed for local development, add the `--dev` flag. This will do everything above **except** stub the requirement.
+
+You can also install all requirements found in `micropy.json`/`requirements.txt`/`dev-requirements.txt` by executing `micropy install` without passing any packages. Micropy will automatically do this when setting up a local environment of an existing micropy project.
+
+#### Example
+
+Lets say your new project will depend on [picoweb](https://pypi.org/project/picoweb/) and [blynklib](https://pypi.org/project/blynklib/). Plus, you'd like to use [rshell](https://pypi.org/project/rshell/) to communicate directly with your device. After creating your project via `micropy init`, you can install your requirements as so:
+
+<p align='center'>
+    <img width="70%" src='.github/img/install_demo.svg' alt="Micropy Pkg Install Demo">
+</p>
+
+Now you or anybody cloning your project can import those requirements normally, and have the benefits of all the features micropy brings:
+
+<p align='center'>
+    <img width="70%" src='https://github.com/BradenM/micropy-cli/raw/master/.github/img/deps_demo.gif' alt="Micropy Deps Demo">
+</p>
+
 
 ### Stub Management
 
@@ -106,6 +156,10 @@ For manual stub generation, please see [Josvel/micropython-stubber](https://gith
 
 Using `micropy stubs create <PORT/IP_ADDRESS>`, MicropyCli can automatically generate and add stubs from any Micropython device you have on hand. This can be done over both USB and WiFi.
 
+> Note: For stub creation, micropy-cli has additional dependencies.
+>
+> These can be installed by executing: `pip install micropy-cli[create_stubs]`
+
 
 #### Viewing Stubs
 
@@ -122,3 +176,4 @@ To search for stubs for your device, use `micropy stubs search <QUERY>`.
 Josverl's Repo is full of information regarding Micropython compatibility with VSCode and more. To find out more about how this process works, take a look at it.
 
 micropy-cli and [micropy-stubs](https://github.com/BradenM/micropy-stubs) depend on micropython-stubber for its ability to generate frozen modules, create stubs on a pyboard, and more.
+
