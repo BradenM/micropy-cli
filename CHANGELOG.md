@@ -1,3 +1,35 @@
+<a name="v2.0.0"></a>
+## v2.0.0 (2019-07-26)
+
+
+#### Bug Fixes
+
+* **dep:**  Broken Docutils Dependency ([ecfc7419](ecfc7419))
+* **project:**  Only modules install correctly ([87fe8ef9](87fe8ef9))
+
+#### Features
+
+*   Add Optional Pyminifier Dep for Stub Creation ([befa4404](befa4404))
+* **cli:**
+  *  Verbosity Flag for Stub Creation ([f93c8b1e](f93c8b1e))
+  *  Install Python Packages for Project ([16cd13cb](16cd13cb))
+* **dep:**
+  *  Packaging Module Requirement ([36992f7b](36992f7b))
+  *  Update Tox to latest ([177f7592](177f7592))
+  *  Update Stubber to Process Branch ([da9fb6b3](da9fb6b3))
+* **project:**
+  *  Update requirements.txt Files on Install ([00f5a923](00f5a923))
+  *  Install from Requirements.txt ([ac236c62](ac236c62))
+  *  Project Config in Info File ([22600153](22600153))
+  *  Template Update Functionality ([f4b91f72](f4b91f72))
+  *  Retrieve and Stub Project Requirements ([0ecf6af9](0ecf6af9))
+  *  Make Templates Optional via CLI (#30) ([eb460d3f](eb460d3f))
+* **pyb:**  Handle Pyboard Output and Errors ([26136c69](26136c69))
+* **stubs:**  Minify Stubber Before Executing ([2b6cdd26](2b6cdd26))
+* **util:**  Generate Stub from File Utility ([aac79e36](aac79e36))
+
+
+
 <a name="v1.1.3"></a>
 ### v1.1.3 (2019-07-20)
 
