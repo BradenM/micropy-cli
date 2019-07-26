@@ -1,3 +1,13 @@
+<a name="v2.0.1"></a>
+### v2.0.1 (2019-07-26)
+
+
+#### Bug Fixes
+
+* **stubs:**  Reduce Schema Strictness ([9343ba1b](9343ba1b))
+
+
+
 <a name="v2.0.0"></a>
 ## v2.0.0 (2019-07-26)
 
