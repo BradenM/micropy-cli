@@ -96,6 +96,12 @@ def test_project_load(mocker, shared_datadir, mock_pkg):
     proj.add_package('pkg')
     mock_shutil.copytree.assert_called_once_with(
         Path('pkg'), (proj.pkg_data / 'pkg'))
+    # Test Win Priv Fail
+    mock_mp.STUBS.resolve_subresource.side_effect = [OSError]
+    # mock_stub = mocker.patch.object(stubs, 'StubManager').return_value
+    # sys_spy = mocker.spy(project.sys)
+    with pytest.raises(SystemExit):
+        proj = project.Project.resolve(proj_path)
 
 
 def test_project_add_stub(mocker, shared_datadir, tmp_path, mock_pkg):
