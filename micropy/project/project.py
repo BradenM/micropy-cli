@@ -4,6 +4,7 @@
 
 import json
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 
@@ -86,6 +87,26 @@ class Project:
         data = json.loads(self.cache.read_text())
         value = data.pop(key, None)
         return value
+
+    def _resolve_subresource(self, stubs):
+        """Resolves stub resource
+
+        Args:
+            stubs (stubs): Stubs Passed to Manager
+        """
+        try:
+            resource = set(
+                self.stub_manager.resolve_subresource(stubs, self.data))
+        except OSError as e:
+            self.log.error(str(e))
+            self.log.info(
+                "MicroPy requires administrative privileges on Windows.")
+            self.log.info(
+                ("See $[https://github.com/BradenM/micropy-cli/issues/38]"
+                 " for more info."))
+            sys.exit(1)
+        else:
+            return resource
 
     def _load_stubs(self, stubs):
         """Loads stubs from info file
@@ -171,8 +192,7 @@ class Project:
         stubs = list(self._load_stubs(_stubs))
         if self.stubs:
             stubs.extend(self.stubs)
-        self.stubs = set(
-            self.stub_manager.resolve_subresource(stubs, self.data))
+        self.stubs = self._resolve_subresource(stubs)
         self.pkg_data.mkdir(exist_ok=True)
         self.load_packages()
         self._loaded = True
@@ -338,8 +358,7 @@ class Project:
         """creates a new project"""
         self.log.title(f"Initiating $[{self.name}]")
         self.data.mkdir(exist_ok=True, parents=True)
-        self.stubs = list(
-            self.stub_manager.resolve_subresource(self.stubs, self.data))
+        self.stubs = self._resolve_subresource(self.stubs)
         self.log.info(
             f"Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
         self.log.debug(f"Generated Project Context: {self.context}")
