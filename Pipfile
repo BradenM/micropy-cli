@@ -26,7 +26,7 @@ coveralls = "*"
 docutils = "==0.15"
 
 [packages]
-click = "*"
+click = ">=7"
 questionary = "*"
 rshell = "*"
 jsonschema = "*"

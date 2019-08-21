@@ -17,7 +17,7 @@ VERSION = '2.0.1'  # Update via bumpversion
 
 # Required Packages
 REQUIRED = [
-    'click',
+    'click>=7',
     'questionary',
     'rshell',
     'colorama ; platform_system=="Windows"',
