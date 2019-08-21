@@ -1,3 +1,14 @@
+<a name="v2.0.2"></a>
+### v2.0.2 (2019-08-21)
+
+
+#### Bug Fixes
+
+* **dep:**  Require appropriate Click version ([6f75e191](6f75e191), closes [#40](40))
+* **windows:**  Warn User if MicroPy Lacks Admin Privs ([9e8f3141](9e8f3141))
+
+
+
 <a name="v2.0.1"></a>
 ### v2.0.1 (2019-07-26)
 
