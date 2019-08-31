@@ -24,6 +24,8 @@ micropy-cli = {editable = true,path = "."}
 wheel = "*"
 coveralls = "*"
 docutils = "==0.15"
+sphinx = "*"
+recommonmark = "*"
 
 [packages]
 click = ">=7"
