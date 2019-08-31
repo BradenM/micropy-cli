@@ -9,6 +9,8 @@ used by MicropyCli
 """
 
 import io
+import subprocess as subproc
+import sys
 import tarfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -284,3 +286,54 @@ def extract_tarbytes(file_bytes, path):
     with tarfile.open(fileobj=tar_bytes_obj, mode="r:gz") as tar:
         tar.extractall(path)
     return path
+
+
+def create_dir_link(source, target):
+    """Creates a platform appropriate directory link
+
+    On POSIX systems it will create a symlink.
+    On Windows it will fallback on a directory junction if needed
+
+    Args:
+        source (os.Pathlike): Path to create link at.
+        target (os.Pathlike): Path to link to.
+
+    Raises:
+        OSError: Symlink Creation Failed
+        OSError: Symlink and Directory Junction Fallback Failed
+    """
+    platform = sys.platform
+    source = Path(source)
+    target = Path(target)
+    try:
+        source.symlink_to(target, target_is_directory=True)
+    except OSError as e:
+        # Handle non-admin/non-dev windows links
+        if not platform == "win32":
+            raise e
+        # Fall back to directory junction
+        cmd = ["MKLINK", "/J", str(source.absolute()), str(target.absolute())]
+        exit_code = subproc.call(cmd, shell=True)
+        if exit_code:
+            raise e
+
+
+def is_dir_link(path):
+    """Test if path is either a symlink or directory junction
+
+    Args:
+        path (os.Pathlike): Path to test.
+
+    Returns:
+        bool: True if path is a type of link.
+    """
+    platform = sys.platform
+    path = Path(path)
+    if path.is_symlink():
+        return True
+    if platform == 'win32':
+        # Test for Directory Junction
+        resolved = str(path.resolve())
+        if not str(path.absolute()) == resolved:
+            return True
+    return False
