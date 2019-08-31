@@ -167,6 +167,11 @@ To list stubs you have installed, simply run `micropy stubs list`.
 
 To search for stubs for your device, use `micropy stubs search <QUERY>`.
 
+## See Also
+
+* [VSCode IntelliSense, Autocompletion & Linting capabilities](https://lemariva.com/blog/2019/08/micropython-vsc-ide-intellisense)
+    - An awesome article written by [lemariva](https://github.com/lemariva). It covers creating a micropython project environment from scratch using `micropy-cli` and [pymakr-vsc](pymakr-vsc). Great place to start if you're new to this!
+
 
 ## Acknowledgements
 
