@@ -29,7 +29,8 @@ __all__ = ["is_url", "get_url_filename",
            "is_downloadable", "is_existing_dir",
            "stream_download", "search_xml",
            "generate_stub", "get_package_meta",
-           "extract_tarbytes", "iter_requirements"]
+           "extract_tarbytes", "iter_requirements",
+           "create_dir_link", "is_dir_link"]
 
 
 def is_url(url):
@@ -313,7 +314,8 @@ def create_dir_link(source, target):
             raise e
         # Fall back to directory junction
         cmd = ["MKLINK", "/J", str(source.absolute()), str(target.absolute())]
-        exit_code = subproc.call(cmd, shell=True)
+        exit_code = subproc.call(
+            cmd, shell=True, stdout=subproc.PIPE, stderr=subproc.PIPE)
         if exit_code:
             raise e
 
