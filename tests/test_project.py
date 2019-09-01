@@ -58,7 +58,8 @@ def test_project_structure(mock_mp_stubs, mock_cwd):
         [i.name for i in proj.path.glob("**/*")])
     expect_files = sorted([*templ_files, *[s.path.name for s in proj.stubs],
                            *set([s.firmware.path.name for s in proj.stubs]),
-                           '.micropy', 'micropy.json'])
+                           '.micropy', 'micropy.json', 'requirements.txt',
+                           'dev-requirements.txt'])
     print("Project Files:", proj_files)
     print("Expect:", expect_files)
     assert expect_files == proj_files
