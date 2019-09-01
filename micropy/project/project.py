@@ -11,6 +11,7 @@ from pathlib import Path
 import requirements
 
 from micropy import utils
+from micropy.exceptions import StubError
 from micropy.logger import Log
 from micropy.main import MicroPy
 from micropy.project.template import TemplateProvider
@@ -98,12 +99,9 @@ class Project:
             resource = set(
                 self.stub_manager.resolve_subresource(stubs, self.data))
         except OSError as e:
-            self.log.error(str(e))
-            self.log.info(
-                "MicroPy requires administrative privileges on Windows.")
-            self.log.info(
-                ("See $[https://github.com/BradenM/micropy-cli/issues/38]"
-                 " for more info."))
+            msg = "Failed to Create Stub Links!"
+            exc = StubError(message=msg)
+            self.log.error(str(e), exception=exc)
             sys.exit(1)
         else:
             return resource
