@@ -13,7 +13,7 @@ DESCRIPTION = ('Micropython Project Management Tool for VSCode with Linting,'
 URL = 'https://github.com/BradenM/micropy-cli'
 AUTHOR = 'Braden Mars'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '2.0.2'  # Update via bump2version
+VERSION = '2.1.0'  # Update via bump2version
 
 # Required Packages
 REQUIRED = [

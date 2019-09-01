@@ -1,3 +1,21 @@
+<a name="v2.1.0"></a>
+## v2.1.0 (2019-09-01)
+
+
+#### Features
+
+* **log:**  Cap Log File at 2MB ([2d8ad6d6](2d8ad6d6))
+* **project:**
+  *  Init Project with Micropy Dev Dependency ([1d2fac85](1d2fac85))
+  *  Git Ignore Template Option ([12ce75c6](12ce75c6))
+
+#### Bug Fixes
+
+* **project:**  Requirement Files skipped on First Init ([25decf8d](25decf8d))
+* **windows:**  Support User Level Directory Linking (#45) ([d67aea80](d67aea80))
+
+
+
 <a name="v2.0.2"></a>
 ### v2.0.2 (2019-08-21)
 
