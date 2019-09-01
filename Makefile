@@ -40,6 +40,12 @@ coverage: ## generate coverage
 coverage-html:
 	pytest --cov --cov-config=setup.cfg --cov-report html
 
+
+gendoc: ## Generate Docs
+	$(MAKE) -C docs clean
+	$(MAKE) -C docs html
+	@printf '$(bold)Docs Generated!\n$(rsttxt)'
+
 release: dist ## package and release
 	@printf '$(bold)Uploading package to PyPi...\n$(rsttxt)'
 	twine upload dist/*
