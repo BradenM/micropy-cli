@@ -8,6 +8,7 @@ API Reference
    micropy.main
    micropy.exceptions
    micropy.stubs
+   micropy.stubs.source
    micropy.project
    micropy.utils
 

@@ -39,9 +39,10 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosectionlabel',
               'recommonmark']
 
-autodoc_default_flags = ['members', 'show-inheritance']  # Defaults
+autodoc_default_flags = ['members',
+                         'show-inheritance']  # Defaults
 autosummary_generate = True  # Enable Autosummary
-# autosummary_imported_members = True
+autosummary_imported_members = True
 autosectionlabel_prefix_document = True
 
 # Add any paths that contain templates here, relative to this directory.

@@ -3,13 +3,18 @@ micropy.stubs
 
 .. automodule:: micropy.stubs
 
-.. automodule:: micropy.stubs.source
 
 
 
 
 
 
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      StubManager
+      source
 
 
 
