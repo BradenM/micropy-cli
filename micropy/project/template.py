@@ -175,7 +175,8 @@ class TemplateProvider:
         'pylint': PylintTemplate,
         'pymakr': "pymakr.conf",
         'main': "src/main.py",
-        'boot': "src/boot.py"
+        'boot': "src/boot.py",
+        'gitignore': ".gitignore"
     }
     ENVIRONMENT = None
     TEMPLATE_DIR = Path(__file__).parent / 'template'
@@ -183,7 +184,8 @@ class TemplateProvider:
         'vscode': (['vscode'], ("VSCode Settings for "
                                 "Autocompletion/Intellisense")),
         'pymakr': (['pymakr'], "Pymakr Configuration"),
-        'pylint': (['pylint'], "Pylint Micropython Settings"),
+        'pylint': (['pylint'], "Pylint MicroPython Settings"),
+        'gitignore': (['gitignore'], "Git Ignore Template"),
         'bootstrap': (['main', 'boot'], "main.py & boot.py files")
     }
 
