@@ -407,9 +407,9 @@ class Stub:
             Stub: Stub from symlink
         """
         fware = stub.firmware
-        if link_path.is_symlink():
+        if utils.is_dir_link(link_path):
             return cls(link_path, firmware=fware)
-        link_path.symlink_to(stub.path, target_is_directory=True)
+        utils.create_dir_link(link_path, stub.path)
         return cls(link_path, firmware=fware)
 
     @property
