@@ -5,6 +5,7 @@
 import logging
 import re
 from contextlib import contextmanager
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 import click
@@ -73,8 +74,9 @@ class ServiceLog:
         self.log = logging.getLogger()
         if not self.log.hasHandlers():
             self.log.setLevel(logging.DEBUG)
-            self.log_handler = logging.FileHandler(
-                str(self.LOG_FILE), mode='a')
+            self.log_handler = RotatingFileHandler(
+                str(self.LOG_FILE), mode='a', maxBytes=2*1024*1024,
+                backupCount=2, encoding=None, delay=0)
             self.log_handler.setLevel(logging.DEBUG)
             self.log.addHandler(self.log_handler)
         self.log_handler = self.log.handlers[0]
