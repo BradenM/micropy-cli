@@ -186,3 +186,58 @@ def test_iter_requirements(mocker, tmp_path):
     result = next(utils.iter_requirements(tmp_file))
     assert result.name == "micropy-cli"
     assert result.specs == [('==', "1.0.0")]
+
+
+def test_create_dir_link(mocker, tmp_path):
+    """Should create a symlink or directory junction if needed"""
+    targ_path = tmp_path / 'target_dir'
+    targ_path.mkdir()
+    link_path = tmp_path / 'link_path'
+    mock_sys = mocker.patch.object(utils.helpers, 'sys')
+    mock_platform = type(mock_sys).platform = mocker.PropertyMock()
+    mock_subproc = mocker.patch.object(utils.helpers, 'subproc')
+    mock_path = mocker.patch.object(utils.helpers, 'Path').return_value
+    mock_path.symlink_to.side_effect = [mocker.ANY, OSError, OSError, OSError]
+
+    mock_platform.return_value = 'linux'
+    # Test POSIX (should not raise exception)
+    utils.create_dir_link(link_path, targ_path)
+    mock_path.symlink_to.assert_called_once()
+    assert mock_subproc.call_count == 0
+    # Test POSIX failed for unknown reason
+    with pytest.raises(OSError):
+        utils.create_dir_link(link_path, targ_path)
+    # Test Windows (should try to make symlink, fallback on DJ)
+    mock_platform.return_value = 'win32'
+    mock_subproc.call.return_value = 0
+    utils.create_dir_link(link_path, targ_path)
+    assert mock_subproc.call.call_count == 1
+    # Test Windows fails for some reason
+    mock_subproc.call.return_value = 1
+    with pytest.raises(OSError):
+        utils.create_dir_link(link_path, targ_path)
+
+
+def test_is_dir_link(mocker, tmp_path):
+    """Should test if a path is a symlink or directory junction"""
+    link_path = tmp_path / 'link'
+    targ_path = tmp_path / 'target'
+    mock_sys = mocker.patch.object(utils.helpers, 'sys')
+    mock_platform = type(mock_sys).platform = mocker.PropertyMock()
+    mock_path = mocker.patch.object(utils.helpers, 'Path').return_value
+    mock_path.is_symlink.side_effect = [True, False, False, False]
+    # Test Symlink (POSIX)
+    mock_platform.return_value = 'linux'
+    assert utils.is_dir_link(link_path)
+    assert not utils.is_dir_link(link_path)
+    # Test Directory Junction (Windows)
+    mock_platform.return_value = 'win32'
+    # From what I can tell, while Path.is_symlink always returns false for DJs.
+    # However, on a DJ, Path.absolute will return the absolute path to the DJ,
+    # while Path.resolve will return the absolute path to the source directory.
+    # With this in mind, this check SHOULD work.
+    mock_path.resolve.return_value = targ_path
+    mock_path.absolute.return_value = link_path
+    assert utils.is_dir_link(link_path)
+    mock_path.absolute.return_value = targ_path
+    assert not utils.is_dir_link(link_path)
