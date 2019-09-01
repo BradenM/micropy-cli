@@ -47,7 +47,7 @@ class Project:
         self.requirements = self.path / 'requirements.txt'
         self.dev_requirements = self.path / 'dev-requirements.txt'
         self.packages = {}
-        self.dev_packages = {}
+        self.dev_packages = {'micropy-cli': '*'}
         self.pkg_data = self.data / self.name
 
         self.config = {'vscode': False, 'pylint': False}
@@ -182,7 +182,7 @@ class Project:
         templates = [k for k, v in self.config.items() if v]
         self.provider = TemplateProvider(templates)
         self.packages = data.get("packages", self.packages)
-        self.dev_packages = data.get("dev-packages", self.packages)
+        self.dev_packages = data.get("dev-packages", self.dev_packages)
         self.stubs = kwargs.get('stubs', self.stubs)
         self.stub_manager = kwargs.get("stub_manager", self.stub_manager)
         self.stub_manager.verbose_log(verbose)
