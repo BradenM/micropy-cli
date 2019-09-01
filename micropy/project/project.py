@@ -363,6 +363,7 @@ class Project:
         if self.provider:
             self.log.title("Rendering Templates")
             self.render_all()
+        self.update_all()
         self.to_json()
         self.log.success(f"Project Created!")
         return self.path.relative_to(Path.cwd())
