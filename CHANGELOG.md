@@ -1,3 +1,20 @@
+<a name="v2.1.1"></a>
+### v2.1.1 (2019-09-22)
+
+
+#### Bug Fixes
+
+* **hotfix:**  Remove workspaceRoot var from VSCode Settings (#51) ([d4ddf139](d4ddf139), closes [#50](50))
+
+#### Breaking Changes
+
+* Requires >= `ms-python.python@2019.9.34474` for VSCode Integration **Only**
+
+#### Notes
+
+*   Relicensed under MIT ([f2f191b5](f2f191b5))
+
+
 <a name="v2.1.0"></a>
 ## v2.1.0 (2019-09-01)
 
