@@ -133,12 +133,9 @@ class CodeTemplate(Template):
     @property
     def context(self):
         """VScode Config Context"""
-        _paths = self.paths
         if self.datadir:
-            root = Path("${workspaceRoot}")
-            _paths = [(root / p.relative_to(self.datadir.parent))
-                      for p in self.paths]
-        paths = [str(p) for p in _paths]
+            paths = [str(p.relative_to(self.datadir.parent))
+                     for p in self.paths]
         stub_paths = json.dumps(paths)
         ctx = {
             "stubs": self.stubs,
