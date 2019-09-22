@@ -34,9 +34,7 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path):
         lines = [l.strip() for l in f.readlines() if l]
         valid = [l for l in lines if "//" not in l[:2]]
     # Valid JSON?
-    root = Path("${workspaceRoot}")
-    expect_paths = [str((root / p.relative_to(tmp_path)))
-                    for p in ctx_paths]
+    expect_paths = [str(p.relative_to(tmp_path)) for p in ctx_paths]
     content = json.loads("\n".join(valid))
     assert sorted(expect_paths) == sorted(
         content["python.autoComplete.extraPaths"])
@@ -47,7 +45,7 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path):
                 datadir=ctx_datadir)
     content = json.loads(expected_path.read_text())
     expect_paths.append(
-        str((root / (tmp_path / "foobar" / "foo.py").relative_to(tmp_path))))
+        str((tmp_path / "foobar" / "foo.py").relative_to(tmp_path)))
     assert sorted(expect_paths) == sorted(
         content["python.autoComplete.extraPaths"])
 
