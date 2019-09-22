@@ -3,12 +3,15 @@
 """Module for handling jinja2 and MicroPy Templates"""
 
 import json
+from functools import partial as _p
 from itertools import chain
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
 from micropy.logger import Log
+
+from . import checks
 
 
 class Template:
@@ -21,6 +24,7 @@ class Template:
         NotImplementedError: Method must be overriden by subclass
     """
     FILENAME = None
+    CHECKS = []
 
     def __init__(self, template, **kwargs):
         self.template = template
@@ -45,6 +49,17 @@ class Template:
             _line = line.strip()
             if not _line.startswith("//"):
                 yield line
+
+    def run_checks(self):
+        """Runs all template checks
+
+        Returns:
+            bool: True if all checks passed
+        """
+        if not self.CHECKS:
+            return True
+        results = [not ck() for ck in self.CHECKS]
+        return any(results)
 
     def update(self, root):
         """Update Template File
@@ -125,6 +140,9 @@ class GenericTemplate(Template):
 class CodeTemplate(Template):
     """Template for VSCode settings"""
     FILENAME = ".vscode/settings.json"
+    CHECKS = [
+        _p(checks.vscode_ext_min_version, 'ms-python.python')
+    ]
 
     def __init__(self, *args, **kwargs):
         self.update_method = self.update_as_json
@@ -234,10 +252,14 @@ class TemplateProvider:
         """
         template = self.get(name, **kwargs)
         self.log.debug(f"Loaded: {str(template)}")
+        if template.CHECKS:
+            self.log.debug(f"Verifying {template} requirements...")
+        template.run_checks()
         parent_dir.mkdir(exist_ok=True)
         out_dir = parent_dir / template.FILENAME
         out_dir.parent.mkdir(exist_ok=True, parents=True)
         self.log.debug(f"Rendered: {name} to {str(out_dir)}")
+        self.log.info(f"$[{name.capitalize()}] File Generated!")
         stream = template.render_stream()
         return stream.dump(str(out_dir))
 
