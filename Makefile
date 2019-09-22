@@ -24,6 +24,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -f .coverage
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
+	rm -f .testmondata
 
 lint: ## check style with flake8
 	flake8 micropy tests --config=setup.cfg
@@ -33,6 +34,13 @@ test: ## run tests quickly with the default Python
 
 test-all: ## run tests on every Python version with tox
 	tox
+
+watch-build: clean ## build pytest-testmon db
+	pytest --testmon
+	$(MAKE) watch
+
+watch: ## watch tests
+	ptw -- --testmon
 
 coverage: ## generate coverage
 	pytest --cov --cov-config=setup.cfg

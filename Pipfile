@@ -26,6 +26,8 @@ coveralls = "*"
 docutils = "==0.15"
 sphinx = "*"
 recommonmark = "*"
+pytest-watch = "*"
+pytest-testmon = "*"
 
 [packages]
 click = ">=7"
