@@ -68,7 +68,7 @@ def test_cli_init(mocker, mock_micropy, shared_datadir, mock_prompt, runner):
 
 
 def test_cli_stubs_add(mocker, mock_micropy, shared_datadir,
-                       runner, tmp_path):
+                       runner, tmp_path, mock_checks):
     """should add stub"""
     test_stub = shared_datadir / 'esp8266_test_stub'
     test_invalid_stub = shared_datadir / 'esp8266_invalid_stub'

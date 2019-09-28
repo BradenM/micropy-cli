@@ -18,7 +18,7 @@ def stub_context(mock_mp_stubs):
     return (stubs, (stub_paths, frozen_paths, fware_paths), ctx_paths)
 
 
-def test_vscode_template(stub_context, shared_datadir, tmp_path):
+def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     stubs, paths, ctx_paths = stub_context
     prov = TemplateProvider(['vscode'])
     ctx_datadir = tmp_path / 'ctx_cata'
