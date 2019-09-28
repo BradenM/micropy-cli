@@ -29,6 +29,17 @@ You can download and install the latest version of this software from the Python
 
 `pip install --upgrade micropy-cli`
 
+### VSCode Integration
+
+If you plan on using `micropy-cli` for it's VSCode related features, you must install the `vscode-python` extension:
+
+`code --install-extension ms-python.python`
+
+You can find the offical page [here](https://marketplace.visualstudio.com/items?itemName=ms-python.python).
+
+> Note: As of `micropy-cli v2.1.1`, you must use version `2019.9.34474` of `vscode-python` or higher. See [#50](https://github.com/BradenM/micropy-cli/issues/50) for details.
+
+
 ## Usage
 
 ```sh
