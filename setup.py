@@ -8,12 +8,23 @@ from setuptools import find_packages, setup
 
 # Package meta-data.
 NAME = 'micropy-cli'
-DESCRIPTION = ('Micropython Project Management Tool for VSCode with Linting,'
-               ' Intellisense, Dependency Management, and more!')
+DESCRIPTION = ('Micropython Project Management Tool with VSCode support, '
+               'Linting, Intellisense, Dependency Management, and more!')
 URL = 'https://github.com/BradenM/micropy-cli'
 AUTHOR = 'Braden Mars'
+AUTHOR_EMAIL = "bradenmars@bradenmars.me"
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = '2.1.1'  # Update via bump2version
+PROJECT_URLS = {
+    "Bug Reports": "https://github.com/BradenM/micropy-cli/issues",
+    "Documentation": "https://micropy-cli.readthedocs.io",
+    "Source Code": URL,
+}
+KEYWORDS = (
+    "micropython stubs linting intellisense "
+    "autocompletion vscode visual-studio-code "
+    "ide microcontroller"
+)
 
 # Required Packages
 REQUIRED = [
@@ -52,20 +63,24 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     author=AUTHOR,
+    author_email=AUTHOR_EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
+    project_urls=PROJECT_URLS,
     packages=find_packages(
         exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
 
     entry_points={
         'console_scripts': ['micropy=micropy.cli:cli'],
     },
+    keywords=KEYWORDS,
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
-    license='GNU GPLv3',
     classifiers=[
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
@@ -74,6 +89,7 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: Implementation :: MicroPython',
         'Topic :: Software Development :: Code Generators',
-        'Topic :: Software Development :: Embedded Systems'
+        'Topic :: Software Development :: Embedded Systems',
+        'Topic :: Software Development :: Build Tools'
     ],
 )

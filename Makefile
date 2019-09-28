@@ -54,6 +54,11 @@ gendoc: ## Generate Docs
 	$(MAKE) -C docs html
 	@printf '$(bold)Docs Generated!\n$(rsttxt)'
 
+test-release: dist ## release on pypi-test repo
+	@printf '$(bold)Uploading Test Release to TestPyPi...\n$(rsttxt)'
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	@printf '$(bold)Test Released published!\n$(rsttxt)'
+
 release: dist ## package and release
 	@printf '$(bold)Uploading package to PyPi...\n$(rsttxt)'
 	twine upload dist/*
