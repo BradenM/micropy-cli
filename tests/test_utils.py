@@ -241,3 +241,13 @@ def test_is_dir_link(mocker, tmp_path):
     assert utils.is_dir_link(link_path)
     mock_path.absolute.return_value = targ_path
     assert not utils.is_dir_link(link_path)
+
+
+def test_is_update_available(mocker):
+    """Test self-update check method"""
+    mock_req = mocker.patch.object(utils.helpers, 'requests')
+    mocker.patch('micropy.__version__', '0.0.0')
+    mock_req.get.return_value.json.return_value = {'releases': {'1.0.0': []}}
+    assert utils.helpers.is_update_available(ignore_cache=True) == '1.0.0'
+    mocker.patch('micropy.__version__', '2.0.0')
+    assert not utils.helpers.is_update_available(ignore_cache=True)

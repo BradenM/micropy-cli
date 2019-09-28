@@ -10,6 +10,8 @@ import questionary as prompt
 from questionary import Choice
 
 import micropy.exceptions as exc
+from micropy import utils
+from micropy.logger import Log
 from micropy.main import MicroPy
 from micropy.project import Project
 
@@ -22,7 +24,14 @@ def cli(ctx):
     if ctx.invoked_subcommand is None:
         proj = Project.resolve('.')
         if not proj:
-            click.echo(ctx.get_help())
+            return click.echo(ctx.get_help())
+    latest = utils.is_update_available()
+    if latest:
+        log = Log.get_logger('MicroPy')
+        log.title("Update Available!")
+        log.info(f"Version $B[v{latest}] is now available")
+        log.info(
+            "You can update via: $[pip install --upgrade micropy-cli]\n")
 
 
 @cli.group(short_help="Manage Micropy Stubs")
