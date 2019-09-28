@@ -1,5 +1,6 @@
 {
     "python.linting.enabled": true,
+    "python.jediEnabled": false,
 
     // Loaded Stubs: {% for stub in stubs %} {{ stub }} {% endfor %}
     "python.autoComplete.extraPaths": {{ paths }},
