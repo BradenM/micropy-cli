@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import json
-from pathlib import Path
 
 import pylint.lint
 import pytest

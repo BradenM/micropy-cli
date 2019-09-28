@@ -10,7 +10,7 @@ mock_vscode_exts = [
 
 
 def test_vscode_ext_min_version(mocker):
-    m_run = mocker.patch.object(checks.subproc, 'run').return_value
+    m_run = mocker.patch.object(checks, 'subproc').run.return_value
     type(m_run).stdout = mocker.PropertyMock(
         return_value="\n".join(mock_vscode_exts))
     assert checks.vscode_ext_min_version('ms-python.python')
