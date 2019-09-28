@@ -37,6 +37,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'sphinx.ext.autosummary',
               'sphinx.ext.autosectionlabel',
+              'sphinx_click.ext',
               'recommonmark']
 
 autodoc_default_flags = ['members',

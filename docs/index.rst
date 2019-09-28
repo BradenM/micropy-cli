@@ -16,6 +16,7 @@ process of creating a workspace complete with:
    :maxdepth: 2
 
    README.md
+   cli
    modules
 
 

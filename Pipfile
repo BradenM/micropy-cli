@@ -28,6 +28,7 @@ sphinx = "*"
 recommonmark = "*"
 pytest-watch = "*"
 pytest-testmon = "*"
+sphinx-click = "*"
 
 [packages]
 click = ">=7"
