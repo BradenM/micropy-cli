@@ -1,3 +1,19 @@
+<a name="v2.2.0"></a>
+## v2.2.0 (2019-09-28)
+
+
+#### Performance
+
+* **stubs:**  Cache Available Stubs for Searching ([998b125a](998b125a))
+
+#### Features
+
+*   Template Checks, MS-Python Version Warning (#52) ([fc151f6b](fc151f6b))
+* **cli:**  Automatic Update Alerts (#54) ([1f33abef](1f33abef))
+* **vscode:**  Ensure Jedi is Disabled in VSCode Template ([efce877a](efce877a))
+
+
+
 <a name="v2.1.1"></a>
 ### v2.1.1 (2019-09-22)
 
