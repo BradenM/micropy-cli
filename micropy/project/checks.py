@@ -3,6 +3,7 @@
 """Various requirement checks for templates"""
 
 import subprocess as subproc
+from functools import partial as _p
 
 from packaging import version
 
@@ -30,13 +31,15 @@ def iter_vscode_ext(name=None):
             yield (ename, vers)
 
 
-def vscode_ext_min_version(ext, min_version=VSCODE_MS_PY_MINVER):
+def vscode_ext_min_version(ext, min_version=VSCODE_MS_PY_MINVER, info=None):
     """Check if installed VScode Extension meets requirements
 
     Args:
         ext (str): Name of Extension to Test
         min_version (str, optional): Minimum version.
             Defaults to VSCODE_MS_PY_MINVER.
+        info (str, optional): Additional information to output.
+            Defaults to None.
 
     Returns:
         bool: True if requirement is satisfied, False otherwise.
@@ -50,6 +53,17 @@ def vscode_ext_min_version(ext, min_version=VSCODE_MS_PY_MINVER):
         f"\nVSCode Extension {ext} failed to satisfy requirements!", bold=True)
     log.error(f"$[Min Required Version]: {min_vers}")
     log.error(f"$[Current Version:] {cur_vers}")
-    log.warn("VSCode Integration will fail!")
-    log.warn("See $[BradenM/micropy-cli#50] for details.\n")
+    if info:
+        log.warn(info)
     return False
+
+
+TEMPLATE_CHECKS = {
+    'ms-python': _p(vscode_ext_min_version,
+                    'ms-python.python',
+                    info=(
+                        "VSCode Integration will fail! "
+                        "See $[BradenM/micropy-cli#50] for details.\n"
+                    )
+                    ),
+}

@@ -3,7 +3,6 @@
 """Module for handling jinja2 and MicroPy Templates"""
 
 import json
-from functools import partial as _p
 from itertools import chain
 from pathlib import Path
 
@@ -11,7 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from micropy.logger import Log
 
-from . import checks
+from .checks import TEMPLATE_CHECKS
 
 
 class Template:
@@ -141,7 +140,7 @@ class CodeTemplate(Template):
     """Template for VSCode settings"""
     FILENAME = ".vscode/settings.json"
     CHECKS = [
-        _p(checks.vscode_ext_min_version, 'ms-python.python')
+        TEMPLATE_CHECKS['ms-python']
     ]
 
     def __init__(self, *args, **kwargs):
