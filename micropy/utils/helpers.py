@@ -13,15 +13,18 @@ import subprocess as subproc
 import sys
 import tarfile
 import xml.etree.ElementTree as ET
+from datetime import timedelta
 from pathlib import Path
 
 import requests
 import requirements
+from cachier import cachier
 from packaging import version
 from requests import exceptions as reqexc
 from requests import utils as requtil
 from tqdm import tqdm
 
+import micropy
 from micropy.lib.stubber.runOnPc import make_stub_files as stubgen
 
 __all__ = ["is_url", "get_url_filename",
@@ -30,7 +33,7 @@ __all__ = ["is_url", "get_url_filename",
            "stream_download", "search_xml",
            "generate_stub", "get_package_meta",
            "extract_tarbytes", "iter_requirements",
-           "create_dir_link", "is_dir_link"]
+           "create_dir_link", "is_dir_link", "is_update_available"]
 
 
 def is_url(url):
@@ -338,4 +341,21 @@ def is_dir_link(path):
         resolved = str(path.resolve())
         if not str(path.absolute()) == resolved:
             return True
+    return False
+
+
+@cachier(stale_after=timedelta(days=2))
+def is_update_available():
+    """Check if micropy-cli update is available`
+
+    Returns:
+        bool: True if update available, else False.
+    """
+    url = f"https://pypi.org/pypi/micropy-cli/json"
+    data = requests.get(url).json()
+    versions = list(data['releases'].keys())
+    latest = version.parse(versions[-1])
+    cur_version = version.parse(micropy.__version__)
+    if cur_version < latest:
+        return str(latest)
     return False

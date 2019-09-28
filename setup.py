@@ -37,7 +37,8 @@ REQUIRED = [
     'requests',
     'tqdm',
     'requirements-parser',
-    'packaging'
+    'packaging',
+    'cachier'
 ]
 
 EXTRAS = {

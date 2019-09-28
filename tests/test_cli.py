@@ -14,13 +14,19 @@ def runner():
     return runner
 
 
-def test_cli_micropy(runner):
+def test_cli_micropy(runner, mocker):
     """should execute"""
     result = runner.invoke(cli.cli)
     assert result.exit_code == 0
     expected = ("CLI Application for creating/managing"
                 " Micropython Projects.")
     assert expected in result.output
+    # should alert about update
+    mocker.patch.object(
+        cli.utils, 'is_update_available', return_value='1.0.0')
+    log_spy = mocker.spy(cli, 'Log')
+    runner.invoke(cli.cli, ["stubs"])
+    log_spy.get_logger.assert_called_once_with("MicroPy")
 
 
 def test_stub_list(mock_mp_stubs, mocker, runner):
