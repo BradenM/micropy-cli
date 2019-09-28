@@ -111,7 +111,7 @@ def test_search_xml(mocker, shared_datadir, test_urls):
     mock_get = mocker.patch.object(requests, 'get')
     with test_xml.open('rb') as f:
         type(mock_get.return_value).content = f.read()
-    results = utils.search_xml(u['valid'], "Key")
+    results = utils.search_xml(u['valid'], "Key", ignore_cache=True)
     assert sorted(results) == sorted([
         "packages/esp32-micropython-1.10.0.tar.gz",
         "packages/esp32-micropython-1.11.0.tar.gz"

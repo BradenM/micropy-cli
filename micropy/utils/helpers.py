@@ -179,6 +179,7 @@ def stream_download(url, **kwargs):
     return content
 
 
+@cachier(stale_after=timedelta(days=3))
 def search_xml(url, node):
     """Search xml from url by node
 
