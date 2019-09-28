@@ -8,6 +8,13 @@ import questionary
 
 import micropy
 
+# Mock values for Template VSCode ext checks
+mock_vscode_exts = [
+    'mock.ext@0.0.0',
+    # meets req
+    'ms-python.python@2019.9.34474'
+]
+
 
 @pytest.fixture
 def mock_prompt(monkeypatch):
@@ -95,3 +102,13 @@ def test_repo(test_urls, mocker):
     repo = micropy.stubs.source.StubRepo(
         "TestRepo", test_urls['valid'], "packages")
     return repo
+
+
+@pytest.fixture
+def mock_checks(mocker):
+    """Mock VSCode Template Checks"""
+    m_run = mocker.patch.object(
+        micropy.project.checks.subproc, "run").return_value
+    type(m_run).stdout = mocker.PropertyMock(
+        return_value="\n".join(mock_vscode_exts))
+    return m_run

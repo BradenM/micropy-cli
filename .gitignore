@@ -132,3 +132,5 @@ dmypy.json
 !tests/data/project_test/**/*
 
 .testmondata
+
+.tmontmp/

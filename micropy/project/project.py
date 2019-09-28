@@ -52,7 +52,8 @@ class Project:
 
         self.config = {'vscode': False, 'pylint': False}
         self.log = Log.add_logger(self.name, show_title=False)
-        template_log = Log.add_logger("Templater", parent=self.log)
+        template_log = Log.add_logger(
+            "Templater", parent=self.log, show_title=False)
         self.provider = None
         if templates:
             for key in self.config:
@@ -340,8 +341,6 @@ class Project:
         self.log.info("Populating Stub info...")
         for t in self.provider.templates:
             self.provider.render_to(t, self.path, **self.context)
-            _name = t.capitalize()
-            self.log.info(f"$[{_name}] template generated!")
         self.log.success("Stubs Injected!")
         return self.context
 

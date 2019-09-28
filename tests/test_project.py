@@ -43,7 +43,7 @@ def test_project_init(mock_mp_stubs, mock_cwd):
     assert proj.name == 'ProjName'
 
 
-def test_project_structure(mock_mp_stubs, mock_cwd):
+def test_project_structure(mock_mp_stubs, mock_cwd, mock_checks):
     """Test if project creates files"""
     mp = mock_mp_stubs
     proj_stubs = list(mp.STUBS)[:2]
