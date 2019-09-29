@@ -274,7 +274,11 @@ class TemplateProvider:
         """
         template = self.get(name, **kwargs)
         self.log.debug(f"Loaded: {str(template)}")
-        template.update(root_dir)
+        try:
+            template.update(root_dir)
+        except FileNotFoundError:
+            self.log.debug("Template does not exist!")
+            return self.render_to(name, root_dir, **kwargs)
         self.log.debug(f"Updated: {str(template)}")
         return template
 
