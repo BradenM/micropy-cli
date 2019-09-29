@@ -47,6 +47,11 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
         str((tmp_path / "foobar" / "foo.py").relative_to(tmp_path)))
     assert sorted(expect_paths) == sorted(
         content["python.autoComplete.extraPaths"])
+    # Test update with missing file
+    expected_path.unlink()  # delete file
+    prov.update('vscode', tmp_path, stubs=stubs, paths=ctx_paths,
+                datadir=ctx_datadir)
+    assert expected_path.exists()
 
 
 def test_pylint_template(stub_context, tmp_path):
