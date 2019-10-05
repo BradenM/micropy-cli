@@ -8,9 +8,11 @@ This module provides utility functions that are used within
 MicropyCli.
 """
 
-from . import helpers
+from . import decorators, helpers
+from .decorators import *  # noqa
 from .helpers import *  # noqa
 from .pybwrapper import PyboardWrapper  # noqa
 from .validate import Validator  # noqa
 
-__all__ = ["Validator", "PyboardWrapper"] + helpers.__all__
+__all__ = (["Validator", "PyboardWrapper"] +
+           helpers.__all__ + decorators.__all__)

@@ -9,6 +9,7 @@ from pathlib import Path
 from micropy import data, utils
 from micropy.lib.stubber import process as stubber
 from micropy.logger import Log
+from micropy.project import Project
 from micropy.stubs import StubManager, source
 
 
@@ -41,6 +42,7 @@ class MicroPy:
         self.STUB_DIR.mkdir()
         return self.setup()
 
+    @utils.lazy_property
     def project(self):
         proj = self.resolve_project('.', verbose=self.verbose)
         return proj
