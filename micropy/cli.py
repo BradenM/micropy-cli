@@ -82,7 +82,7 @@ def init(mpy, path, name=None, template=None):
                          for t, val in Project.TEMPLATES.items()]
         template = prompt.checkbox(
             f"Choose any Templates to Generate", choices=templ_choices).ask()
-    stubs = [Choice(str(s), value=s) for s in mpy.STUBS]
+    stubs = [Choice(str(s), value=s) for s in mpy.stubs]
     if not stubs:
         mpy.log.error("You don't have any stubs!")
         mpy.log.title(
@@ -94,7 +94,7 @@ def init(mpy, path, name=None, template=None):
                       name=name,
                       templates=template,
                       stubs=stub_choices,
-                      stub_manager=mpy.STUBS)
+                      stub_manager=mpy.stubs)
     proj_relative = project.create()
     mpy.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 
@@ -166,11 +166,11 @@ def add(mpy, stub_name, force=False):
 
     Checkout the docs on Github for more info.
     """
-    mpy.STUBS.verbose_log(True)
-    proj = Project('.', stub_manager=mpy.STUBS)
+    mpy.stubs.verbose_log(True)
+    proj = Project('.', stub_manager=mpy.stubs)
     mpy.log.title(f"Adding $[{stub_name}] to stubs")
     try:
-        stub = mpy.STUBS.add(stub_name, force=force)
+        stub = mpy.stubs.add(stub_name, force=force)
     except exc.StubNotFound:
         mpy.log.error(f"$[{stub_name}] could not be found!")
         sys.exit(1)
@@ -189,7 +189,7 @@ def add(mpy, stub_name, force=False):
 def search(mpy, query):
     """Search available Stubs"""
     mpy.log.title(f"Searching Stub Repositories...")
-    results = mpy.STUBS.search_remote(query)
+    results = mpy.stubs.search_remote(query)
     mpy.log.title(f"Results for $[{query}]:")
     for pkg, installed in results:
         name = f"{pkg} $B[(Installed)]" if installed else pkg
@@ -208,14 +208,14 @@ def list(mpy):
                 for stub in stubs:
                     mpy.log.info(str(stub))
     mpy.log.title("Installed Stubs:")
-    mpy.log.info(f"Total: {len(mpy.STUBS)}")
-    print_stubs(mpy.STUBS.iter_by_firmware())
+    mpy.log.info(f"Total: {len(mpy.stubs)}")
+    print_stubs(mpy.stubs.iter_by_firmware())
     mpy.verbose = False
     proj = mpy.resolve_project('.')
     if proj:
         mpy.log.title(f"Stubs used in {proj.name}:")
         mpy.log.info(f"Total: {len(proj.stubs)}")
-        stubs = mpy.STUBS.iter_by_firmware(stubs=proj.stubs)
+        stubs = mpy.stubs.iter_by_firmware(stubs=proj.stubs)
         print_stubs(stubs)
 
 

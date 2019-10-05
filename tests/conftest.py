@@ -80,9 +80,9 @@ def test_urls():
 
 @pytest.fixture
 def mock_mp_stubs(mock_micropy, mocker, shared_datadir):
-    mock_micropy.STUBS.add((shared_datadir / 'fware_test_stub'))
-    mock_micropy.STUBS.add((shared_datadir / 'esp8266_test_stub'))
-    mock_micropy.STUBS.add((shared_datadir / 'esp32_test_stub'))
+    mock_micropy.stubs.add((shared_datadir / 'fware_test_stub'))
+    mock_micropy.stubs.add((shared_datadir / 'esp8266_test_stub'))
+    mock_micropy.stubs.add((shared_datadir / 'esp32_test_stub'))
     return mock_micropy
 
 

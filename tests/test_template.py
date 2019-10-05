@@ -10,7 +10,7 @@ from micropy.project.template import Template, TemplateProvider
 
 @pytest.fixture
 def stub_context(mock_mp_stubs):
-    stubs = list(mock_mp_stubs.STUBS)[:3]
+    stubs = list(mock_mp_stubs.stubs)[:3]
     stub_paths = [stub.stubs for stub in stubs]
     frozen_paths = [stub.frozen for stub in stubs]
     fware_paths = [stub.firmware.frozen for stub in stubs]
