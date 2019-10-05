@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from micropy import project
+from micropy import main, project
 from micropy.project.template import TemplateProvider
 
 
@@ -66,7 +66,7 @@ def test_project_structure(mock_mp_stubs, mock_cwd, mock_checks):
 
 
 def test_project_load(mocker, shared_datadir, mock_pkg):
-    mock_mp = mocker.patch.object(project.project, 'MicroPy').return_value
+    mock_mp = mocker.patch.object(main, 'MicroPy').return_value
     mock_utils = mocker.patch.object(project.project, 'utils')
     mock_shutil = mocker.patch.object(project.project, 'shutil')
     mock_utils.extract_tarbytes.return_value.rglob.side_effect = [
@@ -81,7 +81,8 @@ def test_project_load(mocker, shared_datadir, mock_pkg):
     mock_utils.generate_stub.return_value = (Path(
         "foobar.py"), Path("foobar.pyi"))
     proj_path = shared_datadir / 'project_test'
-    proj = project.Project.resolve(proj_path)
+    proj = project.Project(proj_path, stub_manager=mock_mp.STUBS)
+    proj.load()
     expect_custom = proj.path / '../esp32_test_stub'
     mock_mp.STUBS.add.assert_any_call("esp32-micropython-1.11.0")
     mock_mp.STUBS.add.assert_any_call("esp8266-micropython-1.11.0")
@@ -101,35 +102,39 @@ def test_project_load(mocker, shared_datadir, mock_pkg):
     mock_mp.STUBS.resolve_subresource.side_effect = [OSError]
     # mock_stub = mocker.patch.object(stubs, 'StubManager').return_value
     # sys_spy = mocker.spy(project.sys)
-    with pytest.raises(SystemExit):
-        proj = project.Project.resolve(proj_path)
+    # with pytest.raises(SystemExit):
+    #     proj = project.Project.resolve(proj_path)
 
 
 def test_project_add_stub(mocker, shared_datadir, tmp_path, mock_pkg):
     """should add stub to project"""
-    mock_mp = mocker.patch.object(project.project, 'MicroPy').return_value
+    # mock_mp = mocker.patch.object(main, 'MicroPy').return_value
+    m_stubman = mocker.MagicMock()
     proj_path = tmp_path / 'tmp_project'
     shutil.copytree((shared_datadir / 'project_test'), proj_path)
     # Test Loaded
-    proj = project.Project.resolve(proj_path)
+    proj = project.Project(proj_path, stub_manager=m_stubman)
+    proj.load()
     proj.add_stub("mock_stub")
-    mock_mp.STUBS.resolve_subresource.assert_called_with(
+    m_stubman.resolve_subresource.assert_called_with(
         [mocker.ANY, mocker.ANY, mocker.ANY, "mock_stub"], proj.data)
     shutil.rmtree(proj_path)
     shutil.copytree((shared_datadir / 'project_test'), proj_path)
     # Test Not loaded
-    proj = project.Project(proj_path, stub_manager=mock_mp.STUBS)
+    proj = project.Project(proj_path, stub_manager=m_stubman)
     proj.add_stub("mock_stub")
-    mock_mp.STUBS.resolve_subresource.assert_called_with(
+    m_stubman.resolve_subresource.assert_called_with(
         [mocker.ANY, mocker.ANY, mocker.ANY, "mock_stub"], proj.data)
-    assert mock_mp.STUBS.resolve_subresource.call_count == 3
+    assert m_stubman.resolve_subresource.call_count == 3
 
 
 def test_project_add_pkg(mocker, mock_proj_dir, shared_datadir, tmp_path,
                          mock_pkg):
     """should add package to requirements"""
-    mock_mp = mocker.patch.object(project.project, "MicroPy").return_value
-    proj = project.Project.resolve(mock_proj_dir)
+    # mock_mp = mocker.patch.object(project.project, "MicroPy").return_value
+    m_stubman = mocker.MagicMock()
+    proj = project.Project(mock_proj_dir, stub_manager=m_stubman)
+    proj.load()
     proj.add_package('mock_pkg')
     assert proj.packages['mock_pkg'] == "*"
     assert proj.add_package('mock_pkg') is None
@@ -141,12 +146,11 @@ def test_project_add_pkg(mocker, mock_proj_dir, shared_datadir, tmp_path,
     assert "mock_pkg" in lines
     # Test Context
     expect_proj_stubs = mock_proj_dir / '.micropy' / "NewProject"
-    mock_manager = mock_mp.STUBS
-    mock_manager.resolve_subresource.return_value = [mocker.MagicMock()]
+    m_stubman.resolve_subresource.return_value = [mocker.MagicMock()]
     mock_update = mocker.patch.object(
         project.project.TemplateProvider, 'update')
     proj = project.Project(
-        mock_proj_dir, stub_manager=mock_manager, name="NewProject")
+        mock_proj_dir, stub_manager=m_stubman, name="NewProject")
     proj.load()
     assert expect_proj_stubs in proj.context['paths']
     mock_update.assert_called_with('vscode', proj.path, **proj.context)
@@ -154,8 +158,9 @@ def test_project_add_pkg(mocker, mock_proj_dir, shared_datadir, tmp_path,
 
 def test_project_add_requirements(mocker, mock_proj_dir, mock_pkg):
     """should add from requirements.txt"""
-    mocker.patch.object(project.project, "MicroPy").return_value
-    proj = project.Project.resolve(mock_proj_dir)
+    mocker.patch.object(main, "MicroPy").return_value
+    proj = project.Project(mock_proj_dir, stub_manager=mocker.MagicMock())
+    proj.load()
     # Assert no reqs file
     _reqspath = (proj.requirements, proj.dev_requirements)
     proj.requirements = Path('foobar')

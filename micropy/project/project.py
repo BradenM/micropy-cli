@@ -13,7 +13,6 @@ import requirements
 from micropy import utils
 from micropy.exceptions import StubError
 from micropy.logger import Log
-from micropy.main import MicroPy
 from micropy.project.template import TemplateProvider
 
 
@@ -366,23 +365,3 @@ class Project:
         self.to_json()
         self.log.success(f"Project Created!")
         return self.path.relative_to(Path.cwd())
-
-    @classmethod
-    def resolve(cls, path, verbose=True):
-        """Returns project from path if it exists
-
-        Args:
-            path (str): Path to test
-            verbose (bool): Log to stdout. Defaults to True.
-
-        Returns:
-            (Project|None): Project if it exists
-        """
-        path = Path(path).resolve()
-        proj = cls(path)
-        if proj.exists():
-            micropy = MicroPy()
-            if verbose:
-                micropy.log.title(f"Loading Project")
-            proj.load(stub_manager=micropy.STUBS, verbose=verbose)
-            return proj

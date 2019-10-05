@@ -23,6 +23,7 @@ class MicroPy:
 
     def __init__(self):
         self.log = Log.get_logger('MicroPy')
+        self.verbose = True
         self.setup()
 
     def setup(self):
@@ -39,6 +40,29 @@ class MicroPy:
         self.FILES.mkdir(exist_ok=True)
         self.STUB_DIR.mkdir()
         return self.setup()
+
+    def project(self):
+        proj = self.resolve_project('.', verbose=self.verbose)
+        return proj
+
+    def resolve_project(self, path, verbose=True):
+        """Returns project from path if it exists
+
+        Args:
+            path (str): Path to test
+            verbose (bool): Log to stdout. Defaults to True.
+
+        Returns:
+            (Project|None): Project if it exists
+        """
+        path = Path(path).absolute()
+        proj = Project(path)
+        if proj.exists():
+            if verbose:
+                self.log.title(f"Loading Project")
+            proj.load(stub_manager=self.STUBS, verbose=verbose)
+            return proj
+        return None
 
     def create_stubs(self, port, verbose=False):
         """Create and add stubs from Pyboard
