@@ -22,25 +22,25 @@ def test_setup(mock_micropy_path):
     assert expect_stubs_dir.exists()
     # Test after inital setup
     mp_ = main.MicroPy()
-    assert len(mp_.STUBS) == len(mp.STUBS)
+    assert len(mp_.stubs) == len(mp.stubs)
 
 
 def test_add_stub(mock_micropy, shared_datadir):
     """Test Adding Valid Stub"""
     fware_path = shared_datadir / 'fware_test_stub'
     stub_path = shared_datadir / 'esp8266_test_stub'
-    stubs = mock_micropy.STUBS
+    stubs = mock_micropy.stubs
     fware_stub = stubs.add(fware_path, mock_micropy.STUB_DIR)
     stub = stubs.add(stub_path, mock_micropy.STUB_DIR)
-    assert stub in list(mock_micropy.STUBS)
+    assert stub in list(mock_micropy.stubs)
     assert stub.path in mock_micropy.STUB_DIR.iterdir()
     assert stub.path.exists()
-    assert fware_stub in list(mock_micropy.STUBS._firmware)
+    assert fware_stub in list(mock_micropy.stubs._firmware)
 
 
 def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     """should create and add stubs"""
-    mock_micropy.STUBS.add((shared_datadir / 'fware_test_stub'))
+    mock_micropy.stubs.add((shared_datadir / 'fware_test_stub'))
     tmp_stub_path = tmp_path / 'createtest'
     tmp_stub_path.mkdir()
     copytree(str(shared_datadir / 'stubber_test_stub'),
@@ -51,14 +51,14 @@ def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
                             mock_pyb.return_value, mock_pyb.return_value,
                             mock_pyb.return_value]
     mp = main.MicroPy()
-    mocker.spy(mp.STUBS, 'add')
+    mocker.spy(mp.stubs, 'add')
     stub = mp.create_stubs("/dev/PORT")
     assert stub is None
     mock_pyb.return_value.run.side_effect = [Exception, mocker.ANY, mocker.ANY]
     stub = mp.create_stubs("/dev/PORT")
     assert stub is None
     stub = mp.create_stubs("/dev/PORT")
-    mp.STUBS.add.assert_any_call((tmp_stub_path / 'esp32-1.11.0'))
+    mp.stubs.add.assert_any_call((tmp_stub_path / 'esp32-1.11.0'))
     rmtree((tmp_stub_path / 'esp32-1.11.0'))
     assert isinstance(stub, stubs.DeviceStub)
     # Test outpath with firmware
@@ -67,21 +67,21 @@ def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     mod_data['firmware']['name'] = 'micropython'
     json.dump(mod_data, mod_path.open('w+'))
     stub = mp.create_stubs("/dev/PORT")
-    mp.STUBS.add.assert_any_call((tmp_stub_path / 'esp32-micropython-1.11.0'))
+    mp.stubs.add.assert_any_call((tmp_stub_path / 'esp32-micropython-1.11.0'))
 
 
-def test_create_stubs_pymin_check(mocker, mock_mp_stubs):
+def test_create_stubs_pymin_check(mocker, mock_micropy):
     """should exit without pymin"""
     mocker.patch("micropy.main.utils.PyboardWrapper")
-    mocker.patch.object(mock_mp_stubs, 'STUBS')
+    mocker.patch("micropy.main.StubManager")
     mock_stubber = mocker.patch.object(main, "stubber")
     mock_exit = mocker.spy(main.sys, 'exit')
     mock_stubber.minify_script.side_effect = [AttributeError, mocker.ANY]
     # Should exit
     with pytest.raises(SystemExit):
-        mock_mp_stubs.create_stubs("/dev/PORT")
+        mock_micropy.create_stubs("/dev/PORT")
     # Should continue
-    mock_mp_stubs.create_stubs("/dev/PORT")
+    mock_micropy.create_stubs("/dev/PORT")
     mock_exit.assert_called_once_with(1)
 
 

@@ -47,7 +47,7 @@ def test_stub_list(mock_mpy, mocker, runner):
     mock_mpy.resolve_project.return_value = mock_project.return_value
     mock_mpy.project.name = "Test Project"
     mock_mpy.project.stubs = m_data
-    mock_mpy.STUBS.iter_by_firmware.return_value = m_data
+    mock_mpy.stubs.iter_by_firmware.return_value = m_data
     result = runner.invoke(cli.list)
     assert result.exit_code == 0
     for s in ["dev1", "dev2"]:
@@ -66,10 +66,10 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner):
     mock_project = mocker.patch.object(cli, "Project")
     result = runner.invoke(cli.init, ["TestProject"])
     assert result.exit_code == 1
-    mock_mpy.STUBS = ["stub"]
+    mock_mpy.stubs = ["stub"]
     result = runner.invoke(cli.init, ["TestProject", "-t", "vscode"])
     mock_project.assert_called_once_with(
-        "TestProject", stubs=["stub"], stub_manager=mock_mpy.STUBS,
+        "TestProject", stubs=["stub"], stub_manager=mock_mpy.stubs,
         name=None, templates=('vscode', ))
     mock_project.return_value.create.assert_called_once()
     assert result.exit_code == 0
@@ -77,7 +77,7 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner):
     ptext_mock.ask.return_value = "ProjectName"
     result = runner.invoke(cli.init, ["-t", "vscode"])
     mock_project.assert_called_with(
-        Path.cwd(), stubs=["stub"], stub_manager=mock_mpy.STUBS,
+        Path.cwd(), stubs=["stub"], stub_manager=mock_mpy.stubs,
         name="ProjectName", templates=('vscode', ))
 
 
@@ -90,7 +90,7 @@ def test_cli_stubs_add(mocker, mock_mpy, shared_datadir,
     mock_proj = mocker.patch.object(cli, 'Project').return_value
     mock_proj.exists.return_value = True
     mock_mpy.project = mock_proj
-    mock_mpy.STUBS.add.side_effect = [micropy.exceptions.StubError,
+    mock_mpy.stubs.add.side_effect = [micropy.exceptions.StubError,
                                       micropy.exceptions.StubNotFound,
                                       mocker.MagicMock()]
 
@@ -114,7 +114,7 @@ def test_cli_stubs_add(mocker, mock_mpy, shared_datadir,
 
 def test_cli_stubs_search(mock_mpy, runner):
     """should search stubs"""
-    mock_mpy.STUBS.search_remote.return_value = [
+    mock_mpy.stubs.search_remote.return_value = [
         ("esp8266-micropython-1.11.0", True, ),
         ("esp8266-micropython-1.10.0", False, )
     ]

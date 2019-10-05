@@ -14,33 +14,33 @@ from micropy.stubs import StubManager, source
 
 
 class MicroPy:
-    """Parent class for handling setup and variables"""
+    """Handles App State Management"""
     LIB = Path(__file__).parent / 'lib'
     STUBBER = LIB / 'stubber'
     FILES = Path.home() / '.micropy'
     STUB_DIR = FILES / 'stubs'
-    STUBS = None
+
     REPOS = data.PATH / 'sources.json'
 
     def __init__(self):
         self.log = Log.get_logger('MicroPy')
         self.verbose = True
-        self.setup()
+        self.log.debug("\n---- MicropyCLI Session ----")
+        if not self.STUB_DIR.exists():
+            self.setup()
 
     def setup(self):
         """creates necessary directories for micropy"""
-        self.log.debug("\n---- MicropyCLI Session ----")
-        self.log.debug("Loading stubs...")
-        if self.STUB_DIR.exists():
-            repo_list = self.REPOS.read_text()
-            repos = source.StubRepo.from_json(repo_list)
-            self.STUBS = StubManager(resource=self.STUB_DIR, repos=repos)
-            return self.STUBS
         self.log.debug("Running first time setup...")
         self.log.debug(f"Creating .micropy directory @ {self.FILES}")
         self.FILES.mkdir(exist_ok=True)
         self.STUB_DIR.mkdir()
-        return self.setup()
+
+    @utils.lazy_property
+    def stubs(self):
+        repo_list = self.REPOS.read_text()
+        repos = source.StubRepo.from_json(repo_list)
+        return StubManager(resource=self.STUB_DIR, repos=repos)
 
     @utils.lazy_property
     def project(self):
@@ -62,7 +62,7 @@ class MicroPy:
         if proj.exists():
             if verbose:
                 self.log.title(f"Loading Project")
-            proj.load(stub_manager=self.STUBS, verbose=verbose)
+            proj.load(stub_manager=self.stubs, verbose=verbose)
             return proj
         return None
 
@@ -108,7 +108,7 @@ class MicroPy:
             out_dir = pyb.copy_dir("/stubs", tmpdir)
             stub_path = next(out_dir.iterdir())
             self.log.info(f"Copied Stubs: $[{stub_path.name}]")
-            stub_path = self.STUBS.from_stubber(stub_path, out_dir)
-            stub = self.STUBS.add(stub_path)
+            stub_path = self.stubs.from_stubber(stub_path, out_dir)
+            stub = self.stubs.add(stub_path)
         self.log.success(f"Added {stub.name} to stubs!")
         return stub

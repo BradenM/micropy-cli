@@ -36,7 +36,7 @@ def mock_proj_dir(mocker, tmp_path, shared_datadir):
 def test_project_init(mock_mp_stubs, mock_cwd):
     """Test project setup"""
     mp = mock_mp_stubs
-    proj_stubs = list(mp.STUBS)[:2]
+    proj_stubs = list(mp.stubs)[:2]
     proj_path = mock_cwd / "ProjName"
     proj = project.Project(proj_path, stubs=proj_stubs)
     assert proj.path == mock_cwd / 'ProjName'
@@ -46,11 +46,11 @@ def test_project_init(mock_mp_stubs, mock_cwd):
 def test_project_structure(mock_mp_stubs, mock_cwd, mock_checks):
     """Test if project creates files"""
     mp = mock_mp_stubs
-    proj_stubs = list(mp.STUBS)[:2]
+    proj_stubs = list(mp.stubs)[:2]
     proj_path = mock_cwd / "ProjName"
     templates = ['vscode', 'pylint', 'bootstrap', 'pymakr', 'gitignore']
     proj = project.Project(proj_path, templates=templates, stubs=proj_stubs,
-                           stub_manager=mp.STUBS)
+                           stub_manager=mp.stubs)
     proj.create()
     templ_files = [i.name for i in (
         TemplateProvider.TEMPLATE_DIR).glob("**/*")]
@@ -81,14 +81,14 @@ def test_project_load(mocker, shared_datadir, mock_pkg):
     mock_utils.generate_stub.return_value = (Path(
         "foobar.py"), Path("foobar.pyi"))
     proj_path = shared_datadir / 'project_test'
-    proj = project.Project(proj_path, stub_manager=mock_mp.STUBS)
+    proj = project.Project(proj_path, stub_manager=mock_mp.stubs)
     proj.load()
     expect_custom = proj.path / '../esp32_test_stub'
-    mock_mp.STUBS.add.assert_any_call("esp32-micropython-1.11.0")
-    mock_mp.STUBS.add.assert_any_call("esp8266-micropython-1.11.0")
-    mock_mp.STUBS.add.assert_any_call(expect_custom)
-    assert mock_mp.STUBS.add.call_count == 3
-    mock_mp.STUBS.resolve_subresource.assert_called_once_with(
+    mock_mp.stubs.add.assert_any_call("esp32-micropython-1.11.0")
+    mock_mp.stubs.add.assert_any_call("esp8266-micropython-1.11.0")
+    mock_mp.stubs.add.assert_any_call(expect_custom)
+    assert mock_mp.stubs.add.call_count == 3
+    mock_mp.stubs.resolve_subresource.assert_called_once_with(
         mocker.ANY, proj.data)
     assert proj.data.exists()
     assert mock_shutil.copy2.call_count == 2
@@ -99,7 +99,7 @@ def test_project_load(mocker, shared_datadir, mock_pkg):
     mock_shutil.copytree.assert_called_once_with(
         Path('pkg'), (proj.pkg_data / 'pkg'))
     # Test Win Priv Fail
-    mock_mp.STUBS.resolve_subresource.side_effect = [OSError]
+    mock_mp.stubs.resolve_subresource.side_effect = [OSError]
     # mock_stub = mocker.patch.object(stubs, 'StubManager').return_value
     # sys_spy = mocker.spy(project.sys)
     # with pytest.raises(SystemExit):
