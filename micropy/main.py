@@ -15,32 +15,26 @@ from micropy.stubs import StubManager, source
 
 class MicroPy:
     """Handles App State Management"""
-    LIB = Path(__file__).parent / 'lib'
-    STUBBER = LIB / 'stubber'
-    FILES = Path.home() / '.micropy'
-    STUB_DIR = FILES / 'stubs'
-
-    REPOS = data.PATH / 'sources.json'
 
     def __init__(self):
         self.log = Log.get_logger('MicroPy')
         self.verbose = True
         self.log.debug("\n---- MicropyCLI Session ----")
-        if not self.STUB_DIR.exists():
+        if not data.STUB_DIR.exists():
             self.setup()
 
     def setup(self):
         """creates necessary directories for micropy"""
         self.log.debug("Running first time setup...")
-        self.log.debug(f"Creating .micropy directory @ {self.FILES}")
-        self.FILES.mkdir(exist_ok=True)
-        self.STUB_DIR.mkdir()
+        self.log.debug(f"Creating .micropy directory @ {data.FILES}")
+        data.FILES.mkdir(exist_ok=True)
+        data.STUB_DIR.mkdir()
 
     @utils.lazy_property
     def stubs(self):
-        repo_list = self.REPOS.read_text()
+        repo_list = data.REPO_SOURCES.read_text()
         repos = source.StubRepo.from_json(repo_list)
-        return StubManager(resource=self.STUB_DIR, repos=repos)
+        return StubManager(resource=data.STUB_DIR, repos=repos)
 
     @utils.lazy_property
     def project(self):

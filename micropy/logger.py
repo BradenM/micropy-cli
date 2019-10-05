@@ -6,9 +6,10 @@ import logging
 import re
 from contextlib import contextmanager
 from logging.handlers import RotatingFileHandler
-from pathlib import Path
 
 import click
+
+from micropy import data
 
 
 class Log:
@@ -48,7 +49,7 @@ class ServiceLog:
     :type base_color: str
 
     """
-    LOG_FILE = Path.home() / '.micropy' / 'micropy.log'
+    LOG_FILE = data.LOG_FILE
 
     def __init__(
             self, service_name='MicroPy', base_color='bright_green', **kwargs):

@@ -7,7 +7,7 @@ from shutil import copytree, rmtree
 import pytest
 
 import micropy.exceptions as exc
-from micropy import main
+from micropy import data, main
 from micropy.stubs import stubs
 
 
@@ -16,8 +16,6 @@ def test_setup(mock_micropy_path):
     expect_mp_dir = mock_micropy_path
     expect_stubs_dir = mock_micropy_path / 'stubs'
     mp = main.MicroPy()
-    print("MP FILES:", mp.FILES)
-    print("MP Content:", list(mp.FILES.iterdir()))
     assert expect_mp_dir.exists()
     assert expect_stubs_dir.exists()
     # Test after inital setup
@@ -30,10 +28,10 @@ def test_add_stub(mock_micropy, shared_datadir):
     fware_path = shared_datadir / 'fware_test_stub'
     stub_path = shared_datadir / 'esp8266_test_stub'
     stubs = mock_micropy.stubs
-    fware_stub = stubs.add(fware_path, mock_micropy.STUB_DIR)
-    stub = stubs.add(stub_path, mock_micropy.STUB_DIR)
+    fware_stub = stubs.add(fware_path, data.STUB_DIR)
+    stub = stubs.add(stub_path, data.STUB_DIR)
     assert stub in list(mock_micropy.stubs)
-    assert stub.path in mock_micropy.STUB_DIR.iterdir()
+    assert stub.path in data.STUB_DIR.iterdir()
     assert stub.path.exists()
     assert fware_stub in list(mock_micropy.stubs._firmware)
 

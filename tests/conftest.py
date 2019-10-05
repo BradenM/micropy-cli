@@ -30,13 +30,13 @@ def mock_prompt(monkeypatch):
 
 
 @pytest.fixture
-def mock_micropy_path(monkeypatch, tmp_path):
+def mock_micropy_path(mocker, tmp_path):
     path = tmp_path / '.micropy'
     stub_path = path / 'stubs'
     log_path = path / 'micropy.log'
-    monkeypatch.setattr(micropy.logger.ServiceLog, 'LOG_FILE', log_path)
-    monkeypatch.setattr(micropy.main.MicroPy, 'FILES', path)
-    monkeypatch.setattr(micropy.main.MicroPy, 'STUB_DIR', stub_path)
+    mocker.patch("micropy.data.FILES", path)
+    mocker.patch("micropy.data.STUB_DIR", stub_path)
+    mocker.patch("micropy.data.LOG_FILE", log_path)
     return path
 
 
