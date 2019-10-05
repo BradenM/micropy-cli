@@ -6,7 +6,7 @@
 class StubError(Exception):
     """Exception for any errors raised by stubs"""
 
-    def __init__(self, message, stub=None):
+    def __init__(self, message=None, stub=None):
         super().__init__(message)
         self.stub = stub
         self.message = message
@@ -29,6 +29,7 @@ class StubValidationError(StubError):
 class StubNotFound(StubError):
     """Raised when a stub cannot be found"""
 
-    def __init__(self, stub_name):
+    def __init__(self, stub_name=None):
+        stub_name = stub_name or "Unknown"
         msg = f"{stub_name} is not available!"
         return super().__init__(msg)

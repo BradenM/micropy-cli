@@ -6,7 +6,6 @@ import click
 import pytest
 from click.testing import CliRunner
 
-import micropy
 from micropy import cli
 
 
@@ -84,31 +83,28 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner):
 def test_cli_stubs_add(mocker, mock_mpy, shared_datadir,
                        runner, tmp_path, mock_checks):
     """should add stub"""
-    test_stub = shared_datadir / 'esp8266_test_stub'
-    test_invalid_stub = shared_datadir / 'esp8266_invalid_stub'
-
     mock_proj = mocker.patch.object(cli, 'Project').return_value
     mock_proj.exists.return_value = True
     mock_mpy.project = mock_proj
-    mock_mpy.stubs.add.side_effect = [micropy.exceptions.StubError,
-                                      micropy.exceptions.StubNotFound,
+    mock_mpy.stubs.add.side_effect = [cli.exc.StubError,
+                                      cli.exc.StubNotFound,
                                       mocker.MagicMock()]
+    mock_mpy.log.error = print
 
     mocker.spy(cli.sys, 'exit')
 
-    result = runner.invoke(cli.add, [str(test_invalid_stub.resolve())])
+    result = runner.invoke(cli.add, ["invalid-stub"], obj=mock_mpy)
     assert cli.sys.exit.called_with(1)
-    # assert err_spy.call_count ==
+    assert "is not a valid stub" in result.output
     assert result.exit_code == 1
 
     result = runner.invoke(cli.add, ["not-real-stub"])
     assert cli.sys.exit.called_with(1)
-    # assert err_spy.call_count ==
+    assert "could not be found" in result.output
     assert result.exit_code == 1
 
-    result = runner.invoke(cli.add, [str(test_stub.resolve())])
+    result = runner.invoke(cli.add, ["real-stub"])
     assert mock_proj.add_stub.call_count == 1
-    # assert err_spy.call_count ==
     assert result.exit_code == 0
 
 

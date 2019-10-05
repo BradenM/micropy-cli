@@ -86,3 +86,11 @@ def test_create_stubs_pymin_check(mocker, mock_micropy):
 def test_stub_error():
     with pytest.raises(exc.StubError):
         raise exc.StubError(None)
+
+
+def test_resolve_project(mocker, mock_micropy):
+    mock_proj = mocker.patch.object(main, "Project").return_value
+    mock_proj.exists.return_value = False
+    assert mock_micropy.resolve_project('.') is None
+    mock_proj.exists.return_value = True
+    assert mock_micropy.resolve_project('.')
