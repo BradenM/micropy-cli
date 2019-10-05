@@ -29,6 +29,7 @@ recommonmark = "*"
 pytest-watch = "*"
 pytest-testmon = "*"
 sphinx-click = "*"
+ptvsd = "*"
 
 [packages]
 click = ">=7"

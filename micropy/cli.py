@@ -10,20 +10,21 @@ import questionary as prompt
 from questionary import Choice
 
 import micropy.exceptions as exc
-from micropy import utils
+from micropy import main, utils
 from micropy.logger import Log
-from micropy.main import MicroPy
 from micropy.project import Project
+
+pass_mpy = click.make_pass_decorator(main.MicroPy, ensure=True)
 
 
 @click.group(invoke_without_command=True)
 @click.version_option()
+@pass_mpy
 @click.pass_context
-def cli(ctx):
+def cli(ctx, mpy):
     """CLI Application for creating/managing Micropython Projects."""
     if ctx.invoked_subcommand is None:
-        proj = Project.resolve('.')
-        if not proj:
+        if not mpy.project:
             return click.echo(ctx.get_help())
     latest = utils.is_update_available()
     if latest:
@@ -62,15 +63,15 @@ def stubs():
               required=False,
               help=("Templates to generate for project."
                     " Multiple options can be passed."))
-def init(path, name=None, template=None):
+@pass_mpy
+def init(mpy, path, name=None, template=None):
     """Create new Micropython Project
 
     \b
     When creating a new project, all files will be
     placed under the generated <PROJECT_NAME> folder.
     """
-    mp = MicroPy()
-    mp.log.title("Creating New Project")
+    mpy.log.title("Creating New Project")
     if not path:
         path = Path.cwd()
         default_name = path.name
@@ -81,10 +82,10 @@ def init(path, name=None, template=None):
                          for t, val in Project.TEMPLATES.items()]
         template = prompt.checkbox(
             f"Choose any Templates to Generate", choices=templ_choices).ask()
-    stubs = [Choice(str(s), value=s) for s in mp.STUBS]
+    stubs = [Choice(str(s), value=s) for s in mpy.STUBS]
     if not stubs:
-        mp.log.error("You don't have any stubs!")
-        mp.log.title(
+        mpy.log.error("You don't have any stubs!")
+        mpy.log.title(
             "To add stubs to micropy, use $[micropy stubs add <STUB_NAME>]")
         sys.exit(1)
     stub_choices = prompt.checkbox(
@@ -93,9 +94,9 @@ def init(path, name=None, template=None):
                       name=name,
                       templates=template,
                       stubs=stub_choices,
-                      stub_manager=mp.STUBS)
+                      stub_manager=mpy.STUBS)
     proj_relative = project.create()
-    mp.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
+    mpy.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 
 
 @cli.command(short_help="Install Project Requirements")
@@ -103,7 +104,8 @@ def init(path, name=None, template=None):
 @click.option('-d', '--dev', is_flag=True, default=False,
               help=("Adds Package to dev requirements,"
                     " but does not install stubs for it."))
-def install(packages, dev=False):
+@pass_mpy
+def install(mpy, packages, dev=False):
     """Install Packages as Project Requirements
 
     \b
@@ -125,20 +127,19 @@ def install(packages, dev=False):
         # main.py
         import <package_name>
     """
-    mp = MicroPy()
-    project = Project.resolve('.')
+    project = mpy.project
     if not project:
-        mp.log.error("You are not currently in an active project!")
+        mpy.log.error("You are not currently in an active project!")
         sys.exit(1)
     if not packages:
-        mp.log.title("Installing all Requirements")
+        mpy.log.title("Installing all Requirements")
         reqs = project.add_from_requirements()
         if not reqs:
-            mp.log.error("No requirements.txt file found!")
+            mpy.log.error("No requirements.txt file found!")
             sys.exit(1)
-        mp.log.success("\nRequirements Installed!")
+        mpy.log.success("\nRequirements Installed!")
         sys.exit(0)
-    mp.log.title("Installing Packages")
+    mpy.log.title("Installing Packages")
     for pkg in packages:
         project.add_package(pkg, dev=dev)
 
@@ -147,7 +148,8 @@ def install(packages, dev=False):
 @click.argument('stub_name', required=True)
 @click.option('-f', '--force', is_flag=True, default=False,
               help="Overwrite Stub if it exists.")
-def add(stub_name, force=False):
+@pass_mpy
+def add(mpy, stub_name, force=False):
     """Add Stubs from package or path
 
     \b
@@ -164,56 +166,56 @@ def add(stub_name, force=False):
 
     Checkout the docs on Github for more info.
     """
-    mp = MicroPy()
-    mp.STUBS.verbose_log(True)
-    proj = Project('.', stub_manager=mp.STUBS)
-    mp.log.title(f"Adding $[{stub_name}] to stubs")
+    mpy.STUBS.verbose_log(True)
+    proj = Project('.', stub_manager=mpy.STUBS)
+    mpy.log.title(f"Adding $[{stub_name}] to stubs")
     try:
-        stub = mp.STUBS.add(stub_name, force=force)
+        stub = mpy.STUBS.add(stub_name, force=force)
     except exc.StubNotFound:
-        mp.log.error(f"$[{stub_name}] could not be found!")
+        mpy.log.error(f"$[{stub_name}] could not be found!")
         sys.exit(1)
     except exc.StubError:
-        mp.log.error(f"$[{stub_name}] is not a valid stub!")
+        mpy.log.error(f"$[{stub_name}] is not a valid stub!")
         sys.exit(1)
     else:
         if proj.exists():
-            mp.log.title(f"Adding $[{stub.name}] to $[{proj.name}]")
+            mpy.log.title(f"Adding $[{stub.name}] to $[{proj.name}]")
             proj.add_stub(stub)
 
 
 @stubs.command()
 @click.argument('query', required=True)
-def search(query):
+@pass_mpy
+def search(mpy, query):
     """Search available Stubs"""
-    mp = MicroPy()
-    mp.log.title(f"Searching Stub Repositories...")
-    results = mp.STUBS.search_remote(query)
-    mp.log.title(f"Results for $[{query}]:")
+    mpy.log.title(f"Searching Stub Repositories...")
+    results = mpy.STUBS.search_remote(query)
+    mpy.log.title(f"Results for $[{query}]:")
     for pkg, installed in results:
         name = f"{pkg} $B[(Installed)]" if installed else pkg
-        mp.log.info(name)
+        mpy.log.info(name)
 
 
 @stubs.command()
-def list():
+@pass_mpy
+def list(mpy):
     """List installed stubs"""
     def print_stubs(stub_list):
         for firm, stubs in stub_list:
             if stubs:
                 title = str(firm).capitalize()
-                mp.log.title(f"$[{title}]:")
+                mpy.log.title(f"$[{title}]:")
                 for stub in stubs:
-                    mp.log.info(str(stub))
-    mp = MicroPy()
-    mp.log.title("Installed Stubs:")
-    mp.log.info(f"Total: {len(mp.STUBS)}")
-    print_stubs(mp.STUBS.iter_by_firmware())
-    proj = Project.resolve('.', verbose=False)
+                    mpy.log.info(str(stub))
+    mpy.log.title("Installed Stubs:")
+    mpy.log.info(f"Total: {len(mpy.STUBS)}")
+    print_stubs(mpy.STUBS.iter_by_firmware())
+    mpy.verbose = False
+    proj = mpy.resolve_project('.')
     if proj:
-        mp.log.title(f"Stubs used in {proj.name}:")
-        mp.log.info(f"Total: {len(proj.stubs)}")
-        stubs = mp.STUBS.iter_by_firmware(stubs=proj.stubs)
+        mpy.log.title(f"Stubs used in {proj.name}:")
+        mpy.log.info(f"Total: {len(proj.stubs)}")
+        stubs = mpy.STUBS.iter_by_firmware(stubs=proj.stubs)
         print_stubs(stubs)
 
 
@@ -221,7 +223,8 @@ def list():
 @click.argument('port', required=True)
 @click.option('-v', '--verbose', is_flag=True, default=False,
               help="Enable verbose output")
-def create(port, verbose=False):
+@pass_mpy
+def create(mpy, port, verbose=False):
     """Create stubs from a pyboard at <PORT>
 
     \b
@@ -229,8 +232,7 @@ def create(port, verbose=False):
     For more information, please visit the repository
     at: https://github.com/Josverl/micropython-stubber
     """
-    mp = MicroPy()
-    return mp.create_stubs(port, verbose=verbose)
+    return mpy.create_stubs(port, verbose=verbose)
 
 
 if __name__ == "__main__":
