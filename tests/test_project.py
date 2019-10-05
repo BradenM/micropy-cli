@@ -100,15 +100,13 @@ def test_project_load(mocker, shared_datadir, mock_pkg):
         Path('pkg'), (proj.pkg_data / 'pkg'))
     # Test Win Priv Fail
     mock_mp.stubs.resolve_subresource.side_effect = [OSError]
-    # mock_stub = mocker.patch.object(stubs, 'StubManager').return_value
-    # sys_spy = mocker.spy(project.sys)
-    # with pytest.raises(SystemExit):
-    #     proj = project.Project.resolve(proj_path)
+    with pytest.raises(SystemExit):
+        proj = project.Project(proj_path, stub_manager=mock_mp.stubs)
+        proj.load()
 
 
 def test_project_add_stub(mocker, shared_datadir, tmp_path, mock_pkg):
     """should add stub to project"""
-    # mock_mp = mocker.patch.object(main, 'MicroPy').return_value
     m_stubman = mocker.MagicMock()
     proj_path = tmp_path / 'tmp_project'
     shutil.copytree((shared_datadir / 'project_test'), proj_path)
@@ -131,7 +129,6 @@ def test_project_add_stub(mocker, shared_datadir, tmp_path, mock_pkg):
 def test_project_add_pkg(mocker, mock_proj_dir, shared_datadir, tmp_path,
                          mock_pkg):
     """should add package to requirements"""
-    # mock_mp = mocker.patch.object(project.project, "MicroPy").return_value
     m_stubman = mocker.MagicMock()
     proj = project.Project(mock_proj_dir, stub_manager=m_stubman)
     proj.load()
