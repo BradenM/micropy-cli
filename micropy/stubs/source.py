@@ -15,8 +15,13 @@ import shutil
 import tarfile
 import tempfile
 from contextlib import contextmanager
+from datetime import timedelta
 from functools import partial
 from pathlib import Path
+from urllib import parse
+
+import requests
+from cachier import cachier
 
 import micropy.exceptions as exc
 from micropy import utils
@@ -33,10 +38,11 @@ class StubRepo:
     """
     repos = set()
 
-    def __init__(self, name, location, path):
+    def __init__(self, name, location, path, **kwargs):
         self.name = name
         self.path = path
         self.location = utils.ensure_valid_url(location)
+        self.packages = kwargs.get('packages', [])
         self.repos.add(self)
 
     def has_package(self, name):
@@ -60,7 +66,13 @@ class StubRepo:
         Returns:
             str: formatted url
         """
-        url = f"{self.location}/{self.path}/{path}.tar.gz"
+        arch_path = Path(path)
+        for s in arch_path.suffixes:
+            arch_path = Path(arch_path.stem)
+        base_path = Path(parse.urlparse(self.location).path)
+        pkg_path = base_path / Path(self.path) / \
+            arch_path.with_suffix(".tar.gz")
+        url = parse.urljoin(self.location, str(pkg_path))
         return url
 
     def search(self, query):
@@ -73,9 +85,7 @@ class StubRepo:
             [str]: List of matching results
         """
         query = query.strip().lower()
-        results = utils.search_xml(self.location, "Key")
-        pkgs = [Path(p).name for p in results if self.path in p]
-        pkg_names = [p.split(".tar.gz")[0] for p in pkgs]
+        pkg_names = [p['name'] for p in self.packages]
         results = set([p for p in pkg_names if query in p.lower()])
         return results
 
@@ -102,6 +112,7 @@ class StubRepo:
             return pkg_url
 
     @classmethod
+    @cachier(stale_after=timedelta(days=3))
     def from_json(cls, content):
         """Create StubRepo Instances from JSON file
 
@@ -112,8 +123,11 @@ class StubRepo:
             iterable of created repos
         """
         data = json.loads(content)
-        repos = [cls(**r) for r in data]
-        return repos
+        for source in data:
+            source_url = source['source']
+            source_data = requests.get(source_url).json()
+            cls(**source_data)
+        return cls.repos
 
     def __eq__(self, other):
         return self.location == getattr(other, 'location', None)
