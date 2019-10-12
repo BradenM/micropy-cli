@@ -1,7 +1,6 @@
 [
     {
         "name": "Micropy Stubs",
-        "location": "https://micropy-stubs-prod.s3.amazonaws.com",
-        "path": "packages"
+        "source": "https://raw.githubusercontent.com/BradenM/micropy-stubs/master/source.json"
     }
 ]
