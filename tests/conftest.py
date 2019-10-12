@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Common Pytest Fixtures"""
 
+import json
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,11 @@ mock_vscode_exts = [
     # meets req
     'ms-python.python@2019.9.34474'
 ]
+
+
+@pytest.fixture(autouse=True)
+def cleanup_data():
+    micropy.stubs.source.StubRepo.repos = set()
 
 
 @pytest.fixture
@@ -96,11 +102,16 @@ def test_archive(shared_datadir):
 
 
 @pytest.fixture
-def test_repo(test_urls, mocker):
+def test_repo(test_urls, shared_datadir, mocker):
+    micropy.stubs.source.StubRepo.repos = set()
     mocker.patch.object(micropy.stubs.source.utils, "is_downloadable",
                         return_value=True)
-    repo = micropy.stubs.source.StubRepo(
-        "TestRepo", test_urls['valid'], "packages")
+    mocker.patch.object(micropy.stubs.source.utils, "ensure_valid_url",
+                        return_value=test_urls['valid'])
+    test_data = json.loads((shared_datadir / 'test_repo.json').read_text())
+    mock_get = mocker.patch.object(micropy.stubs.source.requests, 'get')
+    mock_get.return_value.json.return_value = test_repo
+    repo = micropy.stubs.source.StubRepo(**test_data)
     return repo
 
 

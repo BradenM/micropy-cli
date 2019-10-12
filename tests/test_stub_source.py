@@ -1,17 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import json
+
 import pytest
 
 from micropy.exceptions import StubError
 from micropy.stubs import source
-
-
-@pytest.fixture
-def test_repo(test_urls, mocker):
-    mocker.patch.object(source.utils, "is_downloadable",
-                        return_value=True)
-    repo = source.StubRepo("TestRepo", test_urls['valid'], "packages")
-    return repo
 
 
 def test_get_source(shared_datadir, test_urls, test_repo):
@@ -54,8 +48,11 @@ def test_repo_from_json(shared_datadir, mocker):
     mocker.patch.object(source.utils, "ensure_valid_url",
                         return_value="https://testsource.com")
     test_sources = shared_datadir / 'test_sources.json'
+    test_repo = json.loads((shared_datadir / 'test_repo.json').read_text())
+    mock_get = mocker.patch.object(source.requests, 'get')
+    mock_get.return_value.json.return_value = test_repo
     content = test_sources.read_text()
-    repos = source.StubRepo.from_json(content)
+    repos = list(source.StubRepo.from_json(content))
     assert repos[0].name == "Test Repo"
     assert len(repos) == 1
 
@@ -71,17 +68,14 @@ def test_repo_resolve_pkg(mocker, test_urls):
         source.StubRepo.resolve_package("not-valid")
 
 
-def test_repo_search(mocker, test_urls):
+def test_repo_search(mocker, test_urls, test_repo):
     url = test_urls['valid']
     mocker.patch.object(source.utils, "ensure_valid_url",
                         return_value=url)
-    repo = source.StubRepo("TestRepo", url, "packages")
-    mock_return = ["packages/one-pkg.tar.gz", "packages/two-pkg.tar.gz",
-                   "foobar-pkg"]
-    mocker.patch.object(source.utils, 'search_xml', return_value=mock_return)
-    results = repo.search("one")
+    results = test_repo.search("esp32-micropython")
     assert len(results) == 1
-    assert "one-pkg" in results
-    results = repo.search("pkg")
+    assert "esp32-micropython-1.11.0" in results
+    results = test_repo.search("esp32")
     assert len(results) == 2
-    assert sorted(results) == sorted(["one-pkg", "two-pkg"])
+    assert sorted(results) == sorted(
+        ["esp32-micropython-1.11.0", "esp32_LoBo-esp32_LoBo-3.2.24"])
