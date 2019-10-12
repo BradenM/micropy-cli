@@ -184,12 +184,6 @@ def test_name_property(shared_datadir):
 def test_stub_search(mocker, test_urls, shared_datadir, tmp_path, test_repo):
     test_fware = shared_datadir / 'fware_test_stub'
     test_stub = shared_datadir / 'esp8266_test_stub'
-    mock_results = [
-        "packages/esp8266-micropython-1.9.4.tar.gz",
-        "packages/esp32-micropython-1.11.0.tar.gz"
-    ]
-    mock_search = mocker.patch.object(stubs.source.utils, 'search_xml')
-    mock_search.return_value = mock_results
     tmp_path = tmp_path / 'foobar'
     tmp_path.mkdir()
     manager = stubs.StubManager(resource=tmp_path, repos=[test_repo])

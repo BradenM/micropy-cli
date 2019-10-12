@@ -1,7 +1,6 @@
 [
     {
         "name": "Test Repo",
-        "location": "https://testsource.com",
-        "path": "packages"
+        "source": "https://google.com/repo.json"
     }
 ]

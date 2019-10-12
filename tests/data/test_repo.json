@@ -1,15 +1,23 @@
 {
-    "source": {
-        "name": "Test Repo",
-        "location": "https://testsource.com",
-        "ref": "repo.json"
-    },
+    "name": "Test Repo",
+    "location": "www.google.com",
+    "source": "www.google.com/file.json",
+    "path": "tarball/pkg/",
     "packages": [
         {
-            "firmware": "micropython",
-            "device": "esp8266",
-            "version": "1.9.4",
-            "url": "https://testsource.com/packages/esp8266-micropython-1.9.4.tar.gz"
+            "name": "esp32-micropython-1.11.0",
+            "type": "device",
+            "sha256sum": "abc123"
+        },
+        {
+            "name": "esp32_LoBo-esp32_LoBo-3.2.24",
+            "type": "device",
+            "sha256sum": "123abc"
+        },
+        {
+            "name": "esp8266-micropython-1.9.4",
+            "type": "device",
+            "sha256sum": "1ab2c3"
         }
     ]
 }
