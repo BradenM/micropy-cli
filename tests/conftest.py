@@ -19,6 +19,7 @@ mock_vscode_exts = [
 
 @pytest.fixture(autouse=True)
 def cleanup_data():
+    micropy.utils.ensure_valid_url.clear_cache()
     micropy.stubs.source.StubRepo.repos = set()
 
 

@@ -15,13 +15,11 @@ import shutil
 import tarfile
 import tempfile
 from contextlib import contextmanager
-from datetime import timedelta
 from functools import partial
 from pathlib import Path
 from urllib import parse
 
 import requests
-from cachier import cachier
 
 import micropy.exceptions as exc
 from micropy import utils
@@ -41,7 +39,8 @@ class StubRepo:
     def __init__(self, name, location, path, **kwargs):
         self.name = name
         self.path = path
-        self.location = utils.ensure_valid_url(location)
+        self.log = Log.add_logger(self.name)
+        self.location = location
         self.packages = kwargs.get('packages', [])
         self.repos.add(self)
 
@@ -66,13 +65,10 @@ class StubRepo:
         Returns:
             str: formatted url
         """
-        arch_path = Path(path)
-        for s in arch_path.suffixes:
-            arch_path = Path(arch_path.stem)
         base_path = Path(parse.urlparse(self.location).path)
-        pkg_path = base_path / Path(self.path) / \
-            arch_path.with_suffix(".tar.gz")
+        pkg_path = base_path / Path(self.path) / Path(path)
         url = parse.urljoin(self.location, str(pkg_path))
+        self.log.debug(f"Stub Url: {url}")
         return url
 
     def search(self, query):
@@ -112,7 +108,6 @@ class StubRepo:
             return pkg_url
 
     @classmethod
-    @cachier(stale_after=timedelta(days=3))
     def from_json(cls, content):
         """Create StubRepo Instances from JSON file
 
@@ -214,8 +209,9 @@ class RemoteStubSource(StubSource):
         """
         tar_bytes_obj = io.BytesIO(file_bytes)
         with tarfile.open(fileobj=tar_bytes_obj, mode="r:gz") as tar:
-            tar.extractall(path.parent)
-        return path
+            tar.extractall(path)
+        output = next(path.iterdir())
+        return output
 
     def ready(self):
         """Retrieves and unpacks source
@@ -231,11 +227,10 @@ class RemoteStubSource(StubSource):
         tmp_dir = tempfile.mkdtemp()
         tmp_path = Path(tmp_dir)
         filename = utils.get_url_filename(self.location).split(".tar.gz")[0]
-        outpath = tmp_path / filename
         _file_name = "".join(self.log.iter_formatted(f"$B[{filename}]"))
         content = utils.stream_download(
             self.location, desc=f"{self.log.get_service()} {_file_name}")
-        source_path = self._unpack_archive(content, outpath)
+        source_path = self._unpack_archive(content, tmp_path)
         teardown = partial(shutil.rmtree, tmp_path)
         return super().ready(path=source_path, teardown=teardown)
 
