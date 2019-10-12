@@ -33,7 +33,8 @@ __all__ = ["is_url", "get_url_filename",
            "stream_download", "search_xml",
            "generate_stub", "get_package_meta",
            "extract_tarbytes", "iter_requirements",
-           "create_dir_link", "is_dir_link", "is_update_available"]
+           "create_dir_link", "is_dir_link",
+           "is_update_available", "get_cached_data"]
 
 
 def is_url(url):
@@ -49,6 +50,7 @@ def is_url(url):
     return scheme in ('http', 'https',)
 
 
+@cachier(stale_after=timedelta(days=1))
 def ensure_valid_url(url):
     """Ensure a url is valid
 
@@ -360,3 +362,10 @@ def is_update_available():
     if cur_version < latest:
         return str(latest)
     return False
+
+
+@cachier(stale_after=timedelta(days=3))
+def get_cached_data(url):
+    """Wrap requests with a short cache"""
+    source_data = requests.get(url).json()
+    return source_data

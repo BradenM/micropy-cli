@@ -41,7 +41,8 @@ def test_source_ready(shared_datadir, test_urls, tmp_path, mocker,
     remote_stub = source.get_source(test_urls['download'])
     with remote_stub.ready() as source_path:
         print(list(source_path.parent.iterdir()))
-        assert str(source_path) == str(expected_path)
+        assert (source_path / 'info.json').exists()
+        assert len(list(source_path.iterdir())) == 3
 
 
 def test_repo_from_json(shared_datadir, mocker):
