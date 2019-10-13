@@ -6,6 +6,8 @@ jobs:
     build:
         name: Test ${{ matrix.os }} Py v${{ matrix.python }}
         runs-on: ${{ matrix.os }}
+        env:
+            COVERALLS_REPO_TOKEN: ${{ secrets.github_token }}
         strategy:
             matrix:
                 os: [macOS-10.14, windows-2016, ubuntu-18.04]
