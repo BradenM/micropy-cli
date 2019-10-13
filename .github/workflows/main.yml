@@ -1,0 +1,44 @@
+name: Build MicropyCli
+
+on: [push, pull_request]
+
+jobs:
+    build:
+        name: Test ${{ matrix.os }} Py v${{ matrix.version }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [macOS-10.14, windows-2016, ubuntu-18.04]
+                python: ['3.6', '3.7']
+
+        steps:
+            - uses: actions/checkout@master
+            - uses: dschep/install-pipenv-action@v1
+
+            - name: Setup Python ${{ matrix.python }}
+              uses: actions/setup-python@v1
+              with:
+                  python-version: ${{ matrix.python }}
+                  architecture: x64
+
+            - name: Install Dependencies
+              run: pipenv install --dev
+
+            - name: Run Tests
+              run: pipenv run pytest --cov --cov-config=setup.cfg --cov-append -vv
+
+            - name: Coveralls Parallel
+              uses: coverallsapp/github-action@master
+              with:
+                  github-token: ${{ secrets.github_token }}
+                  parallel: true
+                  path-to-lcov: .coverage
+
+            - name: Coveralls Finished
+              uses: coverallsapp/github-action@master
+              with:
+                  github-token: ${{ secrets.github_token }}
+                  parallel-finished: true
+
+            - name: Lint with Flake8
+              run: pipenv run flake8 micropy tests --config=setup.cfg
