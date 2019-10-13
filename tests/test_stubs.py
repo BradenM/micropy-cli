@@ -243,3 +243,17 @@ def test_load_firmware_first(mocker, tmp_path, shared_datadir):
     # Get First call args
     fargs, _ = mock_manager.call_args_list[0]
     assert fargs[0].location == test_fware
+
+
+def test_iter_by_firm_stubs(mocker):
+    """should iter stubs by firmware"""
+    firm_stub = mocker.MagicMock()
+    dev_stub = mocker.MagicMock()
+    dev_stub.firmware = firm_stub
+    unk_stub = mocker.MagicMock()
+    unk_stub.firmware = None
+    manager = stubs.StubManager()
+    manager._loaded = set([firm_stub, dev_stub, unk_stub])
+    manager._firmware = set([firm_stub])
+    stub_iter = list(manager.iter_by_firmware())
+    assert stub_iter == [(firm_stub, [dev_stub]), ('Unknown', [unk_stub])]
