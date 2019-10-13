@@ -69,7 +69,7 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner):
     result = runner.invoke(cli.init, ["TestProject", "-t", "vscode"])
     mock_project.assert_called_once_with(
         "TestProject", stubs=["stub"], stub_manager=mock_mpy.stubs,
-        name=None, templates=('vscode', ))
+        name=None, templates=('vscode', ), run_checks=mock_mpy.RUN_CHECKS)
     mock_project.return_value.create.assert_called_once()
     assert result.exit_code == 0
     ptext_mock = mocker.patch.object(cli.prompt, 'text').return_value
@@ -77,6 +77,7 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner):
     result = runner.invoke(cli.init, ["-t", "vscode"])
     mock_project.assert_called_with(
         Path.cwd(), stubs=["stub"], stub_manager=mock_mpy.stubs,
+        run_checks=mock_mpy.RUN_CHECKS,
         name="ProjectName", templates=('vscode', ))
 
 
