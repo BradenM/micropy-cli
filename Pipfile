@@ -30,6 +30,7 @@ pytest-watch = "*"
 pytest-testmon = "*"
 sphinx-click = "*"
 ptvsd = "*"
+tox-gh-actions = "*"
 
 [packages]
 click = ">=7"
