@@ -251,3 +251,22 @@ def test_is_update_available(mocker):
     assert utils.helpers.is_update_available(ignore_cache=True) == '1.0.0'
     mocker.patch('micropy.__version__', '2.0.0')
     assert not utils.helpers.is_update_available(ignore_cache=True)
+
+
+def test_stream_download(mocker):
+    """Test stream download"""
+    mock_req = mocker.patch.object(utils.helpers, 'requests')
+    mock_stream = mocker.MagicMock()
+    mock_stream.headers = {
+        'content-length': '1000'
+    }
+    mock_req.get.return_value = mock_stream
+    tqdm_mock = mocker.patch.object(utils.helpers, 'tqdm')
+    utils.stream_download("https://someurl.com/file.ext")
+    expect_args = {
+        'unit_scale': True,
+        'unit_divisor': 1024,
+        'smoothing': 0.1,
+        'bar_format': mocker.ANY
+    }
+    tqdm_mock.assert_called_once_with(total=1000, unit='B', **expect_args)
