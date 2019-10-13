@@ -1,10 +1,10 @@
-name: Build MicropyCli
+name: Test MicropyCli
 
 on: [push, pull_request]
 
 jobs:
     build:
-        name: Test ${{ matrix.os }} Py v${{ matrix.python }}
+        name: ${{ matrix.os }} @ Py v${{ matrix.python }}
         runs-on: ${{ matrix.os }}
         env:
             COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
