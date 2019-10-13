@@ -1,3 +1,39 @@
+<a name="v3.0.0"></a>
+## v3.0.0 (2019-10-13)
+
+
+#### Breaking Changes
+
+*   MicroPy Class refactor renamed core attributes ([bd24ada6](bd24ada6))
+*   All Data Path references moved to `micropy.data` module
+
+#### Features
+
+*   Add Flag for Skipping Template Checks ([863c97ca](863c97ca))
+*   Search/Retrieve Stubs Directly from micropy-stubs ([0717f373](0717f373))
+*   Update MicropyCli Stub Sources ([437d32e9](437d32e9))
+*   Refactor MicroPy Class for Better State Management ([711244be](711244be))
+*   Updated micropython-stubber to latest version
+
+#### Bug Fixes
+
+*   Project Fails to Init due to Checks on Windows ([06b894ff](06b894ff), closes [#59](59))
+*   Stub Package Url fails to resolve on Windows ([3397465e](3397465e))
+*   Handle Chunked Content Length on Package Download ([f1dfe5ac](f1dfe5ac))
+*   Package urls not resolving correctly ([55f3d34e](55f3d34e))
+*   Fails to load Project if Template Files are Missing (#55) ([f8c14c91](f8c14c91))
+
+#### Performance
+
+*   Lazy Load Stubs ([bd24ada6](bd24ada6))
+*   Lazy Load Current Active Project ([54b33d51](54b33d51))
+*   Cache Remote Stub Package Sources
+*   Cache Remote Stub Search Queries
+*   Removed unnecessary network requests on startup
+*   Overall Code Cleanup
+
+
+
 <a name="v2.2.0"></a>
 ## v2.2.0 (2019-09-28)
 
