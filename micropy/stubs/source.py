@@ -16,7 +16,7 @@ import tarfile
 import tempfile
 from contextlib import contextmanager
 from functools import partial
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from urllib import parse
 
 import requests
@@ -65,8 +65,8 @@ class StubRepo:
         Returns:
             str: formatted url
         """
-        base_path = Path(parse.urlparse(self.location).path)
-        pkg_path = base_path / Path(self.path) / Path(path)
+        base_path = PurePosixPath(parse.urlparse(self.location).path)
+        pkg_path = base_path / PurePosixPath(self.path) / PurePosixPath(path)
         url = parse.urljoin(self.location, str(pkg_path))
         self.log.debug(f"Stub Url: {url}")
         return url
