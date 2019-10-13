@@ -15,6 +15,7 @@ from micropy.stubs import StubManager, source
 
 class MicroPy:
     """Handles App State Management"""
+    RUN_CHECKS = True
 
     def __init__(self):
         self.log = Log.get_logger('MicroPy')
@@ -52,11 +53,12 @@ class MicroPy:
             (Project|None): Project if it exists
         """
         path = Path(path).absolute()
-        proj = Project(path)
+        proj = Project(path, run_checks=self.RUN_CHECKS)
         if proj.exists():
             if verbose:
                 self.log.title(f"Loading Project")
-            proj.load(stub_manager=self.stubs, verbose=verbose)
+            proj.load(stub_manager=self.stubs, verbose=verbose,
+                      run_checks=self.RUN_CHECKS)
             return proj
         return None
 

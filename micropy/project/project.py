@@ -32,7 +32,7 @@ class Project:
     TEMPLATES = TemplateProvider.TEMPLATES
 
     def __init__(self, path, name=None, templates=[], stubs=None,
-                 stub_manager=None):
+                 stub_manager=None, **kwargs):
         self._loaded = False
         self.path = Path(path).absolute()
         self.data = self.path / '.micropy'
@@ -58,7 +58,8 @@ class Project:
             for key in self.config:
                 if key in templates:
                     self.config[key] = True
-            self.provider = TemplateProvider(templates, log=template_log)
+            self.provider = TemplateProvider(
+                templates, log=template_log, **kwargs)
 
     def _set_cache(self, key, value):
         """Set key in Project cache
@@ -180,7 +181,7 @@ class Project:
         self.name = data.get("name", self.name)
         self.config = data.get("config", self.config)
         templates = [k for k, v in self.config.items() if v]
-        self.provider = TemplateProvider(templates)
+        self.provider = TemplateProvider(templates, **kwargs)
         self.packages = data.get("packages", self.packages)
         self.dev_packages = data.get("dev-packages", self.dev_packages)
         self.stubs = kwargs.get('stubs', self.stubs)

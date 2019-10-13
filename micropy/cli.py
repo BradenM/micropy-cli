@@ -19,9 +19,11 @@ pass_mpy = click.make_pass_decorator(main.MicroPy, ensure=True)
 
 @click.group(invoke_without_command=True)
 @click.version_option()
+@click.option('--skip-checks', '-s', is_flag=True,
+              default=False, help='Skip Project Checks. Defaults to False.')
 @pass_mpy
 @click.pass_context
-def cli(ctx, mpy):
+def cli(ctx, mpy, skip_checks=False):
     """CLI Application for creating/managing Micropython Projects."""
     if ctx.invoked_subcommand is None:
         if not mpy.project:
@@ -33,6 +35,7 @@ def cli(ctx, mpy):
         log.info(f"Version $B[v{latest}] is now available")
         log.info(
             "You can update via: $[pip install --upgrade micropy-cli]\n")
+    mpy.RUN_CHECKS = not skip_checks
 
 
 @cli.group(short_help="Manage Micropy Stubs")
@@ -94,7 +97,8 @@ def init(mpy, path, name=None, template=None):
                       name=name,
                       templates=template,
                       stubs=stub_choices,
-                      stub_manager=mpy.stubs)
+                      stub_manager=mpy.stubs,
+                      run_checks=mpy.RUN_CHECKS)
     proj_relative = project.create()
     mpy.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 

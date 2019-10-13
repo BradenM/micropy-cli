@@ -203,14 +203,17 @@ class TemplateProvider:
         'bootstrap': (['main', 'boot'], "main.py & boot.py files")
     }
 
-    def __init__(self, templates, log=None):
+    def __init__(self, templates, log=None, **kwargs):
         """Template Factory
 
         Args:
             templates ([str]): List of Templates to use
             log (callable, optional): Log instance to use.
                 Defaults to None. If none, creates a new one.
+            run_checks (bool, optional): Whether to run template checks.
+                Defaults to True.
         """
+        self.run_checks = kwargs.get('run_checks', True)
         self.template_names = set(chain.from_iterable(
             [self.TEMPLATES.get(t)[0] for t in templates]))
         self.files = {k: v for k, v in self._template_files.items()
@@ -251,9 +254,9 @@ class TemplateProvider:
         """
         template = self.get(name, **kwargs)
         self.log.debug(f"Loaded: {str(template)}")
-        if template.CHECKS:
+        if self.run_checks:
             self.log.debug(f"Verifying {template} requirements...")
-        template.run_checks()
+            template.run_checks()
         parent_dir.mkdir(exist_ok=True)
         out_dir = parent_dir / template.FILENAME
         out_dir.parent.mkdir(exist_ok=True, parents=True)
