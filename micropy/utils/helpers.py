@@ -164,7 +164,7 @@ def stream_download(url, **kwargs):
     """
     stream = requests.get(url, stream=True)
     content = bytearray()
-    total_size = int(stream.headers.get('content-length'))
+    total_size = int(stream.headers.get('content-length', len(stream.content)))
     block_size = 32*1024
     bar_format = "{l_bar}{bar}| [{n_fmt}/{total_fmt} @ {rate_fmt}]"
     tqdm_kwargs = {
