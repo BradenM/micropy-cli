@@ -1,0 +1,22 @@
+{
+    "firmware": {
+        "machine": "ESP32 module with ESP32",
+        "firmware": "esp32 1.11.0",
+        "nodename": "esp8266",
+        "version": "1.11.0",
+        "release": "1.11.0",
+        "sysname": "esp32",
+        "name": "micropython"
+    },
+    "stubber": { "version": "1.2.0" },
+    "modules": [
+        {
+            "file": "/stubs/esp32_1_11_0/umqtt/robust.py",
+            "module": "umqtt.robust"
+        },
+        {
+            "file": "/stubs/esp32_1_11_0/umqtt/simple.py",
+            "module": "umqtt.simple"
+        }
+    ]
+}

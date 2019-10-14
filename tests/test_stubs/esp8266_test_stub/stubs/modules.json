@@ -1,0 +1,68 @@
+[
+  {
+    "nodename": "esp8266",
+    "release": "2.2.0-dev(9422289)",
+    "version": "v1.9.4-8-ga9a3caad0 on 2018-05-11",
+    "machine": "ESP module with ESP8266",
+    "sysname": "esp8266"
+  },
+  { "stubber": "1.1.2" },
+  {
+    "file": "/stubs/esp8266_v1_9_4/uasyncio/core.py",
+    "module": "uasyncio.core"
+  },
+  { "file": "/stubs/esp8266_v1_9_4/umqtt/robust.py", "module": "umqtt.robust" },
+  { "file": "/stubs/esp8266_v1_9_4/umqtt/simple.py", "module": "umqtt.simple" },
+  {
+    "file": "/stubs/esp8266_v1_9_4/urllib/urequest.py",
+    "module": "urllib.urequest"
+  },
+  { "file": "/stubs/esp8266_v1_9_4/upip.py", "module": "upip" },
+  { "file": "/stubs/esp8266_v1_9_4/_boot.py", "module": "_boot" },
+  { "file": "/stubs/esp8266_v1_9_4/_onewire.py", "module": "_onewire" },
+  { "file": "/stubs/esp8266_v1_9_4/apa102.py", "module": "apa102" },
+  { "file": "/stubs/esp8266_v1_9_4/array.py", "module": "array" },
+  { "file": "/stubs/esp8266_v1_9_4/btree.py", "module": "btree" },
+  { "file": "/stubs/esp8266_v1_9_4/dht.py", "module": "dht" },
+  { "file": "/stubs/esp8266_v1_9_4/ds18x20.py", "module": "ds18x20" },
+  { "file": "/stubs/esp8266_v1_9_4/errno.py", "module": "errno" },
+  { "file": "/stubs/esp8266_v1_9_4/esp.py", "module": "esp" },
+  {
+    "file": "/stubs/esp8266_v1_9_4/example_pub_button.py",
+    "module": "example_pub_button"
+  },
+  {
+    "file": "/stubs/esp8266_v1_9_4/example_sub_led.py",
+    "module": "example_sub_led"
+  },
+  { "file": "/stubs/esp8266_v1_9_4/flashbdev.py", "module": "flashbdev" },
+  { "file": "/stubs/esp8266_v1_9_4/framebuf.py", "module": "framebuf" },
+  { "file": "/stubs/esp8266_v1_9_4/gc.py", "module": "gc" },
+  { "file": "/stubs/esp8266_v1_9_4/inisetup.py", "module": "inisetup" },
+  { "file": "/stubs/esp8266_v1_9_4/json.py", "module": "json" },
+  { "file": "/stubs/esp8266_v1_9_4/math.py", "module": "math" },
+  { "file": "/stubs/esp8266_v1_9_4/micropython.py", "module": "micropython" },
+  { "file": "/stubs/esp8266_v1_9_4/neopixel.py", "module": "neopixel" },
+  { "file": "/stubs/esp8266_v1_9_4/network.py", "module": "network" },
+  { "file": "/stubs/esp8266_v1_9_4/ntptime.py", "module": "ntptime" },
+  { "file": "/stubs/esp8266_v1_9_4/onewire.py", "module": "onewire" },
+  { "file": "/stubs/esp8266_v1_9_4/select.py", "module": "select" },
+  { "file": "/stubs/esp8266_v1_9_4/sys.py", "module": "sys" },
+  { "file": "/stubs/esp8266_v1_9_4/time.py", "module": "time" },
+  { "file": "/stubs/esp8266_v1_9_4/ubinascii.py", "module": "ubinascii" },
+  { "file": "/stubs/esp8266_v1_9_4/uhashlib.py", "module": "uhashlib" },
+  { "file": "/stubs/esp8266_v1_9_4/uheapq.py", "module": "uheapq" },
+  { "file": "/stubs/esp8266_v1_9_4/ujson.py", "module": "ujson" },
+  { "file": "/stubs/esp8266_v1_9_4/urandom.py", "module": "urandom" },
+  { "file": "/stubs/esp8266_v1_9_4/ure.py", "module": "ure" },
+  { "file": "/stubs/esp8266_v1_9_4/uselect.py", "module": "uselect" },
+  { "file": "/stubs/esp8266_v1_9_4/ussl.py", "module": "ussl" },
+  { "file": "/stubs/esp8266_v1_9_4/ustruct.py", "module": "ustruct" },
+  { "file": "/stubs/esp8266_v1_9_4/utime.py", "module": "utime" },
+  { "file": "/stubs/esp8266_v1_9_4/utimeq.py", "module": "utimeq" },
+  { "file": "/stubs/esp8266_v1_9_4/uzlib.py", "module": "uzlib" },
+  {
+    "file": "/stubs/esp8266_v1_9_4/websocket_helper.py",
+    "module": "websocket_helper"
+  }
+]

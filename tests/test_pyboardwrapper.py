@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from pathlib import Path
+
 import pytest
 
 from micropy.utils import PyboardWrapper, pybwrapper
+
 from micropy.utils.pybwrapper import PyboardError
 
 
@@ -67,11 +70,12 @@ def test_pyboard_copy_file(mocker, connect_mock, root_mock, tmp_path):
     pyb = PyboardWrapper("/dev/PORT")
     # No Dest Test
     out_file = pyb.copy_file("/foobar/file.py")
-    assert str(out_file) == "/mock/file.py"
-    mocked_cp.assert_called_once_with("/foobar/file.py", "/mock/file.py")
+    assert Path(out_file) == Path("/mock/file.py")
+    mocked_cp.assert_called_once_with(
+        str(Path("/foobar/file.py").absolute()), "/mock/file.py")
     # With Dest
     out_file = pyb.copy_file("file.py", "/foobar/file.py")
-    assert str(out_file) == "/mock/foobar/file.py"
+    assert Path(out_file) == Path("/mock/foobar/file.py")
 
 
 def test_pyboard_run(mocker, connect_mock, tmp_path):

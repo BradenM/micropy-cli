@@ -93,11 +93,14 @@ def ensure_existing_dir(path):
         object: pathlib.PurePath object
     """
     _path = Path(path)
-    path = _path.resolve()
-    if not path.exists():
-        raise NotADirectoryError(f"{_path} does not exist!")
-    if not path.is_dir():
-        raise NotADirectoryError(f"{_path} is not a directory!")
+    path = _path.absolute()
+    try:
+        if not path.exists():
+            raise NotADirectoryError(f"{_path} does not exist!")
+        if not path.is_dir():
+            raise NotADirectoryError(f"{_path} is not a directory!")
+    except OSError:
+        raise NotADirectoryError(f"{_path} is not a valid path!")
     return _path
 
 
