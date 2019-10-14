@@ -12,7 +12,7 @@ from questionary import Choice
 import micropy.exceptions as exc
 from micropy import main, utils
 from micropy.logger import Log
-from micropy.project import Project
+from micropy.project import Project, modules
 
 pass_mpy = click.make_pass_decorator(main.MicroPy, ensure=True)
 
@@ -61,7 +61,7 @@ def stubs():
 @click.option('--name', '-n', required=False, default=None,
               help="Project Name. Defaults to Path name.")
 @click.option('--template', '-t',
-              type=click.Choice(Project.TEMPLATES.keys()),
+              type=click.Choice(modules.TemplatesModule.TEMPLATES.keys()),
               multiple=True,
               required=False,
               help=("Templates to generate for project."
@@ -81,8 +81,9 @@ def init(mpy, path, name=None, template=None):
         prompt_name = prompt.text("Project Name", default=default_name).ask()
         name = prompt_name.strip()
     if not template:
+        templates = modules.TemplatesModule.TEMPLATES.items()
         templ_choices = [Choice(str(val[1]), value=t)
-                         for t, val in Project.TEMPLATES.items()]
+                         for t, val in templates]
         template = prompt.checkbox(
             f"Choose any Templates to Generate", choices=templ_choices).ask()
     stubs = [Choice(str(s), value=s) for s in mpy.stubs]

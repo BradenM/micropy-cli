@@ -14,9 +14,8 @@ import requirements
 from micropy import utils
 from micropy.exceptions import StubError
 from micropy.logger import Log
+from micropy.project.modules import ProjectModule
 from micropy.project.template import TemplateProvider
-
-from . import ProjectModule
 
 
 class PackagesModule(ProjectModule):
@@ -67,6 +66,28 @@ class PackagesModule(ProjectModule):
             for file, stub in stubs:
                 shutil.copy2(file, (self.parent.pkg_data / file.name))
                 shutil.copy2(stub, (self.parent.pkg_data / stub.name))
+
+    def add_package(self, package):
+        """Add requirement to project
+
+        Args:
+            package (str): package name/spec
+            dev (bool, optional): Flag requirement as dev. Defaults to False.
+
+        Returns:
+            dict: Dictionary of packages
+        """
+        pkg = next(requirements.parse(package))
+        self.log.info(f"Adding $[{pkg.name}] to requirements...")
+        if self.packages.get(pkg.name, None):
+            self.log.error(f"$[{package}] is already installed!")
+            return None
+        specs = "".join(next(iter(pkg.specs))) if pkg.specs else "*"
+        self.packages[pkg.name] = specs
+        self.parent.to_json()
+        self.load()
+        self.log.success("Package installed!")
+        return self.packages
 
     def load(self):
         """Retrieves and stubs project requirements"""

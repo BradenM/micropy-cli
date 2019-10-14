@@ -20,7 +20,7 @@ from micropy.project.template import TemplateProvider
 
 class StubsModule(ProjectModule):
 
-    def __init__(self, stubs, stub_manager):
+    def __init__(self, stub_manager, stubs=None):
         self.stub_manager = stub_manager
         self.stubs = stubs
 

@@ -9,7 +9,7 @@ from pathlib import Path
 from micropy import data, utils
 from micropy.lib.stubber import process as stubber
 from micropy.logger import Log
-from micropy.project import Project
+from micropy.project import Project, modules
 from micropy.stubs import StubManager, source
 
 
@@ -53,12 +53,16 @@ class MicroPy:
             (Project|None): Project if it exists
         """
         path = Path(path).absolute()
-        proj = Project(path, run_checks=self.RUN_CHECKS)
-        if proj.exists():
+        proj = Project(path)
+        proj.add(modules.StubsModule(self.stubs))
+        proj.add(modules.TemplatesModule())
+        proj.add(modules.PackagesModule('requirements.txt'))
+        proj.add(modules.PackagesModule(
+            'dev-requirements.txt', name='dev-packages'))
+        if proj.exists:
             if verbose:
                 self.log.title(f"Loading Project")
-            proj.load(stub_manager=self.stubs, verbose=verbose,
-                      run_checks=self.RUN_CHECKS)
+            proj.load(run_checks=self.RUN_CHECKS)
             return proj
         return None
 
