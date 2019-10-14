@@ -248,9 +248,11 @@ def test_is_update_available(mocker):
     mock_req = mocker.patch.object(utils.helpers, 'requests')
     mocker.patch('micropy.__version__', '0.0.0')
     mock_req.get.return_value.json.return_value = {'releases': {'1.0.0': []}}
-    assert utils.helpers.is_update_available(ignore_cache=True) == '1.0.0'
+    utils.helpers.get_cached_data.clear_cache()
+    assert utils.helpers.is_update_available() == '1.0.0'
     mocker.patch('micropy.__version__', '2.0.0')
-    assert not utils.helpers.is_update_available(ignore_cache=True)
+    utils.helpers.get_cached_data.clear_cache()
+    assert not utils.helpers.is_update_available()
 
 
 def test_stream_download(mocker):
