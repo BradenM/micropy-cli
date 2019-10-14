@@ -1,0 +1,22 @@
+{
+    "firmware": {
+        "machine": "ESP module with ESP8266",
+        "firmware": "esp8266 v1.9.4",
+        "nodename": "esp8266",
+        "version": "1.9.4",
+        "release": "2.2.0-dev(9422289)",
+        "sysname": "esp8266",
+        "name": "micropython"
+    },
+    "stubber": { "version": "1.2.0" },
+    "modules": [
+        {
+            "file": "/stubs/esp8266_1_9_4/umqtt/robust.py",
+            "module": "umqtt.robust"
+        },
+        {
+            "file": "/stubs/esp8266_1_9_4/umqtt/simple.py",
+            "module": "umqtt.simple"
+        }
+    ]
+}

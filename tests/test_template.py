@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+from pathlib import Path
 
 import pylint.lint
 import pytest
@@ -80,7 +81,8 @@ def test_pylint_template(stub_context, tmp_path):
                 paths=ctx_paths, datadir=ctx_datadir)
     init_hook = expected_path.read_text().splitlines(True)[2]
     hook_imports = init_hook.split(";")
-    assert 'sys.path.insert(1, ".micropy/foobar/foo")' in hook_imports
+    hook_path = str(Path(".micropy/foobar/foo"))
+    assert f'sys.path.insert(1, "{hook_path}")' in hook_imports
     test_pylint_load()
 
 
