@@ -1,3 +1,15 @@
+<a name="v3.0.1"></a>
+### v3.0.1 (2019-10-14)
+
+
+#### Bug Fixes
+
+*   Auto Update Check's Cache not expiring after update ([db5dacaf](db5dacaf))
+*   VSCode Template Check always Fails on Linux (#65) ([6e712da2](6e712da2))
+*   Stub Files Failed to Generate ([55a03eb5](55a03eb5))
+
+
+
 <a name="v3.0.0"></a>
 ## v3.0.0 (2019-10-13)
 
@@ -285,6 +297,3 @@
 #### Features
 
 * Initial Release!
-
-
-

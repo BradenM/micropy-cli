@@ -17,4 +17,4 @@ and more.
 """
 
 __author__ = """Braden Mars"""
-__version__ = '3.0.0'
+__version__ = '3.0.1'
