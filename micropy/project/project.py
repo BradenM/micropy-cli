@@ -2,24 +2,14 @@
 
 """Hosts functionality relating to generation of user projects."""
 
-import abc
 import json
-import shutil
-import sys
-import tempfile
 from pathlib import Path
 
-import requirements
-
-from micropy import utils
-from micropy.exceptions import StubError
 from micropy.logger import Log
-from micropy.project.template import TemplateProvider
-
-from . import modules
+from micropy.project.modules import ProjectModule
 
 
-class Project(modules.ProjectModule):
+class Project(ProjectModule):
 
     def __init__(self, path, name=None, **kwargs):
         self._children = []

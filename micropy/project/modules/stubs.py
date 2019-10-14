@@ -2,20 +2,11 @@
 
 """Project Stubs Module"""
 
-import abc
-import json
-import shutil
 import sys
-import tempfile
 from pathlib import Path
 
-import requirements
-
-from micropy import utils
 from micropy.exceptions import StubError
-from micropy.logger import Log
 from micropy.project.modules import ProjectModule
-from micropy.project.template import TemplateProvider
 
 
 class StubsModule(ProjectModule):
