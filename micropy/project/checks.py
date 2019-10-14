@@ -21,7 +21,7 @@ def iter_vscode_ext(name=None):
         name (str, optional): Name of Extension to Yield
     """
     _cmd = "code --list-extensions --show-versions"
-    proc = subproc.run(_cmd.split(), text=True,
+    proc = subproc.run(_cmd, text=True,
                        capture_output=True, shell=True)
     results = [e.strip() for e in proc.stdout.splitlines()]
     for ext in results:
