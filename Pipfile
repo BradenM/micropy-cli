@@ -31,6 +31,7 @@ pytest-testmon = "*"
 sphinx-click = "*"
 ptvsd = "*"
 tox-gh-actions = "*"
+pytest-xdist = "*"
 
 [packages]
 click = ">=7"
