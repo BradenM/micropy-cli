@@ -38,11 +38,11 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 watch-build: clean ## build pytest-testmon db
-	pytest --testmon
+	pytest -n 0 --testmon
 	$(MAKE) watch
 
 watch: ## watch tests
-	ptw -- --testmon -vv
+	ptw -- -n 0 --testmon -vv
 
 coverage: ## generate coverage
 	pytest --cov --cov-config=setup.cfg
