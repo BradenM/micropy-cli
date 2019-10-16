@@ -5,6 +5,7 @@
 import sys
 from pathlib import Path
 
+from micropy import utils
 from micropy.exceptions import StubError
 from micropy.project.modules import ProjectModule
 
@@ -13,7 +14,7 @@ class StubsModule(ProjectModule):
 
     def __init__(self, stub_manager, stubs=None):
         self.stub_manager = stub_manager
-        self.stubs = stubs
+        self._stubs = stubs
 
     @property
     def context(self):
@@ -39,6 +40,10 @@ class StubsModule(ProjectModule):
         return {
             'stubs': stubs
         }
+
+    @utils.lazy_property
+    def stubs(self):
+        return self._resolve_subresource(self._stubs)
 
     def _resolve_subresource(self, stubs):
         """Resolves stub resource
@@ -73,7 +78,6 @@ class StubsModule(ProjectModule):
                 yield self.stub_manager.add(name)
 
     def create(self):
-        self.stubs = self._resolve_subresource(self.stubs)
         self.log.info(
             f"Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
         return self.stubs

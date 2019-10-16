@@ -94,12 +94,10 @@ def init(mpy, path, name=None, template=None):
         sys.exit(1)
     stub_choices = prompt.checkbox(
         f"Which stubs would you like to use?", choices=stubs).ask()
-    project = Project(path,
-                      name=name,
-                      templates=template,
-                      stubs=stub_choices,
-                      stub_manager=mpy.stubs,
-                      run_checks=mpy.RUN_CHECKS)
+    project = Project(path, name=name)
+    project.add(modules.TemplatesModule(templates=template, run_checks=mpy.RUN_CHECKS))
+    project.add(modules.StubsModule(mpy.stubs, stubs=stub_choices))
+    project.add(modules.PackagesModule('requirements.txt'))
     proj_relative = project.create()
     mpy.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 
