@@ -90,7 +90,7 @@ def test_stub_error():
 
 def test_resolve_project(mocker, mock_micropy):
     mock_proj = mocker.patch.object(main, "Project").return_value
-    mock_proj.exists.return_value = False
+    mock_proj.exists = False
     assert mock_micropy.resolve_project('.') is None
-    mock_proj.exists.return_value = True
+    mock_proj.exists = True
     assert mock_micropy.resolve_project('.')

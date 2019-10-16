@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """ Common Pytest Fixtures"""
 
+import importlib
 import json
+import shutil
 from pathlib import Path
 
 import pytest
@@ -19,8 +21,12 @@ mock_vscode_exts = [
 
 @pytest.fixture(autouse=True)
 def cleanup_data():
-    micropy.utils.ensure_valid_url.clear_cache()
-    micropy.stubs.source.StubRepo.repos = set()
+    try:
+        micropy.utils.ensure_valid_url.clear_cache()
+        micropy.stubs.source.StubRepo.repos = set()
+    except Exception:
+        importlib.reload(micropy)
+        pass
 
 
 @pytest.fixture
@@ -86,11 +92,36 @@ def test_urls():
 
 
 @pytest.fixture
+def get_stub_paths(shared_datadir, tmp_path):
+    def _get_stub_paths(count=1, valid=True, dest=tmp_path):
+        stubs = iter(['fware', 'esp8266', 'esp32'])
+        _count = 0
+        while _count < count:
+            s = next(stubs)
+            path = (shared_datadir /
+                    f"{s}_test_stub") if valid else (shared_datadir / f"{s}_invalid_stub")
+            if path.exists():
+                shutil.copytree(path, (dest / path.name))
+                yield (dest / path.name)
+                _count += 1
+    return _get_stub_paths
+
+
+@pytest.fixture
 def mock_mp_stubs(mock_micropy, mocker, shared_datadir):
     mock_micropy.stubs.add((shared_datadir / 'fware_test_stub'))
     mock_micropy.stubs.add((shared_datadir / 'esp8266_test_stub'))
     mock_micropy.stubs.add((shared_datadir / 'esp32_test_stub'))
     return mock_micropy
+
+
+@pytest.fixture
+def micropy_stubs(mock_micropy, tmp_path, get_stub_paths):
+    def _micropy_stubs(count=3):
+        list(get_stub_paths(count=count, dest=mock_micropy.stubs.resource))
+        mock_micropy.stubs.load_from(mock_micropy.stubs.resource, strict=False)
+        return mock_micropy
+    return _micropy_stubs
 
 
 @pytest.yield_fixture

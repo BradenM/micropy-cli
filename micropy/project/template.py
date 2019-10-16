@@ -150,12 +150,13 @@ class CodeTemplate(Template):
     @property
     def context(self):
         """VScode Config Context"""
+        paths = self.paths
         if self.datadir:
             paths = [str(p.relative_to(self.datadir.parent))
                      for p in self.paths]
         stub_paths = json.dumps(paths)
         ctx = {
-            "stubs": self.stubs,
+            "stubs": self.stubs or [],
             "paths": stub_paths,
         }
         return ctx
@@ -173,11 +174,12 @@ class PylintTemplate(Template):
     @property
     def context(self):
         """Pylint Config Context"""
+        paths = self.paths
         if self.datadir:
             paths = [p.relative_to(self.datadir.parent) for p in self.paths]
         ctx = {
-            "stubs": self.stubs,
-            "paths": paths
+            "stubs": self.stubs or [],
+            "paths": paths or []
         }
         return ctx
 
