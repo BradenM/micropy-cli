@@ -11,8 +11,9 @@ from micropy.project.template import TemplateProvider
 class TemplatesModule(ProjectModule):
     TEMPLATES = TemplateProvider.TEMPLATES
 
-    def __init__(self, templates=None, **kwargs):
+    def __init__(self, templates=None, run_checks=True, **kwargs):
         self.templates = templates or []
+        self.run_checks = run_checks
         self.enabled = {
             'vscode': False,
             'pylint': False
@@ -23,7 +24,8 @@ class TemplatesModule(ProjectModule):
             for key in self.enabled:
                 if key in self.templates:
                     self.enabled[key] = True
-            self.provider = TemplateProvider(templates, log=self.log, **kwargs)
+            self.provider = TemplateProvider(
+                templates, run_checks=self.run_checks, log=self.log, **kwargs)
 
     @property
     def config(self):
