@@ -60,25 +60,56 @@ def test_stub_create(runner, mock_mpy):
     assert result.exit_code == 0
 
 
-def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner):
+@pytest.mark.parametrize(
+    "cliargs,expargs",
+    [
+        pytest.param("TestProject", (), marks=pytest.mark.xfail(strict=True)),
+        (
+            "TestProject -t vscode",
+            {
+                'project': {'path': "TestProject", 'name': None},
+                'template': {'templates': ('vscode', )}
+            }
+        ),
+        (
+            "-t vscode",
+            {
+                'project': {'path': Path.cwd(), 'name': "TestProject"},
+                'template': {'templates': ('vscode', )}
+            }
+        ),
+    ]
+)
+def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner, cliargs, expargs):
     """should create project"""
+    # Mock Project
     mock_project = mocker.patch.object(cli, "Project")
-    result = runner.invoke(cli.init, ["TestProject"])
+    mock_modules = mocker.patch.object(cli, "modules")
+    # Mock Text Prompt
+    ptext_mock = mocker.patch.object(cli.prompt, 'text').return_value
+    ptext_mock.ask.return_value = "TestProject"
+    # Test with no stubs (should fail)
+    result = runner.invoke(cli.init, cliargs.split())
     assert result.exit_code == 1
+    # Test with Stubs
     mock_mpy.stubs = ["stub"]
-    result = runner.invoke(cli.init, ["TestProject", "-t", "vscode"])
-    mock_project.assert_called_once_with(
-        "TestProject", stubs=["stub"], stub_manager=mock_mpy.stubs,
-        name=None, templates=('vscode', ), run_checks=mock_mpy.RUN_CHECKS)
+    result = runner.invoke(cli.init, cliargs.split())
+    # Assert Project
+    exp_project = expargs.pop('project', {})
+    exp_path = exp_project.pop("path", mocker.ANY)
+    mock_project.assert_called_once_with(exp_path, **exp_project)
+    # Assert Templates
+    exp_template = expargs.pop('template', {})
+    mock_modules.TemplatesModule.assert_called_once_with(
+        **exp_template, run_checks=mock_mpy.RUN_CHECKS)
+    # Assert Stubs
+    mock_modules.StubsModule.assert_called_once_with(mock_mpy.stubs, stubs=['stub'])
+    # Assert Reqs
+    mock_modules.PackagesModule.assert_any_call("requirements.txt")
+    mock_modules.PackagesModule.assert_any_call("dev-requirements.txt", dev=True)
+    # Assert Exit Code
     mock_project.return_value.create.assert_called_once()
     assert result.exit_code == 0
-    ptext_mock = mocker.patch.object(cli.prompt, 'text').return_value
-    ptext_mock.ask.return_value = "ProjectName"
-    result = runner.invoke(cli.init, ["-t", "vscode"])
-    mock_project.assert_called_with(
-        Path.cwd(), stubs=["stub"], stub_manager=mock_mpy.stubs,
-        run_checks=mock_mpy.RUN_CHECKS,
-        name="ProjectName", templates=('vscode', ))
 
 
 def test_cli_stubs_add(mocker, mock_mpy, shared_datadir,

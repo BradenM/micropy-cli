@@ -93,8 +93,9 @@ def test_urls():
 
 @pytest.fixture
 def get_stub_paths(shared_datadir, tmp_path):
-    def _get_stub_paths(count=1, valid=True, dest=tmp_path):
-        stubs = iter(['fware', 'esp8266', 'esp32'])
+    def _get_stub_paths(count=1, valid=True, firm=False, dest=tmp_path):
+        _stubs = ['fware'] if firm else ['esp8266', 'esp32']
+        stubs = iter(_stubs)
         _count = 0
         while _count < count:
             s = next(stubs)
@@ -116,11 +117,36 @@ def mock_mp_stubs(mock_micropy, mocker, shared_datadir):
 
 
 @pytest.fixture
-def micropy_stubs(mock_micropy, tmp_path, get_stub_paths):
+def micropy_stubs(mocker, tmp_path, get_stub_paths):
     def _micropy_stubs(count=3):
-        list(get_stub_paths(count=count, dest=mock_micropy.stubs.resource))
-        mock_micropy.stubs.load_from(mock_micropy.stubs.resource, strict=False)
-        return mock_micropy
+        def _mock_resolve_subresource(stubs, data_path):
+            _stubs = []
+            for s in stubs:
+                s.path = data_path / s.path.name
+                s.frozen = s.path / 'frozen'
+                s.stubs = s.path / 'stubs'
+                s.firmware.path = data_path / s.firmware.path.name
+                s.firmware.frozen = s.firmware.path / 'frozen'
+                s.firmware.stubs = s.firmware.path / 'stubs'
+                _stubs.append(s)
+            return _stubs
+        mock_mp = mocker.patch.object(micropy, "MicroPy").return_value
+        stubs = get_stub_paths(count=2, dest=tmp_path)
+        firm = next(get_stub_paths(count=1, firm=True, dest=tmp_path))
+        stub_mocks = [mocker.MagicMock() for i in range(3)]
+        for m in stub_mocks:
+            path = next(stubs, firm)
+            m.path = path
+            m.frozen = (path / 'frozen')
+            m.stubs = (path / 'stubs')
+            m.name = m.path.name
+            m.stub_version = '0.0.0'
+        firm_mock = stub_mocks.pop(-1)
+        for m in stub_mocks:
+            m.firmware = firm_mock
+        mock_mp.stubs.__iter__.return_value = stub_mocks
+        mock_mp.stubs.resolve_subresource = _mock_resolve_subresource
+        return mock_mp
     return _micropy_stubs
 
 
