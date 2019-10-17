@@ -22,6 +22,7 @@ def mock_pkg(mocker, tmp_path):
     """return mock package"""
     tmp_pkg = tmp_path / 'tmp_pkg'
     tmp_pkg.mkdir()
+    (tmp_pkg / 'module.py').touch()
     mock_tarbytes = mocker.patch.object(
         modules.packages.utils, 'extract_tarbytes')
     mocker.patch.object(
@@ -226,7 +227,7 @@ class TestStubsModule:
             "custom-stub": str(custom_stub)
         }
         stub_mod.stub_manager.add.return_value = mp.stubs
-        stubs = stub_mod.load(stub_data=stub_data)
+        assert stub_mod.load(stub_data=stub_data)
 
     def test_add_stub(self, test_project, get_stub_paths, mocker):
         proj, mp = next(test_project('stubs'))
@@ -238,3 +239,25 @@ class TestStubsModule:
         stub.stubs = stub_path / 'stubs'
         stub.firmware = stub
         proj.add_stub(stub)
+
+
+class TestPackagesModule:
+
+    def test_add_package(self, mocker, mock_pkg, test_project):
+        proj, mp = next(test_project('reqs'))
+        proj.create()
+        proj.add_package('somepkg')
+        res = proj.add_package('somepkg')
+        # Shouldnt allow duplicate pkgs
+        assert res is None
+        mock_shutil = mocker.patch.object(modules.packages, "shutil")
+        # Tests for modules
+        mocker.patch.object(modules.packages.utils, 'generate_stub',
+                            return_value=(Path("mod.py"), Path("mod.pyi")))
+        proj.add_package('some_module')
+        mock_shutil.copy2.assert_called()
+        # Tests for packages
+        mock_rglob = mocker.patch.object(modules.packages.Path, "rglob")
+        mock_rglob.return_value = iter([Path("SomePkg/__init__.py")])
+        res = proj.add_package('anotha_pkg')
+        mock_shutil.copytree.assert_called_once()

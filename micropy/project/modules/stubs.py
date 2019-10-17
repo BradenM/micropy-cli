@@ -14,7 +14,7 @@ class StubsModule(ProjectModule):
 
     def __init__(self, stub_manager, stubs=None):
         self.stub_manager = stub_manager
-        self._stubs = stubs
+        self._stubs = stubs or []
 
     @property
     def context(self):
@@ -36,7 +36,7 @@ class StubsModule(ProjectModule):
 
     @property
     def config(self):
-        stubs = {s.name: s.stub_version for s in self.stubs}
+        stubs = {s.name: s.stub_version for s in self._stubs}
         return {
             'stubs': stubs
         }
@@ -73,7 +73,6 @@ class StubsModule(ProjectModule):
         Args:
             stub_data (dict): Dict of Stubs
         """
-        stub_data = stub_data or {}
         _data = self.config['stubs']
         data = {**stub_data, **_data}
         for name, location in data.items():
@@ -88,17 +87,20 @@ class StubsModule(ProjectModule):
         Args:
             stub_list (dict): Dict of Stubs
         """
-        stubs = self._load_stub_data(**kwargs)
+        stub_data = self.parent.data.get('stubs', {})
+        stubs = list(self._load_stub_data(stub_data=stub_data))
+        stubs.extend(self.stubs)
         self.stubs = self._resolve_subresource(stubs)
-        return stubs
+        return self.stubs
 
     def create(self):
         self.log.info(
             f"Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
-        return self.stubs
+        return self.load()
 
     def update(self):
-        return self._load_stub_data()
+        self.stubs = self.load()
+        return self.stubs
 
     @ProjectModule.method_hook
     def add_stub(self, stub, **kwargs):

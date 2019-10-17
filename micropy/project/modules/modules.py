@@ -18,7 +18,8 @@ class ProjectModule(metaclass=abc.ABCMeta):
     def parent(self, parent):
         if parent:
             for hook in ProjectModule._hooks:
-                setattr(parent, hook.__name__, partial(hook, self))
+                if not hasattr(parent, hook.__name__) and hasattr(self, hook.__name__):
+                    setattr(parent, hook.__name__, partial(hook, self))
         self._parent = parent
 
     @property

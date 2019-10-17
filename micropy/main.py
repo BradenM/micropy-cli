@@ -55,10 +55,10 @@ class MicroPy:
         path = Path(path).absolute()
         proj = Project(path)
         proj.add(modules.StubsModule(self.stubs))
-        proj.add(modules.TemplatesModule(run_checks=self.RUN_CHECKS))
         proj.add(modules.PackagesModule('requirements.txt'))
         proj.add(modules.PackagesModule(
             'dev-requirements.txt', dev=True))
+        proj.add(modules.TemplatesModule(run_checks=self.RUN_CHECKS))
         if proj.exists:
             if verbose:
                 self.log.title(f"Loading Project")

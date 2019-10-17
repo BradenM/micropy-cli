@@ -76,7 +76,8 @@ class PackagesModule(ProjectModule):
                 shutil.copy2(file, (self.pkg_path / file.name))
                 shutil.copy2(stub, (self.pkg_path / stub.name))
 
-    def add_package(self, package):
+    @ProjectModule.method_hook
+    def add_package(self, package, dev=False):
         """Add requirement to project
 
         Args:
@@ -86,6 +87,8 @@ class PackagesModule(ProjectModule):
         Returns:
             dict: Dictionary of packages
         """
+        if self.is_dev and not dev:
+            return None
         pkg = next(requirements.parse(package))
         self.log.info(f"Adding $[{pkg.name}] to requirements...")
         if self.packages.get(pkg.name, None):
@@ -108,12 +111,13 @@ class PackagesModule(ProjectModule):
             new_pkgs = new_pkgs - set(pkg_cache)
         pkgs = [(name, s)
                 for name, s in self.packages.items() if name in new_pkgs]
-        if pkgs and not self._loaded:
+        if pkgs and not self._loaded and not self.is_dev:
             self.log.title("Fetching Requirements")
         for name, spec in pkgs:
             meta = utils.get_package_meta(name, spec=spec)
             tar_url = meta['url']
-            self._fetch_package(tar_url)
+            if not self.is_dev:
+                self._fetch_package(tar_url)
         self.update()
         self.parent._set_cache('pkg_loaded', list(pkg_keys))
 

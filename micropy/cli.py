@@ -95,10 +95,10 @@ def init(mpy, path, name=None, template=None):
     stub_choices = prompt.checkbox(
         f"Which stubs would you like to use?", choices=stubs).ask()
     project = Project(path, name=name)
-    project.add(modules.TemplatesModule(templates=template, run_checks=mpy.RUN_CHECKS))
     project.add(modules.StubsModule(mpy.stubs, stubs=stub_choices))
     project.add(modules.PackagesModule('requirements.txt'))
     project.add(modules.PackagesModule('dev-requirements.txt', dev=True))
+    project.add(modules.TemplatesModule(templates=template, run_checks=mpy.RUN_CHECKS))
     proj_relative = project.create()
     mpy.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 
@@ -182,7 +182,7 @@ def add(mpy, stub_name, force=False):
         mpy.log.error(f"$[{stub_name}] is not a valid stub!")
         sys.exit(1)
     else:
-        if proj.exists():
+        if proj.exists:
             mpy.log.title(f"Adding $[{stub.name}] to $[{proj.name}]")
             proj.add_stub(stub)
 
