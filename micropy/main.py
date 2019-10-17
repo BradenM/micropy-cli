@@ -58,7 +58,7 @@ class MicroPy:
         proj.add(modules.TemplatesModule(run_checks=self.RUN_CHECKS))
         proj.add(modules.PackagesModule('requirements.txt'))
         proj.add(modules.PackagesModule(
-            'dev-requirements.txt', name='dev-packages'))
+            'dev-requirements.txt', dev=True))
         if proj.exists:
             if verbose:
                 self.log.title(f"Loading Project")

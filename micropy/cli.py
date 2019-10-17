@@ -98,6 +98,7 @@ def init(mpy, path, name=None, template=None):
     project.add(modules.TemplatesModule(templates=template, run_checks=mpy.RUN_CHECKS))
     project.add(modules.StubsModule(mpy.stubs, stubs=stub_choices))
     project.add(modules.PackagesModule('requirements.txt'))
+    project.add(modules.PackagesModule('dev-requirements.txt', dev=True))
     proj_relative = project.create()
     mpy.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 

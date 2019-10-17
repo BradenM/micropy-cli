@@ -20,16 +20,16 @@ class StubsModule(ProjectModule):
     def context(self):
         """Get project template context"""
         paths = []
+        _paths = self.parent._context.get('paths', [])
         if self.stubs:
             frozen = [s.frozen for s in self.stubs]
             fware_mods = [s.firmware.frozen
                           for s in self.stubs if s.firmware is not None]
             stub_paths = [s.stubs for s in self.stubs]
-            paths = [*fware_mods, *frozen, *stub_paths]
-            if self.parent.pkg_data.exists():
-                paths.append(self.parent.pkg_data)
+            paths = set([*fware_mods, *frozen, *stub_paths])
+        paths = list(paths.union(_paths))
         return {
-            "stubs": self.stubs,
+            "stubs": set(self.stubs),
             "paths": paths,
             "datadir": self.parent.data_path,
         }

@@ -14,11 +14,14 @@ from micropy.project.modules import ProjectModule
 
 class PackagesModule(ProjectModule):
 
-    def __init__(self, path, name=None, packages=None, *args, **kwargs):
+    def __init__(self, path, packages=None, dev=False, **kwargs):
         self._path = Path(path)
         self._loaded = False
+        self.is_dev = dev
         packages = packages or {}
-        self.name = name or "packages"
+        if self.is_dev:
+            packages['micropy-cli'] = '*'
+        self.name = "dev-packages" if self.is_dev else "packages"
         self.packages = {**packages}
 
     @property
@@ -27,9 +30,21 @@ class PackagesModule(ProjectModule):
         return path
 
     @property
+    def pkg_path(self):
+        return self.parent.data_path / self.parent.name
+
+    @property
     def config(self):
         return {
             self.name: self.packages
+        }
+
+    @property
+    def context(self):
+        _paths = set(self.parent._context.get('paths', []))
+        _paths.add(self.pkg_path)
+        return {
+            'paths': list(_paths)
         }
 
     def _fetch_package(self, url):
@@ -54,12 +69,12 @@ class PackagesModule(ProjectModule):
                 "*.py") if not any(i in f.name for i in ignore)]
             stubs = [utils.generate_stub(f) for f in py_files]
             if pkg_init:
-                data_path = self.parent.pkg_data / pkg_init.parent.name
+                data_path = self.pkg_path / pkg_init.parent.name
                 shutil.copytree(pkg_init.parent, data_path)
                 return data_path
             for file, stub in stubs:
-                shutil.copy2(file, (self.parent.pkg_data / file.name))
-                shutil.copy2(stub, (self.parent.pkg_data / stub.name))
+                shutil.copy2(file, (self.pkg_path / file.name))
+                shutil.copy2(stub, (self.pkg_path / stub.name))
 
     def add_package(self, package):
         """Add requirement to project
@@ -85,7 +100,7 @@ class PackagesModule(ProjectModule):
 
     def load(self):
         """Retrieves and stubs project requirements"""
-        self.parent.pkg_data.mkdir(exist_ok=True)
+        self.pkg_path.mkdir(exist_ok=True)
         pkg_keys = set(self.packages.keys())
         pkg_cache = self.parent._get_cache('pkg_loaded')
         new_pkgs = pkg_keys.copy()

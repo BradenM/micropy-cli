@@ -17,10 +17,10 @@ class Project(ProjectModule):
         self.data_path = self.path / '.micropy'
         self.info_path = self.data_path / 'micropy.json'
         self.cache_path = self.data_path / '.cache'
+        self._context = {}
 
         self.name = name or self.path.name
         self.log = Log.add_logger(self.name, show_title=False)
-        self.pkg_data = self.data_path / self.name
 
     @property
     def exists(self):
@@ -48,11 +48,10 @@ class Project(ProjectModule):
 
     @property
     def context(self):
-        _context = {}
         for child in self._children:
             child_context = getattr(child, 'context', {})
-            _context = {**_context, **child_context}
-        return _context
+            self._context = {**self._context, **child_context}
+        return self._context
 
     def _set_cache(self, key, value):
         """Set key in Project cache
@@ -95,7 +94,7 @@ class Project(ProjectModule):
     def to_json(self):
         """Dumps project to data file"""
         with self.info_path.open('w+') as f:
-            data = json.dumps(self.info, indent=4)
+            data = json.dumps(self.config, indent=4)
             f.write(data)
 
     def load(self, **kwargs):
@@ -112,6 +111,8 @@ class Project(ProjectModule):
         self.log.debug(f"Generated Project Context: {self.context}")
         for child in self._children:
             child.create()
+        self.to_json()
+        self.log.success(f"Project Created!")
         return self.path.relative_to(Path.cwd())
 
     def update(self):
