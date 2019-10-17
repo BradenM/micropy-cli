@@ -85,6 +85,7 @@ class StubsModule(ProjectModule):
     def update(self):
         pass
 
+    @ProjectModule.method_hook
     def add_stub(self, stub, **kwargs):
         """Add stub to project
 
@@ -97,7 +98,7 @@ class StubsModule(ProjectModule):
         loaded = self.stubs or []
         stubs = [*loaded, stub]
         self.log.info("Loading project...")
-        self.load(stubs=stubs)
+        self.stubs = self._resolve_subresource(stubs)
         self.log.info("Updating Project Info...")
         self.parent.to_json()
         self.log.info(

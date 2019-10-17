@@ -125,13 +125,3 @@ class Project(ProjectModule):
         for child in self._children:
             child.update()
         return self
-
-    def add_stub(self, *args, **kwargs):
-        for child in self._children:
-            if hasattr(child, 'add_stub'):
-                return child.add_stub(*args, **kwargs)
-
-    def add_package(self, *args, **kwargs):
-        for child in self._children:
-            if hasattr(child, 'add_package'):
-                return child.add_package(*args, **kwargs)
