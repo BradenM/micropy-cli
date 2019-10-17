@@ -102,8 +102,10 @@ def get_stub_paths(shared_datadir, tmp_path):
             path = (shared_datadir /
                     f"{s}_test_stub") if valid else (shared_datadir / f"{s}_invalid_stub")
             if path.exists():
-                shutil.copytree(path, (dest / path.name))
-                yield (dest / path.name)
+                dest = (dest / path.name)
+                if not dest.exists():
+                    shutil.copytree(path, (dest / path.name))
+                yield dest
                 _count += 1
     return _get_stub_paths
 
@@ -117,34 +119,32 @@ def mock_mp_stubs(mock_micropy, mocker, shared_datadir):
 
 
 @pytest.fixture
-def micropy_stubs(mocker, tmp_path, get_stub_paths):
-    def _micropy_stubs(count=3):
-        def _mock_resolve_subresource(stubs, data_path):
-            _stubs = []
-            for s in stubs:
-                s.path = data_path / s.path.name
-                s.frozen = s.path / 'frozen'
-                s.stubs = s.path / 'stubs'
-                s.firmware.path = data_path / s.firmware.path.name
-                s.firmware.frozen = s.firmware.path / 'frozen'
-                s.firmware.stubs = s.firmware.path / 'stubs'
-                _stubs.append(s)
-            return _stubs
-        mock_mp = mocker.patch.object(micropy, "MicroPy").return_value
-        stubs = get_stub_paths(count=2, dest=tmp_path)
-        firm = next(get_stub_paths(count=1, firm=True, dest=tmp_path))
-        stub_mocks = [mocker.MagicMock() for i in range(3)]
-        for m in stub_mocks:
-            path = next(stubs, firm)
+def get_stubs(get_stub_paths, mocker, tmp_path):
+    def _get_stubs(path=tmp_path, **kwargs):
+        def stubbify(m, path, firm=None):
             m.path = path
             m.frozen = (path / 'frozen')
             m.stubs = (path / 'stubs')
             m.name = m.path.name
             m.stub_version = '0.0.0'
-        firm_mock = stub_mocks.pop(-1)
-        for m in stub_mocks:
-            m.firmware = firm_mock
-        mock_mp.stubs.__iter__.return_value = stub_mocks
+            m.firmware = firm
+            return m
+        paths = get_stub_paths(dest=path, **kwargs)
+        firm = next(get_stub_paths(firm=True, dest=path))
+        firm_mock = stubbify(mocker.MagicMock(), firm)
+        for p in paths:
+            yield stubbify(mocker.MagicMock(), p, firm=firm_mock)
+    return _get_stubs
+
+
+@pytest.fixture
+def micropy_stubs(mocker, get_stubs):
+    def _micropy_stubs(count=3):
+        def _mock_resolve_subresource(stubs, data_path):
+            return get_stubs(path=data_path)
+        mock_mp = mocker.patch.object(micropy, "MicroPy").return_value
+        stubs = list(get_stubs())
+        mock_mp.stubs.__iter__.return_value = stubs
         mock_mp.stubs.resolve_subresource = _mock_resolve_subresource
         return mock_mp
     return _micropy_stubs

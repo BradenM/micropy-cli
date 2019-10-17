@@ -45,6 +45,10 @@ class StubsModule(ProjectModule):
     def stubs(self):
         return self._resolve_subresource(self._stubs)
 
+    @stubs.setter
+    def stubs(self, val):
+        self._stubs = val
+
     def _resolve_subresource(self, stubs):
         """Resolves stub resource
 
@@ -63,19 +67,30 @@ class StubsModule(ProjectModule):
         else:
             return resource
 
+    def _load_stub_data(self, stub_data=None, **kwargs):
+        """Loads Serialized Stub Data
+
+        Args:
+            stub_data (dict): Dict of Stubs
+        """
+        stub_data = stub_data or {}
+        _data = self.config['stubs']
+        data = {**stub_data, **_data}
+        for name, location in data.items():
+            _path = Path(location).absolute()
+            if Path(_path).exists():
+                yield self.stub_manager.add(_path)
+            yield self.stub_manager.add(name)
+
     def load(self, **kwargs):
         """Loads stubs from info file
 
         Args:
             stub_list (dict): Dict of Stubs
         """
-        stubs = kwargs.get('stubs', self.data.get('stubs', self.stubs))
-        for name, location in stubs.items():
-            _path = self.path / location
-            if Path(_path).exists():
-                yield self.stub_manager.add(_path)
-            else:
-                yield self.stub_manager.add(name)
+        stubs = self._load_stub_data(**kwargs)
+        self.stubs = self._resolve_subresource(stubs)
+        return stubs
 
     def create(self):
         self.log.info(
@@ -83,7 +98,7 @@ class StubsModule(ProjectModule):
         return self.stubs
 
     def update(self):
-        pass
+        return self._load_stub_data()
 
     @ProjectModule.method_hook
     def add_stub(self, stub, **kwargs):
