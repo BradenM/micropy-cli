@@ -15,9 +15,10 @@ class Project(ProjectModule):
         self._children = []
         self.path = Path(path).absolute()
         self.data_path = self.path / '.micropy'
-        self.info_path = self.data_path / 'micropy.json'
+        self.info_path = self.path / 'micropy.json'
         self.cache_path = self.data_path / '.cache'
         self._context = {}
+        self._config = {}
 
         self.name = name or self.path.name
         self.log = Log.add_logger(self.name, show_title=False)
@@ -39,12 +40,17 @@ class Project(ProjectModule):
 
     @property
     def config(self):
-        _config = {
+        self._config = {
             'name': self.name
         }
         for child in self._children:
-            _config = {**_config, **child.config}
-        return _config
+            self._config = {**self._config, **child.config}
+        return self._config
+
+    @config.setter
+    def config(self, value):
+        self._config = value
+        return self._config
 
     @property
     def context(self):

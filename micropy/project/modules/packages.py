@@ -98,7 +98,7 @@ class PackagesModule(ProjectModule):
         self.log.success("Package installed!")
         return self.packages
 
-    def load(self):
+    def load(self, **kwargs):
         """Retrieves and stubs project requirements"""
         self.pkg_path.mkdir(exist_ok=True)
         pkg_keys = set(self.packages.keys())

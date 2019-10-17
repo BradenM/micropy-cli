@@ -17,6 +17,23 @@ def mock_requests(mocker):
 
 
 @pytest.fixture
+def mock_pkg(mocker, tmp_path):
+    """return mock package"""
+    tmp_pkg = tmp_path / 'tmp_pkg'
+    tmp_pkg.mkdir()
+    mock_tarbytes = mocker.patch.object(
+        modules.packages.utils, 'extract_tarbytes')
+    mocker.patch.object(
+        modules.packages.utils, 'get_package_meta')
+    mocker.patch.object(
+        modules.packages.utils, 'get_url_filename')
+    mocker.patch.object(
+        modules.packages.utils, 'stream_download')
+    mock_tarbytes.return_value = tmp_pkg
+    return tmp_pkg
+
+
+@pytest.fixture
 def get_module():
     def _get_module(names, mp, **kwargs):
         _templates = list(modules.TemplatesModule.TEMPLATES.keys())
@@ -102,9 +119,9 @@ def get_context():
 
 @pytest.yield_fixture
 def test_project(micropy_stubs, mock_cwd, tmp_path, get_module):
-    def _test_project(mods=""):
+    def _test_project(mods="", path=None):
         mp = micropy_stubs()
-        proj_path = tmp_path / "NewProject"
+        proj_path = path if path else tmp_path / "NewProject"
         proj = project.Project(proj_path)
         mods = get_module(mods, mp)
         for m in mods:
@@ -114,14 +131,39 @@ def test_project(micropy_stubs, mock_cwd, tmp_path, get_module):
     return _test_project
 
 
-@pytest.mark.parametrize('mods', ['', 'stubs', 'template', 'reqs', 'dev-reqs', 'all'])
+@pytest.fixture
+def tmp_project(tmp_path, shared_datadir):
+    path = shared_datadir / 'project_test'
+    proj_path = tmp_path / "NewProject"
+    shutil.copytree(path, proj_path)
+    return proj_path
+
+
+def test_implementation(mocker):
+    mocker.patch.object(modules.ProjectModule, "__abstractmethods__", new_callable=set)
+    inst = modules.ProjectModule()
+    inst.config
+    inst.load()
+    inst.create()
+    inst.update()
+    inst.add([])
+    inst.remove([])
+
+
+@pytest.mark.parametrize(
+    'mods',
+    ['', 'stubs', 'template', 'reqs', 'dev-reqs', 'all']
+)
 class TestProject:
 
-    def test_create(self, test_project, mods):
+    def test_create(self, test_project, mock_checks, mods):
         test_proj, _ = next(test_project(mods))
+        assert test_proj.data == {}
         resp = test_proj.create()
         assert str(resp) == "NewProject"
         assert test_proj.exists
+        assert test_proj.data is not {}
+        assert test_proj.info_path.exists()
 
     def test_config(self, test_project, get_config,  mods):
         test_proj, mp = next(test_project(mods))
@@ -141,3 +183,11 @@ class TestProject:
                     expect_context.get(k, []))
             except TypeError:
                 assert test_proj.context.get(k, []) == expect_context[k]
+
+    def test_load(self, mock_pkg, tmp_project, mock_checks, test_project, mods):
+        proj, mp = next(test_project(mods, path=tmp_project))
+        proj.load(run_checks=mp.RUN_CHECKS)
+
+    def test_update(self, mock_pkg, tmp_project, mock_checks, test_project, mods):
+        proj, mp = next(test_project(mods, path=tmp_project))
+        proj.update()

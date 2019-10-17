@@ -34,7 +34,7 @@ class TemplatesModule(ProjectModule):
         }
 
     def load(self, **kwargs):
-        templates = [k for k, v in self.parent.config.items() if v]
+        templates = [k for k, v in self.parent.config['config'].items() if v]
         self.provider = TemplateProvider(templates, **kwargs)
 
     def create(self):

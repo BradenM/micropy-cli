@@ -63,13 +63,13 @@ class StubsModule(ProjectModule):
         else:
             return resource
 
-    def load(self, stubs=None):
+    def load(self, **kwargs):
         """Loads stubs from info file
 
         Args:
             stub_list (dict): Dict of Stubs
         """
-        stubs = stubs or self.data.get('stubs', self.stubs)
+        stubs = kwargs.get('stubs', self.data.get('stubs', self.stubs))
         for name, location in stubs.items():
             _path = self.path / location
             if Path(_path).exists():
