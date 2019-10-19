@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import abc
-from functools import partial, wraps
+from functools import wraps
 
 """Project Packages Module Abstract Implementation"""
 
 
 class ProjectModule(metaclass=abc.ABCMeta):
 
-    _hooks = []
+    _hooks = set()
 
     @property
     def parent(self):
@@ -16,23 +16,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
 
     @parent.setter
     def parent(self, parent):
-        if parent:
-            for hook in ProjectModule._hooks:
-                if not hasattr(parent, hook.__name__) and hasattr(self, hook.__name__):
-                    setattr(parent, hook.__name__, partial(hook, self))
         self._parent = parent
-
-    @property
-    def hooks(self):
-        return self._hooks
-
-    @classmethod
-    def method_hook(cls, func):
-        cls._hooks.append(func)
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            return func(*args, **kwargs)
-        return wrapper
 
     @abc.abstractproperty
     def config(self):
@@ -55,3 +39,17 @@ class ProjectModule(metaclass=abc.ABCMeta):
 
     def remove(self, component):
         pass
+
+    @classmethod
+    def hook(cls, func, name=None):
+        name = name or func.__name__
+        cls._hooks.add(name)
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        return wrapper
+
+    def resolve_hook(self, name):
+        for hook in self._hooks:
+            if hasattr(self, name):
+                return getattr(self, name)

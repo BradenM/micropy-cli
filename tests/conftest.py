@@ -26,7 +26,6 @@ def cleanup_data():
         micropy.stubs.source.StubRepo.repos = set()
     except Exception:
         importlib.reload(micropy)
-        pass
 
 
 @pytest.fixture

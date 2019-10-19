@@ -76,7 +76,7 @@ class PackagesModule(ProjectModule):
                 shutil.copy2(file, (self.pkg_path / file.name))
                 shutil.copy2(stub, (self.pkg_path / stub.name))
 
-    @ProjectModule.method_hook
+    @ProjectModule.hook
     def add_package(self, package, dev=False):
         """Add requirement to project
 

@@ -64,7 +64,7 @@ class MicroPy:
                 self.log.title(f"Loading Project")
             proj.load()
             return proj
-        return None
+        return proj
 
     def create_stubs(self, port, verbose=False):
         """Create and add stubs from Pyboard

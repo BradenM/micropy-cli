@@ -26,7 +26,7 @@ pass_mpy = click.make_pass_decorator(main.MicroPy, ensure=True)
 def cli(ctx, mpy, skip_checks=False):
     """CLI Application for creating/managing Micropython Projects."""
     if ctx.invoked_subcommand is None:
-        if not mpy.project:
+        if not mpy.project.exists:
             return click.echo(ctx.get_help())
     latest = utils.is_update_available()
     if latest:
@@ -171,7 +171,7 @@ def add(mpy, stub_name, force=False):
     Checkout the docs on Github for more info.
     """
     mpy.stubs.verbose_log(True)
-    proj = Project('.', stub_manager=mpy.stubs)
+    proj = mpy.project
     mpy.log.title(f"Adding $[{stub_name}] to stubs")
     try:
         stub = mpy.stubs.add(stub_name, force=force)
@@ -215,7 +215,7 @@ def list(mpy):
     mpy.log.info(f"Total: {len(mpy.stubs)}")
     print_stubs(mpy.stubs.iter_by_firmware())
     mpy.verbose = False
-    proj = mpy.resolve_project('.')
+    proj = mpy.project
     if proj:
         mpy.log.title(f"Stubs used in {proj.name}:")
         mpy.log.info(f"Total: {len(proj.stubs)}")

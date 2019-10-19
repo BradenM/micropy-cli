@@ -49,10 +49,11 @@ class StubManager:
             stubs ([Stub], optional): Sublist of Stubs to iterate over.
                 Defaults to None. If none, uses all installed stubs.
         """
+        loaded = stubs or self._loaded
         for firm in self._firmware:
-            stubs = [s for s in self._loaded if s.firmware == firm]
+            stubs = [s for s in loaded if s.firmware == firm]
             yield (firm, stubs)
-        other = [s for s in self._loaded if s.firmware is None]
+        other = [s for s in loaded if s.firmware is None]
         yield ("Unknown", other)
 
     def verbose_log(self, state):

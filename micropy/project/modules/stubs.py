@@ -5,7 +5,6 @@
 import sys
 from pathlib import Path
 
-from micropy import utils
 from micropy.exceptions import StubError
 from micropy.project.modules import ProjectModule
 
@@ -41,7 +40,8 @@ class StubsModule(ProjectModule):
             'stubs': stubs
         }
 
-    @utils.lazy_property
+    @property
+    @ProjectModule.hook
     def stubs(self):
         return self._resolve_subresource(self._stubs)
 
@@ -55,6 +55,8 @@ class StubsModule(ProjectModule):
         Args:
             stubs (stubs): Stubs Passed to Manager
         """
+        if not hasattr(self, "_parent"):
+            return self._stubs
         try:
             resource = set(
                 self.stub_manager.resolve_subresource(stubs,
@@ -102,7 +104,7 @@ class StubsModule(ProjectModule):
         self.stubs = self.load()
         return self.stubs
 
-    @ProjectModule.method_hook
+    @ProjectModule.hook
     def add_stub(self, stub, **kwargs):
         """Add stub to project
 

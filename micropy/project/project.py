@@ -23,6 +23,12 @@ class Project(ProjectModule):
         self.name = name or self.path.name
         self.log = Log.add_logger(self.name, show_title=False)
 
+    def __getattr__(self, name):
+        result = next(iter([c.resolve_hook(name) for c in self._children]), None)
+        if result is not None:
+            return result
+        return self.__getattribute__(name)
+
     @property
     def exists(self):
         """Whether this project exists

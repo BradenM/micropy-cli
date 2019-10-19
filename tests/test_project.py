@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import pathlib
 import shutil
 from functools import partial
 from pathlib import Path
 
 import pytest
 
-from micropy import exceptions as exc
 from micropy import project
 from micropy.project import modules
 
@@ -215,6 +213,8 @@ class TestStubsModule:
         mocker.resetall()
         stub_module.stub_manager.resolve_subresource = mocker.MagicMock()
         stub_module.stub_manager.resolve_subresource.side_effect = [OSError]
+        assert stub_module._resolve_subresource([]) == stub_module._stubs
+        stub_module._parent = mocker.MagicMock()
         with pytest.raises(SystemExit):
             stub_module._resolve_subresource([])
 
@@ -239,6 +239,7 @@ class TestStubsModule:
         stub.stubs = stub_path / 'stubs'
         stub.firmware = stub
         proj.add_stub(stub)
+        print(proj.stubs)
 
 
 class TestPackagesModule:

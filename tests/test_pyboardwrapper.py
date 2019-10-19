@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 
 from micropy.utils import PyboardWrapper, pybwrapper
-
 from micropy.utils.pybwrapper import PyboardError
 
 
