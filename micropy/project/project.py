@@ -184,6 +184,8 @@ class Project(ProjectModule):
         """
         self.log.title(f"Initiating $[{self.name}]")
         self.data_path.mkdir(exist_ok=True, parents=True)
+        ignore_data = self.data_path / '.gitignore'
+        ignore_data.write_text('*')
         self.log.debug(f"Generated Project Context: {self.context}")
         for child in self._children:
             child.create()
