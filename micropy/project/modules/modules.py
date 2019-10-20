@@ -65,10 +65,26 @@ class ProjectModule(metaclass=abc.ABCMeta):
             if hook._name == name:
                 _hook = hook
                 _hook.add_instance(self)
+                if _hook.is_descriptor():
+                    return _hook.get()
         return _hook
 
 
 class HookProxy:
+    """Proxy for Project Hooks
+
+    Allows multiple project hooks with the same name by
+    creating individual hooks for any defined permutations
+    of kwargs.
+
+    This is accomplished by creating a unique name for each
+    permutation proxying the original attribute name to the
+    appropriate method determined from the provided kwargs.
+
+    Args:
+        name (str): Name of Proxy
+    """
+
     def __init__(self, name):
         self.methods = []
         self.instances = []
@@ -79,9 +95,8 @@ class HookProxy:
         for method, name in self.methods:
             _name = self.get_name(method, kwargs)
             if name == _name:
-                _class = utils.get_class_that_defined_method(method)
-                instance = next((i for i in self.instances if isinstance(i, _class)))
-                self.log.debug(f"{self._name} proxied to [{name}@{instance}]")
+                instance = self._get_instance(method)
+                self.log.debug(f"{self._name} proxied to [{_name}@{instance}]")
                 return getattr(instance, method.__name__)(*args, **kwargs)
 
     def __str__(self):
@@ -92,7 +107,47 @@ class HookProxy:
         name = f"HookProxy(name={self._name}, methods=[{self.methods}])"
         return name
 
+    def _get_instance(self, attr):
+        """Retrieves instance from attribute.
+
+        Args:
+            attr (Callable): Attribute to use.
+
+        Returns:
+            Instance the attribute belongs to.
+        """
+        _class = utils.get_class_that_defined_method(attr)
+        if _class:
+            instance = next((i for i in self.instances if isinstance(i, _class)), None)
+            return instance
+
+    def is_descriptor(self):
+        """Determine if initial method provided is a descriptor"""
+        method = self.methods[0][0]
+        instance = self._get_instance(method)
+        if instance:
+            attr = inspect.getattr_static(instance, self._name)
+            return inspect.isdatadescriptor(attr)
+        return False
+
+    def get(self):
+        """Get initial method descriptor value"""
+        instance = self._get_instance(self.methods[0][0])
+        self.log.debug(f"{self._name} proxied to [property@{instance}]")
+        return getattr(instance, self._name)
+
     def add_method(self, func, **kwargs):
+        """Adds method to Proxy.
+
+        Any kwargs provided will be used to generate the unique
+        hook name.
+
+        Args:
+            func (Callable): Method to add
+
+        Returns:
+            Tuple[Callable, str]: Tuple containing method and unique hook name.
+        """
         name = self.get_name(func, kwargs)
         hook = (func, name)
         self.methods.append(hook)
@@ -100,9 +155,25 @@ class HookProxy:
         return hook
 
     def add_instance(self, inst):
+        """Add instance to Proxy
+
+        Args:
+            inst (Any): Instance to add.
+        """
         return self.instances.append(inst)
 
-    def get_name(self, func, params):
+    def get_name(self, func, params=None):
+        """Generates name from method and provided kwargs.
+
+        Args:
+            func (Callable): Method to generate name for.
+            params (Dict[Any, Any], optional): Any kwargs to update the defaults with.
+                Defaults to None. If none, uses default kwargs.
+
+        Returns:
+            str: Generated name
+        """
+        params = params or {}
         sig = inspect.signature(func)
         _default = {p.name: p.default for p in sig.parameters.values() if p.kind ==
                     p.POSITIONAL_OR_KEYWORD and p.default is not p.empty}

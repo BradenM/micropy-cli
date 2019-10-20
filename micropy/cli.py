@@ -216,7 +216,7 @@ def list(mpy):
     print_stubs(mpy.stubs.iter_by_firmware())
     mpy.verbose = False
     proj = mpy.project
-    if proj:
+    if proj.exists:
         mpy.log.title(f"Stubs used in {proj.name}:")
         mpy.log.info(f"Total: {len(proj.stubs)}")
         stubs = mpy.stubs.iter_by_firmware(stubs=proj.stubs)
