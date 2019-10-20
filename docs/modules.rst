@@ -10,7 +10,5 @@ API Reference
    micropy.stubs
    micropy.stubs.source
    micropy.project
+   micropy.project.modules
    micropy.utils
-
-
-
