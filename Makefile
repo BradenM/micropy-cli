@@ -32,23 +32,26 @@ lint: ## check style with flake8
 	flake8 --statistics --count -qq
 
 test: ## run tests quickly with the default Python
-	pytest
+	pytest -n'auto'
 
 test-all: ## run tests on every Python version with tox
 	tox
 
 watch-build: clean ## build pytest-testmon db
-	pytest -n 0 --testmon
+	pytest --testmon -c setup.cfg
 	$(MAKE) watch
 
 watch: ## watch tests
-	ptw -- -n 0 --testmon -vv
+	ptw --spool 500 --onpass "make watch-cov" --clear -- --testmon -vv -c setup.cfg
+
+watch-cov: ## watch test coverage
+	pytest -n'auto' --cov --cov-append --cov-config=setup.cfg --cov-report=xml:cov.xml --cov-report term
 
 coverage: ## generate coverage
-	pytest --cov --cov-config=setup.cfg
+	pytest -n'auto' --cov --cov-config=setup.cfg
 
 coverage-html: ## generate coverage html
-	pytest --cov --cov-config=setup.cfg --cov-report html
+	pytest -n'auto' --cov --cov-config=setup.cfg --cov-report html
 
 codestyle: ## cleanup code
 	@printf '$(bold)Cleaning Code...\n$(rsttxt)'

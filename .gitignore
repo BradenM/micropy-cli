@@ -134,3 +134,5 @@ dmypy.json
 .testmondata
 
 .tmontmp/
+
+cov.xml
