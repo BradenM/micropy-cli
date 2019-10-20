@@ -42,7 +42,7 @@ def get_module():
             'template': partial(modules.TemplatesModule,
                                 templates=_templates),
             'reqs': partial(modules.PackagesModule, 'requirements.txt'),
-            'dev-reqs': partial(modules.PackagesModule, 'dev-requirements.txt', dev=True)
+            'dev-reqs': partial(modules.DevPackagesModule, 'dev-requirements.txt')
         }
         if names == 'all':
             names = ",".join(list(mods.keys()))
@@ -262,3 +262,9 @@ class TestPackagesModule:
         mock_rglob.return_value = iter([Path("SomePkg/__init__.py")])
         res = proj.add_package('anotha_pkg')
         mock_shutil.copytree.assert_called_once()
+
+    def test_add_dev_package(self, mocker, mock_pkg, test_project):
+        proj, mp = next(test_project('reqs,dev-reqs'))
+        proj.create()
+        proj.add_package('somepkg')
+        proj.add_package('anotha_pkg', dev=True)

@@ -8,6 +8,7 @@ This module contains generic utility helpers
 used by MicropyCli
 """
 
+import inspect
 import io
 import subprocess as subproc
 import sys
@@ -34,7 +35,8 @@ __all__ = ["is_url", "get_url_filename",
            "generate_stub", "get_package_meta",
            "extract_tarbytes", "iter_requirements",
            "create_dir_link", "is_dir_link",
-           "is_update_available", "get_cached_data"]
+           "is_update_available", "get_cached_data",
+           "get_class_that_defined_method"]
 
 
 def is_url(url):
@@ -371,3 +373,27 @@ def get_cached_data(url):
     """Wrap requests with a short cache"""
     source_data = requests.get(url).json()
     return source_data
+
+
+def get_class_that_defined_method(meth):
+    """Determines Class that defined a given method
+
+    See - https://stackoverflow.com/a/25959545
+
+    Args:
+        meth (Callable): Method to determine class from
+
+    Returns:
+        Callable: Class that defined method
+    """
+    if inspect.ismethod(meth):
+        for cls in inspect.getmro(meth.__self__.__class__):
+            if cls.__dict__.get(meth.__name__) is meth:
+                return cls
+        meth = meth.__func__  # fallback to __qualname__ parsing
+    if inspect.isfunction(meth):
+        cls = getattr(inspect.getmodule(meth),
+                      meth.__qualname__.split('.<locals>', 1)[0].rsplit('.', 1)[0])
+        if isinstance(cls, type):
+            return cls
+    return getattr(meth, '__objclass__', None)  # handle special descriptor objects

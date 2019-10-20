@@ -24,9 +24,11 @@ class Project(ProjectModule):
         self.log = Log.add_logger(self.name, show_title=False)
 
     def __getattr__(self, name):
-        result = next(iter([c.resolve_hook(name) for c in self._children]), None)
-        if result is not None:
-            return result
+        results = iter([c.resolve_hook(name) for c in self._children])
+        for res in results:
+            if res is not None:
+                self.log.debug(f"Hook Resolved: {name} -> {res}")
+                return res
         return self.__getattribute__(name)
 
     @property

@@ -97,7 +97,7 @@ def init(mpy, path, name=None, template=None):
     project = Project(path, name=name)
     project.add(modules.StubsModule(mpy.stubs, stubs=stub_choices))
     project.add(modules.PackagesModule('requirements.txt'))
-    project.add(modules.PackagesModule('dev-requirements.txt', dev=True))
+    project.add(modules.DevPackagesModule('dev-requirements.txt'))
     project.add(modules.TemplatesModule(templates=template, run_checks=mpy.RUN_CHECKS))
     proj_relative = project.create()
     mpy.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
@@ -132,7 +132,7 @@ def install(mpy, packages, dev=False):
         import <package_name>
     """
     project = mpy.project
-    if not project:
+    if not project.exists:
         mpy.log.error("You are not currently in an active project!")
         sys.exit(1)
     if not packages:

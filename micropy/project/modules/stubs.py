@@ -41,7 +41,7 @@ class StubsModule(ProjectModule):
         }
 
     @property
-    @ProjectModule.hook
+    @ProjectModule.hook()
     def stubs(self):
         return self._resolve_subresource(self._stubs)
 
@@ -89,10 +89,13 @@ class StubsModule(ProjectModule):
         Args:
             stub_list (dict): Dict of Stubs
         """
+        self.log.title(f"Looking for Stubs...")
         stub_data = self.parent.data.get('stubs', {})
         stubs = list(self._load_stub_data(stub_data=stub_data))
         stubs.extend(self.stubs)
         self.stubs = self._resolve_subresource(stubs)
+        for stub in self.stubs:
+            self.log.info(f"Found => $[{stub}]")
         return self.stubs
 
     def create(self):
@@ -104,7 +107,7 @@ class StubsModule(ProjectModule):
         self.stubs = self.load()
         return self.stubs
 
-    @ProjectModule.hook
+    @ProjectModule.hook()
     def add_stub(self, stub, **kwargs):
         """Add stub to project
 

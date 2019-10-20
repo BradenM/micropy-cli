@@ -106,7 +106,7 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner, cliargs
     mock_modules.StubsModule.assert_called_once_with(mock_mpy.stubs, stubs=['stub'])
     # Assert Reqs
     mock_modules.PackagesModule.assert_any_call("requirements.txt")
-    mock_modules.PackagesModule.assert_any_call("dev-requirements.txt", dev=True)
+    mock_modules.DevPackagesModule.assert_any_call("dev-requirements.txt")
     # Assert Exit Code
     mock_project.return_value.create.assert_called_once()
     assert result.exit_code == 0
