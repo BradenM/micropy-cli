@@ -137,7 +137,7 @@ def install(mpy, packages, dev=False):
         sys.exit(1)
     if not packages:
         mpy.log.title("Installing all Requirements")
-        reqs = project.add_from_requirements()
+        reqs = project.add_from_file(dev=dev)
         if not reqs:
             mpy.log.error("No requirements.txt file found!")
             sys.exit(1)

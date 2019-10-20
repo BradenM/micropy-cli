@@ -21,6 +21,7 @@ def mock_pkg(mocker, tmp_path):
     tmp_pkg = tmp_path / 'tmp_pkg'
     tmp_pkg.mkdir()
     (tmp_pkg / 'module.py').touch()
+    (tmp_pkg / 'file.py').touch()
     mock_tarbytes = mocker.patch.object(
         modules.packages.utils, 'extract_tarbytes')
     mocker.patch.object(
@@ -244,24 +245,36 @@ class TestStubsModule:
 
 class TestPackagesModule:
 
-    def test_add_package(self, mocker, mock_pkg, test_project):
+    @pytest.fixture
+    def test_package(self, mocker, mock_pkg, test_project):
         proj, mp = next(test_project('reqs'))
         proj.create()
-        proj.add_package('somepkg')
+        return proj
+
+    def test_add_package(self, test_package):
+        proj = test_package
+        proj.add_package('somepkg>=7')
         res = proj.add_package('somepkg')
         # Shouldnt allow duplicate pkgs
         assert res is None
+
+    @pytest.mark.parametrize(
+        'glob_val,expect',
+        [
+            ([Path("SomePkg/__init__.py")], "copytree"),
+            (None, "move")
+        ]
+    )
+    def test_package_types(self, mocker, test_package, glob_val, expect):
+        proj = test_package
         mock_shutil = mocker.patch.object(modules.packages, "shutil")
-        # Tests for modules
         mocker.patch.object(modules.packages.utils, 'generate_stub',
                             return_value=(Path("mod.py"), Path("mod.pyi")))
-        proj.add_package('some_module')
-        mock_shutil.copy2.assert_called()
-        # Tests for packages
-        mock_rglob = mocker.patch.object(modules.packages.Path, "rglob")
-        mock_rglob.return_value = iter([Path("SomePkg/__init__.py")])
-        res = proj.add_package('anotha_pkg')
-        mock_shutil.copytree.assert_called_once()
+        if glob_val:
+            mock_rglob = mocker.patch.object(modules.packages.Path, "rglob")
+            mock_rglob.return_value = iter(glob_val)
+        proj.add_package(f'some_module_{expect}')
+        getattr(mock_shutil, expect).assert_called()
 
     def test_add_dev_package(self, mocker, mock_pkg, test_project):
         proj, mp = next(test_project('reqs,dev-reqs'))

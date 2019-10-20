@@ -162,7 +162,7 @@ def test_cli_install(mocker, runner, mock_mpy):
     # Test from requirements
     result = runner.invoke(cli.install, "")
     assert result.exit_code == 0
-    mock_proj.add_from_requirements.return_value = None
+    mock_proj.add_from_file.return_value = None
     result = runner.invoke(cli.install, "")
     assert result.exit_code == 1
     # Test no project found
