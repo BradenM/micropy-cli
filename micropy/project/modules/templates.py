@@ -34,8 +34,12 @@ class TemplatesModule(ProjectModule):
         }
 
     def load(self, **kwargs):
-        templates = [k for k, v in self.parent.config['config'].items() if v]
+        _data = self.parent.data.get('config', {})
+        self.enabled = {**self.enabled, **_data}
+        templates = [k for k, v in self.enabled.items() if v]
+        self.log.debug(f"Loading Templates: {templates}")
         self.provider = TemplateProvider(templates, **kwargs)
+        self.update()
 
     def create(self):
         self.log.title("Rendering Templates")

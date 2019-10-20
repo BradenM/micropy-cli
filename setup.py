@@ -38,7 +38,8 @@ REQUIRED = [
     'tqdm',
     'requirements-parser',
     'packaging',
-    'cachier'
+    'cachier',
+    'boltons'
 ]
 
 EXTRAS = {

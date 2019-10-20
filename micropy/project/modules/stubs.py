@@ -5,6 +5,8 @@
 import sys
 from pathlib import Path
 
+from boltons import setutils
+
 from micropy.exceptions import StubError
 from micropy.project.modules import ProjectModule
 
@@ -18,15 +20,14 @@ class StubsModule(ProjectModule):
     @property
     def context(self):
         """Get project template context"""
-        paths = []
-        _paths = self.parent._context.get('paths', [])
+        paths = setutils.IndexedSet()
         if self.stubs:
             frozen = [s.frozen for s in self.stubs]
             fware_mods = [s.firmware.frozen
                           for s in self.stubs if s.firmware is not None]
             stub_paths = [s.stubs for s in self.stubs]
-            paths = set([*fware_mods, *frozen, *stub_paths])
-        paths = list(paths.union(_paths))
+            paths.update(*frozen, *fware_mods, *stub_paths)
+
         return {
             "stubs": set(self.stubs),
             "paths": paths,
@@ -89,13 +90,10 @@ class StubsModule(ProjectModule):
         Args:
             stub_list (dict): Dict of Stubs
         """
-        self.log.title(f"Looking for Stubs...")
         stub_data = self.parent.data.get('stubs', {})
         stubs = list(self._load_stub_data(stub_data=stub_data))
         stubs.extend(self.stubs)
         self.stubs = self._resolve_subresource(stubs)
-        for stub in self.stubs:
-            self.log.info(f"Found => $[{stub}]")
         return self.stubs
 
     def create(self):
@@ -122,6 +120,7 @@ class StubsModule(ProjectModule):
         self.log.info("Loading project...")
         self.stubs = self._resolve_subresource(stubs)
         self.log.info("Updating Project Info...")
+        self.parent.update()
         self.parent.to_json()
         self.log.info(
             f"Project Stubs: $[{' '.join(str(s) for s in self.stubs)}]")

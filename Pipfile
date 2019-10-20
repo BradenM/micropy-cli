@@ -32,6 +32,7 @@ sphinx-click = "*"
 ptvsd = "*"
 tox-gh-actions = "*"
 pytest-xdist = "*"
+rope = "*"
 
 [packages]
 click = ">=7"
@@ -45,3 +46,4 @@ tqdm = "*"
 requirements-parser = "*"
 packaging = "*"
 cachier = "*"
+boltons = "*"

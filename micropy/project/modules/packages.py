@@ -38,10 +38,10 @@ class PackagesModule(ProjectModule):
 
     @property
     def context(self):
-        _paths = set(self.parent._context.get('paths', []))
+        _paths = self.parent._context.get('paths', set())
         _paths.add(self.pkg_path)
         return {
-            'paths': list(_paths)
+            'paths': _paths
         }
 
     def _fetch_package(self, url):
