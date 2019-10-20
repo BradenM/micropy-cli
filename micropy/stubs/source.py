@@ -27,12 +27,13 @@ from micropy.logger import Log
 
 
 class StubRepo:
-    """Represents a remote repository for stubs
+    """Represents a remote repository for stubs.
 
     Args:
         name (str): Repo Name
         location (str): Valid url
         ref (str): path to repo definition file
+
     """
     repos = set()
 
@@ -45,25 +46,27 @@ class StubRepo:
         self.repos.add(self)
 
     def has_package(self, name):
-        """Checks if package is available in repo
+        """Checks if package is available in repo.
 
         Args:
             name (str): name of package
 
         Returns:
             bool: True if package is available
+
         """
         url = self.get_url(name)
         return utils.is_downloadable(url)
 
     def get_url(self, path):
-        """Returns formatted url to provided path
+        """Returns formatted url to provided path.
 
         Args:
             path (str): path to format
 
         Returns:
             str: formatted url
+
         """
         base_path = PurePosixPath(parse.urlparse(self.location).path)
         pkg_path = base_path / PurePosixPath(self.path) / PurePosixPath(path)
@@ -72,13 +75,14 @@ class StubRepo:
         return url
 
     def search(self, query):
-        """Searches repository packages
+        """Searches repository packages.
 
         Args:
             query (str): query to search by
 
         Returns:
             [str]: List of matching results
+
         """
         query = query.strip().lower()
         pkg_names = [p['name'] for p in self.packages]
@@ -87,7 +91,7 @@ class StubRepo:
 
     @classmethod
     def resolve_package(cls, name):
-        """Attempts to resolve package from all repos
+        """Attempts to resolve package from all repos.
 
         Args:
             name (str): package to resolve
@@ -97,6 +101,7 @@ class StubRepo:
 
         Returns:
             str: url to package
+
         """
         results = (r for r in cls.repos if r.has_package(name))
         try:
@@ -109,13 +114,14 @@ class StubRepo:
 
     @classmethod
     def from_json(cls, content):
-        """Create StubRepo Instances from JSON file
+        """Create StubRepo Instances from JSON file.
 
         Args:
             file_obj (str or bytes): json content
 
         Returns:
             iterable of created repos
+
         """
         data = json.loads(content)
         for source in data:
@@ -132,7 +138,7 @@ class StubRepo:
 
 
 class StubSource:
-    """Abstract Base Class for Stub Sources"""
+    """Abstract Base Class for Stub Sources."""
 
     def __init__(self, location, log=None):
         self.location = location
@@ -141,7 +147,7 @@ class StubSource:
 
     @contextmanager
     def ready(self, path=None, teardown=None):
-        """Yields prepared Stub Source
+        """Yields prepared Stub Source.
 
         Allows StubSource subclasses to have a preperation
         method before providing a local path to itself.
@@ -154,6 +160,7 @@ class StubSource:
 
         Yields:
             Resolved PathLike object to stub source
+
         """
         _path = path or self.location
         info_path = next(_path.rglob("info.json"), None)
@@ -168,13 +175,14 @@ class StubSource:
 
 
 class LocalStubSource(StubSource):
-    """Stub Source Subclass for local locations
+    """Stub Source Subclass for local locations.
 
     Args:
         path (str): Path to Stub Source
 
     Returns:
         obj: Instance of LocalStubSource
+
     """
 
     def __init__(self, path, **kwargs):
@@ -183,13 +191,14 @@ class LocalStubSource(StubSource):
 
 
 class RemoteStubSource(StubSource):
-    """Stub Source for remote locations
+    """Stub Source for remote locations.
 
     Args:
         url (str): URL to Stub Source
 
     Returns:
         obj: Instance of RemoteStubSource
+
     """
 
     def __init__(self, name, **kwargs):
@@ -197,7 +206,7 @@ class RemoteStubSource(StubSource):
         return super().__init__(location, **kwargs)
 
     def _unpack_archive(self, file_bytes, path):
-        """Unpack archive from bytes buffer
+        """Unpack archive from bytes buffer.
 
         Args:
             file_bytes (bytes): Byte array to extract from
@@ -206,6 +215,7 @@ class RemoteStubSource(StubSource):
 
         Returns:
             path: path extracted to
+
         """
         tar_bytes_obj = io.BytesIO(file_bytes)
         with tarfile.open(fileobj=tar_bytes_obj, mode="r:gz") as tar:
@@ -214,7 +224,7 @@ class RemoteStubSource(StubSource):
         return output
 
     def ready(self):
-        """Retrieves and unpacks source
+        """Retrieves and unpacks source.
 
         Prepares remote stub resource by downloading and
         unpacking it into a temporary directory.
@@ -223,6 +233,7 @@ class RemoteStubSource(StubSource):
 
         Returns:
             callable: StubSource.ready parent method
+
         """
         tmp_dir = tempfile.mkdtemp()
         tmp_path = Path(tmp_dir)
@@ -236,13 +247,14 @@ class RemoteStubSource(StubSource):
 
 
 def get_source(location, **kwargs):
-    """Factory for StubSource Instance
+    """Factory for StubSource Instance.
 
     Args:
         location (str): PathLike object or valid URL
 
     Returns:
         obj: Either Local or Remote StubSource Instance
+
     """
     try:
         utils.ensure_existing_dir(location)

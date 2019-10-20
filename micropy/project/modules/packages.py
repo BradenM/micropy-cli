@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Project Packages Module"""
+"""Project Packages Module."""
 
 import shutil
 import tempfile
@@ -45,13 +45,14 @@ class PackagesModule(ProjectModule):
         }
 
     def _fetch_package(self, url):
-        """Fetch and stub package at url
+        """Fetch and stub package at url.
 
         Args:
             url (str): URL to fetch
 
         Returns:
             Path: path to package
+
         """
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
@@ -78,10 +79,11 @@ class PackagesModule(ProjectModule):
 
     @ProjectModule.hook(dev=False)
     def add_from_file(self, path=None, dev=False, **kwargs):
-        """Loads all requirements from file
+        """Loads all requirements from file.
 
         Args:
             path (str): Path to file. Defaults to self.path.
+
         """
         reqs = utils.iter_requirements(self.path)
         for req in reqs:
@@ -90,13 +92,14 @@ class PackagesModule(ProjectModule):
 
     @ProjectModule.hook()
     def add_package(self, package, dev=False, **kwargs):
-        """Add requirement to project
+        """Add requirement to project.
 
         Args:
             package (str): package name/spec
 
         Returns:
             dict: Dictionary of packages
+
         """
         pkg = package
         if isinstance(package, str):
@@ -113,7 +116,7 @@ class PackagesModule(ProjectModule):
         return self.packages
 
     def load(self, fetch=True, **kwargs):
-        """Retrieves and stubs project requirements"""
+        """Retrieves and stubs project requirements."""
         self.pkg_path.mkdir(exist_ok=True)
         if self.path.exists():
             packages = utils.iter_requirements(self.path)
@@ -141,7 +144,7 @@ class PackagesModule(ProjectModule):
         return self.update()
 
     def update(self):
-        """Dumps packages to file at path"""
+        """Dumps packages to file at path."""
         if not self.path.exists():
             self.path.touch()
         pkgs = [(f"{name}{spec}" if spec and spec != "*" else name)

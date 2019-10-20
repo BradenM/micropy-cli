@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Various requirement checks for templates"""
+"""Various requirement checks for templates."""
 
 import subprocess as subproc
 from functools import partial as _p
@@ -15,10 +15,11 @@ log = Log.get_logger('MicroPy')
 
 
 def iter_vscode_ext(name=None):
-    """Iterates over installed VSCode Extensions
+    """Iterates over installed VSCode Extensions.
 
     Args:
         name (str, optional): Name of Extension to Yield
+
     """
     _cmd = "code --list-extensions --show-versions"
     proc = subproc.run(_cmd, text=True,
@@ -33,7 +34,7 @@ def iter_vscode_ext(name=None):
 
 
 def vscode_ext_min_version(ext, min_version=VSCODE_MS_PY_MINVER, info=None):
-    """Check if installed VScode Extension meets requirements
+    """Check if installed VScode Extension meets requirements.
 
     Args:
         ext (str): Name of Extension to Test
@@ -44,6 +45,7 @@ def vscode_ext_min_version(ext, min_version=VSCODE_MS_PY_MINVER, info=None):
 
     Returns:
         bool: True if requirement is satisfied, False otherwise.
+
     """
     name, vers = next(iter_vscode_ext(name=ext), (ext, '0.0.0'))
     cur_vers = version.parse(vers)

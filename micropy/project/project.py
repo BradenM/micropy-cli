@@ -33,10 +33,11 @@ class Project(ProjectModule):
 
     @property
     def exists(self):
-        """Whether this project exists
+        """Whether this project exists.
 
         Returns:
             bool: True if it exists
+
         """
         return self.info_path.exists()
 
@@ -68,11 +69,12 @@ class Project(ProjectModule):
         return self._context
 
     def _set_cache(self, key, value):
-        """Set key in Project cache
+        """Set key in Project cache.
 
         Args:
             key (str): Key to set
             value (obj): Value to set
+
         """
         if not self.cache_path.exists():
             self.cache_path.write_text("{}")
@@ -82,13 +84,14 @@ class Project(ProjectModule):
             json.dump(data, f)
 
     def _get_cache(self, key):
-        """Retrieve value from Project Cache
+        """Retrieve value from Project Cache.
 
         Args:
             key (str): Key to retrieve
 
         Returns:
             obj: Value at key
+
         """
         if not self.cache_path.exists():
             return None
@@ -106,7 +109,7 @@ class Project(ProjectModule):
         component.parent = None
 
     def to_json(self):
-        """Dumps project to data file"""
+        """Dumps project to data file."""
         with self.info_path.open('w+') as f:
             data = json.dumps(self.config, indent=4)
             f.write(data)

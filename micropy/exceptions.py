@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""Micropy Exceptions"""
+"""Micropy Exceptions."""
 
 
 class StubError(Exception):
-    """Exception for any errors raised by stubs"""
+    """Exception for any errors raised by stubs."""
 
     def __init__(self, message=None, stub=None):
         super().__init__(message)
@@ -15,7 +15,7 @@ class StubError(Exception):
 
 
 class StubValidationError(StubError):
-    """Raised when a stub fails validation"""
+    """Raised when a stub fails validation."""
 
     def __init__(self, path, errors, *args, **kwargs):
         msg = (f"Stub at[{str(path)}] encountered"
@@ -27,7 +27,7 @@ class StubValidationError(StubError):
 
 
 class StubNotFound(StubError):
-    """Raised when a stub cannot be found"""
+    """Raised when a stub cannot be found."""
 
     def __init__(self, stub_name=None):
         stub_name = stub_name or "Unknown"

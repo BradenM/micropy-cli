@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Logging functionality"""
+"""Logging functionality."""
 
 import logging
 import re
@@ -13,7 +13,7 @@ from micropy import data
 
 
 class Log:
-    """Borg for easy access to any Log from anywhere in the package"""
+    """Borg for easy access to any Log from anywhere in the package."""
     __shared_state = {}
 
     def __init__(self):
@@ -23,7 +23,7 @@ class Log:
 
     @classmethod
     def add_logger(cls, service_name, base_color="white", **kwargs):
-        """Creates a new child ServiceLog instance"""
+        """Creates a new child ServiceLog instance."""
         _self = cls()
         parent = kwargs.pop("parent", _self.parent_logger)
         logger = ServiceLog(service_name, base_color,
@@ -33,7 +33,7 @@ class Log:
 
     @classmethod
     def get_logger(cls, service_name):
-        """Retrieves a child logger by service name"""
+        """Retrieves a child logger by service name."""
         _self = cls()
         logger = next(
             (i for i in _self.loggers if i.service_name == service_name))
@@ -41,7 +41,7 @@ class Log:
 
 
 class ServiceLog:
-    """Handles logging to stdout and micropy.log
+    """Handles logging to stdout and micropy.log.
 
     :param service_name: Active service to display
     :type service_name: str
@@ -71,7 +71,7 @@ class ServiceLog:
         self.stdout = True
 
     def load_handler(self):
-        """Loads Logging Module Formatting"""
+        """Loads Logging Module Formatting."""
         self.log = logging.getLogger()
         if not self.log.hasHandlers():
             self.log.setLevel(logging.DEBUG)
@@ -115,7 +115,7 @@ class ServiceLog:
         return (parts, clean)
 
     def get_parents(self, names=[]):
-        """Retrieve all parents"""
+        """Retrieve all parents."""
         if len(names) == 0:
             names = [self.service_name]
         if self.parent:
@@ -124,7 +124,7 @@ class ServiceLog:
         return names
 
     def get_service(self, **kwargs):
-        """Retrieves formatted service title
+        """Retrieves formatted service title.
 
         :param **kwargs:
         :return: formatted title
@@ -142,10 +142,11 @@ class ServiceLog:
         return title
 
     def iter_formatted(self, message, **kwargs):
-        """Iterate formatted message tuple into styled string
+        """Iterate formatted message tuple into styled string.
 
         Args:
             message (tuple): tuple as (msg, style)
+
         """
         if isinstance(message, str):
             message, _ = self.parse_msg(message)
@@ -155,7 +156,7 @@ class ServiceLog:
             yield click.style(text, **mstyle)
 
     def echo(self, msg, **kwargs):
-        """Prints msg to stdout
+        """Prints msg to stdout.
 
         :param str msg: message to print
         :param **kwargs:
@@ -190,7 +191,7 @@ class ServiceLog:
                 click.echo("")
 
     def info(self, msg, **kwargs):
-        """Prints message with info formatting
+        """Prints message with info formatting.
 
         :param msg:
         :param **kwargs:
@@ -201,7 +202,7 @@ class ServiceLog:
         return self.echo(msg, log="info", **kwargs)
 
     def title(self, msg, **kwargs):
-        """Prints bolded info message
+        """Prints bolded info message.
 
         Args:
             msg (str): Message
@@ -210,7 +211,7 @@ class ServiceLog:
         return self.info(f"\n{msg}", bold=True)
 
     def error(self, msg, exception=None, **kwargs):
-        """Prints message with error formatting
+        """Prints message with error formatting.
 
         :param msg:
         :param **kwargs:
@@ -224,7 +225,7 @@ class ServiceLog:
             return self.exception(exception)
 
     def warn(self, msg, **kwargs):
-        """Prints message with warn formatting
+        """Prints message with warn formatting.
 
         :param msg:
         :param **kwargs:
@@ -236,7 +237,7 @@ class ServiceLog:
                          title_color='red', title_bold=True)
 
     def exception(self, error, **kwargs):
-        """Prints message with exception formatting
+        """Prints message with exception formatting.
 
         :param error:
         :param **kwargs:
@@ -250,7 +251,7 @@ class ServiceLog:
             title_color='red', title_bold=True, **kwargs)
 
     def success(self, msg, **kwargs):
-        """Prints message with success formatting
+        """Prints message with success formatting.
 
         :param msg:
         :param **kwargs:
@@ -264,7 +265,7 @@ class ServiceLog:
         return self.echo(message, log="info", fg='green', **kwargs)
 
     def debug(self, msg, **kwargs):
-        """Prints message with debug formatting
+        """Prints message with debug formatting.
 
         :param msg:
         :param **kwargs:

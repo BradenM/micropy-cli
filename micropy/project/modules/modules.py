@@ -71,7 +71,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
 
 
 class HookProxy:
-    """Proxy for Project Hooks
+    """Proxy for Project Hooks.
 
     Allows multiple project hooks with the same name by
     creating individual hooks for any defined permutations
@@ -83,6 +83,7 @@ class HookProxy:
 
     Args:
         name (str): Name of Proxy
+
     """
 
     def __init__(self, name):
@@ -115,6 +116,7 @@ class HookProxy:
 
         Returns:
             Instance the attribute belongs to.
+
         """
         _class = utils.get_class_that_defined_method(attr)
         if _class:
@@ -122,7 +124,7 @@ class HookProxy:
             return instance
 
     def is_descriptor(self):
-        """Determine if initial method provided is a descriptor"""
+        """Determine if initial method provided is a descriptor."""
         method = self.methods[0][0]
         instance = self._get_instance(method)
         if instance:
@@ -131,7 +133,7 @@ class HookProxy:
         return False
 
     def get(self):
-        """Get initial method descriptor value"""
+        """Get initial method descriptor value."""
         instance = self._get_instance(self.methods[0][0])
         self.log.debug(f"{self._name} proxied to [property@{instance}]")
         return getattr(instance, self._name)
@@ -147,6 +149,7 @@ class HookProxy:
 
         Returns:
             Tuple[Callable, str]: Tuple containing method and unique hook name.
+
         """
         name = self.get_name(func, kwargs)
         hook = (func, name)
@@ -155,10 +158,11 @@ class HookProxy:
         return hook
 
     def add_instance(self, inst):
-        """Add instance to Proxy
+        """Add instance to Proxy.
 
         Args:
             inst (Any): Instance to add.
+
         """
         return self.instances.append(inst)
 
@@ -172,6 +176,7 @@ class HookProxy:
 
         Returns:
             str: Generated name
+
         """
         params = params or {}
         sig = inspect.signature(func)

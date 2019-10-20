@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""MicropyCli Console Entrypoint"""
+"""MicropyCli Console Entrypoint."""
 import sys
 from pathlib import Path
 
@@ -40,7 +40,7 @@ def cli(ctx, mpy, skip_checks=False):
 
 @cli.group(short_help="Manage Micropy Stubs")
 def stubs():
-    """Manage Micropy Stubs
+    """Manage Micropy Stubs.
 
     \b
     Stub files are what enable linting,
@@ -53,6 +53,7 @@ def stubs():
         micropy stubs add <STUB_NAME>
 
     For more info, please check micropy stubs add --help
+
     """
 
 
@@ -68,11 +69,11 @@ def stubs():
                     " Multiple options can be passed."))
 @pass_mpy
 def init(mpy, path, name=None, template=None):
-    """Create new Micropython Project
+    """Create new Micropython Project.
 
-    \b
-    When creating a new project, all files will be
-    placed under the generated <PROJECT_NAME> folder.
+    \b When creating a new project, all files will be placed under the
+    generated <PROJECT_NAME> folder.
+
     """
     mpy.log.title("Creating New Project")
     if not path:
@@ -110,7 +111,7 @@ def init(mpy, path, name=None, template=None):
                     " but does not install stubs for it."))
 @pass_mpy
 def install(mpy, packages, dev=False):
-    """Install Packages as Project Requirements
+    """Install Packages as Project Requirements.
 
     \b
     Installing a package via micropy will stub it, enabling
@@ -130,6 +131,7 @@ def install(mpy, packages, dev=False):
         \b
         # main.py
         import <package_name>
+
     """
     project = mpy.project
     if not project.exists:
@@ -154,7 +156,7 @@ def install(mpy, packages, dev=False):
               help="Overwrite Stub if it exists.")
 @pass_mpy
 def add(mpy, stub_name, force=False):
-    """Add Stubs from package or path
+    """Add Stubs from package or path.
 
     \b
     In general, stub package names follow this schema:
@@ -169,6 +171,7 @@ def add(mpy, stub_name, force=False):
         micropy stubs search <QUERY>
 
     Checkout the docs on Github for more info.
+
     """
     mpy.stubs.verbose_log(True)
     proj = mpy.project
@@ -191,7 +194,7 @@ def add(mpy, stub_name, force=False):
 @click.argument('query', required=True)
 @pass_mpy
 def search(mpy, query):
-    """Search available Stubs"""
+    """Search available Stubs."""
     mpy.log.title(f"Searching Stub Repositories...")
     results = mpy.stubs.search_remote(query)
     mpy.log.title(f"Results for $[{query}]:")
@@ -203,7 +206,7 @@ def search(mpy, query):
 @stubs.command()
 @pass_mpy
 def list(mpy):
-    """List installed stubs"""
+    """List installed stubs."""
     def print_stubs(stub_list):
         for firm, stubs in stub_list:
             if stubs:
@@ -235,6 +238,7 @@ def create(mpy, port, verbose=False):
     MicropyCli uses Josverl's micropython-stubber for stub creation.
     For more information, please visit the repository
     at: https://github.com/Josverl/micropython-stubber
+
     """
     return mpy.create_stubs(port, verbose=verbose)
 

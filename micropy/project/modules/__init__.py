@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Project Modules"""
+"""Project Modules."""
 
 
 from .modules import ProjectModule

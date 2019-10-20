@@ -11,7 +11,7 @@ from micropy.stubs import source
 
 
 class StubManager:
-    """Manages a collection of Stubs
+    """Manages a collection of Stubs.
 
     Kwargs:
         resource (str): Default resource path
@@ -23,6 +23,7 @@ class StubManager:
 
     Returns:
         object: Instance of StubManager
+
     """
     _schema = data.SCHEMAS / 'stubs.json'
     _firm_schema = data.SCHEMAS / 'firmware.json'
@@ -43,11 +44,12 @@ class StubManager:
         return len(self._loaded)
 
     def iter_by_firmware(self, stubs=None):
-        """Iterate stubs sorted by firmware
+        """Iterate stubs sorted by firmware.
 
         Args:
             stubs ([Stub], optional): Sublist of Stubs to iterate over.
                 Defaults to None. If none, uses all installed stubs.
+
         """
         loaded = stubs or self._loaded
         for firm in self._firmware:
@@ -57,19 +59,20 @@ class StubManager:
         yield ("Unknown", other)
 
     def verbose_log(self, state):
-        """Enable Stub logging to stdout
+        """Enable Stub logging to stdout.
 
         Args:
             state (bool): State to set
 
         Returns:
             bool: state
+
         """
         self.log.stdout = state
         return state
 
     def _load(self, stub_source, strict=True, **kwargs):
-        """Loads a stub into StubManager
+        """Loads a stub into StubManager.
 
         Args:
             stub_source (StubSource): Stub Source Instance
@@ -81,6 +84,7 @@ class StubManager:
 
         Returns:
             Stub: Instance of Stub
+
         """
         with stub_source.ready() as src_path:
             try:
@@ -104,7 +108,7 @@ class StubManager:
                 return stub
 
     def resolve_firmware(self, stub):
-        """Resolves FirmwareStub for DeviceStub instance
+        """Resolves FirmwareStub for DeviceStub instance.
 
         Args:
             stub (DeviceStub): Stub to resolve
@@ -113,6 +117,7 @@ class StubManager:
             FirmwareStub: Instance of FirmwareStub
             NoneType: None if an appropriate
                 FirmwareStub cannot be found
+
         """
         fware_name = stub.firmware_name
         self.log.info(f"Detected Firmware: $[{fware_name}]")
@@ -133,7 +138,7 @@ class StubManager:
         return fware
 
     def validate(self, path, schema=None):
-        """Validates given stub path against its schema
+        """Validates given stub path against its schema.
 
         Args:
             path (str): path to validate
@@ -143,6 +148,7 @@ class StubManager:
         Raises:
             StubError: Raised if no info file can be found
             StubValidationError: Raised if the info file fails validation
+
         """
         self.log.debug(f"Validating: {path}")
         schema = schema or self._schema
@@ -157,13 +163,14 @@ class StubManager:
             raise StubValidationError(path, str(e))
 
     def _get_stubtype(self, path):
-        """Resolves appropriate stub type
+        """Resolves appropriate stub type.
 
         Args:
             path (str): path to stub
 
         Returns:
             cls: Appropriate class for stub
+
         """
         try:
             self.validate(path)
@@ -180,13 +187,14 @@ class StubManager:
             return DeviceStub
 
     def is_valid(self, path):
-        """Check if stub is valid without raising an exception
+        """Check if stub is valid without raising an exception.
 
         Args:
             path (str): path to stub
 
         Returns:
             bool: True if stub is valid
+
         """
         try:
             self._get_stubtype(path)
@@ -196,13 +204,14 @@ class StubManager:
             return True
 
     def _check_existing(self, location):
-        """check if location is or contains an existing stub
+        """check if location is or contains an existing stub.
 
         Args:
             location (str): name or path of Stub
 
         Returns:
             generator of existing stubs
+
         """
         try:
             do_recurse = self._should_recurse(location)
@@ -220,13 +229,14 @@ class StubManager:
                 yield stub
 
     def load_from(self, directory, *args, **kwargs):
-        """Recursively loads stubs from a directory
+        """Recursively loads stubs from a directory.
 
         Args:
             directory (str): Path to load from
 
         Returns:
             [DeviceStub]: List of loaded Stubs
+
         """
         dir_path = Path(str(directory)).resolve()
         dirs = dir_path.iterdir()
@@ -243,7 +253,7 @@ class StubManager:
         return stubs
 
     def _should_recurse(self, location):
-        """Checks for multiple stubs in a location
+        """Checks for multiple stubs in a location.
 
         Args:
             location (str): location of potential stub
@@ -253,6 +263,7 @@ class StubManager:
 
         Returns:
             bool: True if multiple stubs are found
+
         """
         if not Path(location).exists():
             return False
@@ -265,7 +276,7 @@ class StubManager:
         return False
 
     def add(self, location, dest=None, force=False):
-        """Add stub(s) from source
+        """Add stub(s) from source.
 
         Args:
             source (str): path to stub(s)
@@ -276,6 +287,7 @@ class StubManager:
 
         Raises:
             TypeError: No resource or destination provided
+
         """
         _dest = dest or self.resource
         if not _dest:
@@ -296,7 +308,7 @@ class StubManager:
         return self._load(stub_source, copy_to=dest)
 
     def from_stubber(self, path, dest):
-        """Formats stubs generated by createstubs.py
+        """Formats stubs generated by createstubs.py.
 
         Creates a stub package from the stubs generated by
         createstubs.py. Also attempts to auto-resolve the stubs
@@ -308,6 +320,7 @@ class StubManager:
 
         Returns:
             str: formatted stubs
+
         """
         _path = Path(path).resolve()
         dest = Path(dest).resolve()
@@ -330,7 +343,7 @@ class StubManager:
         return out_stub
 
     def search_remote(self, query):
-        """Search all repositories for query
+        """Search all repositories for query.
 
         Args:
             query (str): query to search for
@@ -339,6 +352,7 @@ class StubManager:
             [tuple]: List of result tuples. The first item
                 is the package name, and the second is a bool
                 based on whether the package is installed or not
+
         """
         results = []
         installed = [str(s) for s in self._loaded.union(self._firmware)]
@@ -348,7 +362,7 @@ class StubManager:
         return sorted(results)
 
     def resolve_subresource(self, stubs, subresource):
-        """Resolve or Create StubManager from list of stubs
+        """Resolve or Create StubManager from list of stubs.
 
         Args:
             stubs ([Stub]): List of stubs to use in subresource
@@ -356,6 +370,7 @@ class StubManager:
 
         Returns:
             StubManager: StubManager with subresource stubs
+
         """
         for stub in stubs:
             fware = stub.firmware
@@ -369,7 +384,7 @@ class StubManager:
 
 
 class Stub:
-    """Abstract Parent for Stub Related Classes
+    """Abstract Parent for Stub Related Classes.
 
     Not Meant to be instantiated directly. Contains common logic
     between different types of Stubs (ex. Firmware vs Device)
@@ -379,6 +394,7 @@ class Stub:
 
     Returns:
         Instance of Stub
+
     """
 
     def __init__(self, path, copy_to=None, **kwargs):
@@ -389,7 +405,7 @@ class Stub:
             self.copy_to(copy_to)
 
     def copy_to(self, dest, name=None):
-        """Copy stub to a directory"""
+        """Copy stub to a directory."""
         if not name:
             dest = Path(dest) / self.path.name
         shutil.copytree(self.path, dest)
@@ -398,7 +414,7 @@ class Stub:
 
     @classmethod
     def resolve_link(cls, stub, link_path):
-        """Resolve or Create Stub Symlink
+        """Resolve or Create Stub Symlink.
 
         Args:
             stub (Stub): stub to resolve
@@ -406,6 +422,7 @@ class Stub:
 
         Returns:
             Stub: Stub from symlink
+
         """
         fware = stub.firmware
         if utils.is_dir_link(link_path):
@@ -415,7 +432,7 @@ class Stub:
 
     @property
     def name(self):
-        """Human friendly stub name"""
+        """Human friendly stub name."""
         raise NotImplementedError
 
     def __eq__(self, other):
@@ -429,7 +446,7 @@ class Stub:
 
 
 class DeviceStub(Stub):
-    """Handles Device Specific Stubs
+    """Handles Device Specific Stubs.
 
     Args:
         path (str): path to stub
@@ -437,6 +454,7 @@ class DeviceStub(Stub):
 
     Returns:
         Device Stub Instance
+
     """
 
     def __init__(self, path, copy_to=None, **kwargs):
@@ -454,10 +472,11 @@ class DeviceStub(Stub):
 
     @property
     def firmware_name(self):
-        """Return an appropriate firmware name
+        """Return an appropriate firmware name.
 
         Returns:
             str: Name of Firmware
+
         """
         if isinstance(self.firmware, FirmwareStub):
             return self.firmware.firmware
@@ -479,7 +498,7 @@ class DeviceStub(Stub):
 
 
 class FirmwareStub(Stub):
-    """Handles Firmware Specific Modules
+    """Handles Firmware Specific Modules.
 
     Args:
         path (str): path to stub
@@ -487,6 +506,7 @@ class FirmwareStub(Stub):
 
     Returns:
         FirmwareStub Instance
+
     """
 
     def __init__(self, path, copy_to=None, **kwargs):

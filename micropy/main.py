@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Main Module"""
+"""Main Module."""
 
 import sys
 import tempfile
@@ -14,7 +14,7 @@ from micropy.stubs import StubManager, source
 
 
 class MicroPy:
-    """Handles App State Management"""
+    """Handles App State Management."""
     RUN_CHECKS = True
 
     def __init__(self):
@@ -25,7 +25,7 @@ class MicroPy:
             self.setup()
 
     def setup(self):
-        """creates necessary directories for micropy"""
+        """creates necessary directories for micropy."""
         self.log.debug("Running first time setup...")
         self.log.debug(f"Creating .micropy directory @ {data.FILES}")
         data.FILES.mkdir(exist_ok=True)
@@ -43,7 +43,7 @@ class MicroPy:
         return proj
 
     def resolve_project(self, path, verbose=True):
-        """Returns project from path if it exists
+        """Returns project from path if it exists.
 
         Args:
             path (str): Path to test
@@ -51,6 +51,7 @@ class MicroPy:
 
         Returns:
             (Project|None): Project if it exists
+
         """
         path = Path(path).absolute()
         proj = Project(path)
@@ -67,13 +68,14 @@ class MicroPy:
         return proj
 
     def create_stubs(self, port, verbose=False):
-        """Create and add stubs from Pyboard
+        """Create and add stubs from Pyboard.
 
         Args:
             port (str): Port of Pyboard
 
         Returns:
             Stub: generated stub
+
         """
         self.log.title(f"Connecting to Pyboard @ $[{port}]")
         try:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Project Templates Module"""
+"""Project Templates Module."""
 
 
 from micropy.logger import Log

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Project Stubs Module"""
+"""Project Stubs Module."""
 
 import sys
 from pathlib import Path
@@ -19,7 +19,7 @@ class StubsModule(ProjectModule):
 
     @property
     def context(self):
-        """Get project template context"""
+        """Get project template context."""
         paths = setutils.IndexedSet()
         if self.stubs:
             frozen = [s.frozen for s in self.stubs]
@@ -51,10 +51,11 @@ class StubsModule(ProjectModule):
         self._stubs = val
 
     def _resolve_subresource(self, stubs):
-        """Resolves stub resource
+        """Resolves stub resource.
 
         Args:
             stubs (stubs): Stubs Passed to Manager
+
         """
         if not hasattr(self, "_parent"):
             return self._stubs
@@ -71,10 +72,11 @@ class StubsModule(ProjectModule):
             return resource
 
     def _load_stub_data(self, stub_data=None, **kwargs):
-        """Loads Serialized Stub Data
+        """Loads Serialized Stub Data.
 
         Args:
             stub_data (dict): Dict of Stubs
+
         """
         _data = self.config['stubs']
         data = {**stub_data, **_data}
@@ -85,10 +87,11 @@ class StubsModule(ProjectModule):
             yield self.stub_manager.add(name)
 
     def load(self, **kwargs):
-        """Loads stubs from info file
+        """Loads stubs from info file.
 
         Args:
             stub_list (dict): Dict of Stubs
+
         """
         stub_data = self.parent.data.get('stubs', {})
         stubs = list(self._load_stub_data(stub_data=stub_data))
@@ -107,13 +110,14 @@ class StubsModule(ProjectModule):
 
     @ProjectModule.hook()
     def add_stub(self, stub, **kwargs):
-        """Add stub to project
+        """Add stub to project.
 
         Args:
             stub (Stub): Stub object to add
 
         Returns:
             [Stubs]: Project Stubs
+
         """
         loaded = self.stubs or []
         stubs = [*loaded, stub]

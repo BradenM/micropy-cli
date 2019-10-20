@@ -40,13 +40,14 @@ __all__ = ["is_url", "get_url_filename",
 
 
 def is_url(url):
-    """Check if provided string is a url
+    """Check if provided string is a url.
 
     Args:
         url (str): url to check
 
     Returns:
         bool: True if arg url is a valid url
+
     """
     scheme = requtil.urlparse(str(url)).scheme
     return scheme in ('http', 'https',)
@@ -54,7 +55,7 @@ def is_url(url):
 
 @cachier(stale_after=timedelta(days=1))
 def ensure_valid_url(url):
-    """Ensure a url is valid
+    """Ensure a url is valid.
 
     Args:
         url (str): URL to validate
@@ -66,6 +67,7 @@ def ensure_valid_url(url):
 
     Returns:
         str: valid url
+
     """
     if not is_url(url):
         raise reqexc.InvalidURL(f"{url} is not a valid url!")
@@ -79,7 +81,7 @@ def ensure_valid_url(url):
 
 
 def ensure_existing_dir(path):
-    """Ensure path exists and is a directory
+    """Ensure path exists and is a directory.
 
     If path does exist, it will be returned as
     a pathlib.PurePath object
@@ -93,6 +95,7 @@ def ensure_existing_dir(path):
 
     Returns:
         object: pathlib.PurePath object
+
     """
     _path = Path(path)
     path = _path.absolute()
@@ -107,13 +110,14 @@ def ensure_existing_dir(path):
 
 
 def is_existing_dir(path):
-    """Check if path is an existing directory
+    """Check if path is an existing directory.
 
     Args:
         path (str): path to check
 
     Returns:
         bool: True if path exists and is a directory
+
     """
     try:
         ensure_existing_dir(path)
@@ -124,13 +128,14 @@ def is_existing_dir(path):
 
 
 def is_downloadable(url):
-    """Checks if the url can be downloaded from
+    """Checks if the url can be downloaded from.
 
     Args:
         url (str): url to check
 
     Returns:
         bool: True if contains a downloadable resource
+
     """
     try:
         ensure_valid_url(url)
@@ -145,13 +150,14 @@ def is_downloadable(url):
 
 
 def get_url_filename(url):
-    """Parse filename from url
+    """Parse filename from url.
 
     Args:
         url (str): url to parse
 
     Returns:
         str: filename of url
+
     """
     path = requtil.urlparse(url).path
     file_name = Path(path).name
@@ -159,13 +165,14 @@ def get_url_filename(url):
 
 
 def stream_download(url, **kwargs):
-    """Stream download with tqdm progress bar
+    """Stream download with tqdm progress bar.
 
     Args:
         url (str): url to file
 
     Returns:
         bytearray: bytearray of content
+
     """
     stream = requests.get(url, stream=True)
     content = bytearray()
@@ -188,7 +195,7 @@ def stream_download(url, **kwargs):
 
 @cachier(stale_after=timedelta(days=3))
 def search_xml(url, node):
-    """Search xml from url by node
+    """Search xml from url by node.
 
     Args:
         url (str): url to xml
@@ -196,6 +203,7 @@ def search_xml(url, node):
 
     Returns:
         [str]: matching nodes
+
     """
     resp = requests.get(url)
     xml = resp.content.decode("UTF-8")
@@ -217,6 +225,7 @@ def generate_stub(path, log_func=None):
 
     Returns:
         tuple: Tuple of file path and generated stub path.
+
     """
     mod_path = Path(stubgen.__file__).parent
     # Monkeypatch print to prevent or wrap output
@@ -238,10 +247,11 @@ def generate_stub(path, log_func=None):
 
 
 def iter_requirements(path):
-    """Iterate requirements from a requirements.txt file
+    """Iterate requirements from a requirements.txt file.
 
     Args:
         path (str): path to file
+
     """
     req_path = Path(path).absolute()
     with req_path.open('r') as rfile:
@@ -250,7 +260,7 @@ def iter_requirements(path):
 
 
 def get_package_meta(name, spec=None):
-    """Retrieve package metadata from PyPi
+    """Retrieve package metadata from PyPi.
 
     Args:
         name (str): Name of Package
@@ -259,6 +269,7 @@ def get_package_meta(name, spec=None):
 
     Returns:
         dict: Dictionary of Metadata
+
     """
     def _iter_compare(in_val, comp_to, operator):
         for t in comp_to:
@@ -285,7 +296,7 @@ def get_package_meta(name, spec=None):
 
 
 def extract_tarbytes(file_bytes, path):
-    """Extract tarfile as bytes
+    """Extract tarfile as bytes.
 
     Args:
         file_bytes (bytearray): Bytes of file to extract
@@ -293,6 +304,7 @@ def extract_tarbytes(file_bytes, path):
 
     Returns:
         path: destination path
+
     """
     tar_bytes_obj = io.BytesIO(file_bytes)
     with tarfile.open(fileobj=tar_bytes_obj, mode="r:gz") as tar:
@@ -301,7 +313,7 @@ def extract_tarbytes(file_bytes, path):
 
 
 def create_dir_link(source, target):
-    """Creates a platform appropriate directory link
+    """Creates a platform appropriate directory link.
 
     On POSIX systems it will create a symlink.
     On Windows it will fallback on a directory junction if needed
@@ -313,6 +325,7 @@ def create_dir_link(source, target):
     Raises:
         OSError: Symlink Creation Failed
         OSError: Symlink and Directory Junction Fallback Failed
+
     """
     platform = sys.platform
     source = Path(source)
@@ -332,13 +345,14 @@ def create_dir_link(source, target):
 
 
 def is_dir_link(path):
-    """Test if path is either a symlink or directory junction
+    """Test if path is either a symlink or directory junction.
 
     Args:
         path (os.Pathlike): Path to test.
 
     Returns:
         bool: True if path is a type of link.
+
     """
     platform = sys.platform
     path = Path(path)
@@ -357,6 +371,7 @@ def is_update_available():
 
     Returns:
         bool: True if update available, else False.
+
     """
     url = f"https://pypi.org/pypi/micropy-cli/json"
     data = get_cached_data(url)
@@ -370,13 +385,13 @@ def is_update_available():
 
 @cachier(stale_after=timedelta(days=3))
 def get_cached_data(url):
-    """Wrap requests with a short cache"""
+    """Wrap requests with a short cache."""
     source_data = requests.get(url).json()
     return source_data
 
 
 def get_class_that_defined_method(meth):
-    """Determines Class that defined a given method
+    """Determines Class that defined a given method.
 
     See - https://stackoverflow.com/a/25959545
 
@@ -385,6 +400,7 @@ def get_class_that_defined_method(meth):
 
     Returns:
         Callable: Class that defined method
+
     """
     if inspect.ismethod(meth):
         for cls in inspect.getmro(meth.__self__.__class__):
