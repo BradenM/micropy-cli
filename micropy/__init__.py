@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""
-Micropy Cli
-~~~~~~~~~~~~~~~~~~~~~
+"""Micropy Cli.
 
 Micropy Cli is a project management/generation tool for writing Micropython
 code in modern IDEs such as VSCode. Its primary goal is to automate the
@@ -14,6 +12,7 @@ Autocompletion,
 Dependency Management,
 VCS Compatibility
 and more.
+
 """
 
 from micropy import data, lib, project, stubs, utils

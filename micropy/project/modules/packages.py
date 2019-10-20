@@ -13,6 +13,14 @@ from micropy.project.modules import ProjectModule
 
 
 class PackagesModule(ProjectModule):
+    """Project Module for handling requirements.
+
+    Args:
+        path (str): Path to create requirements file at.
+        packages (dict, optional): Initial packages to use.
+            Defaults to None.
+
+    """
 
     def __init__(self, path, packages=None, **kwargs):
         self._path = Path(path)
@@ -23,21 +31,45 @@ class PackagesModule(ProjectModule):
 
     @property
     def path(self):
+        """Path to requirements file.
+
+        Returns:
+            Path: Path to file
+
+        """
         path = self.parent.path / self._path
         return path
 
     @property
     def pkg_path(self):
+        """Path to package data folder.
+
+        Returns:
+            Path: Path to folder.
+
+        """
         return self.parent.data_path / self.parent.name
 
     @property
     def config(self):
+        """Config values specific to component.
+
+        Returns:
+            dict: Component config.
+
+        """
         return {
             self.name: self.packages
         }
 
     @property
     def context(self):
+        """Context values specific to component.
+
+        Returns:
+            dict: Context values.
+
+        """
         _paths = self.parent._context.get('paths', set())
         _paths.add(self.pkg_path)
         return {
@@ -83,6 +115,8 @@ class PackagesModule(ProjectModule):
 
         Args:
             path (str): Path to file. Defaults to self.path.
+            dev (bool, optional): If dev requirements should be loaded.
+                Defaults to False.
 
         """
         reqs = utils.iter_requirements(self.path)
@@ -96,6 +130,8 @@ class PackagesModule(ProjectModule):
 
         Args:
             package (str): package name/spec
+            dev (bool, optional): If dev requirements should be loaded.
+                Defaults to False.
 
         Returns:
             dict: Dictionary of packages
@@ -141,6 +177,7 @@ class PackagesModule(ProjectModule):
         self.parent._set_cache(self.name, list(pkg_keys))
 
     def create(self):
+        """Create project files."""
         return self.update()
 
     def update(self):
@@ -158,6 +195,7 @@ class PackagesModule(ProjectModule):
 
 
 class DevPackagesModule(PackagesModule):
+    """Project Module for Dev Packages."""
 
     def __init__(self, path, **kwargs):
         super().__init__(path, **kwargs)
@@ -165,12 +203,15 @@ class DevPackagesModule(PackagesModule):
         self.name = "dev-packages"
 
     def load(self, *args, **kwargs):
+        """Load component."""
         return super().load(*args, **kwargs, fetch=False)
 
     @ProjectModule.hook(dev=True)
     def add_package(self, package, **kwargs):
+        """Adds package."""
         return super().add_package(package, **kwargs)
 
     @ProjectModule.hook(dev=True)
     def add_from_file(self, path=None, **kwargs):
+        """Adds packages from file."""
         return super().add_from_file(path=path, **kwargs)

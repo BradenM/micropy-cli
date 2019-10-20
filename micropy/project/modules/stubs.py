@@ -12,6 +12,13 @@ from micropy.project.modules import ProjectModule
 
 
 class StubsModule(ProjectModule):
+    """Project module for handling Stubs.
+
+    Args:
+        stub_manager (micropy.stubs.StubManager): StubManager instance.
+        stubs (List[micropy.stubs.Stub]): Initial Stubs to use.
+
+    """
 
     def __init__(self, stub_manager, stubs=None):
         self.stub_manager = stub_manager
@@ -19,7 +26,7 @@ class StubsModule(ProjectModule):
 
     @property
     def context(self):
-        """Get project template context."""
+        """Component stub context."""
         paths = setutils.IndexedSet()
         if self.stubs:
             frozen = [s.frozen for s in self.stubs]
@@ -36,6 +43,12 @@ class StubsModule(ProjectModule):
 
     @property
     def config(self):
+        """Component specific config values.
+
+        Returns:
+            dict: Current config.
+
+        """
         stubs = {s.name: s.stub_version for s in self._stubs}
         return {
             'stubs': stubs
@@ -44,10 +57,22 @@ class StubsModule(ProjectModule):
     @property
     @ProjectModule.hook()
     def stubs(self):
+        """Component stubs.
+
+        Returns:
+            List[micropy.stubs.Stub]: List of stubs used in project.
+
+        """
         return self._resolve_subresource(self._stubs)
 
     @stubs.setter
     def stubs(self, val):
+        """Sets project stubs.
+
+        Args:
+            val (List[micropy.stubs.Stub]): List of stubs to set.
+
+        """
         self._stubs = val
 
     def _resolve_subresource(self, stubs):
@@ -100,11 +125,13 @@ class StubsModule(ProjectModule):
         return self.stubs
 
     def create(self):
+        """Create stub project files."""
         self.log.info(
             f"Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
         return self.load()
 
     def update(self):
+        """Update current project stubs."""
         self.stubs = self.load()
         return self.stubs
 

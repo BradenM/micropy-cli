@@ -11,41 +11,74 @@ from micropy.logger import Log
 
 
 class ProjectModule(metaclass=abc.ABCMeta):
+    """Abstract Base Class for Project Modules."""
 
     _hooks = []
 
     @property
     def parent(self):
+        """Component Parent."""
         return self._parent
 
     @parent.setter
     def parent(self, parent):
+        """Sets component parent.
+
+        Args:
+            parent (Any): Parent to set
+
+        """
         self._parent = parent
 
     @abc.abstractproperty
     def config(self):
+        """Config values specific to component."""
         pass
 
     @abc.abstractmethod
     def load(self):
+        """Method to load component."""
         pass
 
     @abc.abstractmethod
     def create(self):
+        """Method to create component."""
         pass
 
     @abc.abstractmethod
     def update(self):
+        """Method to update component."""
         pass
 
     def add(self, component):
+        """Adds component.
+
+        Args:
+            component (Any): Component to add.
+
+        """
         pass
 
     def remove(self, component):
+        """Removes component.
+
+        Args:
+            component (Any): Component to remove.
+
+        """
         pass
 
     @classmethod
     def hook(cls, *args, **kwargs):
+        """Decorator for creating a Project Hook.
+
+        Allows decorated method to be called from parent
+        container.
+
+        Returns:
+            Callable: Decorated function.
+
+        """
         def _hook(func):
             name = kwargs.get('name', func.__name__)
             hook = next((i for i in cls._hooks if i._name == name), None)
@@ -60,6 +93,15 @@ class ProjectModule(metaclass=abc.ABCMeta):
         return _hook
 
     def resolve_hook(self, name):
+        """Resolves appropriate hook for attribute name.
+
+        Args:
+            name (str): Attribute name to resolve hook for.
+
+        Returns:
+            HookProxy: Callable Proxy for ProjectHook.
+
+        """
         _hook = None
         for hook in self._hooks:
             if hook._name == name:

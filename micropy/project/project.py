@@ -10,6 +10,14 @@ from micropy.project.modules import ProjectModule
 
 
 class Project(ProjectModule):
+    """Micropy Project.
+
+    Args:
+        path (str): Path to project root.
+        name (str, optional): Name of Project.
+            Defaults to None. If none, uses name of current directory.
+
+    """
 
     def __init__(self, path, name=None, **kwargs):
         self._children = []
@@ -43,12 +51,24 @@ class Project(ProjectModule):
 
     @property
     def data(self):
+        """Data defined in project info file.
+
+        Returns:
+            dict: Dictionary of data
+
+        """
         if self.exists:
             return json.loads(self.info_path.read_text())
         return {}
 
     @property
     def config(self):
+        """Project Configuration.
+
+        Returns:
+            dict: Dictionary of Project Config Values
+
+        """
         self._config = {
             'name': self.name
         }
@@ -58,11 +78,26 @@ class Project(ProjectModule):
 
     @config.setter
     def config(self, value):
+        """Sets active config.
+
+        Args:
+            value (dict): Value to set.
+
+        Returns:
+            dict: Current config
+
+        """
         self._config = value
         return self._config
 
     @property
     def context(self):
+        """Project context used in templates.
+
+        Returns:
+            dict: Current context
+
+        """
         for child in self._children:
             child_context = getattr(child, 'context', {})
             self._context = {**self._context, **child_context}
@@ -100,11 +135,23 @@ class Project(ProjectModule):
         return value
 
     def add(self, component):
+        """Adds project component.
+
+        Args:
+            component (Any): Component to add.
+
+        """
         self._children.append(component)
         component.parent = self
         component.log = self.log
 
     def remove(self, component):
+        """Removes project component.
+
+        Args:
+            component (Any): Component to remove.
+
+        """
         self._children.remove(component)
         component.parent = None
 
@@ -115,6 +162,12 @@ class Project(ProjectModule):
             f.write(data)
 
     def load(self, **kwargs):
+        """Loads all components in Project.
+
+        Returns:
+            Current Project Instance
+
+        """
         self.name = self.data.get("name", self.name)
         self.config = self.data.get("config", self.config)
         self.data_path.mkdir(exist_ok=True)
@@ -123,6 +176,12 @@ class Project(ProjectModule):
         return self
 
     def create(self):
+        """Creates new Project.
+
+        Returns:
+            Path: Path relative to current active directory.
+
+        """
         self.log.title(f"Initiating $[{self.name}]")
         self.data_path.mkdir(exist_ok=True, parents=True)
         self.log.debug(f"Generated Project Context: {self.context}")
@@ -133,6 +192,12 @@ class Project(ProjectModule):
         return self.path.relative_to(Path.cwd())
 
     def update(self):
+        """Updates all project components.
+
+        Returns:
+            Current active project.
+
+        """
         for child in self._children:
             child.update()
         return self

@@ -25,7 +25,7 @@ class MicroPy:
             self.setup()
 
     def setup(self):
-        """creates necessary directories for micropy."""
+        """Creates necessary directories for micropy."""
         self.log.debug("Running first time setup...")
         self.log.debug(f"Creating .micropy directory @ {data.FILES}")
         data.FILES.mkdir(exist_ok=True)
@@ -33,12 +33,24 @@ class MicroPy:
 
     @utils.lazy_property
     def stubs(self):
+        """Primary Stub Manager for MicroPy.
+
+        Returns:
+            StubManager: StubManager Instance
+
+        """
         repo_list = data.REPO_SOURCES.read_text()
         repos = source.StubRepo.from_json(repo_list)
         return StubManager(resource=data.STUB_DIR, repos=repos)
 
     @utils.lazy_property
     def project(self):
+        """Current active project if available.
+
+        Returns:
+            Project: Instance of Current Project
+
+        """
         proj = self.resolve_project('.', verbose=self.verbose)
         return proj
 
@@ -50,7 +62,7 @@ class MicroPy:
             verbose (bool): Log to stdout. Defaults to True.
 
         Returns:
-            (Project|None): Project if it exists
+            Project if it exists
 
         """
         path = Path(path).absolute()
