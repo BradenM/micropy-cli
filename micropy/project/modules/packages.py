@@ -4,6 +4,7 @@
 
 import shutil
 import tempfile
+from json import JSONDecodeError
 from pathlib import Path
 
 import requirements
@@ -147,9 +148,21 @@ class PackagesModule(ProjectModule):
         specs = "".join(next(iter(pkg.specs))) if pkg.specs else "*"
         self.packages[pkg.name] = specs
         self.parent.to_json()
-        self.load()
-        self.log.success("Package installed!")
-        return self.packages
+        try:
+            self.load()
+        except JSONDecodeError:
+            self.log.error(f"Failed to find package $[{pkg.name}]!")
+            self.log.error("Is it available on PyPi?")
+            self.packages.pop(pkg.name)
+        except Exception as e:
+            self.log.error(f"An unknown error occured during the installation of $[{pkg.name}]!",
+                           exec=e)
+            self.packages.pop(pkg.name)
+        else:
+            self.log.success("Package installed!")
+        finally:
+            self.parent.to_json()
+            return self.packages
 
     def load(self, fetch=True, **kwargs):
         """Retrieves and stubs project requirements."""
