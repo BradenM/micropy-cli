@@ -20,7 +20,7 @@ jobs:
                   submodules: true
 
             - name: Setup Python ${{ matrix.python }}
-              uses: actions/setup-python@v1
+              uses: actions/setup-python@v1.1.1
               with:
                   python-version: ${{ matrix.python }}
                   architecture: x64
