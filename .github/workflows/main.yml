@@ -11,7 +11,7 @@ jobs:
         strategy:
             max-parallel: 4
             matrix:
-                os: [macOS-10.14, windows-2016, ubuntu-18.04]
+                os: [macOS-10.14, windows-latest, ubuntu-18.04]
                 python: ['3.6', '3.7']
 
         steps:
