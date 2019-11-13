@@ -76,6 +76,8 @@ class MicroPy:
             if verbose:
                 self.log.title(f"Loading Project")
             proj.load()
+            if verbose:
+                self.log.success("Ready!")
             return proj
         return proj
 

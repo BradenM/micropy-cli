@@ -33,22 +33,18 @@ class ProjectModule(metaclass=abc.ABCMeta):
     @abc.abstractproperty
     def config(self):
         """Config values specific to component."""
-        pass
 
     @abc.abstractmethod
     def load(self):
         """Method to load component."""
-        pass
 
     @abc.abstractmethod
     def create(self):
         """Method to create component."""
-        pass
 
     @abc.abstractmethod
     def update(self):
         """Method to update component."""
-        pass
 
     def add(self, component):
         """Adds component.
@@ -57,7 +53,6 @@ class ProjectModule(metaclass=abc.ABCMeta):
             component (Any): Component to add.
 
         """
-        pass
 
     def remove(self, component):
         """Removes component.
@@ -66,7 +61,6 @@ class ProjectModule(metaclass=abc.ABCMeta):
             component (Any): Component to remove.
 
         """
-        pass
 
     @classmethod
     def hook(cls, *args, **kwargs):

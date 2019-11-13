@@ -200,6 +200,7 @@ class Project(ProjectModule):
             Current active project.
 
         """
+        self.log.debug("Updating all project modules...")
         for child in self._children:
             child.update()
         return self
