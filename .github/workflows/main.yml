@@ -11,8 +11,8 @@ jobs:
         strategy:
             max-parallel: 4
             matrix:
-                os: [macOS-10.14, ubuntu-18.04]
-                python: ['3.6', '3.7']
+                os: [windows-latest, macOS-10.14, ubuntu-18.04]
+                python: ["3.6", "3.7"]
 
         steps:
             - uses: actions/checkout@master
