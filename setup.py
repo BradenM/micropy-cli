@@ -14,7 +14,7 @@ URL = 'https://github.com/BradenM/micropy-cli'
 AUTHOR = 'Braden Mars'
 AUTHOR_EMAIL = "bradenmars@bradenmars.me"
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '3.0.1'  # Update via bump2version
+VERSION = '3.1.0'  # Update via bump2version
 PROJECT_URLS = {
     "Bug Reports": "https://github.com/BradenM/micropy-cli/issues",
     "Documentation": "https://micropy-cli.readthedocs.io",
