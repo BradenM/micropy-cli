@@ -59,7 +59,6 @@ codestyle: ## cleanup code
 	autopep8 -i -r --max-line-length=100 --exclude ./micropy/lib --experimental ./micropy/
 	$(MAKE) lint
 
-
 gendoc: ## Generate Docs
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
@@ -67,19 +66,20 @@ gendoc: ## Generate Docs
 
 test-release: dist ## release on pypi-test repo
 	@printf '$(bold)Uploading Test Release to TestPyPi...\n$(rsttxt)'
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	poetry publish -r test
 	@printf '$(bold)Test Released published!\n$(rsttxt)'
 
 release: dist ## package and release
 	@printf '$(bold)Uploading package to PyPi...\n$(rsttxt)'
-	twine upload dist/*
+	poetry publish -r pypi
 	git push --tags
 	@printf '$(bold)Done! Tags Pushed!\n$(rsttxt)'
 
 dist: clean ## builds package
 	@printf '$(bold)Building Source and Wheel...\n$(rsttxt)'
-	python setup.py sdist
-	python setup.py bdist_wheel
+	pipx run dephell deps convert
+	rm README.rst
+	poetry build
 	ls -l dist
 
 install: clean ## install pkg

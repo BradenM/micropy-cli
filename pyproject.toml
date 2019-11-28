@@ -32,12 +32,14 @@ include = [
     "micropy/lib/*"
 ]
 
+[tool.poetry.scripts]
+micropy = 'micropy.cli:cli'
+
 [tool.poetry.dependencies]
 python = "^3.6"
 boltons = "^19.3"
 cachier = "^1.2"
 Jinja2 = "^2.10"
-jsonschema = "^3.2"
 packaging = "^19.2"
 questionary = "^1.4"
 requests = "^2.22"
@@ -46,6 +48,7 @@ rshell = "^0.0.26"
 tqdm = "^4.39"
 click = "^7.0"
 colorama = {version = "^0.4.1", platform = "win32"}
+jsonschema = "=3.2.0"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.3"
