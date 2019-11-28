@@ -71,6 +71,10 @@ sphinx-click = "^2.3"
 tox = "^3.14"
 tox-gh-actions = "^0.3.0"
 
+[tool.dephell.main]
+from = {format = "poetry", path="pyproject.toml"}
+to = {format = "setuppy", path="setup.py"}
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
