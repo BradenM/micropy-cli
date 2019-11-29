@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""Logging functionality."""
+"""Logging functionality.
+
+TODO: Split logging from UI, refactor.
+
+"""
 
 import logging
 import re
@@ -81,12 +85,12 @@ class ServiceLog:
             self.log_handler.setLevel(logging.DEBUG)
             self.log.addHandler(self.log_handler)
         self.log_handler = self.log.handlers[0]
-        parents = self.get_parents()
-        log_head = f"%(levelname)s|{parents[0]}"
-        if self.parent:
-            log_head = f"{log_head}|{'|'.join(parents[1:])}"
-        log_form = f"[{log_head}] %(message)s"
-        self.log_handler.setFormatter(logging.Formatter(log_form))
+        log_format = (
+            "[%(asctime)s] %(levelname)s: "
+            f"{self.service_name.lower()}: "
+            "%(message)s"
+        )
+        self.log_handler.setFormatter(logging.Formatter(log_format, "%Y-%m-%d %H:%M:%S"))
 
     def parse_msg(self, msg, accent_color=None):
         """Parses any color codes accordingly.
@@ -111,7 +115,7 @@ class ServiceLog:
             sindex = _parts.index(w[1])
             parts[sindex] = (w[1], special)
             clean = msg.replace(f"${w[0]}[{w[1]}]", w[1])
-        clean = clean.encode('ascii', 'ignore').decode('utf-8')
+        clean = clean.encode('ascii', 'ignore').decode('utf-8').strip()
         return (parts, clean)
 
     def get_parents(self, names=[]):

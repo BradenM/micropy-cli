@@ -20,7 +20,7 @@ class MicroPy:
     def __init__(self):
         self.log = Log.get_logger('MicroPy')
         self.verbose = True
-        self.log.debug("\n---- MicropyCLI Session ----")
+        self.log.debug("MicroPy Loaded")
         if not data.STUB_DIR.exists():
             self.setup()
 
