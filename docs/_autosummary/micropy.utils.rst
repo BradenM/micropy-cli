@@ -3,12 +3,12 @@ micropy.utils
 
 .. automodule:: micropy.utils
 
-   
-   
+
+
    .. rubric:: Functions
 
    .. autosummary::
-   
+
       create_dir_link
       ensure_existing_dir
       ensure_valid_url
@@ -23,20 +23,18 @@ micropy.utils
       iter_requirements
       search_xml
       stream_download
-   
-   
+      is_update_available
+      get_cached_data
+      get_class_that_defined_method
+      merge_dicts
 
-   
-   
+
+
+
+
    .. rubric:: Classes
 
    .. autosummary::
-   
+
       PyboardWrapper
       Validator
-   
-   
-
-   
-   
-   
