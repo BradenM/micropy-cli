@@ -22,7 +22,7 @@ def iter_vscode_ext(name=None):
 
     """
     _cmd = "code --list-extensions --show-versions"
-    proc = subproc.run(_cmd, text=True,
+    proc = subproc.run(_cmd, stdout=subproc.PIPE, stderr=subproc.PIPE,
                        capture_output=True, shell=True)
     results = [e.strip() for e in proc.stdout.splitlines()]
     for ext in results:
@@ -47,18 +47,24 @@ def vscode_ext_min_version(ext, min_version=VSCODE_MS_PY_MINVER, info=None):
         bool: True if requirement is satisfied, False otherwise.
 
     """
-    name, vers = next(iter_vscode_ext(name=ext), (ext, '0.0.0'))
-    cur_vers = version.parse(vers)
-    min_vers = version.parse(min_version)
-    if cur_vers >= min_vers:
+    try:
+        name, vers = next(iter_vscode_ext(name=ext), (ext, '0.0.0'))
+    except Exception as e:
+        log.debug(f"vscode check failed to run: {e}")
+        log.debug("skipping...")
         return True
-    log.error(
-        f"\nVSCode Extension {ext} failed to satisfy requirements!", bold=True)
-    log.error(f"$[Min Required Version]: {min_vers}")
-    log.error(f"$[Current Version:] {cur_vers}")
-    if info:
-        log.warn(info)
-    return False
+    else:
+        cur_vers = version.parse(vers)
+        min_vers = version.parse(min_version)
+        if cur_vers >= min_vers:
+            return True
+        log.error(
+            f"\nVSCode Extension {ext} failed to satisfy requirements!", bold=True)
+        log.error(f"$[Min Required Version]: {min_vers}")
+        log.error(f"$[Current Version:] {cur_vers}")
+        if info:
+            log.warn(info)
+        return False
 
 
 TEMPLATE_CHECKS = {
