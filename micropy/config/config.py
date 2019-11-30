@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 from pathlib import Path
-from typing import Any
+from typing import Any, Type
 
 from boltons import iterutils
 
@@ -18,7 +18,7 @@ class Config:
     def __init__(
             self,
             path: Path,
-            source_format: ConfigSource = JSONConfigSource,
+            source_format: Type[ConfigSource] = JSONConfigSource,
             default: dict = {}):
         """Configuration File Interface
 
