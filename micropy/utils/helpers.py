@@ -417,11 +417,12 @@ def get_class_that_defined_method(meth):
 
 
 def merge_dicts(d1: dict, d2: dict):
-    """Merge two dict objects
+    """Merge two dict objects.
 
     Args:
         d1 (dict): First object
         d2 (dict): Second object
+
     """
     for k, v in d2.items():
         if k in d1 and isinstance(d1[k], dict) and isinstance(d2[k], Mapping):
