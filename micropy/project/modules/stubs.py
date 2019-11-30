@@ -8,7 +8,6 @@ from typing import List, Sequence, Union
 
 from boltons import setutils
 
-from micropy.config import Config
 from micropy.exceptions import StubError
 from micropy.project.modules import ProjectModule
 from micropy.stubs import StubManager

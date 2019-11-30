@@ -52,7 +52,7 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def save(self, content: Any) -> Any:
-        """Method to save config"""
+        """Method to save config."""
 
     @abc.abstractmethod
     def process(self) -> dict:
@@ -65,7 +65,7 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def prepare(self) -> Any:
-        """Method to prepare on enter"""
+        """Method to prepare on enter."""
 
     def __enter__(self) -> dict:
         self.prepare()

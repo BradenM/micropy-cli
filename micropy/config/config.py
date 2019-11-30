@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from copy import deepcopy
-from typing import Any, Callable, List, Optional, Type, Union
+from typing import Any, Callable, Optional, Type, Union
 
 from boltons import iterutils
 
@@ -89,6 +89,7 @@ class Config:
 
         Returns:
             dict: updated config
+
         """
         _config = config
         if isinstance(config, Config):
