@@ -81,15 +81,29 @@ class TestConfig:
         assert conf.get('section.value') == 'foo'
         assert conf.config == new
 
-    def test_merge(self, test_config):
-        conf = test_config
-        new_data = {
+    @pytest.mark.parametrize('new_data', [
+        {
             'section': {
                 'foo': 45
             }
-        }
+        },
+        config.Config(source_format=config.DictConfigSource,
+                      default={
+                          'section': {
+                              'foo': 45
+                          }
+                      })
+    ])
+    def test_merge(self, test_config, new_data):
+        conf = test_config
         conf.merge(new_data)
         file_data = json.loads(conf.source.file_path.read_text())
         print(file_data)
         assert file_data['section']['foo'] == 45
         assert conf.get('section.foo') == 45
+
+    def test_dict(self):
+        conf = config.Config(source_format=config.DictConfigSource, default=self.default)
+        assert conf.get('one') == 1
+        conf.set('sub.bool', False)
+        assert not conf.get('sub.bool')
