@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from copy import deepcopy
-from pathlib import Path
-from typing import Any, Type
+from typing import Any, Type, Union
 
 from boltons import iterutils
 
@@ -18,7 +17,7 @@ from .config_source import ConfigSource
 class Config:
     """Configuration File Interface.
 
-    Automatically sybcs config in memory
+    Automatically syncs config in memory
     with config saved to disk.
 
     Args:
@@ -31,13 +30,13 @@ class Config:
     """
 
     def __init__(self,
-                 path: Path,
+                 *args: Any,
                  source_format: Type[ConfigSource] = JSONConfigSource,
                  default: dict = {}):
-        self.log: ServiceLog = Log.add_logger(f"{__name__}({path.name})")
+        self.log: ServiceLog = Log.add_logger(f"{__name__}")
         self._config = deepcopy(default)
         self.format = source_format
-        self._source: ConfigSource = self.format(path)
+        self._source: ConfigSource = self.format(*args)
         self.sync()
 
     @property
@@ -45,7 +44,7 @@ class Config:
         return self._source
 
     @source.setter
-    def source(self, value: Path) -> ConfigSource:
+    def source(self, value: Any) -> ConfigSource:
         self._source = self.format(value)
         return self._source
 
@@ -73,17 +72,19 @@ class Config:
         self.log.debug("configuration synced!")
         return self.config
 
-    def merge(self, config: dict) -> dict:
+    def merge(self, config: Union[dict, 'Config']) -> dict:
         """Merge current config with another.
 
         Args:
-            config (dict): config to merge with
+            config (Union[dict,Config]): Config to merge with
 
         Returns:
             dict: updated config
-
         """
-        utils.merge_dicts(self._config, config)
+        _config = config
+        if isinstance(config, Config):
+            _config = config.config
+        utils.merge_dicts(self._config, _config)
         with self.source as file_cfg:
             utils.merge_dicts(self._config, file_cfg)
         return self.sync()

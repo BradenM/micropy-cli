@@ -2,7 +2,8 @@
 
 import json
 from pathlib import Path
-from typing import Any
+
+from boltons.fileutils import AtomicSaver
 
 from .config_source import ConfigSource
 
@@ -16,7 +17,27 @@ class JSONConfigSource(ConfigSource):
     """
 
     def __init__(self, path: Path):
-        super().__init__(path)
+        super().__init__()
+        self._file_path: Path = path
+
+    @property
+    def file_path(self) -> Path:
+        """Path to config file."""
+        return self._file_path
+
+    @file_path.setter
+    def file_path(self, value: Path) -> Path:
+        """Set config file path.
+
+        Args:
+            value (Path): New path to config file
+
+        Returns:
+            Path: Path to config file
+
+        """
+        self._file_path = value
+        return self._file_path
 
     def process(self) -> dict:
         """Load config from JSON file.
@@ -31,27 +52,22 @@ class JSONConfigSource(ConfigSource):
         config = json.loads(content)
         return config
 
-    def preprocess(self, content: Any) -> str:
-        """Preprocess config in memory before writing to file.
+    def prepare(self):
+        if not self.file_path.exists():
+            self.log.debug(f"creating new config file: {self.file_path}")
+            self.file_path.touch()
 
-        Args:
-            content (Any): current config
-
-        Returns:
-            str: Content ready to be written to file.
-
-        """
-        content = json.dumps(content, indent=4)
-        return content
-
-    def save(self, content: str) -> Path:
+    def save(self, content: dict) -> Path:
         """Save current config.
 
         Args:
-            content (str): content to write to file.
+            content (dict): content to write to file.
 
         Returns:
             Path: path to config file.
 
         """
-        return super().save(content)
+        config = json.dumps(content, indent=4)
+        with AtomicSaver((str(self.file_path)), text_mode=True) as file:
+            file.write(config)
+        return self.file_path
