@@ -69,7 +69,7 @@ class TemplatesModule(ProjectModule):
         self.log.title("Rendering Templates")
         self.log.info("Populating Stub Info...")
         for t in self.provider.templates:
-            self.provider.render_to(t, self.parent.path, **self.parent.context)
+            self.provider.render_to(t, self.parent.path, **self.parent.context.raw)
         self.log.success("Stubs Injected!")
         return self.parent.context
 
@@ -82,5 +82,5 @@ class TemplatesModule(ProjectModule):
         """
         self.parent.config.set('config', self.enabled)
         for tmp in self.provider.templates:
-            self.provider.update(tmp, self.parent.path, **self.parent.context)
+            self.provider.update(tmp, self.parent.path, **self.parent.context.raw)
         return self.parent.context
