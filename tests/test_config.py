@@ -5,7 +5,6 @@ import json
 import pytest
 
 from micropy import config
-from micropy.config.config_dict import DictConfigSource
 
 
 class TestConfig:
@@ -63,6 +62,13 @@ class TestConfig:
         data = json.loads(conf.source.file_path.read_text())
         assert data == conf.config
 
+    def test_should_sync(self, tmp_path):
+        cfg_file = tmp_path / 'conf.json'
+        conf = config.Config(cfg_file, default=self.default, should_sync=lambda *args: False)
+        assert not cfg_file.exists()
+        conf.set('one', 45)
+        assert not cfg_file.exists()
+
     def test_update_from_file(self, test_config):
         conf = test_config
         cfg_file = conf.source.file_path
@@ -75,29 +81,15 @@ class TestConfig:
         assert conf.get('section.value') == 'foo'
         assert conf.config == new
 
-    @pytest.mark.parametrize("new_data", [
-        {
-            'section': {
-                'foo': 45
-            }
-        },
-        config.Config(source_format=DictConfigSource, default={
-            'section': {
-                'foo': 45
-            }
-        })
-    ])
-    def test_merge(self, test_config, new_data):
+    def test_merge(self, test_config):
         conf = test_config
+        new_data = {
+            'section': {
+                'foo': 45
+            }
+        }
         conf.merge(new_data)
         file_data = json.loads(conf.source.file_path.read_text())
         print(file_data)
         assert file_data['section']['foo'] == 45
         assert conf.get('section.foo') == 45
-
-    def test_dict_config(self):
-        conf = config.Config(source_format=DictConfigSource, default=self.default)
-        assert conf.config == self.default
-        assert conf.get('one') == 1
-        conf.set('sub.bool', False)
-        assert not conf.get('sub.bool')

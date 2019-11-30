@@ -55,6 +55,7 @@ class JSONConfigSource(ConfigSource):
     def prepare(self):
         if not self.file_path.exists():
             self.log.debug(f"creating new config file: {self.file_path}")
+            self.file_path.parent.mkdir(parents=True, exist_ok=True)
             self.file_path.touch()
 
     def save(self, content: dict) -> Path:
