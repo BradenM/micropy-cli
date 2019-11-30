@@ -4,8 +4,10 @@
 
 import json
 from pathlib import Path
+from typing import Any, List, Optional, Type
 
-from micropy.logger import Log
+from micropy.config import Config
+from micropy.logger import Log, ServiceLog
 from micropy.project.modules import ProjectModule
 
 
@@ -19,19 +21,21 @@ class Project(ProjectModule):
 
     """
 
-    def __init__(self, path, name=None, **kwargs):
-        self._children = []
-        self.path = Path(path).absolute()
-        self.data_path = self.path / '.micropy'
-        self.info_path = self.path / 'micropy.json'
-        self.cache_path = self.data_path / '.cache'
-        self._context = {}
-        self._config = {}
+    def __init__(self, path: str, name: Optional[str] = None, **kwargs: Any):
+        self._children: List[Type[ProjectModule]] = []
+        self.path: Path = Path(path).absolute()
+        self.data_path: Path = self.path / '.micropy'
+        self.info_path: Path = self.path / 'micropy.json'
+        self.cache_path: Path = self.data_path / '.cache'
+        self._context: dict = {}
 
-        self.name = name or self.path.name
-        self.log = Log.add_logger(self.name, show_title=False)
+        self.name: str = name or self.path.name
+        self._config: Config = Config(self.info_path,
+                                      default={'name': self.name},
+                                      should_sync=lambda *a: self.exists)
+        self.log: ServiceLog = Log.add_logger(self.name, show_title=False)
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         results = iter([c.resolve_hook(name) for c in self._children])
         for res in results:
             if res is not None:
@@ -40,7 +44,7 @@ class Project(ProjectModule):
         return self.__getattribute__(name)
 
     @property
-    def exists(self):
+    def exists(self) -> bool:
         """Whether this project exists.
 
         Returns:
@@ -50,44 +54,27 @@ class Project(ProjectModule):
         return self.info_path.exists()
 
     @property
-    def data(self):
-        """Data defined in project info file.
-
-        Returns:
-            dict: Dictionary of data
-
-        """
-        if self.exists:
-            return json.loads(self.info_path.read_text())
-        return {}
-
-    @property
-    def config(self):
+    def config(self) -> Config:
         """Project Configuration.
 
         Returns:
-            dict: Dictionary of Project Config Values
+            Config: Dictionary of Project Config Values
 
         """
-        self._config = {
-            'name': self.name
-        }
-        for child in self._children:
-            self._config = {**self._config, **child.config}
         return self._config
 
     @config.setter
-    def config(self, value):
+    def config(self, value: dict) -> Config:
         """Sets active config.
 
         Args:
             value (dict): Value to set.
 
         Returns:
-            dict: Current config
+            Config: Current config
 
         """
-        self._config = value
+        self._config = Config(self.info_path, default=value)
         return self._config
 
     @property
@@ -155,21 +142,14 @@ class Project(ProjectModule):
         self._children.remove(component)
         component.parent = None
 
-    def to_json(self):
-        """Dumps project to data file."""
-        with self.info_path.open('w+') as f:
-            data = json.dumps(self.config, indent=4)
-            f.write(data)
-
-    def load(self, **kwargs):
+    def load(self, **kwargs: Any) -> 'Project':
         """Loads all components in Project.
 
         Returns:
             Current Project Instance
 
         """
-        self.name = self.data.get("name", self.name)
-        self.config = self.data.get("config", self.config)
+        self.name = self._config.get('name')
         self.data_path.mkdir(exist_ok=True)
         for child in self._children:
             child.load(**kwargs)
@@ -188,8 +168,10 @@ class Project(ProjectModule):
         ignore_data.write_text('*')
         self.log.debug(f"Generated Project Context: {self.context}")
         for child in self._children:
+            self.config.merge(child.config)
             child.create()
-        self.to_json()
+        self.info_path.touch()
+        self.config.sync()
         self.log.success(f"Project Created!")
         return self.path.relative_to(Path.cwd())
 

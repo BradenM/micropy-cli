@@ -142,12 +142,13 @@ class PackagesModule(ProjectModule):
         if isinstance(package, str):
             pkg = next(requirements.parse(package))
         self.log.info(f"Adding $[{pkg.name}] to requirements...")
+        specs = "".join(next(iter(pkg.specs))) if pkg.specs else "*"
         if self.packages.get(pkg.name, None):
             self.log.error(f"$[{pkg.name}] is already installed!")
+            self.update()
             return None
-        specs = "".join(next(iter(pkg.specs))) if pkg.specs else "*"
         self.packages[pkg.name] = specs
-        self.parent.to_json()
+        self.parent.config.set(f'{self.name}.{pkg.name}', specs)
         try:
             self.load()
         except JSONDecodeError:
@@ -161,7 +162,6 @@ class PackagesModule(ProjectModule):
         else:
             self.log.success("Package installed!")
         finally:
-            self.parent.to_json()
             return self.packages
 
     def load(self, fetch=True, **kwargs):
@@ -172,6 +172,7 @@ class PackagesModule(ProjectModule):
             for p in packages:
                 spec = "".join(next(iter(p.specs))) if p.specs else "*"
                 self.packages.update({p.name: spec})
+                self.parent.config.set(f'{self.name}.{p.name}', spec)
         pkg_keys = set(self.packages.keys())
         pkg_cache = self.parent._get_cache(self.name)
         new_pkgs = pkg_keys.copy()
@@ -195,6 +196,7 @@ class PackagesModule(ProjectModule):
 
     def update(self):
         """Dumps packages to file at path."""
+        self.parent.config.set(self.name, self.packages)
         if not self.path.exists():
             self.path.touch()
         pkgs = [(f"{name}{spec}" if spec and spec != "*" else name)

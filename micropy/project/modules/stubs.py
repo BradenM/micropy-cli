@@ -4,25 +4,30 @@
 
 import sys
 from pathlib import Path
+from typing import List, Sequence, Union
 
 from boltons import setutils
 
+from micropy.config import Config
 from micropy.exceptions import StubError
 from micropy.project.modules import ProjectModule
+from micropy.stubs import StubManager
+from micropy.stubs.stubs import DeviceStub
 
 
 class StubsModule(ProjectModule):
     """Project module for handling Stubs.
 
     Args:
-        stub_manager (micropy.stubs.StubManager): StubManager instance.
-        stubs (List[micropy.stubs.Stub]): Initial Stubs to use.
+        stub_manager (StubManager): StubManager instance.
+        stubs (List[Type[Stub]], optional): Initial Stubs to use.
 
     """
 
-    def __init__(self, stub_manager, stubs=None):
-        self.stub_manager = stub_manager
-        self._stubs = stubs or []
+    def __init__(self, stub_manager: StubManager,
+                 stubs: Sequence[DeviceStub] = None):
+        self.stub_manager: StubManager = stub_manager
+        self._stubs: Sequence[DeviceStub] = stubs or []
 
     @property
     def context(self):
@@ -42,7 +47,7 @@ class StubsModule(ProjectModule):
         }
 
     @property
-    def config(self):
+    def config(self) -> dict:
         """Component specific config values.
 
         Returns:
@@ -56,7 +61,7 @@ class StubsModule(ProjectModule):
 
     @property
     @ProjectModule.hook()
-    def stubs(self):
+    def stubs(self) -> Union[StubManager, Sequence[DeviceStub]]:
         """Component stubs.
 
         Returns:
@@ -75,7 +80,8 @@ class StubsModule(ProjectModule):
         """
         self._stubs = val
 
-    def _resolve_subresource(self, stubs):
+    def _resolve_subresource(self,
+                             stubs: List[DeviceStub]) -> Union[StubManager, Sequence[DeviceStub]]:
         """Resolves stub resource.
 
         Args:
@@ -101,7 +107,7 @@ class StubsModule(ProjectModule):
             stub_data (dict): Dict of Stubs
 
         """
-        _data = self.config['stubs']
+        _data = self.config.get('stubs')
         data = {**stub_data, **_data}
         for name, location in data.items():
             _path = Path(location).absolute()
@@ -116,7 +122,7 @@ class StubsModule(ProjectModule):
             stub_list (dict): Dict of Stubs
 
         """
-        stub_data = self.parent.data.get('stubs', {})
+        stub_data = self.parent.config.get('stubs', default={})
         stubs = list(self._load_stub_data(stub_data=stub_data))
         stubs.extend(self.stubs)
         self.stubs = self._resolve_subresource(stubs)
@@ -131,6 +137,7 @@ class StubsModule(ProjectModule):
     def update(self):
         """Update current project stubs."""
         self.stubs = self.load()
+        self.parent.config.set('stubs', {s.name: s.stub_version for s in self._stubs})
         return self.stubs
 
     @ProjectModule.hook()
@@ -150,7 +157,6 @@ class StubsModule(ProjectModule):
         self.stubs = self._resolve_subresource(stubs)
         self.log.info("Updating Project Info...")
         self.parent.update()
-        self.parent.to_json()
         self.log.info(
             f"Project Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
         self.log.success("\nProject Updated!")
