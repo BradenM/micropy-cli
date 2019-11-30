@@ -15,3 +15,4 @@ micropy.config
 
       Config
       JSONConfigSource
+      DictConfigSource
