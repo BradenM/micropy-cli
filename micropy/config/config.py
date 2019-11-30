@@ -63,6 +63,10 @@ class Config:
             self._config = value
         return self.sync()
 
+    @property
+    def raw(self) -> dict:
+        return self._config
+
     def sync(self) -> dict:
         """Sync in-memory config with disk.
 
