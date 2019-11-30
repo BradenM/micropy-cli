@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Config Abstract"""
+"""Config Abstract."""
 
 import abc
 import contextlib
@@ -13,10 +13,11 @@ from micropy.logger import Log, ServiceLog
 
 
 class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
-    """Abstract Base Class for Config Sources
+    """Abstract Base Class for Config Sources.
 
-        Args:
-            path (Path): Path to save config too.
+    Args:
+        path (Path): Path to save config too.
+
     """
 
     def __init__(self, path: Path):
@@ -26,36 +27,38 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
 
     @property
     def file_path(self) -> Path:
-        """Path to config file"""
+        """Path to config file."""
         return self._file_path
 
     @file_path.setter
     def file_path(self, value: Path) -> Path:
-        """Set config file path
+        """Set config file path.
 
         Args:
             value (Path): New path to config file
 
         Returns:
             Path: Path to config file
+
         """
         self._file_path = value
         return self._file_path
 
     @property
     def config(self) -> dict:
-        """Current Config Content"""
+        """Current Config Content."""
         return self._config
 
     @config.setter
     def config(self, value: dict) -> dict:
-        """Set current config content
+        """Set current config content.
 
         Args:
             value (dict): New value to set
 
         Returns:
             dict: Current config
+
         """
         self._config = value
         return self._config
@@ -71,21 +74,23 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def preprocess(self, content: Any) -> str:
-        """Preprocess config before saving to file
+        """Preprocess config before saving to file.
 
         Args:
             content (Any): Content to preprocess
 
         Returns:
             str: Content to write to file
+
         """
 
     @abc.abstractmethod
     def save(self, content: Any) -> Path:
-        """Save content to file
+        """Save content to file.
 
         Args:
             config (Any): Content to save
+
         """
         content = self.preprocess(content)
         with AtomicSaver(str(self.file_path), text_mode=True) as file:
@@ -94,10 +99,11 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def process(self) -> dict:
-        """Read and process config file
+        """Read and process config file.
 
         Returns:
             dict: Config file content
+
         """
 
     def __enter__(self) -> dict:

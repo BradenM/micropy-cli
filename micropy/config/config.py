@@ -27,6 +27,7 @@ class Config:
             Defaults to JSONConfigSource.
         default (dict, optional): Default configuration.
                 Defaults to {}.
+
     """
 
     def __init__(self,
@@ -60,10 +61,11 @@ class Config:
         return self.sync()
 
     def sync(self) -> dict:
-        """Sync in-memory config with disk
+        """Sync in-memory config with disk.
 
         Returns:
             dict: updated config
+
         """
         with self.source as file_config:
             utils.merge_dicts(self._config, file_config)
@@ -72,13 +74,14 @@ class Config:
         return self.config
 
     def merge(self, config: dict) -> dict:
-        """Merge current config with another
+        """Merge current config with another.
 
         Args:
             config (dict): config to merge with
 
         Returns:
             dict: updated config
+
         """
         utils.merge_dicts(self._config, config)
         with self.source as file_cfg:
@@ -86,7 +89,7 @@ class Config:
         return self.sync()
 
     def get(self, key: str, default: Any = None) -> Any:
-        """Retrieve config value
+        """Retrieve config value.
 
         Args:
             key (str): Key (in dot-notation) of value to return.
@@ -95,13 +98,14 @@ class Config:
 
         Returns:
             Any: Value at key given
+
         """
         key_path = key.split('.')
         value = iterutils.get_path(self.config, key_path, default=default)
         return value
 
     def set(self, key: str, value: Any) -> Any:
-        """Set config value
+        """Set config value.
 
         Args:
             key (str): Key (in dot-notation) to update.
@@ -109,6 +113,7 @@ class Config:
 
         Returns:
             Any: Updated config
+
         """
         full_path = tuple(i for i in key.split('.'))
         path = full_path[:-1]
