@@ -3,17 +3,22 @@
 import abc
 import inspect
 from functools import wraps
+from typing import Any, Callable, List, Optional, Tuple, Type, TypeVar, Union
 
 from micropy import utils
-from micropy.logger import Log
+from micropy.config import Config
+from micropy.logger import Log, ServiceLog
 
 """Project Packages Module Abstract Implementation"""
+
+T = TypeVar('T', bound=Callable[..., Any])
+Proxy = TypeVar('Proxy', bound=List[Tuple[Callable[..., Any], str]])
 
 
 class ProjectModule(metaclass=abc.ABCMeta):
     """Abstract Base Class for Project Modules."""
 
-    _hooks = []
+    _hooks: List['HookProxy'] = []
 
     @property
     def parent(self):
@@ -21,7 +26,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
         return self._parent
 
     @parent.setter
-    def parent(self, parent):
+    def parent(self, parent: Type['ProjectModule']) -> Type['ProjectModule']:
         """Sets component parent.
 
         Args:
@@ -29,9 +34,10 @@ class ProjectModule(metaclass=abc.ABCMeta):
 
         """
         self._parent = parent
+        return self.parent
 
     @abc.abstractproperty
-    def config(self):
+    def config(self) -> Union[dict, Config]:
         """Config values specific to component."""
 
     @abc.abstractmethod
@@ -46,7 +52,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
     def update(self):
         """Method to update component."""
 
-    def add(self, component):
+    def add(self, component: Type['ProjectModule']) -> Any:
         """Adds component.
 
         Args:
@@ -54,7 +60,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
 
         """
 
-    def remove(self, component):
+    def remove(self, component: Type['ProjectModule']) -> Any:
         """Removes component.
 
         Args:
@@ -63,7 +69,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
         """
 
     @classmethod
-    def hook(cls, *args, **kwargs):
+    def hook(cls, *args: Any, **kwargs: Any) -> Callable[..., Any]:
         """Decorator for creating a Project Hook.
 
         Allows decorated method to be called from parent
@@ -73,7 +79,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
             Callable: Decorated function.
 
         """
-        def _hook(func):
+        def _hook(func: T) -> Callable[..., Any]:
             name = kwargs.get('name', func.__name__)
             hook = next((i for i in cls._hooks if i._name == name), None)
             if not hook:
@@ -81,19 +87,20 @@ class ProjectModule(metaclass=abc.ABCMeta):
                 ProjectModule._hooks.append(hook)
             hook.add_method(func, **kwargs)
             @wraps(func)
-            def wrapper(*args, **kwargs):
+            def wrapper(*args: Any, **kwargs: Any) -> T:
                 return func(*args, **kwargs)
             return wrapper
         return _hook
 
-    def resolve_hook(self, name):
+    def resolve_hook(self, name: str) -> Union[Optional['HookProxy'], T]:
         """Resolves appropriate hook for attribute name.
 
         Args:
             name (str): Attribute name to resolve hook for.
 
         Returns:
-            HookProxy: Callable Proxy for ProjectHook.
+            Optional[HookProxy]: Callable Proxy for ProjectHook.
+            NoneType: Name could not be resolved.
 
         """
         _hook = None
@@ -122,11 +129,11 @@ class HookProxy:
 
     """
 
-    def __init__(self, name):
-        self.methods = []
-        self.instances = []
-        self._name = name
-        self.log = Log.add_logger(str(self))
+    def __init__(self, name: str):
+        self.methods: List[Tuple[Callable[..., Any], str]] = []
+        self.instances: List[Type[ProjectModule]] = []
+        self._name: str = name
+        self.log: ServiceLog = Log.add_logger(str(self))
 
     def __call__(self, *args, **kwargs):
         for method, name in self.methods:
@@ -144,7 +151,7 @@ class HookProxy:
         name = f"HookProxy(name={self._name}, methods=[{self.methods}])"
         return name
 
-    def _get_instance(self, attr):
+    def _get_instance(self, attr: Callable[..., Any]) -> Optional[Type[ProjectModule]]:
         """Retrieves instance from attribute.
 
         Args:
@@ -159,7 +166,7 @@ class HookProxy:
             instance = next((i for i in self.instances if isinstance(i, _class)), None)
             return instance
 
-    def is_descriptor(self):
+    def is_descriptor(self) -> bool:
         """Determine if initial method provided is a descriptor."""
         method = self.methods[0][0]
         instance = self._get_instance(method)
@@ -168,13 +175,13 @@ class HookProxy:
             return inspect.isdatadescriptor(attr)
         return False
 
-    def get(self):
+    def get(self) -> T:
         """Get initial method descriptor value."""
         instance = self._get_instance(self.methods[0][0])
         self.log.debug(f"{self._name} proxied to [property@{instance}]")
         return getattr(instance, self._name)
 
-    def add_method(self, func, **kwargs):
+    def add_method(self, func: Callable[..., Any], **kwargs: Any) -> Proxy:
         """Adds method to Proxy.
 
         Any kwargs provided will be used to generate the unique
@@ -191,9 +198,9 @@ class HookProxy:
         hook = (func, name)
         self.methods.append(hook)
         self.log.debug(f"Method added to proxy: {hook}")
-        return hook
+        return hook  # type: ignore
 
-    def add_instance(self, inst):
+    def add_instance(self, inst: Any) -> Any:
         """Add instance to Proxy.
 
         Args:
@@ -202,7 +209,7 @@ class HookProxy:
         """
         return self.instances.append(inst)
 
-    def get_name(self, func, params=None):
+    def get_name(self, func: Callable[..., Any], params: Optional[dict] = None) -> str:
         """Generates name from method and provided kwargs.
 
         Args:
