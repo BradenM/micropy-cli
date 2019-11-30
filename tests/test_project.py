@@ -160,11 +160,10 @@ class TestProject:
 
     def test_create(self, test_project, mock_checks, mods):
         test_proj, _ = next(test_project(mods))
-        assert test_proj.data == {}
+        assert test_proj.config.get('name') == 'NewProject'
         resp = test_proj.create()
         assert str(resp) == "NewProject"
         assert test_proj.exists
-        assert test_proj.data is not {}
         assert test_proj.info_path.exists()
         if test_proj._children:
             test_proj.remove(test_proj._children[-1])
@@ -172,7 +171,9 @@ class TestProject:
     def test_config(self, test_project, get_config,  mods):
         test_proj, mp = next(test_project(mods))
         expect_config = get_config(mods, stubs=list(mp.stubs)[:2])
-        assert test_proj.config == expect_config
+        assert test_proj.config._config == {'name': 'NewProject'}
+        test_proj.create()
+        assert test_proj.config._config == expect_config
 
     def test_context(self, test_project, get_context, mods):
         test_proj, mp = next(test_project(mods))
@@ -254,9 +255,12 @@ class TestPackagesModule:
     def test_add_package(self, test_package):
         proj = test_package
         proj.add_package('somepkg>=7')
-        res = proj.add_package('somepkg')
+        print(proj.config._config)
+        assert proj.config.get('packages.somepkg') == '>=7'
         # Shouldnt allow duplicate pkgs
+        res = proj.add_package('somepkg')
         assert res is None
+        assert proj.config.get('packages.somepkg') == '>=7'
 
     @pytest.mark.parametrize(
         'glob_val,expect',

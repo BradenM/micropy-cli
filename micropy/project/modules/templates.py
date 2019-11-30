@@ -52,7 +52,7 @@ class TemplatesModule(ProjectModule):
 
     def load(self, **kwargs):
         """Loads project templates."""
-        _data = self.parent.data.get('config', {})
+        _data = self.config.get('config')
         self.enabled = {**self.enabled, **_data}
         templates = [k for k, v in self.enabled.items() if v]
         self.log.debug(f"Loading Templates: {templates}")
@@ -80,6 +80,7 @@ class TemplatesModule(ProjectModule):
             dict: Project context
 
         """
+        self.parent.config.set('config', self.enabled)
         for tmp in self.provider.templates:
             self.provider.update(tmp, self.parent.path, **self.parent.context)
         return self.parent.context
