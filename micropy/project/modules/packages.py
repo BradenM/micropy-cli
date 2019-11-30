@@ -71,7 +71,7 @@ class PackagesModule(ProjectModule):
             dict: Context values.
 
         """
-        _paths = self.parent._context.get('paths', set())
+        _paths = set(self.parent.context.get('paths', set()))
         _paths.add(self.pkg_path)
         return {
             'paths': _paths

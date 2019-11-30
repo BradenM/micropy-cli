@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any, List, Optional, Type
 
-from micropy.config import Config
+from micropy.config import Config, DictConfigSource
 from micropy.logger import Log, ServiceLog
 from micropy.project.modules import ProjectModule
 
@@ -27,7 +27,7 @@ class Project(ProjectModule):
         self.data_path: Path = self.path / '.micropy'
         self.info_path: Path = self.path / 'micropy.json'
         self.cache_path: Path = self.data_path / '.cache'
-        self._context: dict = {}
+        self._context = Config(source_format=DictConfigSource)
 
         self.name: str = name or self.path.name
         self._config: Config = Config(self.info_path,
@@ -85,9 +85,6 @@ class Project(ProjectModule):
             dict: Current context
 
         """
-        for child in self._children:
-            child_context = getattr(child, 'context', {})
-            self._context = {**self._context, **child_context}
         return self._context
 
     def _set_cache(self, key, value):
@@ -131,6 +128,8 @@ class Project(ProjectModule):
         self._children.append(component)
         component.parent = self
         component.log = self.log
+        if hasattr(component, 'context'):
+            self.context.merge(component.context)
 
     def remove(self, component):
         """Removes project component.
