@@ -70,7 +70,6 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
     def __enter__(self) -> dict:
         self.prepare()
         with self._handle_cleanup():
-            self.log.debug(f'processing config object')
             self._config = self.process()
         return self._config
 

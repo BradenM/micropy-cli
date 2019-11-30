@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from copy import deepcopy
-from typing import Any, Type, Union
+from typing import Any, Callable, List, Optional, Type, Union
 
 from boltons import iterutils
 
@@ -26,14 +26,18 @@ class Config:
             Defaults to JSONConfigSource.
         default (dict, optional): Default configuration.
                 Defaults to {}.
+        should_sync: Function to determine whether or not Config should sync.
+            Defaults to None.
 
     """
 
     def __init__(self,
                  *args: Any,
                  source_format: Type[ConfigSource] = JSONConfigSource,
-                 default: dict = {}):
+                 default: dict = {},
+                 should_sync: Optional[Callable[..., bool]] = None):
         self.log: ServiceLog = Log.add_logger(f"{__name__}")
+        self.should_sync = should_sync or (lambda *args: True)
         self._config = deepcopy(default)
         self.format = source_format
         self._source: ConfigSource = self.format(*args)
@@ -66,17 +70,22 @@ class Config:
             dict: updated config
 
         """
+        if not self.should_sync():
+            self.log.debug("sync blocked!")
+            return self.config
         with self.source as file_config:
             utils.merge_dicts(self._config, file_config)
             utils.merge_dicts(file_config, self._config)
-        self.log.debug("configuration synced!")
+        self.log.debug('config synced!')
         return self.config
 
-    def merge(self, config: Union[dict, 'Config']) -> dict:
+    def merge(self, config: Union[dict, 'Config'], sync: bool = True) -> dict:
         """Merge current config with another.
 
         Args:
             config (Union[dict,Config]): Config to merge with
+            sync (bool, optional): Sync after merging.
+                Defaults to True.
 
         Returns:
             dict: updated config
@@ -87,7 +96,9 @@ class Config:
         utils.merge_dicts(self._config, _config)
         with self.source as file_cfg:
             utils.merge_dicts(self._config, file_cfg)
-        return self.sync()
+        if sync:
+            return self.sync()
+        return self.config
 
     def get(self, key: str, default: Any = None) -> Any:
         """Retrieve config value.
@@ -118,9 +129,9 @@ class Config:
         """
         full_path = tuple(i for i in key.split('.'))
         path = full_path[:-1]
-        key = full_path[-1]
+        p_key = full_path[-1]
         remapped = iterutils.remap(self._config, lambda p, k, v: (
-            k, value) if p == path and k == key else (k, v))
+            k, value) if p == path and k == p_key else (k, v))
         self._config = remapped
         self.log.debug(f"set config value [{key}] -> {value}")
         return self.sync()
