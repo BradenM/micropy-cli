@@ -12,23 +12,27 @@ from micropy.logger import Log, ServiceLog
 from .config_json import JSONConfigSource
 from .config_source import ConfigSource
 
+"""Config Interface"""
+
 
 class Config:
+    """Configuration File Interface.
 
-    def __init__(
-            self,
-            path: Path,
-            source_format: Type[ConfigSource] = JSONConfigSource,
-            default: dict = {}):
-        """Configuration File Interface
+    Automatically sybcs config in memory
+    with config saved to disk.
 
-        Args:
-            path (Path): Path to save file at.
-            source_format (ConfigSource, optional): Configuration File Format.
-                Defaults to JSONConfigSource.
-            default (dict, optional): Default configuration.
-                 Defaults to {}.
-        """
+    Args:
+        path (Path): Path to save file at.
+        source_format (ConfigSource, optional): Configuration File Format.
+            Defaults to JSONConfigSource.
+        default (dict, optional): Default configuration.
+                Defaults to {}.
+    """
+
+    def __init__(self,
+                 path: Path,
+                 source_format: Type[ConfigSource] = JSONConfigSource,
+                 default: dict = {}):
         self.log: ServiceLog = Log.add_logger(f"{__name__}({path.name})")
         self._config = deepcopy(default)
         self.format = source_format
@@ -56,7 +60,7 @@ class Config:
         return self.sync()
 
     def sync(self) -> dict:
-        """Load config from file
+        """Sync in-memory config with disk
 
         Returns:
             dict: updated config
@@ -85,7 +89,7 @@ class Config:
         """Retrieve config value
 
         Args:
-            key (str): key of config value to retrieve
+            key (str): Key (in dot-notation) of value to return.
             default (Any, optional): Default value to return.
                 Defaults to None.
 
@@ -100,7 +104,7 @@ class Config:
         """Set config value
 
         Args:
-            key (str): Key to set in dot notation
+            key (str): Key (in dot-notation) to update.
             value (Any): Value to set
 
         Returns:

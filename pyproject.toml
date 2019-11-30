@@ -74,6 +74,7 @@ sphinx-click = "^2.3"
 tox = "^3.14"
 tox-gh-actions = "^0.3.0"
 mypy = "^0.750.0"
+doc8 = "^0.8.0"
 
 [tool.dephell.main]
 from = {format = "poetry", path="pyproject.toml"}
