@@ -4,10 +4,7 @@
 
 import abc
 import contextlib
-from pathlib import Path
 from typing import Any
-
-from boltons.fileutils import AtomicSaver
 
 from micropy.logger import Log, ServiceLog
 
@@ -16,33 +13,14 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
     """Abstract Base Class for Config Sources.
 
     Args:
-        path (Path): Path to save config too.
+        initial_config (dict, optional): Initial config values.
+            Defaults to {}.
 
     """
 
-    def __init__(self, path: Path):
-        self._file_path: Path = path
-        self._config: dict = {}
+    def __init__(self, initial_config: dict = {}):
+        self._config: dict = initial_config
         self.log: ServiceLog = Log.add_logger(__name__)
-
-    @property
-    def file_path(self) -> Path:
-        """Path to config file."""
-        return self._file_path
-
-    @file_path.setter
-    def file_path(self, value: Path) -> Path:
-        """Set config file path.
-
-        Args:
-            value (Path): New path to config file
-
-        Returns:
-            Path: Path to config file
-
-        """
-        self._file_path = value
-        return self._file_path
 
     @property
     def config(self) -> dict:
@@ -73,29 +51,8 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
             stack.pop_all()
 
     @abc.abstractmethod
-    def preprocess(self, content: Any) -> str:
-        """Preprocess config before saving to file.
-
-        Args:
-            content (Any): Content to preprocess
-
-        Returns:
-            str: Content to write to file
-
-        """
-
-    @abc.abstractmethod
-    def save(self, content: Any) -> Path:
-        """Save content to file.
-
-        Args:
-            config (Any): Content to save
-
-        """
-        content = self.preprocess(content)
-        with AtomicSaver(str(self.file_path), text_mode=True) as file:
-            file.write(content)
-        return self.file_path
+    def save(self, content: Any) -> Any:
+        """Method to save config"""
 
     @abc.abstractmethod
     def process(self) -> dict:
@@ -106,12 +63,14 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
 
         """
 
+    @abc.abstractmethod
+    def prepare(self) -> Any:
+        """Method to prepare on enter"""
+
     def __enter__(self) -> dict:
-        if not self.file_path.exists():
-            self.log.debug(f"creating new config file: {self.file_path}")
-            self.file_path.touch()
+        self.prepare()
         with self._handle_cleanup():
-            self.log.debug(f'processing config from {self.file_path}')
+            self.log.debug(f'processing config object')
             self._config = self.process()
         return self._config
 
