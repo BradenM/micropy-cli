@@ -39,6 +39,7 @@ class TestConfig:
         conf.config = {'one': 1}
         assert self.get_file_data(conf) == {'one': 1}
         assert conf.source == conf._source
+        assert conf.config == conf.source.config
         new_cfg = tmp_path / 'newcfg.json'
         conf.source = new_cfg
         assert isinstance(conf.source, config.JSONConfigSource)
