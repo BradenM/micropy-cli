@@ -20,6 +20,7 @@ from pathlib import Path
 
 import requests
 import requirements
+from boltons import setutils
 from cachier import cachier
 from packaging import version
 from requests import exceptions as reqexc
@@ -426,6 +427,9 @@ def merge_dicts(d1: dict, d2: dict):
     """
     for k, v in d2.items():
         if k in d1 and isinstance(d1[k], dict) and isinstance(d2[k], Mapping):
-            merge_dicts(d1[k], d2[k])
+            if isinstance(d1[k], set) and isinstance(d2[k], set):
+                d1[k] = setutils.IndexedSet(d1[k] + d2[k])
+            else:
+                merge_dicts(d1[k], d2[k])
         else:
             d1[k] = d2[k]

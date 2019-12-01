@@ -22,7 +22,7 @@ def mock_mpy(mocker):
     return mock_mp
 
 
-def test_cli_micropy(runner, mocker):
+def test_cli_micropy(runner, mocker, mock_cwd):
     """should execute"""
     result = runner.invoke(cli.cli)
     assert result.exit_code == 0

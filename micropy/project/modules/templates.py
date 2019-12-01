@@ -46,6 +46,8 @@ class TemplatesModule(ProjectModule):
             dict: Current configuration
 
         """
+        _config = self.parent.config.get('config', {})
+        self.enabled = {**self.enabled, **_config}
         return {
             'config': self.enabled
         }
@@ -80,7 +82,6 @@ class TemplatesModule(ProjectModule):
             dict: Project context
 
         """
-        self.parent.config.set('config', self.enabled)
         for tmp in self.provider.templates:
             self.provider.update(tmp, self.parent.path, **self.parent.context.raw)
         return self.parent.context
