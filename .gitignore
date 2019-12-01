@@ -136,3 +136,4 @@ dmypy.json
 .tmontmp/
 
 cov.xml
+test*.xml
