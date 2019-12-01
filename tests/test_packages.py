@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from micropy import packages, utils
+from micropy import packages
 
 
 class TestPackages:

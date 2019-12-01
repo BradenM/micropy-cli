@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
+import shutil
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from tempfile import mkdtemp
 from typing import Any, Callable, List, Optional, Tuple, Union
 
 from micropy import utils
@@ -16,7 +17,7 @@ class PackageDependencySource(DependencySource):
 
     Args:
         package (Package): Package source points too.
-        format_desc (Optional[Callable[..., Any]], optional): Callback to format progress bar description.
+        format_desc: Callback to format progress bar description.
             Defaults to None.
 
     """
@@ -63,13 +64,13 @@ class PackageDependencySource(DependencySource):
             Union[Path, List[Tuple[Path, Path]]]: Root package path or list of files.
 
         """
-        with TemporaryDirectory() as tmp_dir:
-            with self.handle_cleanup():
-                tmp = Path(tmp_dir)
-                path = utils.extract_tarbytes(self.fetch(), tmp)
-                stubs = self.generate_stubs(path)
-                pkg_root = self.get_root(path)
-            return pkg_root or stubs
+        self.tmp_path = Path(mkdtemp())
+        with self.handle_cleanup():
+            path = utils.extract_tarbytes(self.fetch(), self.tmp_path)
+            stubs = self.generate_stubs(path)
+            pkg_root = self.get_root(path)
+        return pkg_root or stubs
 
     def __exit__(self, *args):
+        shutil.rmtree(self.tmp_path, ignore_errors=True)
         return super().__exit__(*args)

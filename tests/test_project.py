@@ -2,11 +2,10 @@
 
 import shutil
 from functools import partial
-from pathlib import Path
 
 import pytest
 
-from micropy import packages, project, utils
+from micropy import project, utils
 from micropy.project import modules
 
 
@@ -240,7 +239,7 @@ class TestPackagesModule:
         proj.add_package('somepkg>=7')
         print(proj.config._config)
         assert proj.config.get('packages.somepkg') == '>=7'
-        assert (proj.data_path / proj.name / 'file.py').exists()
+        assert len(list((proj.data_path / proj.name).iterdir())) > 0
         # Shouldnt allow duplicate pkgs
         res = proj.add_package('somepkg')
         assert res is None
