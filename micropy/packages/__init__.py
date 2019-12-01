@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 
-"""Packages Module."""
+"""Packages Module.
+
+Allows user to address different dependency types (package, module, path,
+pypi, etc.) through a single uniform api.
+
+"""
 
 from pathlib import Path
-from typing import Any, Union, Optional
+from typing import Any, Optional, Union
 
 import requirements
 
@@ -16,6 +21,17 @@ def create_dependency_source(
         requirement: str,
         name: Optional[str] = None,
         **kwargs: Any) -> Union[LocalDependencySource, PackageDependencySource]:
+    """Factory for creating a dependency source object.
+
+    Args:
+        requirement (str): Package name/path/constraints in string form.
+        name (str, optional): Override package name.
+            Defaults to None.
+
+    Returns:
+        Appropriate Dependency Source
+
+    """
     req = next(requirements.parse(str(requirement)))
     if req.local_file:
         path = Path(req.path)
