@@ -2,8 +2,6 @@
 
 import subprocess
 
-import pytest
-
 from micropy.project import checks
 
 

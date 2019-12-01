@@ -14,6 +14,7 @@ from micropy import main, utils
 from micropy.logger import Log
 from micropy.project import Project, modules
 
+
 pass_mpy = click.make_pass_decorator(main.MicroPy, ensure=True)
 
 
