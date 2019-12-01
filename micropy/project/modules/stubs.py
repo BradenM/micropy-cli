@@ -90,7 +90,6 @@ class StubsModule(ProjectModule):
         if not hasattr(self, "_parent"):
             return self._stubs
         try:
-            self.parent.data_path.mkdir(exist_ok=True, parents=True)
             resource = set(
                 self.stub_manager.resolve_subresource(stubs,
                                                       self.parent.data_path))
