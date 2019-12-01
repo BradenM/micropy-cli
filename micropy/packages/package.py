@@ -9,6 +9,13 @@ from packaging.utils import canonicalize_name
 class Package:
 
     def __init__(self, name: str, specs: List[Tuple[str, str]]):
+        """Generic Python Dependency.
+
+        Args:
+            name (str): Name of package
+            specs (List[Tuple[str, str]]): Package constraints.
+
+        """
         self._name = name
         self._specs = specs
 

@@ -14,6 +14,12 @@ from .package import Package
 
 
 class DependencySource(AbstractContextManager):
+    """Base class for managing dependency sources.
+
+    Args:
+        package (Package): package the source points too.
+
+    """
     _ignore_stubs: List[str] = ['setup.py', '__version__', 'test_']
 
     def __init__(self, package: Package):
@@ -33,13 +39,14 @@ class DependencySource(AbstractContextManager):
             stack.pop_all()
 
     def get_root(self, path: Path) -> Optional[Path]:
-        """Determines package root if it has one
+        """Determines package root if it has one.
 
         Args:
             path (Path): Path to check
 
         Returns:
             bool: True if is package
+
         """
         init = next(path.rglob('__init__.py'), None)
         if init:
@@ -55,13 +62,14 @@ class DependencySource(AbstractContextManager):
         Returns:
             List[Tuple[Path, Path]]: List of tuples containing
                  a path to the original file and stub, respectively.
+
         """
         py_files = fileutils.iter_find_files(str(path), patterns='*.py', ignored=self._ignore_stubs)
         stubs = [utils.generate_stub(f) for f in py_files]
         return stubs
 
     def __enter__(self):
-        """Method to prepare source"""
+        """Method to prepare source."""
 
     def __exit__(self, *args):
         return super().__exit__(*args)
