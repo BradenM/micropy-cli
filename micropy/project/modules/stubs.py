@@ -90,14 +90,11 @@ class StubsModule(ProjectModule):
         if not hasattr(self, "_parent"):
             return self._stubs
         try:
-            self.parent.data_path.mkdir(exist_ok=True, parents=True)
             resource = set(
                 self.stub_manager.resolve_subresource(stubs,
                                                       self.parent.data_path))
         except OSError as e:
-            msg = "Failed to Create Stub Links!"
-            exc = StubError(message=msg)
-            self.log.error(str(e), exception=exc)
+            self.log.error("Failed to Create Stub Links!", exception=e)
             sys.exit(1)
         else:
             return resource

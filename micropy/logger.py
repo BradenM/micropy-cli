@@ -223,8 +223,9 @@ class ServiceLog:
         :rtype: method
 
         """
+        bold = kwargs.pop('bold', (exception != None))
         self.echo(msg, log="error", title_color='red', title_bold=True,
-                  fg='red', accent='red', **kwargs)
+                  fg='red', accent='red', bold=bold, **kwargs)
         if exception:
             return self.exception(exception)
 
@@ -249,10 +250,13 @@ class ServiceLog:
         :rtype: method
 
         """
+        name = type(error).__name__
+        msg = f"{name}: {str(error)}"
         return self.echo(
-            str(error),
+            msg,
             log="exception",
-            title_color='red', title_bold=True, **kwargs)
+            title_color='red',
+            fg='red', accent='red', ** kwargs)
 
     def success(self, msg, **kwargs):
         """Prints message with success formatting.
