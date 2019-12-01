@@ -75,4 +75,4 @@ class DependencySource(AbstractContextManager):
         return super().__exit__(*args)
 
     def __repr__(self):
-        return f"<{self.__class__} {self.package}>"
+        return f"<{self.__class__.__name__} {self.package}>"

@@ -2,8 +2,8 @@
 
 """Packages Module.
 
-Allows user to address different dependency types (package, module, path,
-pypi, etc.) through a single uniform api.
+Allows user to address different dependency types (package, module,
+path, pypi, etc.) through a single uniform api.
 
 """
 
