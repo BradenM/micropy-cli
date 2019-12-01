@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from micropy import project
+from micropy import packages, project, utils
 from micropy.project import modules
 
 
@@ -99,7 +99,7 @@ def get_context():
     return _get_context
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def test_project(micropy_stubs, mock_cwd, tmp_path, get_module):
     def _test_project(mods="", path=None):
         mp = micropy_stubs()
@@ -227,42 +227,56 @@ class TestStubsModule:
 
 class TestPackagesModule:
 
-    @pytest.fixture
-    def test_package(self, mocker, mock_pkg, test_project):
-        proj, mp = next(test_project('reqs'))
+    @pytest.fixture()
+    def test_package(self, mocker, tmp_path, mock_pkg, test_project):
+        new_path = tmp_path / 'somepath'
+        proj, mp = next(test_project('reqs', path=new_path))
         proj.create()
         return proj
 
-    def test_add_package(self, test_package, mock_cwd):
-        proj = test_package
+    def test_add_package(self, test_project, mock_pkg, tmp_path):
+        proj, mp = next(test_project('reqs', path=(tmp_path / 'nicenewpath')))
+        proj.create()
         proj.add_package('somepkg>=7')
         print(proj.config._config)
         assert proj.config.get('packages.somepkg') == '>=7'
+        assert (proj.data_path / proj.name / 'file.py').exists()
         # Shouldnt allow duplicate pkgs
         res = proj.add_package('somepkg')
         assert res is None
         assert proj.config.get('packages.somepkg') == '>=7'
 
-    @pytest.mark.parametrize(
-        'glob_val,expect',
-        [
-            ([Path("SomePkg/__init__.py")], "copytree"),
-            (None, "move")
-        ]
-    )
-    def test_package_types(self, mocker, test_package, glob_val, expect):
-        proj = test_package
-        mock_shutil = mocker.patch.object(modules.packages, "shutil")
-        mocker.patch.object(modules.packages.utils, 'generate_stub',
-                            return_value=(Path("mod.py"), Path("mod.pyi")))
-        if glob_val:
-            mock_rglob = mocker.patch.object(modules.packages.Path, "rglob")
-            mock_rglob.return_value = iter(glob_val)
-        proj.add_package(f'some_module_{expect}')
-        getattr(mock_shutil, expect).assert_called()
+    def test_package_error(self, test_project, mock_pkg, mocker, tmp_path, caplog):
+        utils.extract_tarbytes.side_effect = [ValueError, Exception]
+        path = tmp_path / 'newdir'
+        proj, mp = next(test_project('reqs', path=path))
+        proj.create()
+        pkgs = proj.add_package('newpackage')
+        assert proj.config.get('packages.newpackage', None) is None
+        assert 'newpackage' not in pkgs.keys()
+        assert "Is it available on PyPi?" in caplog.text
+        pkgs = proj.add_package('anothaone')
+        assert 'anothaone' not in pkgs.keys()
+        assert 'An error occured during the installation' in caplog.text
 
     def test_add_dev_package(self, mocker, mock_pkg, test_project):
         proj, mp = next(test_project('reqs,dev-reqs'))
         proj.create()
         proj.add_package('somepkg')
         proj.add_package('anotha_pkg', dev=True)
+
+    # def test_add_package_path(self, test_project, mock_pkg, tmp_path):
+    #     proj, mp = next(test_project('reqs'))
+    #     proj.create()
+    #     # package
+    #     proj.add_package(mock_pkg)
+    #     name = mock_pkg.name
+    #     exp_path = 'src' / 'lib' / name
+    #     assert proj.config.get(f'packages.{name}') == str(exp_path)
+    #     assert (proj.path / exp_path).exists()
+    #     # file
+    #     pyth_file = tmp_path / 'coollib.py'
+    #     proj.add_package(pyth_file)
+    #     exp_path = 'src' / 'lib' / 'coollib.py'
+    #     proj.config.get(f'packages.coollib') == str(exp_path)
+    #     assert (proj.path / exp_path).exists()
