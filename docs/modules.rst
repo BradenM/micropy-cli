@@ -14,3 +14,4 @@ API Reference
    micropy.utils
    micropy.config
    micropy.config.config_source
+   micropy.packages
