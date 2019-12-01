@@ -16,25 +16,6 @@ def mock_requests(mocker):
 
 
 @pytest.fixture
-def mock_pkg(mocker, tmp_path):
-    """return mock package"""
-    tmp_pkg = tmp_path / 'tmp_pkg'
-    tmp_pkg.mkdir()
-    (tmp_pkg / 'module.py').touch()
-    (tmp_pkg / 'file.py').touch()
-    mock_tarbytes = mocker.patch.object(
-        modules.packages.utils, 'extract_tarbytes')
-    mocker.patch.object(
-        modules.packages.utils, 'get_package_meta')
-    mocker.patch.object(
-        modules.packages.utils, 'get_url_filename')
-    mocker.patch.object(
-        modules.packages.utils, 'stream_download')
-    mock_tarbytes.return_value = tmp_pkg
-    return tmp_pkg
-
-
-@pytest.fixture
 def get_module():
     def _get_module(names, mp, **kwargs):
         _templates = list(modules.TemplatesModule.TEMPLATES.keys())
@@ -252,7 +233,7 @@ class TestPackagesModule:
         proj.create()
         return proj
 
-    def test_add_package(self, test_package):
+    def test_add_package(self, test_package, mock_cwd):
         proj = test_package
         proj.add_package('somepkg>=7')
         print(proj.config._config)

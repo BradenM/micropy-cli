@@ -180,3 +180,22 @@ def mock_checks(mocker):
     type(m_run).stdout = mocker.PropertyMock(
         return_value="\n".join(mock_vscode_exts))
     return m_run
+
+
+@pytest.fixture
+def mock_pkg(mocker, tmp_path):
+    """return mock package"""
+    tmp_pkg = tmp_path / 'tmp_pkg'
+    tmp_pkg.mkdir()
+    (tmp_pkg / 'module.py').touch()
+    (tmp_pkg / 'file.py').touch()
+    mock_tarbytes = mocker.patch.object(
+        micropy.project.modules.packages.utils, 'extract_tarbytes')
+    mocker.patch.object(
+        micropy.project.modules.packages.utils, 'get_package_meta')
+    mocker.patch.object(
+        micropy.project.modules.packages.utils, 'get_url_filename')
+    mocker.patch.object(
+        micropy.project.modules.packages.utils, 'stream_download')
+    mock_tarbytes.return_value = tmp_pkg
+    return tmp_pkg
