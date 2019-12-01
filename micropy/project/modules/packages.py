@@ -3,13 +3,14 @@
 """Project Packages Module."""
 
 import shutil
-import tempfile
-from json import JSONDecodeError
 from pathlib import Path
+from typing import Any, Union
 
-import requirements
+from boltons import fileutils
 
 from micropy import utils
+from micropy.packages import (LocalDependencySource, PackageDependencySource,
+                              create_dependency_source)
 from micropy.project.modules import ProjectModule
 
 
@@ -77,38 +78,17 @@ class PackagesModule(ProjectModule):
             'paths': _paths
         }
 
-    def _fetch_package(self, url):
-        """Fetch and stub package at url.
-
-        Args:
-            url (str): URL to fetch
-
-        Returns:
-            Path: path to package
-
-        """
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            tmp_path = Path(tmp_dir)
-            file_name = utils.get_url_filename(url)
-            self.log.debug(f"Fetching package: {file_name}")
-            _file_name = "".join(self.log.iter_formatted(f"$B[{file_name}]"))
-            content = utils.stream_download(
-                url, desc=f"{self.log.get_service()} {_file_name}")
-            pkg_path = utils.extract_tarbytes(content, tmp_path)
-            ignore = ['setup.py', '__version__', 'test_']
-            pkg_init = next(pkg_path.rglob("__init__.py"), None)
-            py_files = [f for f in pkg_path.rglob(
-                "*.py") if not any(i in f.name for i in ignore)]
-            stubs = [utils.generate_stub(f) for f in py_files]
-            if pkg_init:
-                data_path = self.pkg_path / pkg_init.parent.name
-                shutil.rmtree(data_path, ignore_errors=True)
-                shutil.copytree(pkg_init.parent, data_path)
-                return data_path
-            # Iterates over flattened list of stubs tuple
-            file_paths = [(f, (self.pkg_path / f.name)) for f in list(sum(stubs, ()))]
-            for paths in file_paths:
-                shutil.move(*paths)  # overwrite if existing
+    def install_package(self, source: Union[LocalDependencySource, PackageDependencySource]) -> Any:
+        with source as files:
+            if isinstance(files, list):
+                self.log.debug(f"installing {source} as module(s)")
+                # Iterates over flattened list of stubs tuple
+                file_paths = [(f, (self.pkg_path / f.name)) for f in list(sum(files, ()))]
+                for paths in file_paths:
+                    return shutil.move(*paths)  # overwrites if existing
+            self.log.debug(f'installing {source} as package')
+            pkg_path = self.pkg_path / source.package.name
+            return fileutils.copytree(files, pkg_path)
 
     @ProjectModule.hook(dev=False)
     def add_from_file(self, path=None, dev=False, **kwargs):
@@ -138,28 +118,29 @@ class PackagesModule(ProjectModule):
             dict: Dictionary of packages
 
         """
-        pkg = package
-        if isinstance(package, str):
-            pkg = next(requirements.parse(package))
+
+        source = create_dependency_source(package)
+        pkg = source.package
         self.log.info(f"Adding $[{pkg.name}] to requirements...")
-        specs = "".join(next(iter(pkg.specs))) if pkg.specs else "*"
         if self.packages.get(pkg.name, None):
-            self.log.error(f"$[{pkg.name}] is already installed!")
+            self.log.error(f"$[{pkg}] is already installed!")
             self.update()
             return None
-        self.packages[pkg.name] = specs
-        self.parent.config.set(f'{self.name}.{pkg.name}', specs)
+        self.packages[pkg.name] = pkg.pretty_specs
         try:
             self.load()
-        except JSONDecodeError:
+        except ValueError:
             self.log.error(f"Failed to find package $[{pkg.name}]!")
             self.log.error("Is it available on PyPi?")
             self.packages.pop(pkg.name)
+            self.parent.config.pop(f"{self.name}.{pkg}")
         except Exception as e:
-            self.log.error(f"An unknown error occured during the installation of $[{pkg.name}]!",
-                           exec=e)
+            self.log.error(f"An error occured during the installation of $[{pkg.name}]!")
+            self.log.error(str(e))
             self.packages.pop(pkg.name)
+            self.parent.config.pop(f"{self.name}.{pkg}")
         else:
+            self.parent.config.set(f"{self.name}.{pkg}", pkg.pretty_specs)
             self.log.success("Package installed!")
         finally:
             return self.packages
@@ -170,23 +151,22 @@ class PackagesModule(ProjectModule):
         if self.path.exists():
             packages = utils.iter_requirements(self.path)
             for p in packages:
-                spec = "".join(next(iter(p.specs))) if p.specs else "*"
-                self.packages.update({p.name: spec})
-                self.parent.config.set(f'{self.name}.{p.name}', spec)
+                pkg = create_dependency_source(p.line).package
+                self.packages.update({pkg.name: pkg.pretty_specs})
+                self.parent.config.set(f'{self.name}.{pkg.name}', pkg.pretty_specs)
         pkg_keys = set(self.packages.keys())
         pkg_cache = self.parent._get_cache(self.name)
         new_pkgs = pkg_keys.copy()
         if pkg_cache:
             new_pkgs = new_pkgs - set(pkg_cache)
-        pkgs = [(name, s)
-                for name, s in self.packages.items() if name in new_pkgs]
+        new_pkgs = [f"{name}{s if s != '*' else ''}"
+                    for name, s in self.packages.items() if name in new_pkgs]
         if fetch:
-            if pkgs:
+            if new_pkgs:
                 self.log.title("Fetching Requirements")
-            for name, spec in pkgs:
-                meta = utils.get_package_meta(name, spec=spec)
-                tar_url = meta['url']
-                self._fetch_package(tar_url)
+            for req in new_pkgs:
+                source = create_dependency_source(req)
+                self.install_package(source)
         self.update()
         self.parent._set_cache(self.name, list(pkg_keys))
 
