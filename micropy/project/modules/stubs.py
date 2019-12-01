@@ -8,7 +8,6 @@ from typing import List, Sequence, Union
 
 from boltons import setutils
 
-from micropy.exceptions import StubError
 from micropy.project.modules import ProjectModule
 from micropy.stubs import StubManager
 from micropy.stubs.stubs import DeviceStub
@@ -27,6 +26,7 @@ class StubsModule(ProjectModule):
                  stubs: Sequence[DeviceStub] = None):
         self.stub_manager: StubManager = stub_manager
         self._stubs: Sequence[DeviceStub] = stubs or []
+        self.log = None
 
     @property
     def context(self):
@@ -89,6 +89,8 @@ class StubsModule(ProjectModule):
         """
         if not hasattr(self, "_parent"):
             return self._stubs
+        if not self.parent.exists:
+            return self._stubs
         try:
             resource = set(
                 self.stub_manager.resolve_subresource(stubs,
@@ -129,6 +131,7 @@ class StubsModule(ProjectModule):
 
     def create(self):
         """Create stub project files."""
+        self.parent.context.merge(self.context)
         self.log.info(
             f"Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
         return self.load()

@@ -125,6 +125,7 @@ class Project(ProjectModule):
             component (Any): Component to add.
 
         """
+        self.log.debug(f'adding module: {type(component).__name__}')
         self._children.append(component)
         component.parent = self
         component.log = self.log

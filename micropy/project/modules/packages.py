@@ -30,6 +30,7 @@ class PackagesModule(ProjectModule):
         packages = packages or {}
         self.name = "packages"
         self.packages = {**packages}
+        self.log = kwargs.pop('logger', None)
 
     @property
     def path(self):
@@ -118,7 +119,6 @@ class PackagesModule(ProjectModule):
             dict: Dictionary of packages
 
         """
-
         source = create_dependency_source(package)
         pkg = source.package
         self.log.info(f"Adding $[{pkg.name}] to requirements...")
@@ -135,8 +135,9 @@ class PackagesModule(ProjectModule):
             self.packages.pop(pkg.name)
             self.parent.config.pop(f"{self.name}.{pkg}")
         except Exception as e:
-            self.log.error(f"An error occured during the installation of $[{pkg.name}]!")
-            self.log.error(str(e))
+            self.log.error(
+                f"An error occured during the installation of $[{pkg.name}]!",
+                exception=e)
             self.packages.pop(pkg.name)
             self.parent.config.pop(f"{self.name}.{pkg}")
         else:
@@ -165,7 +166,9 @@ class PackagesModule(ProjectModule):
             if new_pkgs:
                 self.log.title("Fetching Requirements")
             for req in new_pkgs:
-                source = create_dependency_source(req)
+                def format_desc(p): return "".join(self.log.iter_formatted(f"$B[{p}]"))
+                source = create_dependency_source(
+                    req, format_desc=lambda p: f"{self.log.get_service()} {format_desc(p)}")
                 self.install_package(source)
         self.update()
         self.parent._set_cache(self.name, list(pkg_keys))
@@ -177,6 +180,8 @@ class PackagesModule(ProjectModule):
     def update(self):
         """Dumps packages to file at path."""
         self.parent.config.set(self.name, self.packages)
+        ctx_paths = self.parent.context.get('paths')
+        ctx_paths.add(self.pkg_path)
         if not self.path.exists():
             self.path.touch()
         pkgs = [(f"{name}{spec}" if spec and spec != "*" else name)
