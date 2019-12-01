@@ -70,9 +70,10 @@ class TestPackages:
                 assert mock_source.pkg.name == files.name
             else:
                 assert isinstance(files, list)
-                file_one = files[0]
-                assert file_one[0].name == 'file.py'
-                assert file_one[1].name == 'file.pyi'
+                file_names = [(p.name, s.name) for p, s in files]
+                file_names = list(sum(file_names, ()))
+                assert sorted(['file.py', 'file.pyi', 'module.py',
+                               'module.pyi']) == sorted(file_names)
 
     def test_package_path(self, mock_source_path):
         source = packages.create_dependency_source(f'-e {mock_source_path.pkg}')
