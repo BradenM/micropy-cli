@@ -3,7 +3,6 @@
 
 from pathlib import Path
 
-
 from .package import Package
 from .source import DependencySource
 
