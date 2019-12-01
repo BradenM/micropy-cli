@@ -30,10 +30,13 @@ class Project(ProjectModule):
         self.info_path: Path = self.path / 'micropy.json'
         self.cache_path: Path = self.data_path / '.cache'
         self._context = Config(source_format=DictConfigSource)
-
         self.name: str = name or self.path.name
+        default_config = {
+            'name': self.name,
+            'local-lib-path': 'src/lib'
+        }
         self._config: Config = Config(self.info_path,
-                                      default={'name': self.name},
+                                      default=default_config,
                                       should_sync=lambda *a: self.exists)
         self.log: ServiceLog = Log.add_logger(self.name, show_title=False)
 

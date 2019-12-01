@@ -10,6 +10,7 @@ clean-build: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/
 	rm -fr .eggs/
+	rm -fr pip-wheel-metadata/
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
@@ -23,9 +24,10 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
-	rm -fr .pytest_cache
+	find . -name '.pytest_cache' -exec rm -fr {} +
 	rm -f .testmondata
 	rm -rf .tmontmp
+	rm cov.xml test_log.xml
 
 lint: ## check style with flake8
 	flake8 micropy tests --config=setup.cfg
