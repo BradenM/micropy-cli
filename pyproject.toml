@@ -76,6 +76,7 @@ tox-gh-actions = "^0.3.0"
 mypy = "^0.750.0"
 doc8 = "^0.8.0"
 docformatter = "^1.3"
+codacy-coverage = "^1.3"
 
 [tool.dephell.main]
 from = {format = "poetry", path="pyproject.toml"}
