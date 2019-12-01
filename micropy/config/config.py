@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from copy import deepcopy
-from typing import Any, Callable, Optional, Type, Union
+from typing import Any, Callable, Optional, Sequence, Tuple, Type, Union
 
 from boltons import iterutils
 
@@ -105,6 +105,28 @@ class Config:
             return self.sync()
         return self.config
 
+    def parse_key(self, key: str) -> Tuple[Sequence[str], str]:
+        """Parses dot-notation key.
+
+        Splits it into a path and 'final key'
+        object.
+
+        Example:
+            >>> self.parse_key('item.subitem.value')
+            (('item', 'subitem'), 'value')
+
+        Args:
+            key (str): key in dot notation
+
+        Returns:
+            Tuple[Sequence[str], str]: Parsed key
+
+        """
+        full_path = tuple(i for i in key.split('.'))
+        path = full_path[:-1]
+        p_key = full_path[-1]
+        return (path, p_key)
+
     def get(self, key: str, default: Any = None) -> Any:
         """Retrieve config value.
 
@@ -132,11 +154,27 @@ class Config:
             Any: Updated config
 
         """
-        full_path = tuple(i for i in key.split('.'))
-        path = full_path[:-1]
-        p_key = full_path[-1]
+        path, target = self.parse_key(key)
         remapped = iterutils.remap(self._config, lambda p, k, v: (
-            k, value) if p == path and k == p_key else (k, v))
+            k, value) if p == path and k == target else (k, v))
         self._config = remapped
         self.log.debug(f"set config value [{key}] -> {value}")
         return self.sync()
+
+    def pop(self, key: str) -> Any:
+        """Delete and return value at key.
+
+        Args:
+            key (str): Key to pop.
+
+        Returns:
+            Any: Popped value.
+
+        """
+        path, target = self.parse_key(key)
+        value = self.get(key)
+        remapped = iterutils.remap(self._config, lambda p, k,
+                                   v: False if p == path and k == target else True)
+        self._config = remapped
+        self.log.debug(f"popped config value {value} <- [{key}]")
+        return value
