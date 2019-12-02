@@ -54,6 +54,11 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
+cov.xml
+test_log.xml
+.testmondata
+.tmontmp/
+
 
 # Translations
 *.mo
@@ -130,9 +135,3 @@ dmypy.json
 !micropy/project/template/**/*
 !micropy/lib
 !tests/data/project_test/**/*
-
-.testmondata
-
-.tmontmp/
-
-cov.xml
