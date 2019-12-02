@@ -9,7 +9,8 @@ from typing import Any, Union
 from boltons import fileutils
 
 from micropy import utils
-from micropy.packages import (LocalDependencySource, PackageDependencySource,
+from micropy.packages import (LocalDependencySource, Package,
+                              PackageDependencySource,
                               create_dependency_source)
 from micropy.project.modules import ProjectModule
 
@@ -84,6 +85,9 @@ class PackagesModule(ProjectModule):
 
     def install_package(self, source: Union[LocalDependencySource, PackageDependencySource]) -> Any:
         with source as files:
+            if source.is_local:
+                self.log.debug(f"installing {source} as local")
+                return
             if isinstance(files, list):
                 self.log.debug(f"installing {source} as module(s)")
                 # Iterates over flattened list of stubs tuple
@@ -106,7 +110,7 @@ class PackagesModule(ProjectModule):
         """
         reqs = utils.iter_requirements(self.path)
         for req in reqs:
-            self.add_package(req, fetch=True)
+            self.add_package(req)
         return reqs
 
     @ProjectModule.hook()
@@ -122,7 +126,8 @@ class PackagesModule(ProjectModule):
             dict: Dictionary of packages
 
         """
-        source = create_dependency_source(package)
+        self.log.debug(f"adding new dependency: {package}")
+        source = create_dependency_source(package, **kwargs)
         pkg = source.package
         self.log.info(f"Adding $[{pkg.name}] to requirements...")
         if self.packages.get(pkg.name, None):
@@ -132,19 +137,19 @@ class PackagesModule(ProjectModule):
         self.packages[pkg.name] = pkg.pretty_specs
         try:
             self.load()
-        except ValueError:
+        except ValueError as e:
             self.log.error(f"Failed to find package $[{pkg.name}]!")
-            self.log.error("Is it available on PyPi?")
+            self.log.error("Is it available on PyPi?", exception=e)
             self.packages.pop(pkg.name)
-            self.parent.config.pop(f"{self.name}.{pkg}")
+            self.parent.config.pop(f"{self.name}.{pkg.name}")
         except Exception as e:
             self.log.error(
                 f"An error occured during the installation of $[{pkg.name}]!",
                 exception=e)
             self.packages.pop(pkg.name)
-            self.parent.config.pop(f"{self.name}.{pkg}")
+            self.parent.config.pop(f"{self.name}.{pkg.name}")
         else:
-            self.parent.config.set(f"{self.name}.{pkg}", pkg.pretty_specs)
+            self.parent.config.set(f"{self.name}.{pkg.name}", pkg.pretty_specs)
             self.log.success("Package installed!")
         finally:
             return self.packages
@@ -163,15 +168,17 @@ class PackagesModule(ProjectModule):
         new_pkgs = pkg_keys.copy()
         if pkg_cache:
             new_pkgs = new_pkgs - set(pkg_cache)
-        new_pkgs = [f"{name}{s if s != '*' else ''}"
-                    for name, s in self.packages.items() if name in new_pkgs]
+        new_packages = [Package.from_text(name, spec)
+                        for name, spec in self.packages.items() if name in new_pkgs]
         if fetch:
-            if new_pkgs:
+            if new_packages:
                 self.log.title("Fetching Requirements")
-            for req in new_pkgs:
+            for req in new_packages:
                 def format_desc(p): return "".join(self.log.iter_formatted(f"$B[{p}]"))
                 source = create_dependency_source(
-                    req, format_desc=lambda p: f"{self.log.get_service()} {format_desc(p)}")
+                    str(req),
+                    name=req.name,
+                    format_desc=lambda p: f"{self.log.get_service()} {format_desc(p)}")
                 self.install_package(source)
         self.update()
         self.parent._set_cache(self.name, list(pkg_keys))
@@ -187,12 +194,13 @@ class PackagesModule(ProjectModule):
         ctx_paths.add(self.pkg_path)
         if not self.path.exists():
             self.path.touch()
-        pkgs = [(f"{name}{spec}" if spec and spec != "*" else name)
-                for name, spec in self.packages.items()]
+        pkgs = [str(Package.from_text(name, spec)) for name, spec in self.packages.items()]
+        self.log.debug(f'dumping to {self.path.name}')
         with self.path.open('r+') as f:
             content = [c.strip() for c in f.readlines() if c.strip() != '']
             _lines = sorted(set(pkgs) | set(content))
             lines = [l + "\n" for l in _lines]
+            self.log.debug(f"dumping: {lines}")
             f.seek(0)
             f.writelines(lines)
 

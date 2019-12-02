@@ -20,7 +20,8 @@ mock_vscode_exts = [
 
 
 @pytest.fixture(autouse=True)
-def cleanup_data():
+def cleanup_data(mocker):
+    mocker.resetall()
     try:
         micropy.utils.ensure_valid_url.clear_cache()
         micropy.stubs.source.StubRepo.repos = set()
@@ -181,18 +182,19 @@ def mock_checks(mocker):
 @pytest.fixture
 def mock_pkg(mocker, tmp_path):
     """return mock package"""
+    from micropy import packages
     tmp_pkg = tmp_path / 'tmp_pkg'
     tmp_pkg.mkdir()
     (tmp_pkg / 'module.py').touch()
     (tmp_pkg / 'file.py').touch()
     mock_tarbytes = mocker.patch.object(
-        micropy.project.modules.packages.utils, 'extract_tarbytes')
+        packages.source_package.utils, 'extract_tarbytes')
     mock_meta = mocker.patch.object(
-        micropy.project.modules.packages.utils, 'get_package_meta')
+        packages.source_package.utils, 'get_package_meta')
     mocker.patch.object(
-        micropy.project.modules.packages.utils, 'get_url_filename')
+        packages.source_package.utils, 'get_url_filename')
     mocker.patch.object(
-        micropy.project.modules.packages.utils, 'stream_download')
+        packages.source_package.utils, 'stream_download')
     mock_tarbytes.return_value = tmp_pkg
     mock_meta.return_value = {'url': 'http://realurl.com'}
     return tmp_pkg
