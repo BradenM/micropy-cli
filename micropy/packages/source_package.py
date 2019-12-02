@@ -61,7 +61,7 @@ class PackageDependencySource(DependencySource):
         root will be returned.
 
         Returns:
-            Union[Path, List[Tuple[Path, Path]]]: Root package path or list of files.
+            Root package path or list of files.
 
         """
         self.tmp_path = Path(mkdtemp())

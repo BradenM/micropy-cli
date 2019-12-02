@@ -21,14 +21,13 @@ class TestPackages:
             (mock_pkg / '__init__.py').touch()
         return self.MockSource(mock_pkg, request.param)
 
-    @pytest.fixture(params=[True, False, None], ids=['package', 'module', 'dir'])
+    @pytest.fixture(params=[True, False], ids=['package', 'module'])
     def mock_source_path(self, request, tmp_path):
         path = (tmp_path / 'file.py')
-        pkg = path
         if request.param is True:
             pkg = tmp_path
             path = (tmp_path / '__init__.py')
-        if request.param is None:
+        else:
             pkg = tmp_path
         path.touch()
         return self.MockSource(pkg, request.param)
@@ -47,11 +46,18 @@ class TestPackages:
     @pytest.mark.parametrize(
         'requirement,expect',
         [
-            (['picoweb'], ['picoweb', '*']),
-            (['picoweb==^7.1'], ['picoweb', '==^7.1']),
-            (['BlynkLib==0.0.0'], ['blynklib', '==0.0.0']),
-            (['-e /foobar/somepkg', 'somepackage'], ['somepackage', '*']),
-            (['-e /foobar/somepkg'], ['somepkg', '*']),
+            (['picoweb'], ['picoweb', '*', 'picoweb']),
+            (['picoweb==^7.1'], ['picoweb', '==^7.1', 'picoweb==^7.1']),
+            (['BlynkLib==0.0.0'], ['blynklib', '==0.0.0', 'blynklib==0.0.0']),
+            (
+                ['-e /foobar/somepkg', 'somepackage'],
+                ['somepackage',
+                    '-e /foobar/somepkg', '-e /foobar/somepkg']
+            ),
+            (
+                ['-e /foobar/somepkg'],
+                ['somepkg', '-e /foobar/somepkg', '-e /foobar/somepkg']
+            ),
 
         ]
     )
@@ -60,6 +66,7 @@ class TestPackages:
         pkg = source.package
         assert pkg.name == expect[0]  # name
         assert pkg.pretty_specs == expect[1]  # specs
+        assert str(pkg) == expect[2]  # full name ()
 
     def test_package_source(self, mock_source):
         def format_desc(x): return f"desc{x}"
@@ -83,8 +90,4 @@ class TestPackages:
                 assert files.is_dir()
             if mock_source_path.has_init is False:
                 # is module
-                assert files.is_file()
-            if mock_source_path.has_init is None:
-                # is just a dir
                 assert files.is_dir()
-                assert files == source._path

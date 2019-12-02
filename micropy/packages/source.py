@@ -23,6 +23,7 @@ class DependencySource(AbstractContextManager):
     _ignore_stubs: List[str] = ['setup.py', '__version__', 'test_']
 
     def __init__(self, package: Package):
+        self.is_local = False
         self._package = package
         self.log: ServiceLog = Log.add_logger(repr(self))
 
