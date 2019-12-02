@@ -2,6 +2,7 @@
 
 import abc
 import inspect
+from copy import deepcopy
 from functools import wraps
 from typing import Any, Callable, List, Optional, Tuple, Type, TypeVar, Union
 
@@ -11,8 +12,8 @@ from micropy.logger import Log, ServiceLog
 
 """Project Packages Module Abstract Implementation"""
 
-T = TypeVar('T', bound=Callable[..., Any])
-Proxy = TypeVar('Proxy', bound=List[Tuple[Callable[..., Any], str]])
+T = TypeVar('T')
+ProxyItem = List[Tuple[T, str]]
 
 
 class ProjectModule(metaclass=abc.ABCMeta):
@@ -130,18 +131,16 @@ class HookProxy:
     """
 
     def __init__(self, name: str):
-        self.methods: List[Tuple[Callable[..., Any], str]] = []
+        self.methods: List[ProxyItem[Callable[..., Any]]] = []
         self.instances: List[Type[ProjectModule]] = []
         self._name: str = name
         self.log: ServiceLog = Log.add_logger(str(self))
 
     def __call__(self, *args, **kwargs):
-        for method, name in self.methods:
-            _name = self.get_name(method, kwargs)
-            if name == _name:
-                instance = self._get_instance(method)
-                self.log.debug(f"{self._name} proxied to [{_name}@{instance}]")
-                return getattr(instance, method.__name__)(*args, **kwargs)
+        proxy_kwargs = deepcopy(kwargs)
+        proxy = self.resolve_proxy(**proxy_kwargs)
+        if proxy:
+            return getattr(*proxy)(*args, **kwargs)
 
     def __str__(self):
         name = f"HookProxy({self._name})"
@@ -150,6 +149,32 @@ class HookProxy:
     def __repr__(self):
         name = f"HookProxy(name={self._name}, methods=[{self.methods}])"
         return name
+
+    def resolve_proxy(self, **kwargs: Any) -> (Type[ProjectModule], str):
+        """Resolves appropriate instance and method to proxy to.
+
+        If additional kwargs are provided and a proxy is not found,
+        the function will continue to remove one kwarg and
+        recurse into itself until either a match is found or it runs
+        out of kwargs.
+
+        Returns:
+            Instance and method name if resolved, otherwise None.
+
+        """
+        proxy_kwargs = deepcopy(kwargs)
+        for method, name in self.methods:
+            _name = self.get_name(method, proxy_kwargs)
+            if name == _name:
+                instance = self._get_instance(method)
+                self.log.debug(f"{self._name} proxied to [{_name}@{instance}]")
+                return (instance, method.__name__)
+        if proxy_kwargs:
+            self.log.debug(
+                f'could not resolve proxy: {self._name}[{proxy_kwargs}], broadening search...')
+            proxy_kwargs.popitem()
+            return self.resolve_proxy(**proxy_kwargs)
+        return None
 
     def _get_instance(self, attr: Callable[..., Any]) -> Optional[Type[ProjectModule]]:
         """Retrieves instance from attribute.
@@ -181,7 +206,7 @@ class HookProxy:
         self.log.debug(f"{self._name} proxied to [property@{instance}]")
         return getattr(instance, self._name)
 
-    def add_method(self, func: Callable[..., Any], **kwargs: Any) -> Proxy:
+    def add_method(self, func: Callable[..., Any], **kwargs: Any) -> ProxyItem[Callable[..., Any]]:
         """Adds method to Proxy.
 
         Any kwargs provided will be used to generate the unique
@@ -189,6 +214,13 @@ class HookProxy:
 
         Args:
             func (Callable): Method to add
+
+        Example:
+            >>> def test_func(arg1, kwarg1=False):
+                    pass
+
+            >>> self.add_method(test_func, {'kwarg1': False})
+            >>> (test_func, '_hook__test_func__kwarg1_False')
 
         Returns:
             Tuple[Callable, str]: Tuple containing method and unique hook name.
