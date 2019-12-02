@@ -36,7 +36,7 @@ def create_dependency_source(
     if req.local_file:
         path = Path(req.path)
         name = name or path.name
-        pkg = Package(name, req.specs)
+        pkg = Package(name, req.specs, path=req.path)
         source = LocalDependencySource(pkg, path)
         return source
     pkg = Package(req.name, req.specs)
