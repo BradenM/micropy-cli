@@ -31,7 +31,7 @@ class Template:
         self.stubs = kwargs.get("stubs", None)
         self.paths = kwargs.get("paths", None)
         self.datadir = kwargs.get("datadir", None)
-        self.local_lib = kwargs.get("local_lib", None)
+        self.local_paths = kwargs.get("local_paths", None)
 
     @property
     def context(self):
@@ -161,8 +161,8 @@ class CodeTemplate(Template):
         if self.datadir:
             paths = [str(p.relative_to(self.datadir.parent))
                      for p in self.paths]
-        if self.local_lib:
-            paths.append(str(self.local_lib))
+        if self.local_paths:
+            paths.extend(str(s) for s in self.local_paths)
         stub_paths = json.dumps(paths)
         ctx = {
             "stubs": self.stubs or [],
@@ -186,10 +186,11 @@ class PylintTemplate(Template):
         paths = self.paths
         if self.datadir:
             paths = [p.relative_to(self.datadir.parent) for p in self.paths]
+        if self.local_paths:
+            paths.extend(str(p) for p in self.local_paths)
         ctx = {
             "stubs": self.stubs or [],
-            "paths": paths or [],
-            "local_lib": self.local_lib
+            "paths": paths or []
         }
         return ctx
 

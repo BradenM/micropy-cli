@@ -5,6 +5,7 @@ from typing import List, Optional, Tuple
 
 import requirements
 from packaging.utils import canonicalize_name
+from pathlib import Path
 
 
 class Package:
@@ -21,10 +22,15 @@ class Package:
         self._name = name
         self._specs = specs
         self._path = path
+        self.editable = (self._path is not None)
 
     @property
     def name(self) -> str:
         return canonicalize_name(self._name)
+
+    @property
+    def path(self) -> Path:
+        return Path(self._path)
 
     @property
     def full_name(self) -> str:

@@ -42,7 +42,6 @@ def get_config():
         _mods = {
             'base': {
                 'name': name,
-                'local-lib-path': 'src/lib'
             },
             'stubs': {
                 'stubs': {s.name: s.stub_version for s in stubs}
@@ -92,7 +91,6 @@ def get_context():
         if 'reqs' in mods and 'stubs' in mods:
             _ctx = _context['stubs'].copy()
             _ctx['paths'].extend(_context['reqs']['paths'])
-            _ctx['local_lib'] = Path('src/lib')
             return _ctx
         context = {}
         for m in mods:
@@ -181,7 +179,7 @@ class TestProject:
     def test_config(self, test_project, get_config,  mods):
         test_proj, mp = next(test_project(mods))
         expect_config = get_config(mods, stubs=list(mp.stubs)[:2])
-        assert test_proj.config._config == {'name': 'NewProject', 'local-lib-path': 'src/lib'}
+        assert test_proj.config._config == {'name': 'NewProject'}
         test_proj.create()
         assert test_proj.config._config == expect_config
 

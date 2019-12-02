@@ -91,3 +91,4 @@ class TestPackages:
             if mock_source_path.has_init is False:
                 # is module
                 assert files.is_dir()
+                assert files == source.package.path
