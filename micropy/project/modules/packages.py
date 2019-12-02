@@ -76,11 +76,13 @@ class PackagesModule(ProjectModule):
 
         """
         _paths = set(self.parent.context.get('paths', set()))
-        _local_lib = self.parent.config.get('local-lib-path', 'src/lib')
         _paths.add(self.pkg_path)
+        _local_paths = set(self.parent.context.get('local_paths', set()))
+        pkgs = [Package.from_text(n, s) for n, s in self.packages.items()]
+        _local_paths.update([p.path for p in pkgs if p.editable])
         return {
             'paths': _paths,
-            'local_lib': Path(_local_lib)
+            'local_paths': _local_paths
         }
 
     def install_package(self, source: Union[LocalDependencySource, PackageDependencySource]) -> Any:

@@ -33,7 +33,6 @@ class Project(ProjectModule):
         self.name: str = name or self.path.name
         default_config = {
             'name': self.name,
-            'local-lib-path': 'src/lib'
         }
         self._config: Config = Config(self.info_path,
                                       default=default_config,
