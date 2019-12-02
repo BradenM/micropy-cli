@@ -37,3 +37,15 @@ jobs:
               env:
                   CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
               run: poetry run tox
+
+            - name: Report Results
+              if: always()
+              shell: bash
+              run: |
+                  curl "https://api.check-run-reporter.com/api/v1/submissions" \
+                   --user token:${{ secrets.REPORTER_TOKEN }} \
+                   -X POST \
+                   -F report=@"test_log.xml" \
+                   -F label="Unit Tests" \
+                   -F sha="${{ github.sha }}" \
+                   -F root="$GITHUB_WORKSPACE"
