@@ -21,13 +21,13 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '__pycache__' -exec rm -fr {} +
 
 clean-test: ## remove test and coverage artifacts
-	rm -fr .tox/
-	rm -f .coverage
-	rm -fr htmlcov/
+	- rm -fr .tox/
+	- rm -f .coverage
+	- rm -fr htmlcov/
 	find . -name '.pytest_cache' -exec rm -fr {} +
-	rm -f .testmondata
-	rm -rf .tmontmp
-	rm cov.xml test_log.xml
+	- rm -f .testmondata
+	- rm -rf .tmontmp
+	- rm cov.xml test_log.xml
 
 lint: ## check style with flake8
 	flake8 micropy tests --config=setup.cfg

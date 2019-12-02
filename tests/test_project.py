@@ -4,7 +4,7 @@ import shutil
 
 import pytest
 
-from micropy import project, utils
+from micropy import packages, project
 from micropy.project import modules
 
 
@@ -14,7 +14,10 @@ def mock_requests(mocker):
 
 
 @pytest.fixture
-def get_module():
+def get_module(tmp_path):
+    tmp_reqs = tmp_path / 'requirements.txt'
+    tmp_devreqs = tmp_path / 'dev-requirements.txt'
+
     def _get_module(names, mp, **kwargs):
         _templates = list(modules.TemplatesModule.TEMPLATES.keys())
         mods = {
@@ -245,7 +248,7 @@ class TestStubsModule:
 
 class TestPackagesModule:
 
-    @pytest.fixture()
+    @pytest.fixture
     def test_package(self, mocker, tmp_path, mock_pkg, test_project):
         new_path = tmp_path / 'somepath'
         proj, mp = next(test_project('reqs', path=new_path))
@@ -263,9 +266,12 @@ class TestPackagesModule:
         res = proj.add_package('somepkg')
         assert res is None
         assert proj.config.get('packages.somepkg') == '>=7'
+        # Add from path
+        proj.add_package(f"-e {mock_pkg}", name="MockPack")
+        assert proj.config.get('packages.mockpack') == f'-e {mock_pkg}'
 
     def test_package_error(self, test_project, mock_pkg, mocker, tmp_path, caplog):
-        utils.extract_tarbytes.side_effect = [ValueError, Exception]
+        packages.source_package.utils.extract_tarbytes.side_effect = [ValueError, Exception]
         path = tmp_path / 'newdir'
         proj, mp = next(test_project('reqs', path=path))
         proj.create()
@@ -282,19 +288,3 @@ class TestPackagesModule:
         proj.create()
         proj.add_package('somepkg')
         proj.add_package('anotha_pkg', dev=True)
-
-    # def test_add_package_path(self, test_project, mock_pkg, tmp_path):
-    #     proj, mp = next(test_project('reqs'))
-    #     proj.create()
-    #     # package
-    #     proj.add_package(mock_pkg)
-    #     name = mock_pkg.name
-    #     exp_path = 'src' / 'lib' / name
-    #     assert proj.config.get(f'packages.{name}') == str(exp_path)
-    #     assert (proj.path / exp_path).exists()
-    #     # file
-    #     pyth_file = tmp_path / 'coollib.py'
-    #     proj.add_package(pyth_file)
-    #     exp_path = 'src' / 'lib' / 'coollib.py'
-    #     proj.config.get(f'packages.coollib') == str(exp_path)
-    #     assert (proj.path / exp_path).exists()
