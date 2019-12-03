@@ -241,7 +241,6 @@ class TestStubsModule:
         print(proj.stubs)
 
 
-@pytest.mark.forked
 class TestPackagesModule:
 
     @pytest.fixture

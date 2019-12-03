@@ -291,7 +291,7 @@ version = "1.1.0"
 [[package]]
 category = "main"
 description = "Read metadata from Python packages"
-marker = "python_version < \"3.8\""
+marker = "sys_platform == \"linux\" and python_version < \"3.8\" or python_version < \"3.8\""
 name = "importlib-metadata"
 optional = false
 python-versions = ">=2.7,!=3.0,!=3.1,!=3.2,!=3.3,!=3.4"
@@ -1021,7 +1021,7 @@ version = "1.11.2"
 [[package]]
 category = "main"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-marker = "python_version < \"3.8\""
+marker = "sys_platform == \"linux\" and python_version < \"3.8\" or python_version < \"3.8\""
 name = "zipp"
 optional = false
 python-versions = ">=2.7"
@@ -1031,7 +1031,7 @@ version = "0.6.0"
 more-itertools = "*"
 
 [metadata]
-content-hash = "374d2a6368fc817b3665c428bcf1e8872115efd8909ceeeddb07278ef43184db"
+content-hash = "e335a4702755c62ab83ecd3b76ed9d55e0e924db939b1c909596319ce295b77f"
 python-versions = "^3.6"
 
 [metadata.hashes]
