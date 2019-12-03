@@ -35,8 +35,8 @@ class TemplatesModule(ProjectModule):
             for key in self.enabled:
                 if key in self.templates:
                     self.enabled[key] = True
-            self.provider = TemplateProvider(
-                templates, run_checks=self.run_checks, log=self.log, **kwargs)
+        self.provider = TemplateProvider(
+            self.templates, run_checks=self.run_checks, log=self.log, **kwargs)
 
     @property
     def config(self):
