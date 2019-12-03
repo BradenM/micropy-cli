@@ -35,6 +35,20 @@ class PackagesModule(ProjectModule):
         self.packages = {**packages}
 
     @property
+    def packages(self):
+        _packages = self.parent.config.get(self.name, self._packages)
+        return _packages
+
+    @packages.setter
+    def packages(self, value):
+        self._packages = self.parent.config.set(self.name, value)
+        self.parent.context.set('paths', self.pkg_path)
+        pkgs = [Package.from_text(n, s) for n, s in self._packages]
+        local_paths = set([p.path for p in pkgs if p.editable])
+        self.parent.context.set('local_paths', local_paths)
+        return self._packages
+
+    @property
     def path(self):
         """Path to requirements file.
 
@@ -77,7 +91,7 @@ class PackagesModule(ProjectModule):
         """
         _paths = set(self.parent.context.get('paths', set()))
         _paths.add(self.pkg_path)
-        _local_paths = set(self.parent.context.get('local_paths', set()))
+        _local_paths = set(self.parent.context.get('local_paths', []))
         pkgs = [Package.from_text(n, s) for n, s in self.packages.items()]
         _local_paths.update([p.path for p in pkgs if p.editable])
         return {
@@ -143,15 +157,12 @@ class PackagesModule(ProjectModule):
             self.log.error(f"Failed to find package $[{pkg.name}]!")
             self.log.error("Is it available on PyPi?", exception=e)
             self.packages.pop(pkg.name)
-            self.parent.config.pop(f"{self.name}.{pkg.name}")
         except Exception as e:
             self.log.error(
                 f"An error occured during the installation of $[{pkg.name}]!",
                 exception=e)
             self.packages.pop(pkg.name)
-            self.parent.config.pop(f"{self.name}.{pkg.name}")
         else:
-            self.parent.config.set(f"{self.name}.{pkg.name}", pkg.pretty_specs)
             self.log.success("Package installed!")
         finally:
             return self.packages
@@ -164,7 +175,6 @@ class PackagesModule(ProjectModule):
             for p in packages:
                 pkg = create_dependency_source(p.line).package
                 self.packages.update({pkg.name: pkg.pretty_specs})
-                self.parent.config.set(f'{self.name}.{pkg.name}', pkg.pretty_specs)
         pkg_keys = set(self.packages.keys())
         pkg_cache = self.parent._get_cache(self.name)
         new_pkgs = pkg_keys.copy()
@@ -191,9 +201,6 @@ class PackagesModule(ProjectModule):
 
     def update(self):
         """Dumps packages to file at path."""
-        self.parent.config.set(self.name, self.packages)
-        ctx_paths = self.parent.context.get('paths')
-        ctx_paths.add(self.pkg_path)
         if not self.path.exists():
             self.path.touch()
         pkgs = [str(Package.from_text(name, spec)) for name, spec in self.packages.items()]
@@ -213,7 +220,7 @@ class DevPackagesModule(PackagesModule):
 
     def __init__(self, path, **kwargs):
         super().__init__(path, **kwargs)
-        self.packages.update({'micropy-cli': '*'})
+        self._packages.update({'micropy-cli': '*'})
         self.name = "dev-packages"
 
     def load(self, *args, **kwargs):
