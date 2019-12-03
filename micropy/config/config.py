@@ -3,7 +3,7 @@
 from copy import deepcopy
 from typing import Any, Callable, Optional, Sequence, Tuple, Type, Union
 
-from boltons import iterutils
+from boltons import dictutils, iterutils
 
 from micropy import utils
 from micropy.logger import Log, ServiceLog
@@ -38,7 +38,8 @@ class Config:
                  should_sync: Optional[Callable[..., bool]] = None):
         self.log: ServiceLog = Log.add_logger(f"{__name__}")
         self.should_sync = should_sync or (lambda *args: True)
-        self._config = deepcopy(default)
+        self._config = dictutils.OrderedMultiDict()
+        self._config.update(deepcopy(default))
         self.format = source_format
         self._source: ConfigSource = self.format(*args)
         self.sync()
@@ -65,7 +66,7 @@ class Config:
 
     @property
     def raw(self) -> dict:
-        return self._config
+        return self._config.todict()
 
     def sync(self) -> dict:
         """Sync in-memory config with disk.
@@ -155,11 +156,20 @@ class Config:
 
         """
         path, target = self.parse_key(key)
+        new_value = value
+        if iterutils.is_collection(value):
+            prev = self.get(key, type(value))
+            if isinstance(value, dict):
+                utils.merge_dicts(new_value, prev)
+            if isinstance(value, set) or isinstance(value, list):
+                new_value = set(value)
+                new_value = prev.union(new_value)
         remapped = iterutils.remap(self._config, lambda p, k, v: (
-            k, value) if p == path and k == target else (k, v))
+            k, new_value) if p == path and k == target else (k, v))
         self._config = remapped
         self.log.debug(f"set config value [{key}] -> {value}")
-        return self.sync()
+        self.sync()
+        return self.get(key)
 
     def pop(self, key: str) -> Any:
         """Delete and return value at key.
