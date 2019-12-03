@@ -32,17 +32,10 @@ class StubsModule(ProjectModule):
     @property
     def context(self):
         """Component stub context."""
-        paths = setutils.IndexedSet()
-        if self.stubs:
-            frozen = [s.frozen for s in self.stubs]
-            fware_mods = [s.firmware.frozen
-                          for s in self.stubs if s.firmware is not None]
-            stub_paths = [s.stubs for s in self.stubs]
-            paths.update(*frozen, *fware_mods, *stub_paths)
-
+        stub_paths = self.get_stub_tree()
         return {
-            "stubs": set(self.stubs),
-            "paths": paths,
+            "stubs": self.stubs,
+            "paths": stub_paths,
             "datadir": self.parent.data_path,
         }
 
@@ -68,17 +61,37 @@ class StubsModule(ProjectModule):
             List[micropy.stubs.Stub]: List of stubs used in project.
 
         """
-        return self._resolve_subresource(self._stubs)
+        _stubs = self.parent.context.get("stubs", self._stubs)
+        return self._resolve_subresource(_stubs)
 
     @stubs.setter
-    def stubs(self, val):
+    def stubs(self, value):
         """Sets project stubs.
 
         Args:
             val (List[micropy.stubs.Stub]): List of stubs to set.
 
         """
-        self._stubs = val
+        self._stubs = value
+        self.parent.context.set("stubs", self._stubs)
+        self.parent.context.set("paths", self.get_stub_tree())
+        self.parent.config.set("stubs", {s.name: s.stub_version for s in self._stubs})
+        return self._stubs
+
+    def get_stub_tree(self) -> Sequence[Path]:
+        """Retrieve and order paths to base stubs and any stubs they depend on.
+
+        Returns:
+            Paths to all stubs project depends on.
+
+        """
+        stub_tree = setutils.IndexedSet()
+        base_stubs = setutils.IndexedSet([s.stubs for s in self.stubs])
+        frozen = [s.frozen for s in self.stubs]
+        fware_mods = [s.firmware.frozen
+                      for s in self.stubs if s.firmware is not None]
+        stub_tree.update(*frozen, *fware_mods, *base_stubs)
+        return stub_tree
 
     def _resolve_subresource(self,
                              stubs: List[DeviceStub]) -> Union[StubManager, Sequence[DeviceStub]]:
@@ -109,9 +122,7 @@ class StubsModule(ProjectModule):
             stub_data (dict): Dict of Stubs
 
         """
-        _data = self.config.get('stubs')
-        data = {**stub_data, **_data}
-        for name, location in data.items():
+        for name, location in stub_data.items():
             _path = Path(location).absolute()
             if Path(_path).exists():
                 yield self.stub_manager.add(_path)
@@ -124,7 +135,7 @@ class StubsModule(ProjectModule):
             stub_list (dict): Dict of Stubs
 
         """
-        stub_data = self.parent.config.get('stubs', default={})
+        stub_data = self.parent.config.get('stubs')
         stubs = list(self._load_stub_data(stub_data=stub_data))
         stubs.extend(self.stubs)
         self.stubs = self._resolve_subresource(stubs)
@@ -139,9 +150,7 @@ class StubsModule(ProjectModule):
 
     def update(self):
         """Update current project stubs."""
-        self.parent.context.set('stubs', self.stubs)
-        self.parent.context.set('paths', self.context.get('paths'))
-        self.parent.config.set('stubs', {s.name: s.stub_version for s in self.stubs})
+        self.stubs = self.load()
         return self.stubs
 
     @ProjectModule.hook()

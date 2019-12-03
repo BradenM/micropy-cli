@@ -81,6 +81,7 @@ class TemplatesModule(ProjectModule):
             dict: Project context
 
         """
+        self.log.debug(f"updating templates with context: {self.parent.context.raw}")
         for tmp in self.provider.templates:
             self.provider.update(tmp, self.parent.path, **self.parent.context.raw)
         return self.parent.context

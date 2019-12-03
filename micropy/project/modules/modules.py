@@ -224,7 +224,7 @@ class HookProxy:
                     pass
 
             >>> self.add_method(test_func, {'kwarg1': False})
-            >>> (test_func, '_hook__test_func__kwarg1_False')
+            (test_func, '_hook__test_func__kwarg1_False')
 
         Returns:
             Tuple[Callable, str]: Tuple containing method and unique hook name.
