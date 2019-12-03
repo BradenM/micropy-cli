@@ -5,9 +5,11 @@ import importlib
 import json
 import shutil
 from pathlib import Path
+from pprint import PrettyPrinter
 
 import pytest
 import questionary
+from boltons import iterutils
 
 import micropy
 
@@ -17,6 +19,11 @@ mock_vscode_exts = [
     # meets req
     'ms-python.python@2019.9.34474'
 ]
+
+
+@pytest.fixture(autouse=True)
+def mock_requests(mocker):
+    mocker.patch('requests.session')
 
 
 @pytest.fixture(autouse=True)
@@ -213,3 +220,29 @@ def pytest_runtest_setup(item):
         previousfailed = getattr(item.parent, "_previousfailed", None)
         if previousfailed is not None:
             pytest.xfail("previous test failed ({})".format(previousfailed.name))
+
+
+class AssertUtils:
+    pp = PrettyPrinter(indent=4, width=20).pprint
+
+    def dict_match_mocks(self, d1):
+        from unittest.mock import Mock
+        # Mocks
+        remapped = iterutils.remap(d1, lambda p, k, v: (
+            k, "MOCKED_VALUE") if isinstance(v, Mock) else True)
+        return remapped
+
+    def dict_equal(self, d1, d2):
+        match_d1 = sorted(self.dict_match_mocks(d1).items())
+        match_d2 = sorted(self.dict_match_mocks(d1).items())
+        print('== IS DICT EQUAL ==')
+        self.pp(match_d1)
+        print("\n----------\n")
+        self.pp(match_d2)
+        print("==============")
+        return match_d1 == match_d2
+
+
+@pytest.fixture
+def utils():
+    return AssertUtils()

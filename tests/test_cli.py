@@ -65,7 +65,6 @@ def test_stub_create(runner, mock_mpy):
 @pytest.mark.parametrize(
     "cliargs,expargs",
     [
-        pytest.param("TestProject", (), marks=pytest.mark.xfail(strict=True)),
         (
             "TestProject -t vscode",
             {
