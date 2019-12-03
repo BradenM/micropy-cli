@@ -4,9 +4,10 @@ import abc
 import inspect
 from copy import deepcopy
 from functools import wraps
-from typing import Any, Callable, List, Optional, Tuple, Type, TypeVar
+from typing import Any, Callable, List, Optional, Tuple, Type, TypeVar, Union
 
 from micropy import utils
+from micropy.config import Config
 from micropy.logger import Log, ServiceLog
 
 """Project Packages Module Abstract Implementation"""
