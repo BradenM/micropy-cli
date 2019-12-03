@@ -34,4 +34,6 @@ jobs:
               run: poetry install -v
 
             - name: Test with Tox
+              env:
+                  CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
               run: poetry run tox
