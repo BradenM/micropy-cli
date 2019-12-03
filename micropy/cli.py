@@ -107,14 +107,15 @@ def init(mpy, path, name=None, template=None):
 @cli.command(short_help="Install Project Requirements")
 @click.argument('packages', nargs=-1)
 @click.option('-d', '--dev', is_flag=True, default=False,
-              help=("Adds Package to dev requirements,"
-                    " but does not install stubs for it."))
+              help=("Add dependency to dev requirements"))
+@click.option('-p', '--path', type=click.Path(exists=True, path_type=str),
+              help=("Add dependency from local path. Can be a file or directory."))
 @pass_mpy
-def install(mpy, packages, dev=False):
+def install(mpy, packages, dev=False, path=None):
     """Install Packages as Project Requirements.
 
     \b
-    Installing a package via micropy will stub it, enabling
+    Install a project dependency while enabling
     intellisense, autocompletion, and linting for it.
 
     \b
@@ -126,17 +127,30 @@ def install(mpy, packages, dev=False):
     added to micropy.json. They are not stubbed.
 
     \b
+    To add a dependency from a path, use the --path option
+    and provide a name for your package:
+        \b
+        $ micropy install --path ./src/lib/mypackage MyCustomPackage
+
+
+    \b
     You can import installed packages just as you would
     on your actual device:
         \b
-        # main.py
-        import <package_name>
+        >>> # main.py
+        >>> import <package_name>
 
     """
     project = mpy.project
     if not project.exists:
         mpy.log.error("You are not currently in an active project!")
         sys.exit(1)
+    if path:
+        pkg_name = next(iter(packages), None)
+        mpy.log.title("Installing Local Package")
+        pkg_path = "-e " + path
+        project.add_package(pkg_path, dev=dev, name=pkg_name)
+        sys.exit(0)
     if not packages:
         mpy.log.title("Installing all Requirements")
         reqs = project.add_from_file(dev=dev)
