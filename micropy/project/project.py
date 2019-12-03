@@ -147,8 +147,6 @@ class Project(ProjectModule):
         child = component(*args, **kwargs, log=self.log, parent=self)
         self._children.append(child)
         self.log.debug(f'adding module: {type(child).__name__}')
-        if hasattr(child, 'context'):
-            self.context.merge(child.context)
 
     def remove(self, component):
         """Removes project component.
