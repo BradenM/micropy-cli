@@ -24,7 +24,7 @@ if os.path.exists(readme_path):
 setup(
     long_description=readme,
     name='micropy-cli',
-    version='3.1.0',
+    version='3.1.1',
     description='Micropython Project Management Tool with VSCode support, Linting, Intellisense, Dependency Management, and more!',
     python_requires='==3.*,>=3.6.0',
     project_urls={"documentation": "https://micropy-cli.readthedocs.io", "homepage": "https://github.com/BradenM/micropy-cli", "repository": "https://github.com/BradenM/micropy-cli"},

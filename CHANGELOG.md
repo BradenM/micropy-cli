@@ -1,4 +1,31 @@
-# [](https://github.com/BradenM/micropy-cli/compare/v3.0.1...v) (2019-11-13)
+## [3.1.1](https://github.com/BradenM/micropy-cli/compare/v3.1.0...v) (2019-12-03)
+
+
+### Bug Fixes
+
+* HookProxy failed to resolve with kwargs ([02f9462](https://github.com/BradenM/micropy-cli/commit/02f9462))
+* **checks:** VSCode check failing on py36 ([31452bb](https://github.com/BradenM/micropy-cli/commit/31452bb))
+* **logger:** Exception formatting ([1274ff8](https://github.com/BradenM/micropy-cli/commit/1274ff8))
+* **package:** Add metadata to pyproject.toml ([bc06d90](https://github.com/BradenM/micropy-cli/commit/bc06d90))
+* **package:** Update Makefile and bump2version to use pyproject ([359a42e](https://github.com/BradenM/micropy-cli/commit/359a42e))
+* **package:** Use Dephell to generate setup.py, Remove Manifest.in ([02b5171](https://github.com/BradenM/micropy-cli/commit/02b5171))
+* **project:** Exception Raised if no Templates are used in Project ([43a09eb](https://github.com/BradenM/micropy-cli/commit/43a09eb)), closes [#78](https://github.com/BradenM/micropy-cli/issues/78)
+* **project:** VSCode check always failed silently ([e488519](https://github.com/BradenM/micropy-cli/commit/e488519))
+
+
+### Features
+
+* Cleanup Log File Formatting ([0a560f4](https://github.com/BradenM/micropy-cli/commit/0a560f4))
+* Use Poetry for Dependency Management ([3cb06f9](https://github.com/BradenM/micropy-cli/commit/3cb06f9))
+
+
+### Performance Improvements
+
+* **size:** Slimmed Package Size ([2dc1a6e](https://github.com/BradenM/micropy-cli/commit/2dc1a6e))
+
+
+
+## [3.1.0](https://github.com/BradenM/micropy-cli/compare/v3.0.1...v) (2019-11-13)
 
 
 ### Bug Fixes
@@ -336,6 +363,3 @@
 * Initial commit ([0030fdd](https://github.com/BradenM/micropy-cli/commit/0030fdd))
 * Project Init and Template Serialization ([e77eef3](https://github.com/BradenM/micropy-cli/commit/e77eef3))
 * Setup Template Files ([9f7b4a4](https://github.com/BradenM/micropy-cli/commit/9f7b4a4))
-
-
-
