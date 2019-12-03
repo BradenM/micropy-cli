@@ -3,14 +3,10 @@
 import shutil
 
 import pytest
+from boltons import setutils
 
 from micropy import packages, project
 from micropy.project import modules
-
-
-@pytest.fixture(autouse=True)
-def mock_requests(mocker):
-    mocker.patch('requests.session')
 
 
 @pytest.fixture
@@ -73,16 +69,17 @@ def get_context():
         _frozen = [s.frozen for s in stubs]
         _fware = [s.firmware.frozen for s in stubs if s.firmware is not None]
         _stub_paths = [s.stubs for s in stubs]
-        _paths = set([*_frozen, *_fware, *_stub_paths])
+        _paths = setutils.IndexedSet([*_frozen, *_fware, *_stub_paths])
         _context = {
             'base': {},
             'stubs': {
                 'stubs': set(stubs),
-                'paths': list(_paths),
+                'paths': _paths,
                 'datadir': data_dir,
             },
             'reqs': {
-                'paths': [pkg_path]
+                'paths': setutils.IndexedSet([pkg_path]),
+                'local_paths': set([])
             }
         }
         if request == 'all':
@@ -90,7 +87,8 @@ def get_context():
         mods = request.split(',')
         if 'reqs' in mods and 'stubs' in mods:
             _ctx = _context['stubs'].copy()
-            _ctx['paths'].extend(_context['reqs']['paths'])
+            _ctx['paths'].update(_context['reqs']['paths'])
+            _ctx['local_paths'] = _context['reqs']['local_paths']
             return _ctx
         context = {}
         for m in mods:
@@ -176,27 +174,26 @@ class TestProject:
         if test_proj._children:
             test_proj.remove(type(test_proj._children[-1]))
 
-    def test_config(self, test_project, get_config,  mods):
+    def test_config(self, test_project, get_config,  mods, utils):
         test_proj, mp = next(test_project(mods))
         expect_config = get_config(mods, stubs=list(mp.stubs)[:2])
         assert test_proj.config._config == {'name': 'NewProject'}
         test_proj.create()
-        assert test_proj.config._config == expect_config
+        assert utils.dict_equal(test_proj.config.raw, expect_config)
+        # should be the same post-load
+        test_proj.load()
+        assert utils.dict_equal(test_proj.config.raw, expect_config)
 
-    def test_context(self, test_project, get_context, mods):
-        test_proj, mp = next(test_project(mods))
+    def test_context(self, test_project, get_context, mods, tmp_path, utils):
+        proj_path = tmp_path / 'tmpprojpath'
+        test_proj, mp = next(test_project(mods, path=proj_path))
+        test_proj.create()
         pkg_path = test_proj.data_path / test_proj.name
         expect_context = get_context(mods, stubs=mp.stubs, pkg_path=pkg_path,
                                      data_dir=test_proj.data_path)
-        for k in expect_context.keys():
-            print("Context Key:", k)
-            try:
-                assert sorted(test_proj.context.get(k, [])) == sorted(
-                    expect_context.get(k, []))
-            except TypeError:
-                assert test_proj.context.get(k, []) == expect_context[k]
-            except AssertionError:
-                assert len(test_proj.context.get(k, [])) == len(expect_context[k])
+        assert utils.dict_equal(test_proj.context.raw, expect_context)
+        test_proj.load()  # should be the same post load
+        assert utils.dict_equal(test_proj.context.raw, expect_context)
 
     def test_load(self, mock_pkg, tmp_project, mock_checks, test_project, mods):
         proj, mp = next(test_project(mods, path=tmp_project))
@@ -244,6 +241,7 @@ class TestStubsModule:
         print(proj.stubs)
 
 
+@pytest.mark.forked
 class TestPackagesModule:
 
     @pytest.fixture

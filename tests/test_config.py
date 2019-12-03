@@ -34,6 +34,15 @@ class TestConfig:
         assert cfg_file.exists()
         assert self.get_file_data(conf) == conf.config
 
+    def test_load_from_file(self, tmp_path):
+        cfg_file = tmp_path / 'conf.json'
+        cfg_file.write_text(json.dumps(self.default))
+        conf = config.Config(cfg_file, default={})
+        assert conf.config == self.default
+        # default should be overriden
+        conf = config.Config(cfg_file, default={'one': 1})
+        assert conf.config.todict().items() == self.default.items()
+
     def test_override(self, test_config, tmp_path):
         conf = test_config
         conf.config = {'one': 1}
