@@ -31,24 +31,24 @@ class TestConfig:
     def test_default(self, tmp_path):
         cfg_file = tmp_path / 'conf.json'
         conf = config.Config(cfg_file, default=self.default)
+        # should not create source file until first change
+        assert not cfg_file.exists()
+        # make change
+        conf.set('one', 2)
         assert cfg_file.exists()
-        assert self.get_file_data(conf) == conf.config
+        assert self.get_file_data(conf) == conf.raw()
 
-    def test_load_from_file(self, tmp_path):
+    def test_load_from_file(self, tmp_path, utils):
         cfg_file = tmp_path / 'conf.json'
         cfg_file.write_text(json.dumps(self.default))
         conf = config.Config(cfg_file, default={})
         assert conf.config == self.default
         # default should be overriden
         conf = config.Config(cfg_file, default={'one': 1})
-        assert conf.config.todict().items() == self.default.items()
+        assert utils.dict_equal(conf.raw(), self.default)
 
     def test_override(self, test_config, tmp_path):
         conf = test_config
-        conf.config = {'one': 1}
-        assert self.get_file_data(conf) == {'one': 1}
-        assert conf.source == conf._source
-        assert conf.config == conf.source.config
         new_cfg = tmp_path / 'newcfg.json'
         conf.source = new_cfg
         assert isinstance(conf.source, config.JSONConfigSource)
@@ -60,23 +60,16 @@ class TestConfig:
     def test_get(self, test_config):
         conf = test_config
         assert conf.get('one') == 1
-        assert conf.get('sub.bool')
-        assert conf.get('sub.items.0') == "foo"
-        assert conf.get('sub.items') == ["foo", "bar"]
+        assert conf.get('sub/bool')
+        assert conf.get('sub/items/0') == "foo"
+        assert conf.get('sub/items') == ["foo", "bar"]
 
     def test_set(self, test_config):
         conf = test_config
         conf.set('one', 1)
-        conf.set('one.sub.items.0', "foobar")
+        conf.set('one/sub/items.0', "foobar")
         data = json.loads(conf.source.file_path.read_text())
         assert data == conf.config
-
-    def test_should_sync(self, tmp_path):
-        cfg_file = tmp_path / 'conf.json'
-        conf = config.Config(cfg_file, default=self.default, should_sync=lambda *args: False)
-        assert not cfg_file.exists()
-        conf.set('one', 45)
-        assert not cfg_file.exists()
 
     def test_update_from_file(self, test_config):
         conf = test_config
@@ -87,32 +80,39 @@ class TestConfig:
         cfg_file.write_text(json.dumps(new))
         conf = config.Config(cfg_file, default=self.default)
         assert conf.get('one') == 45
-        assert conf.get('section.value') == 'foo'
+        assert conf.get('section/value') == 'foo'
         assert conf.config == new
 
-    @pytest.mark.parametrize('new_data', [
-        {
-            'section': {
-                'foo': 45
-            }
-        },
-        config.Config(source_format=config.DictConfigSource,
-                      default={
-                          'section': {
-                              'foo': 45
-                          }
-                      })
-    ])
-    def test_merge(self, test_config, new_data):
+    def test_extend(self, test_config):
         conf = test_config
-        conf.merge(new_data)
+        conf.extend('sub/items', ["foobar", "barfoo"])
         file_data = json.loads(conf.source.file_path.read_text())
         print(file_data)
-        assert file_data['section']['foo'] == 45
-        assert conf.get('section.foo') == 45
+        assert file_data['sub']['items'] == ["foo", "bar", "foobar", "barfoo"]
+        assert conf.get('sub/items') == ["foo", "bar", "foobar", "barfoo"]
+
+    def test_upsert(self, test_config):
+        conf = test_config
+        conf.upsert('sub/items', ["barfoo", "foobar", "bar", "foo"])
+        file_data = self.get_file_data(conf)
+        assert file_data['sub']['items'] == ['barfoo', 'foobar', 'bar', 'foo']
+        assert conf.get('sub/items') == ['barfoo', 'foobar', 'bar', 'foo']
+
+    def test_with_root(self, tmp_path, utils):
+        cfg_file = tmp_path / 'testconf.json'
+        conf = config.Config(cfg_file, default=self.default)
+        conf.set('one', True)
+        with conf.root_key('sub') as cfg:
+            cfg.set('bool', False)
+            cfg.extend('items', ["hi"])
+            data = self.get_file_data(conf)
+        assert not conf.get('sub/bool')
+        assert conf.get('sub/items') == ['foo', 'bar', 'hi']
+        data = self.get_file_data(conf)
+        assert utils.dict_equal(data, conf.raw())
 
     def test_dict(self):
         conf = config.Config(source_format=config.DictConfigSource, default=self.default)
         assert conf.get('one') == 1
-        conf.set('sub.bool', False)
-        assert not conf.get('sub.bool')
+        conf.set('sub/bool', False)
+        assert not conf.get('sub/bool')

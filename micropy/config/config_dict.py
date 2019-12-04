@@ -15,6 +15,10 @@ class DictConfigSource(ConfigSource):
         """
         super().__init__(initial_config=config)
 
+    @property
+    def exists(self) -> bool:
+        return any(self.config.keys())
+
     def process(self) -> dict:
         return {}
 

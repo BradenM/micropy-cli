@@ -39,6 +39,10 @@ class JSONConfigSource(ConfigSource):
         self._file_path = value
         return self._file_path
 
+    @property
+    def exists(self) -> bool:
+        return self.file_path.exists()
+
     def process(self) -> dict:
         """Load config from JSON file.
 

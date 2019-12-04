@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import contextlib
 from copy import deepcopy
-from typing import Any, Callable, Optional, Sequence, Tuple, Type, Union
+from typing import Any, List, Sequence, Tuple, Type, Union
 
-from boltons import dictutils, iterutils
+import dpath
+from boltons import iterutils
 
-from micropy import utils
 from micropy.logger import Log, ServiceLog
 
 from .config_json import JSONConfigSource
@@ -26,23 +27,23 @@ class Config:
             Defaults to JSONConfigSource.
         default (dict, optional): Default configuration.
                 Defaults to {}.
-        should_sync: Function to determine whether or not Config should sync.
-            Defaults to None.
 
     """
 
     def __init__(self,
                  *args: Any,
                  source_format: Type[ConfigSource] = JSONConfigSource,
-                 default: dict = {},
-                 should_sync: Optional[Callable[..., bool]] = None):
+                 default: dict = {}):
         self.log: ServiceLog = Log.add_logger(f"{__name__}")
-        self.should_sync = should_sync or (lambda *args: True)
-        self._config = dictutils.OrderedMultiDict()
-        self._config.update(deepcopy(default))
         self.format = source_format
         self._source: ConfigSource = self.format(*args)
-        self.sync()
+        self._config = deepcopy(default)
+        self._do_sync = True
+        self._root_key = ''
+        if self._source.exists:
+            with self._source as src:
+                self.log.debug("loaded config values")
+                dpath.util.merge(self._config, src, flags=dpath.MERGE_REPLACE)
 
     @property
     def source(self) -> ConfigSource:
@@ -57,16 +58,13 @@ class Config:
     def config(self) -> dict:
         return self._config
 
-    @config.setter
-    def config(self, value: dict) -> dict:
-        with self.source:
-            self.source.config = value
-            self._config = value
-        return self.sync()
+    def root(self, key: str) -> str:
+        return self._root_key + key
 
-    @property
     def raw(self) -> dict:
-        return self._config.todict()
+        if self._root_key:
+            return deepcopy(self.get(self._root_key[:-1], {}))
+        return self._config
 
     def sync(self) -> dict:
         """Sync in-memory config with disk.
@@ -75,45 +73,20 @@ class Config:
             dict: updated config
 
         """
-        if not self.should_sync():
-            self.log.debug("sync blocked!")
-            return self.config
-        with self.source as file_config:
-            utils.merge_dicts(self._config, file_config)
-            utils.merge_dicts(file_config, self._config)
-        self.log.debug('config synced!')
-        return self.config
-
-    def merge(self, config: Union[dict, 'Config'], sync: bool = True) -> dict:
-        """Merge current config with another.
-
-        Args:
-            config (Union[dict,Config]): Config to merge with
-            sync (bool, optional): Sync after merging.
-                Defaults to True.
-
-        Returns:
-            dict: updated config
-
-        """
-        _config = config
-        if isinstance(config, Config):
-            _config = config.config
-        utils.merge_dicts(self._config, _config)
-        with self.source as file_cfg:
-            utils.merge_dicts(self._config, file_cfg)
-        if sync:
-            return self.sync()
+        if self._do_sync:
+            with self.source as src:
+                dpath.util.merge(src, self.config, flags=dpath.MERGE_REPLACE)
+            self.log.debug('config synced!')
         return self.config
 
     def parse_key(self, key: str) -> Tuple[Sequence[str], str]:
-        """Parses dot-notation key.
+        """Parses key.
 
         Splits it into a path and 'final key'
-        object.
+        object. Each key is seperates by a: "/"
 
         Example:
-            >>> self.parse_key('item.subitem.value')
+            >>> self.parse_key('item/subitem/value')
             (('item', 'subitem'), 'value')
 
         Args:
@@ -123,7 +96,7 @@ class Config:
             Tuple[Sequence[str], str]: Parsed key
 
         """
-        full_path = tuple(i for i in key.split('.'))
+        full_path = tuple(i for i in key.split('/'))
         path = full_path[:-1]
         p_key = full_path[-1]
         return (path, p_key)
@@ -140,9 +113,12 @@ class Config:
             Any: Value at key given
 
         """
-        key_path = key.split('.')
-        value = iterutils.get_path(self.config, key_path, default=default)
-        return value
+        try:
+            value = dpath.util.get(self.config, self.root(key))
+        except KeyError:
+            value = default
+        finally:
+            return value
 
     def set(self, key: str, value: Any) -> Any:
         """Set config value.
@@ -155,21 +131,26 @@ class Config:
             Any: Updated config
 
         """
-        path, target = self.parse_key(key)
-        new_value = value
-        if iterutils.is_collection(value):
-            prev = self.get(key, type(value))
-            if isinstance(value, dict):
-                utils.merge_dicts(new_value, prev)
-            if isinstance(value, set) or isinstance(value, list):
-                new_value = set(value)
-                new_value = prev.union(new_value)
-        remapped = iterutils.remap(self._config, lambda p, k, v: (
-            k, new_value) if p == path and k == target else (k, v))
-        self._config = remapped
-        self.log.debug(f"set config value [{key}] -> {value}")
-        self.sync()
-        return self.get(key)
+        key = self.root(key)
+        dpath.set(self._config, key, value)
+        self.log.debug(f"set config value [{key}] => {value}")
+        return self.sync()
+
+    def add(self, key: str, value: Any) -> Any:
+        """Overwrite or add config value.
+
+        Args:
+            key: Key to set
+            value: Value to add or update too
+
+        Returns:
+            Updated config
+
+        """
+        key = self.root(key)
+        dpath.new(self._config, key, value)
+        self.log.debug(f"added config value [{key}] -> {value}")
+        return self.sync()
 
     def pop(self, key: str) -> Any:
         """Delete and return value at key.
@@ -181,10 +162,12 @@ class Config:
             Any: Popped value.
 
         """
+        key = self.root(key)
         path, target = self.parse_key(key)
         value = self.get(key)
         remapped = iterutils.remap(self._config, lambda p, k,
                                    v: False if p == path and k == target else True)
         self._config = remapped
         self.log.debug(f"popped config value {value} <- [{key}]")
-        return value
+        return self.sync()
+
