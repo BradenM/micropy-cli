@@ -32,12 +32,7 @@ class StubsModule(ProjectModule):
     @property
     def context(self):
         """Component stub context."""
-        stub_paths = self.get_stub_tree()
-        return {
-            "stubs": self.stubs,
-            "paths": stub_paths,
-            "datadir": self.parent.data_path,
-        }
+        return self.parent.context
 
     @property
     def config(self) -> dict:
@@ -47,10 +42,7 @@ class StubsModule(ProjectModule):
             dict: Current config.
 
         """
-        stubs = {s.name: s.stub_version for s in self._stubs}
-        return {
-            'stubs': stubs
-        }
+        return self.parent.config
 
     @property
     @ProjectModule.hook()
@@ -61,35 +53,24 @@ class StubsModule(ProjectModule):
             List[micropy.stubs.Stub]: List of stubs used in project.
 
         """
-        _stubs = self.parent.context.get("stubs", self._stubs)
+        _stubs = self.context.get("stubs", [])
         return self._resolve_subresource(_stubs)
 
-    @stubs.setter
-    def stubs(self, value):
-        """Sets project stubs.
+    def get_stub_tree(self, stubs) -> Sequence[Path]:
+        """Retrieve and order paths to base stubs and any stubs they depend on.
 
         Args:
-            val (List[micropy.stubs.Stub]): List of stubs to set.
-
-        """
-        self._stubs = value
-        self.parent.context.set("stubs", self._stubs)
-        self.parent.context.set("paths", self.get_stub_tree())
-        self.parent.config.set("stubs", {s.name: s.stub_version for s in self._stubs})
-        return self._stubs
-
-    def get_stub_tree(self) -> Sequence[Path]:
-        """Retrieve and order paths to base stubs and any stubs they depend on.
+            stubs: List of Stub Items
 
         Returns:
             Paths to all stubs project depends on.
 
         """
         stub_tree = setutils.IndexedSet()
-        base_stubs = setutils.IndexedSet([s.stubs for s in self.stubs])
-        frozen = [s.frozen for s in self.stubs]
+        base_stubs = setutils.IndexedSet([s.stubs for s in stubs])
+        frozen = [s.frozen for s in stubs]
         fware_mods = [s.firmware.frozen
-                      for s in self.stubs if s.firmware is not None]
+                      for s in stubs if s.firmware is not None]
         stub_tree.update(*frozen, *fware_mods, *base_stubs)
         return stub_tree
 
@@ -113,6 +94,9 @@ class StubsModule(ProjectModule):
             self.log.error("Failed to Create Stub Links!", exception=e)
             sys.exit(1)
         else:
+            with self.config.root_key('stubs') as config:
+                for stub in stubs:
+                    config.add(stub.name, stub.stub_version)
             return resource
 
     def _load_stub_data(self, stub_data=None, **kwargs):
@@ -135,22 +119,25 @@ class StubsModule(ProjectModule):
             stub_list (dict): Dict of Stubs
 
         """
-        stub_data = self.parent.config.get('stubs')
-        stubs = list(self._load_stub_data(stub_data=stub_data))
-        stubs.extend(self.stubs)
-        self.stubs = self._resolve_subresource(stubs)
-        return self.update()
+        with self.config.root_key("stubs") as config:
+            for stub in self._stubs:
+                config.add(stub.name, stub.stub_version)
+            stubs = list(self._load_stub_data(stub_data=config.raw()))
+            stubs.extend(self.stubs)
+        stubs = self._resolve_subresource(stubs)
+        self.context.upsert("stubs", self.stubs)
+        self.context.upsert("paths", self.get_stub_tree(self.stubs))
+        return self.stubs
 
     def create(self):
         """Create stub project files."""
-        self.parent.context.merge(self.context)
         self.log.info(
             f"Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
         return self.load()
 
     def update(self):
         """Update current project stubs."""
-        self.stubs = self.load()
+        self.load()
         return self.stubs
 
     @ProjectModule.hook()
@@ -164,10 +151,9 @@ class StubsModule(ProjectModule):
             [Stubs]: Project Stubs
 
         """
-        loaded = self.stubs or []
-        stubs = [*loaded, stub]
+        self.context.extend('stubs', [stub])
         self.log.info("Loading project...")
-        self.stubs = self._resolve_subresource(stubs)
+        self._resolve_subresource(self.stubs)
         self.log.info("Updating Project Info...")
         self.parent.update()
         self.log.info(

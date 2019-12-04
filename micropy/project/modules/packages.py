@@ -9,6 +9,7 @@ from typing import Any, Union
 from boltons import fileutils
 
 from micropy import utils
+from micropy.config import Config
 from micropy.packages import (LocalDependencySource, Package,
                               PackageDependencySource,
                               create_dependency_source)
@@ -24,29 +25,17 @@ class PackagesModule(ProjectModule):
             Defaults to None.
 
     """
+    name: str = "packages"
     PRIORITY: int = 8
 
-    def __init__(self, path, packages=None, **kwargs):
+    def __init__(self, path, **kwargs):
         super().__init__(**kwargs)
         self._path = Path(path)
-        self._loaded = False
-        packages = packages or {}
-        self.name = "packages"
-        self.packages = {**packages}
 
     @property
     def packages(self):
-        _packages = self.parent.config.get(self.name, self._packages)
+        _packages = self.config.get(self.name, {})
         return _packages
-
-    @packages.setter
-    def packages(self, value):
-        self._packages = self.parent.config.set(self.name, value)
-        self.parent.context.set('paths', self.pkg_path)
-        pkgs = [Package.from_text(n, s) for n, s in self._packages]
-        local_paths = set([p.path for p in pkgs if p.editable])
-        self.parent.context.set('local_paths', local_paths)
-        return self._packages
 
     @property
     def path(self):
@@ -70,34 +59,24 @@ class PackagesModule(ProjectModule):
         return self.parent.data_path / self.parent.name
 
     @property
-    def config(self):
+    def config(self) -> Config:
         """Config values specific to component.
 
         Returns:
-            dict: Component config.
+            Component config.
 
         """
-        return {
-            self.name: self.packages
-        }
+        return self.parent.config
 
     @property
-    def context(self):
+    def context(self) -> Config:
         """Context values specific to component.
 
         Returns:
-            dict: Context values.
+            Context values.
 
         """
-        _paths = set(self.parent.context.get('paths', set()))
-        _paths.add(self.pkg_path)
-        _local_paths = set(self.parent.context.get('local_paths', []))
-        pkgs = [Package.from_text(n, s) for n, s in self.packages.items()]
-        _local_paths.update([p.path for p in pkgs if p.editable])
-        return {
-            'paths': _paths,
-            'local_paths': _local_paths
-        }
+        return self.parent.context
 
     def install_package(self, source: Union[LocalDependencySource, PackageDependencySource]) -> Any:
         with source as files:
@@ -150,38 +129,40 @@ class PackagesModule(ProjectModule):
             self.log.error(f"$[{pkg}] is already installed!")
             self.update()
             return None
-        self.packages[pkg.name] = pkg.pretty_specs
         try:
+            self.config.add(self.name + '/' + pkg.name, pkg.pretty_specs)
             self.load()
         except ValueError as e:
             self.log.error(f"Failed to find package $[{pkg.name}]!")
             self.log.error("Is it available on PyPi?", exception=e)
-            self.packages.pop(pkg.name)
+            self.config.pop(self.name + '/' + pkg.name)
         except Exception as e:
             self.log.error(
                 f"An error occured during the installation of $[{pkg.name}]!",
                 exception=e)
-            self.packages.pop(pkg.name)
+            self.config.pop(self.name + '/' + pkg.name)
         else:
             self.log.success("Package installed!")
         finally:
-            return self.packages
+            return self.config.raw()
 
     def load(self, fetch=True, **kwargs):
         """Retrieves and stubs project requirements."""
         self.pkg_path.mkdir(exist_ok=True)
+        packages = self.config.get(self.name, {})
         if self.path.exists():
-            packages = utils.iter_requirements(self.path)
-            for p in packages:
-                pkg = create_dependency_source(p.line).package
-                self.packages.update({pkg.name: pkg.pretty_specs})
-        pkg_keys = set(self.packages.keys())
+            reqs = utils.iter_requirements(self.path)
+            for r in reqs:
+                pkg = create_dependency_source(r.line).package
+                if not packages.get(pkg.name):
+                    packages.update({pkg.name: pkg.pretty_specs})
+        pkg_keys = set(packages.keys())
         pkg_cache = self.parent._get_cache(self.name)
         new_pkgs = pkg_keys.copy()
         if pkg_cache:
             new_pkgs = new_pkgs - set(pkg_cache)
         new_packages = [Package.from_text(name, spec)
-                        for name, spec in self.packages.items() if name in new_pkgs]
+                        for name, spec in packages.items() if name in new_pkgs]
         if fetch:
             if new_packages:
                 self.log.title("Fetching Requirements")
@@ -197,21 +178,24 @@ class PackagesModule(ProjectModule):
 
     def create(self):
         """Create project files."""
+        self.context.extend('paths', [self.pkg_path])
         return self.update()
 
     def update(self):
         """Dumps packages to file at path."""
         if not self.path.exists():
             self.path.touch()
-        pkgs = [str(Package.from_text(name, spec)) for name, spec in self.packages.items()]
+        pkgs = [Package.from_text(name, spec) for name, spec in self.packages.items()]
         self.log.debug(f'dumping to {self.path.name}')
         with self.path.open('r+') as f:
             content = [c.strip() for c in f.readlines() if c.strip() != '']
-            _lines = sorted(set(pkgs) | set(content))
+            _lines = sorted(set(str(p) for p in pkgs) | set(content))
             lines = [l + "\n" for l in _lines]
             self.log.debug(f"dumping: {lines}")
             f.seek(0)
             f.writelines(lines)
+        local_paths = [p.path for p in pkgs if p.editable]
+        self.context.add('local_paths', local_paths)
 
 
 class DevPackagesModule(PackagesModule):
@@ -220,12 +204,13 @@ class DevPackagesModule(PackagesModule):
 
     def __init__(self, path, **kwargs):
         super().__init__(path, **kwargs)
-        self._packages.update({'micropy-cli': '*'})
         self.name = "dev-packages"
 
     def load(self, *args, **kwargs):
         """Load component."""
-        return super().load(*args, **kwargs, fetch=False)
+        super().load(*args, **kwargs, fetch=False)
+        with self.config.root_key(self.name) as config:
+            config.add('micropy-cli', '*')
 
     @ProjectModule.hook(dev=True)
     def add_package(self, package, **kwargs):

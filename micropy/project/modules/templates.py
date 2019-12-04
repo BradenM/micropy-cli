@@ -70,7 +70,7 @@ class TemplatesModule(ProjectModule):
         self.log.title("Rendering Templates")
         self.log.info("Populating Stub Info...")
         for t in self.provider.templates:
-            self.provider.render_to(t, self.parent.path, **self.parent.context.raw)
+            self.provider.render_to(t, self.parent.path, **self.parent.context.raw())
         self.log.success("Stubs Injected!")
         return self.parent.context
 
@@ -81,7 +81,7 @@ class TemplatesModule(ProjectModule):
             dict: Project context
 
         """
-        self.log.debug(f"updating templates with context: {self.parent.context.raw}")
+        self.log.debug(f"updating templates with context: {self.parent.context.raw()}")
         for tmp in self.provider.templates:
-            self.provider.update(tmp, self.parent.path, **self.parent.context.raw)
+            self.provider.update(tmp, self.parent.path, **self.parent.context.raw())
         return self.parent.context
