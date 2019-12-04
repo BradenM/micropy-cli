@@ -35,8 +35,7 @@ class Project(ProjectModule):
             'name': self.name,
         }
         self._config: Config = Config(self.info_path,
-                                      default=default_config,
-                                      should_sync=lambda *a: self.exists)
+                                      default=default_config)
         self.log: ServiceLog = Log.add_logger(self.name, show_title=False)
 
     def __getattr__(self, name: str) -> Any:
@@ -65,20 +64,6 @@ class Project(ProjectModule):
             Config: Dictionary of Project Config Values
 
         """
-        return self._config
-
-    @config.setter
-    def config(self, value: dict) -> Config:
-        """Sets active config.
-
-        Args:
-            value (dict): Value to set.
-
-        Returns:
-            Config: Current config
-
-        """
-        self._config = Config(self.info_path, default=value)
         return self._config
 
     @property
@@ -184,7 +169,6 @@ class Project(ProjectModule):
         ignore_data.write_text('*')
         self.log.debug(f"Generated Project Context: {self.context}")
         for child in self.iter_children_by_priority():
-            self.config.merge(child.config)
             child.create()
         self.info_path.touch()
         self.config.sync()

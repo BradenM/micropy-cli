@@ -179,10 +179,10 @@ class TestProject:
         expect_config = get_config(mods, stubs=list(mp.stubs)[:2])
         assert test_proj.config._config == {'name': 'NewProject'}
         test_proj.create()
-        assert utils.dict_equal(test_proj.config.raw, expect_config)
+        assert utils.dict_equal(test_proj.config.raw(), expect_config)
         # should be the same post-load
         test_proj.load()
-        assert utils.dict_equal(test_proj.config.raw, expect_config)
+        assert utils.dict_equal(test_proj.config.raw(), expect_config)
 
     def test_context(self, test_project, get_context, mods, tmp_path, utils):
         proj_path = tmp_path / 'tmpprojpath'
@@ -191,9 +191,9 @@ class TestProject:
         pkg_path = test_proj.data_path / test_proj.name
         expect_context = get_context(mods, stubs=mp.stubs, pkg_path=pkg_path,
                                      data_dir=test_proj.data_path)
-        assert utils.dict_equal(test_proj.context.raw, expect_context)
+        assert utils.dict_equal(test_proj.context.raw(), expect_context)
         test_proj.load()  # should be the same post load
-        assert utils.dict_equal(test_proj.context.raw, expect_context)
+        assert utils.dict_equal(test_proj.context.raw(), expect_context)
 
     def test_load(self, mock_pkg, tmp_project, mock_checks, test_project, mods):
         proj, mp = next(test_project(mods, path=tmp_project))
@@ -255,15 +255,15 @@ class TestPackagesModule:
         proj.create()
         proj.add_package('somepkg>=7')
         print(proj.config._config)
-        assert proj.config.get('packages.somepkg') == '>=7'
+        assert proj.config.get('packages/somepkg') == '>=7'
         assert len(list((proj.data_path / proj.name).iterdir())) > 0
         # Shouldnt allow duplicate pkgs
         res = proj.add_package('somepkg')
         assert res is None
-        assert proj.config.get('packages.somepkg') == '>=7'
+        assert proj.config.get('packages/somepkg') == '>=7'
         # Add from path
         proj.add_package(f"-e {mock_pkg}", name="MockPack")
-        assert proj.config.get('packages.mockpack') == f'-e {mock_pkg}'
+        assert proj.config.get('packages/mockpack') == f'-e {mock_pkg}'
 
     def test_package_error(self, test_project, mock_pkg, mocker, tmp_path, caplog):
         packages.source_package.utils.extract_tarbytes.side_effect = [ValueError, Exception]
@@ -271,7 +271,7 @@ class TestPackagesModule:
         proj, mp = next(test_project('reqs', path=path))
         proj.create()
         pkgs = proj.add_package('newpackage')
-        assert proj.config.get('packages.newpackage', None) is None
+        assert proj.config.get('packages/newpackage', None) is None
         assert 'newpackage' not in pkgs.keys()
         assert "Is it available on PyPi?" in caplog.text
         pkgs = proj.add_package('anothaone')
