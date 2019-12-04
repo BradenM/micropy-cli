@@ -171,3 +171,81 @@ class Config:
         self.log.debug(f"popped config value {value} <- [{key}]")
         return self.sync()
 
+    def extend(self, key: str, value: List[Any]):
+        """Extend a list in config at key path.
+
+        Args:
+            key: Key to path to extend.
+            value: List of values to extend by.
+
+        Returns:
+            Updated Config
+
+        """
+        to_update = deepcopy(self.get(key, value))
+        dpath.merge(to_update, value, flags=dpath.MERGE_ADDITIVE)
+        self.set(key, to_update)
+        return self.sync()
+
+    def upsert(self, key: str, value: Union[List[Any], dict]):
+        """Update or insert values into key list or dict.
+
+        Args:
+            key: Key to value to upsert.
+            value: Value to upsert by.
+
+        Returns:
+            Updated config.
+
+        """
+        to_update = deepcopy(self.get(key, value))
+        dpath.merge(to_update, value, flags=dpath.MERGE_REPLACE)
+        self.set(key, to_update)
+        return self.sync()
+
+    def search(self, key):
+        """Retrieve all values at key (with glob pattern).
+
+        Args:
+            key: Key with pattern to search with.
+
+        Returns:
+            Values matching key and pattern.
+
+        """
+        return dpath.values(self.config, key)
+
+    @contextlib.contextmanager
+    def cache(self):
+        """Context Manager for caching data in memory."""
+        self._do_sync = False
+        yield self
+        self._do_sync = True
+        self.sync()
+
+    @contextlib.contextmanager
+    def root_key(self, key: str):
+        """Context manager that enables cache and sets the config root.
+
+        Example:
+            >>> config.add('item/subitem', True)
+            {'item': {'subitem': True}}
+            >>> with config.root_key('item') as cfg:
+                    cfg.set('subitem, False)
+            >>> config.get('item/subitem')
+            False
+
+        Args:
+            key: Key to set root too.
+
+        Yields:
+            Config
+
+        """
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(self.cache())
+            stack.enter_context(self.source)
+            self._root_key = key + '/'
+            yield self
+            self._root_key = ''
+            stack.pop_all()
