@@ -41,6 +41,10 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
         self._config = value
         return self._config
 
+    @abc.abstractproperty
+    def exists(self) -> bool:
+        """Property to check if source exists."""
+
     @contextlib.contextmanager
     def _handle_cleanup(self):
         with contextlib.ExitStack() as stack:
