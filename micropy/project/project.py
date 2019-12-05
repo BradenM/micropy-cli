@@ -4,7 +4,9 @@
 
 import json
 from pathlib import Path
-from typing import Any, List, Optional, Type
+from typing import Any, Iterator, List, Optional, Sequence, Type
+
+from boltons.queueutils import PriorityQueue
 
 from micropy.config import Config, DictConfigSource
 from micropy.logger import Log, ServiceLog
@@ -118,7 +120,21 @@ class Project(ProjectModule):
         value = data.pop(key, None)
         return value
 
-    def add(self, component):
+    def iter_children_by_priority(self) -> Iterator[Type[ProjectModule]]:
+        """Iterate project modules by priority
+
+        Yields:
+            the next child item
+        """
+        pq = PriorityQueue()
+        for i in self._children:
+            pq.add(i, i.PRIORITY)
+        more = pq.peek(default=False)
+        while more:
+            yield pq.pop()
+            more = pq.peek(default=False)
+
+    def add(self, component, *args, **kwargs):
         """Adds project component.
 
         Args:
@@ -126,11 +142,10 @@ class Project(ProjectModule):
 
         """
         self.log.debug(f'adding module: {type(component).__name__}')
-        self._children.append(component)
-        component.parent = self
-        component.log = self.log
-        if hasattr(component, 'context'):
-            self.context.merge(component.context)
+        child = component(*args, parent=self, log=self, **kwargs)
+        self._children.append(child)
+        if hasattr(child, 'context'):
+            self.context.merge(child.context)
 
     def remove(self, component):
         """Removes project component.
@@ -139,8 +154,8 @@ class Project(ProjectModule):
             component (Any): Component to remove.
 
         """
-        self._children.remove(component)
-        component.parent = None
+        child = next(i for i in self._children if isinstance(i, component))
+        self._children.remove(child)
 
     def load(self, **kwargs: Any) -> 'Project':
         """Loads all components in Project.
@@ -151,7 +166,7 @@ class Project(ProjectModule):
         """
         self.name = self._config.get('name')
         self.data_path.mkdir(exist_ok=True)
-        for child in self._children:
+        for child in self.iter_children_by_priority():
             child.load(**kwargs)
         return self
 
@@ -167,7 +182,7 @@ class Project(ProjectModule):
         ignore_data = self.data_path / '.gitignore'
         ignore_data.write_text('*')
         self.log.debug(f"Generated Project Context: {self.context}")
-        for child in self._children:
+        for child in self.iter_children_by_priority():
             self.config.merge(child.config)
             child.create()
         self.info_path.touch()
@@ -183,6 +198,6 @@ class Project(ProjectModule):
 
         """
         self.log.debug("Updating all project modules...")
-        for child in self._children:
+        for child in self.iter_children_by_priority():
             child.update()
         return self

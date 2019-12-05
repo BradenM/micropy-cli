@@ -18,7 +18,7 @@ ProxyItem = List[Tuple[T, str]]
 
 class ProjectModule(metaclass=abc.ABCMeta):
     """Abstract Base Class for Project Modules."""
-
+    PRIORITY: int = 0
     _hooks: List['HookProxy'] = []
 
     @property

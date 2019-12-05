@@ -20,6 +20,7 @@ class TemplatesModule(ProjectModule):
             Defaults to True.
 
     """
+    PRIORITY: int = 0
     TEMPLATES = TemplateProvider.TEMPLATES
 
     def __init__(self, templates=None, run_checks=True, **kwargs):
