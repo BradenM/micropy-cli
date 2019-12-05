@@ -144,7 +144,7 @@ class PackagesModule(ProjectModule):
         else:
             self.log.success("Package installed!")
         finally:
-            return self.config.raw()
+            return self.packages
 
     def load(self, fetch=True, **kwargs):
         """Retrieves and stubs project requirements."""
@@ -178,7 +178,6 @@ class PackagesModule(ProjectModule):
 
     def create(self):
         """Create project files."""
-        self.context.extend('paths', [self.pkg_path])
         return self.update()
 
     def update(self):
@@ -196,6 +195,7 @@ class PackagesModule(ProjectModule):
             f.writelines(lines)
         local_paths = [p.path for p in pkgs if p.editable]
         self.context.add('local_paths', local_paths)
+        self.context.extend('paths', [self.pkg_path], unique=True)
 
 
 class DevPackagesModule(PackagesModule):
@@ -206,11 +206,15 @@ class DevPackagesModule(PackagesModule):
         super().__init__(path, **kwargs)
         self.name = "dev-packages"
 
+    def create(self, *args, **kwargs):
+        """Creates component."""
+        self.config.add(f"{self.name}/micropy-cli", '*')
+        return super().create(*args, **kwargs)
+
     def load(self, *args, **kwargs):
         """Load component."""
         super().load(*args, **kwargs, fetch=False)
-        with self.config.root_key(self.name) as config:
-            config.add('micropy-cli', '*')
+        self.config.add(f"{self.name}/micropy-cli", '*')
 
     @ProjectModule.hook(dev=True)
     def add_package(self, package, **kwargs):

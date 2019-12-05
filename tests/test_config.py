@@ -98,19 +98,6 @@ class TestConfig:
         assert file_data['sub']['items'] == ['barfoo', 'foobar', 'bar', 'foo']
         assert conf.get('sub/items') == ['barfoo', 'foobar', 'bar', 'foo']
 
-    def test_with_root(self, tmp_path, utils):
-        cfg_file = tmp_path / 'testconf.json'
-        conf = config.Config(cfg_file, default=self.default)
-        conf.set('one', True)
-        with conf.root_key('sub') as cfg:
-            cfg.set('bool', False)
-            cfg.extend('items', ["hi"])
-            data = self.get_file_data(conf)
-        assert not conf.get('sub/bool')
-        assert conf.get('sub/items') == ['foo', 'bar', 'hi']
-        data = self.get_file_data(conf)
-        assert utils.dict_equal(data, conf.raw())
-
     def test_dict(self):
         conf = config.Config(source_format=config.DictConfigSource, default=self.default)
         assert conf.get('one') == 1

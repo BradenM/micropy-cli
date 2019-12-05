@@ -38,8 +38,6 @@ class Config:
         self.format = source_format
         self._source: ConfigSource = self.format(*args)
         self._config = deepcopy(default)
-        self._do_sync = True
-        self._root_key = ''
         if self._source.exists:
             with self._source as src:
                 self.log.debug("loaded config values")
@@ -58,12 +56,7 @@ class Config:
     def config(self) -> dict:
         return self._config
 
-    def root(self, key: str) -> str:
-        return self._root_key + key
-
     def raw(self) -> dict:
-        if self._root_key:
-            return deepcopy(self.get(self._root_key[:-1], {}))
         return self._config
 
     def sync(self) -> dict:
@@ -73,10 +66,8 @@ class Config:
             dict: updated config
 
         """
-        if self._do_sync:
-            with self.source as src:
-                dpath.util.merge(src, self.config, flags=dpath.MERGE_REPLACE)
-            self.log.debug('config synced!')
+        with self.source as src:
+            dpath.util.merge(src, self.config, flags=dpath.MERGE_REPLACE)
         return self.config
 
     def parse_key(self, key: str) -> Tuple[Sequence[str], str]:
@@ -114,11 +105,12 @@ class Config:
 
         """
         try:
-            value = dpath.util.get(self.config, self.root(key))
+            value = dpath.util.get(self.config, key)
         except KeyError:
             value = default
-        finally:
+        else:
             return value
+        return value
 
     def set(self, key: str, value: Any) -> Any:
         """Set config value.
@@ -131,7 +123,6 @@ class Config:
             Any: Updated config
 
         """
-        key = self.root(key)
         dpath.set(self._config, key, value)
         self.log.debug(f"set config value [{key}] => {value}")
         return self.sync()
@@ -147,7 +138,6 @@ class Config:
             Updated config
 
         """
-        key = self.root(key)
         dpath.new(self._config, key, value)
         self.log.debug(f"added config value [{key}] -> {value}")
         return self.sync()
@@ -162,7 +152,6 @@ class Config:
             Any: Popped value.
 
         """
-        key = self.root(key)
         path, target = self.parse_key(key)
         value = self.get(key)
         remapped = iterutils.remap(self._config, lambda p, k,
@@ -171,18 +160,21 @@ class Config:
         self.log.debug(f"popped config value {value} <- [{key}]")
         return self.sync()
 
-    def extend(self, key: str, value: List[Any]):
+    def extend(self, key: str, value: List[Any], unique: bool = False):
         """Extend a list in config at key path.
 
         Args:
             key: Key to path to extend.
             value: List of values to extend by.
+            unique: Only extend values if not already in values.
 
         Returns:
             Updated Config
 
         """
         to_update = deepcopy(self.get(key, value))
+        if unique:
+            value = [v for v in value if v not in to_update]
         dpath.merge(to_update, value, flags=dpath.MERGE_ADDITIVE)
         self.set(key, to_update)
         return self.sync()
@@ -200,7 +192,7 @@ class Config:
         """
         to_update = deepcopy(self.get(key, value))
         dpath.merge(to_update, value, flags=dpath.MERGE_REPLACE)
-        self.set(key, to_update)
+        self.add(key, to_update)
         return self.sync()
 
     def search(self, key):
@@ -214,38 +206,3 @@ class Config:
 
         """
         return dpath.values(self.config, key)
-
-    @contextlib.contextmanager
-    def cache(self):
-        """Context Manager for caching data in memory."""
-        self._do_sync = False
-        yield self
-        self._do_sync = True
-        self.sync()
-
-    @contextlib.contextmanager
-    def root_key(self, key: str):
-        """Context manager that enables cache and sets the config root.
-
-        Example:
-            >>> config.add('item/subitem', True)
-            {'item': {'subitem': True}}
-            >>> with config.root_key('item') as cfg:
-                    cfg.set('subitem, False)
-            >>> config.get('item/subitem')
-            False
-
-        Args:
-            key: Key to set root too.
-
-        Yields:
-            Config
-
-        """
-        with contextlib.ExitStack() as stack:
-            stack.enter_context(self.cache())
-            stack.enter_context(self.source)
-            self._root_key = key + '/'
-            yield self
-            self._root_key = ''
-            stack.pop_all()

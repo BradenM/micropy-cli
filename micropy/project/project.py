@@ -29,7 +29,8 @@ class Project(ProjectModule):
         self.data_path: Path = self.path / '.micropy'
         self.info_path: Path = self.path / 'micropy.json'
         self.cache_path: Path = self.data_path / '.cache'
-        self._context = Config(source_format=DictConfigSource)
+        self._context = Config(source_format=DictConfigSource,
+                               default={'datadir': self.data_path})
         self.name: str = name or self.path.name
         default_config = {
             'name': self.name,
