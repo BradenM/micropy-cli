@@ -28,10 +28,10 @@ class Template:
 
     def __init__(self, template, **kwargs):
         self.template = template
-        self.stubs = kwargs.get("stubs", None)
-        self.paths = kwargs.get("paths", None)
+        self.stubs = kwargs.get("stubs", [])
+        self.paths = kwargs.get("paths", [])
         self.datadir = kwargs.get("datadir", None)
-        self.local_paths = kwargs.get("local_paths", None)
+        self.local_paths = kwargs.get("local_paths", [])
 
     @property
     def context(self):
@@ -159,11 +159,11 @@ class CodeTemplate(Template):
         """VScode Config Context."""
         paths = self.paths
         if self.datadir:
-            paths = [str(p.relative_to(self.datadir.parent))
+            paths = [p.relative_to(self.datadir.parent)
                      for p in self.paths]
         if self.local_paths:
-            paths.extend(str(s) for s in self.local_paths)
-        stub_paths = json.dumps(paths)
+            paths.extend(s for s in self.local_paths)
+        stub_paths = json.dumps([str(s) for s in paths])
         ctx = {
             "stubs": self.stubs or [],
             "paths": stub_paths,

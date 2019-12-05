@@ -21,21 +21,12 @@ class TemplatesModule(ProjectModule):
     """
     PRIORITY: int = 0
     TEMPLATES = TemplateProvider.TEMPLATES
+    _dynamic = ['vscode', 'pylint']
 
     def __init__(self, templates=None, run_checks=True, **kwargs):
-        self.templates = templates or []
+        self._templates = templates or []
         super().__init__(**kwargs)
         self.run_checks = run_checks
-        self.enabled = {
-            'vscode': False,
-            'pylint': False
-        }
-        if templates:
-            for key in self.enabled:
-                if key in self.templates:
-                    self.enabled[key] = True
-        self.provider = TemplateProvider(
-            self.templates, **kwargs)
 
     @property
     def config(self):
@@ -45,17 +36,15 @@ class TemplatesModule(ProjectModule):
             dict: Current configuration
 
         """
-        _config = self.parent.config.get('config', {})
-        self.enabled = {**self.enabled, **_config}
-        return {
-            'config': self.enabled
-        }
+        return self.parent.config
+
+    def get_provider(self, templates):
+        return TemplateProvider(templates, run_checks=self.run_checks, log=self.log)
 
     def load(self, **kwargs):
         """Loads project templates."""
-        _data = self.config.get('config')
-        self.enabled = {**self.enabled, **_data}
-        templates = [k for k, v in self.enabled.items() if v]
+        self.provider = self.get_provider(self.config.get('config'))
+        templates = [k for k, v in self.config.get('config').items() if v]
         self.log.debug(f"Loading Templates: {templates}")
         self.provider = TemplateProvider(templates, **kwargs)
         self.update()
@@ -69,10 +58,14 @@ class TemplatesModule(ProjectModule):
         """
         self.log.title("Rendering Templates")
         self.log.info("Populating Stub Info...")
+        for key in self._templates:
+            if key in self._dynamic:
+                self.config.add('config' + '/' + key, True)
+        self.provider = self.get_provider(self._templates)
         for t in self.provider.templates:
             self.provider.render_to(t, self.parent.path, **self.parent.context.raw())
         self.log.success("Stubs Injected!")
-        return self.parent.context
+        return self._templates
 
     def update(self):
         """Updates project files.
@@ -81,6 +74,7 @@ class TemplatesModule(ProjectModule):
             dict: Project context
 
         """
+        self.provider = self.get_provider(self.config.get('config'))
         self.log.debug(f"updating templates with context: {self.parent.context.raw()}")
         for tmp in self.provider.templates:
             self.provider.update(tmp, self.parent.path, **self.parent.context.raw())
