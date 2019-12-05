@@ -21,6 +21,7 @@ class StubsModule(ProjectModule):
         stubs (List[Type[Stub]], optional): Initial Stubs to use.
 
     """
+    PRIORITY: int = 9
 
     def __init__(self, stub_manager: StubManager,
                  stubs: Sequence[DeviceStub] = None):

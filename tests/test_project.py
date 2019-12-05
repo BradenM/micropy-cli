@@ -132,6 +132,33 @@ def test_implementation(mocker):
     inst.remove([])
 
 
+def test_project_queue(mock_cwd, tmp_path, mocker):
+    mocker.patch('micropy.project.project.Config')
+    path = tmp_path / 'project_path'
+    proj = project.Project(path)
+    # should create/load projects based on <MODULES>.PRIORITY,
+    # not based on order added
+    mock_parent = mocker.Mock()
+    mock_parent.m1.return_value = mocker.Mock(PRIORITY=8)
+    mock_parent.m2.return_value = mocker.Mock(PRIORITY=0)
+    mock_parent.m3.return_value = mocker.Mock(PRIORITY=9)
+    proj.add(mock_parent.m1)
+    proj.add(mock_parent.m2)
+    proj.add(mock_parent.m3)
+    proj.create()
+    # should be called in order of priority (9 being highest)
+    mock_parent.assert_has_calls([
+        # adding them doesnt matter
+        mocker.call.m1(log=mocker.ANY, parent=mocker.ANY),
+        mocker.call.m2(log=mocker.ANY, parent=mocker.ANY),
+        mocker.call.m3(log=mocker.ANY, parent=mocker.ANY),
+        # create order should differ
+        mocker.call.m3().create(),
+        mocker.call.m1().create(),
+        mocker.call.m2().create(),
+    ])
+
+
 @pytest.mark.parametrize(
     'mods',
     ['', 'stubs', 'template', 'reqs', 'dev-reqs', 'all']

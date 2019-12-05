@@ -23,6 +23,7 @@ class PackagesModule(ProjectModule):
             Defaults to None.
 
     """
+    PRIORITY: int = 8
 
     def __init__(self, path, packages=None, **kwargs):
         self._path = Path(path)
@@ -196,6 +197,7 @@ class PackagesModule(ProjectModule):
 
 class DevPackagesModule(PackagesModule):
     """Project Module for Dev Packages."""
+    PRIORITY: int = 7
 
     def __init__(self, path, **kwargs):
         super().__init__(path, **kwargs)
