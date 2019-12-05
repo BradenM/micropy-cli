@@ -45,15 +45,6 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
     def exists(self) -> bool:
         """Property to check if source exists."""
 
-    @contextlib.contextmanager
-    def _handle_cleanup(self):
-        with contextlib.ExitStack() as stack:
-            stack.push(self)
-            yield
-            # any validation occurs here
-            # if everything is good, keep the config and continue
-            stack.pop_all()
-
     @abc.abstractmethod
     def save(self, content: Any) -> Any:
         """Method to save config."""
@@ -73,8 +64,7 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
 
     def __enter__(self) -> dict:
         self.prepare()
-        with self._handle_cleanup():
-            self._config = self.process()
+        self._config = self.process()
         return self._config
 
     def __exit__(self, *args):

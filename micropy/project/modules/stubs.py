@@ -72,7 +72,7 @@ class StubsModule(ProjectModule):
         fware_mods = [s.firmware.frozen
                       for s in stubs if s.firmware is not None]
         stub_tree.update(*frozen, *fware_mods, *base_stubs)
-        return stub_tree
+        return list(stub_tree)
 
     def _resolve_subresource(self,
                              stubs: List[DeviceStub]) -> Union[StubManager, Sequence[DeviceStub]]:
@@ -94,9 +94,7 @@ class StubsModule(ProjectModule):
             self.log.error("Failed to Create Stub Links!", exception=e)
             sys.exit(1)
         else:
-            with self.config.root_key('stubs') as config:
-                for stub in stubs:
-                    config.add(stub.name, stub.stub_version)
+            self.config.upsert('stubs', {s.name: s.stub_version for s in stubs})
             return resource
 
     def _load_stub_data(self, stub_data=None, **kwargs):
@@ -119,13 +117,11 @@ class StubsModule(ProjectModule):
             stub_list (dict): Dict of Stubs
 
         """
-        with self.config.root_key("stubs") as config:
-            for stub in self._stubs:
-                config.add(stub.name, stub.stub_version)
-            stubs = list(self._load_stub_data(stub_data=config.raw()))
-            stubs.extend(self.stubs)
+        self.config.upsert('stubs', {s.name: s.stub_version for s in self._stubs})
+        stubs = list(self._load_stub_data(stub_data=self.config.get('stubs')))
+        stubs.extend(self.stubs)
         stubs = self._resolve_subresource(stubs)
-        self.context.upsert("stubs", self.stubs)
+        self.context.upsert("stubs", stubs)
         self.context.upsert("paths", self.get_stub_tree(self.stubs))
         return self.stubs
 

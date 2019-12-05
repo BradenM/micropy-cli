@@ -149,6 +149,7 @@ def micropy_stubs(mocker, get_stubs):
         stubs = list(get_stubs())
         mock_mp.stubs.__iter__.return_value = stubs
         mock_mp.stubs.resolve_subresource = _mock_resolve_subresource
+        mock_mp.stubs.add.return_value = stubs[0]
         return mock_mp
     return _micropy_stubs
 
@@ -241,6 +242,14 @@ class AssertUtils:
         self.pp(match_d2)
         print("==============")
         return match_d1 == match_d2
+
+    def load_json(self, path):
+        import json
+        return json.loads(path.read_text())
+
+    def json_equal_dict(self, path, d2):
+        data = self.load_json(path)
+        return self.dict_equal(data, d2)
 
 
 @pytest.fixture

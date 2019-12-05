@@ -14,13 +14,11 @@ import subprocess as subproc
 import sys
 import tarfile
 import xml.etree.ElementTree as ET
-from collections.abc import Mapping
 from datetime import timedelta
 from pathlib import Path
 
 import requests
 import requirements
-from boltons import setutils
 from cachier import cachier
 from packaging import version
 from requests import exceptions as reqexc
@@ -38,7 +36,7 @@ __all__ = ["is_url", "get_url_filename",
            "extract_tarbytes", "iter_requirements",
            "create_dir_link", "is_dir_link",
            "is_update_available", "get_cached_data",
-           "get_class_that_defined_method", "merge_dicts"]
+           "get_class_that_defined_method"]
 
 
 def is_url(url):
@@ -415,21 +413,3 @@ def get_class_that_defined_method(meth):
         if isinstance(cls, type):
             return cls
     return getattr(meth, '__objclass__', None)  # handle special descriptor objects
-
-
-def merge_dicts(d1: dict, d2: dict):
-    """Merge two dict objects.
-
-    Args:
-        d1 (dict): First object
-        d2 (dict): Second object
-
-    """
-    for k, v in d2.items():
-        if k in d1 and isinstance(d1[k], dict) and isinstance(d2[k], Mapping):
-            if isinstance(d1[k], set) and isinstance(d2[k], set):
-                d1[k] = setutils.IndexedSet(d1[k] + d2[k])
-            else:
-                merge_dicts(d1[k], d2[k])
-        else:
-            d1[k] = d2[k]

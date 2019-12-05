@@ -72,7 +72,7 @@ class JSONConfigSource(ConfigSource):
             Path: path to config file.
 
         """
-        config = json.dumps(content, indent=4)
+        config = json.dumps(content, indent=4, separators=(',', ': '))
         with AtomicSaver((str(self.file_path)), text_mode=True) as file:
             file.write(config)
         return self.file_path

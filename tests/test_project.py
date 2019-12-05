@@ -5,7 +5,7 @@ import shutil
 import pytest
 from boltons import setutils
 
-from micropy import packages, project
+from micropy import config, packages, project
 from micropy.project import modules
 
 
@@ -195,11 +195,11 @@ class TestProject:
         test_proj.load()  # should be the same post load
         assert utils.dict_equal(test_proj.context.raw(), expect_context)
 
-    def test_load(self, mock_pkg, tmp_project, mock_checks, test_project, mods):
+    def test_load(self, mock_pkg, tmp_project, mock_checks, test_project, mods, utils):
         proj, mp = next(test_project(mods, path=tmp_project))
         proj.load(run_checks=mp.RUN_CHECKS)
 
-    def test_update(self, mock_pkg, tmp_project, mock_checks, test_project, mods):
+    def test_update(self, mock_pkg, tmp_project, mock_checks, test_project, mods, utils):
         proj, mp = next(test_project(mods, path=tmp_project))
         proj.update()
 
@@ -231,6 +231,7 @@ class TestStubsModule:
     def test_add_stub(self, test_project, get_stub_paths, mocker):
         proj, mp = next(test_project('stubs'))
         proj.create()
+        mocker.patch.object(config.config.dpath, 'merge')
         stub_path = next(get_stub_paths())
         stub = mocker.MagicMock()
         stub.path = stub_path
