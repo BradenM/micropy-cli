@@ -57,7 +57,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
     def update(self):
         """Method to update component."""
 
-    def add(self, component: Type['ProjectModule']) -> Any:
+    def add(self, component: Type['ProjectModule'], *args, **kwargs) -> Any:
         """Adds component.
 
         Args:

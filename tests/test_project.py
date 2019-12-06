@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import shutil
-from functools import partial
 
 import pytest
 
@@ -207,15 +206,6 @@ class TestProject:
 
 class TestStubsModule:
 
-    # @pytest.fixture
-    # def stub_module(self, get_module, micropy_stubs, mocker, tmp_path):
-    #     mp = micropy_stubs()
-    #     mocker.patch.object(modules.StubsModule, 'parent')
-    #     stub_mod = next(get_module('stubs', mp))
-    #     stub_mod = modules.StubsModule(mp.stubs, **stub_mod[1], log=mocker.Mock())
-    #     stub_mod.parent.data_path = tmp_path
-    #     return stub_mod, mp
-
     @pytest.fixture()
     def stub_module(self, mocker, tmp_path, micropy_stubs):
         mp = micropy_stubs()
@@ -225,16 +215,6 @@ class TestStubsModule:
         stub_mod = modules.StubsModule(
             mp.stubs, stubs=[stub_item], parent=parent_mock, log=mocker.Mock())
         return stub_mod, mp
-
-    # def test_resolve_stubs(self, stub_module, mocker):
-    #     stub_module, mp = stub_module
-    #     assert len(stub_module.stubs) == 1
-    #     stub_module.stub_manager.resolve_subresource = mocker.MagicMock()
-    #     stub_module.stub_manager.resolve_subresource.side_effect = [OSError]
-    #     assert stub_module._resolve_subresource([]) == stub_module._stubs
-    #     stub_module._parent = mocker.MagicMock()
-    #     with pytest.raises(SystemExit):
-    #         stub_module._resolve_subresource([])
 
     def test_load(self, tmp_project, stub_module, get_stub_paths):
         custom_stub = next(get_stub_paths())

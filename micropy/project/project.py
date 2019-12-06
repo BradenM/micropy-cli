@@ -142,9 +142,9 @@ class Project(ProjectModule):
             component (Any): Component to add.
 
         """
-        self.log.debug(f'adding module: {type(component).__name__}')
         child = component(*args, **kwargs, log=self.log, parent=self)
         self._children.append(child)
+        self.log.debug(f'adding module: {type(child).__name__}')
         if hasattr(child, 'context'):
             self.context.merge(child.context)
 

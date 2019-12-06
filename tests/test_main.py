@@ -95,3 +95,15 @@ def test_resolve_project(mocker, mock_micropy):
     mock_proj.exists = True
     assert mock_micropy.resolve_project('.')
 
+
+# def test_create_project(mock_cwd, mock_micropy, get_stub_paths, tmp_path):
+#     """high-level test"""
+#     from micropy.project import Project, modules
+#     # Setup Micropy
+#     mp = mock_micropy
+#     stub_paths = get_stub_paths(count=2, valid=True)
+#     for i in stub_paths:
+#         mp.stubs.add(i)
+#     proj_stub = list(mp.stubs)[0]
+#     # Create Project
+#     proj = Project()

@@ -102,7 +102,6 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner, cliargs
     mock_project.assert_called_once_with(exp_path, **exp_project)
     # mock_add = mock_project.return_value.add
     # Assert Templates
-    exp_template = expargs.pop('template', {})
     expect_calls = [
         mocker.call(mock_modules.StubsModule, mock_mpy.stubs, stubs=['stub']),
         mocker.call(mock_modules.PackagesModule, "requirements.txt"),
