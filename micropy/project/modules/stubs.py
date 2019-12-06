@@ -128,7 +128,7 @@ class StubsModule(ProjectModule):
         stubs = list(self._load_stub_data(stub_data=stub_data))
         stubs.extend(self.stubs)
         self.stubs = self._resolve_subresource(stubs)
-        return self.stubs
+        return self.update()
 
     def create(self):
         """Create stub project files."""
@@ -139,8 +139,9 @@ class StubsModule(ProjectModule):
 
     def update(self):
         """Update current project stubs."""
-        self.stubs = self.load()
-        self.parent.config.set('stubs', {s.name: s.stub_version for s in self._stubs})
+        self.parent.context.set('stubs', self.stubs)
+        self.parent.context.set('paths', self.context.get('paths'))
+        self.parent.config.set('stubs', {s.name: s.stub_version for s in self.stubs})
         return self.stubs
 
     @ProjectModule.hook()

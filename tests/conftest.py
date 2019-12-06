@@ -196,3 +196,18 @@ def mock_pkg(mocker, tmp_path):
     mock_tarbytes.return_value = tmp_pkg
     mock_meta.return_value = {'url': 'http://realurl.com'}
     return tmp_pkg
+
+
+# Pytest Incremental Marker
+def pytest_runtest_makereport(item, call):
+    if "incremental" in item.keywords:
+        if call.excinfo is not None:
+            parent = item.parent
+            parent._previousfailed = item
+
+
+def pytest_runtest_setup(item):
+    if "incremental" in item.keywords:
+        previousfailed = getattr(item.parent, "_previousfailed", None)
+        if previousfailed is not None:
+            pytest.xfail("previous test failed ({})".format(previousfailed.name))
