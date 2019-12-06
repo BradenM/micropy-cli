@@ -24,6 +24,8 @@ def mock_mpy(mocker):
 
 def test_cli_micropy(runner, mocker, mock_cwd):
     """should execute"""
+    if (mock_cwd / '.micropy').exists():
+        (mock_cwd / '.micropy').unlink()
     result = runner.invoke(cli.cli)
     assert result.exit_code == 0
     expected = ("CLI Application for creating/managing"
@@ -98,16 +100,17 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner, cliargs
     exp_project = expargs.pop('project', {})
     exp_path = exp_project.pop("path", mocker.ANY)
     mock_project.assert_called_once_with(exp_path, **exp_project)
+    # mock_add = mock_project.return_value.add
     # Assert Templates
     exp_template = expargs.pop('template', {})
-    mock_modules.TemplatesModule.assert_called_once_with(
-        **exp_template, run_checks=mock_mpy.RUN_CHECKS)
-    # Assert Stubs
-    mock_modules.StubsModule.assert_called_once_with(mock_mpy.stubs, stubs=['stub'])
-    # Assert Reqs
-    mock_modules.PackagesModule.assert_any_call("requirements.txt")
-    mock_modules.DevPackagesModule.assert_any_call("dev-requirements.txt")
-    # Assert Exit Code
+    expect_calls = [
+        mocker.call(mock_modules.StubsModule, mock_mpy.stubs, stubs=['stub']),
+        mocker.call(mock_modules.PackagesModule, "requirements.txt"),
+        mocker.call(mock_modules.DevPackagesModule, "dev-requirements.txt"),
+        mocker.call(mock_modules.TemplatesModule, templates=('vscode', ), run_checks=mocker.ANY),
+    ]
+    mock_project.return_value.add.assert_has_calls(expect_calls, any_order=True)
+    # # Assert Exit Code
     mock_project.return_value.create.assert_called_once()
     assert result.exit_code == 0
 

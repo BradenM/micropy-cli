@@ -21,6 +21,10 @@ class ProjectModule(metaclass=abc.ABCMeta):
     PRIORITY: int = 0
     _hooks: List['HookProxy'] = []
 
+    def __init__(self, parent: Optional['ProjectModule'] = None, log: Optional[ServiceLog] = None):
+        self._parent = parent
+        self.log = log
+
     @property
     def parent(self):
         """Component Parent."""

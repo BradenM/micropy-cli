@@ -4,7 +4,7 @@
 
 import json
 from pathlib import Path
-from typing import Any, Iterator, List, Optional, Sequence, Type
+from typing import Any, Iterator, List, Optional, Type
 
 from boltons.queueutils import PriorityQueue
 
@@ -121,10 +121,11 @@ class Project(ProjectModule):
         return value
 
     def iter_children_by_priority(self) -> Iterator[Type[ProjectModule]]:
-        """Iterate project modules by priority
+        """Iterate project modules by priority.
 
         Yields:
             the next child item
+
         """
         pq = PriorityQueue()
         for i in self._children:
@@ -142,7 +143,7 @@ class Project(ProjectModule):
 
         """
         self.log.debug(f'adding module: {type(component).__name__}')
-        child = component(*args, parent=self, log=self, **kwargs)
+        child = component(*args, **kwargs, log=self.log, parent=self)
         self._children.append(child)
         if hasattr(child, 'context'):
             self.context.merge(child.context)

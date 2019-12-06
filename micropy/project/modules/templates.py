@@ -3,7 +3,6 @@
 """Project Templates Module."""
 
 
-from micropy.logger import Log
 from micropy.project.modules import ProjectModule
 from micropy.project.template import TemplateProvider
 
@@ -25,19 +24,18 @@ class TemplatesModule(ProjectModule):
 
     def __init__(self, templates=None, run_checks=True, **kwargs):
         self.templates = templates or []
+        super().__init__(**kwargs)
         self.run_checks = run_checks
         self.enabled = {
             'vscode': False,
             'pylint': False
         }
-        self.log = Log.add_logger(
-            'Templater', show_title=False)
         if templates:
             for key in self.enabled:
                 if key in self.templates:
                     self.enabled[key] = True
         self.provider = TemplateProvider(
-            self.templates, run_checks=self.run_checks, log=self.log, **kwargs)
+            self.templates, **kwargs)
 
     @property
     def config(self):

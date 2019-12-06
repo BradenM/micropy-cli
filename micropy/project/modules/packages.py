@@ -26,12 +26,12 @@ class PackagesModule(ProjectModule):
     PRIORITY: int = 8
 
     def __init__(self, path, packages=None, **kwargs):
+        super().__init__(**kwargs)
         self._path = Path(path)
         self._loaded = False
         packages = packages or {}
         self.name = "packages"
         self.packages = {**packages}
-        self.log = kwargs.pop('logger', None)
 
     @property
     def path(self):

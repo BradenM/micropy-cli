@@ -94,3 +94,4 @@ def test_resolve_project(mocker, mock_micropy):
     assert not mock_micropy.resolve_project('.').exists
     mock_proj.exists = True
     assert mock_micropy.resolve_project('.')
+

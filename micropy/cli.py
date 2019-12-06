@@ -14,7 +14,6 @@ from micropy import main, utils
 from micropy.logger import Log
 from micropy.project import Project, modules
 
-
 pass_mpy = click.make_pass_decorator(main.MicroPy, ensure=True)
 
 
@@ -97,10 +96,10 @@ def init(mpy, path, name=None, template=None):
     stub_choices = prompt.checkbox(
         f"Which stubs would you like to use?", choices=stubs).ask()
     project = Project(path, name=name)
-    project.add(modules.StubsModule(mpy.stubs, stubs=stub_choices))
-    project.add(modules.PackagesModule('requirements.txt'))
-    project.add(modules.DevPackagesModule('dev-requirements.txt'))
-    project.add(modules.TemplatesModule(templates=template, run_checks=mpy.RUN_CHECKS))
+    project.add(modules.StubsModule, mpy.stubs, stubs=stub_choices)
+    project.add(modules.PackagesModule, 'requirements.txt')
+    project.add(modules.DevPackagesModule, 'dev-requirements.txt')
+    project.add(modules.TemplatesModule, templates=template, run_checks=mpy.RUN_CHECKS)
     proj_relative = project.create()
     mpy.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
 
