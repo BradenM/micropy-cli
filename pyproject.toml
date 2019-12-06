@@ -47,7 +47,7 @@ requirements-parser = "^0.2.0"
 rshell = "^0.0.26"
 tqdm = "^4.39"
 click = "^7.0"
-colorama = {version = "^0.4.1", platform = "win32"}
+colorama = {version = ">=0.4.1,!=0.4.2", platform = "win32"}
 jsonschema = "=3.2.0"
 dpath = "^1.4"
 

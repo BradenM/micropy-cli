@@ -207,15 +207,14 @@ class DevPackagesModule(PackagesModule):
         super().__init__(path, **kwargs)
         self.name = "dev-packages"
 
-    def create(self, *args, **kwargs):
+    def create(self):
         """Creates component."""
+        super().create()
         self.config.add(f"{self.name}/micropy-cli", '*')
-        return super().create(*args, **kwargs)
 
     def load(self, *args, **kwargs):
         """Load component."""
         super().load(*args, **kwargs, fetch=False)
-        self.config.add(f"{self.name}/micropy-cli", '*')
 
     @ProjectModule.hook(dev=True)
     def add_package(self, package, **kwargs):
