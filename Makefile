@@ -44,7 +44,7 @@ watch-build: clean ## build pytest-testmon db
 
 watch: clean ## watch tests
 	- pytest --testmon
-	ptw --spool 500 --onpass "make watch-cov" --clear -- --testmon -v -v -c setup.cfg
+	ptw --spool 500 --onpass "make watch-cov" --clear -- --testmon -vv -c setup.cfg
 
 watch-cov: ## watch test coverage
 	pytest -n'auto' --forked --cov --cov-append --cov-config=setup.cfg --cov-report=xml:cov.xml --cov-report term
@@ -57,9 +57,9 @@ coverage-html: ## generate coverage html
 
 codestyle: ## cleanup code
 	@printf '$(bold)Cleaning Code...\n$(rsttxt)'
-	autoflake -r --exclude ./micropy/lib --remove-all-unused-imports --remove-unused-variables ./micropy --in-place
-	autopep8 -i -r --max-line-length=100 --exclude ./micropy/lib --experimental ./micropy/
-	docformatter -r micropy -i --blank
+	- autoflake -r --exclude ./micropy/lib --remove-all-unused-imports --remove-unused-variables ./micropy --in-place
+	- autopep8 -i -r --max-line-length=100 --exclude ./micropy/lib --experimental ./micropy/
+	- docformatter -r micropy -i --blank
 	$(MAKE) lint
 
 gendoc: ## Generate Docs

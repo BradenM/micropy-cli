@@ -24,8 +24,12 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     prov = TemplateProvider(['vscode'])
     ctx_datadir = tmp_path / 'ctx_cata'
     ctx_datadir.mkdir(exist_ok=True)
+    # Add test local path
+    ctx_local = ctx_datadir / 'src' / 'lib' / 'somelib'
+    ctx_local.mkdir(parents=True)
+    ctx_local_paths = [ctx_local]
     prov.render_to('vscode', tmp_path, stubs=stubs,
-                   paths=ctx_paths, datadir=ctx_datadir)
+                   paths=ctx_paths, datadir=ctx_datadir, local_paths=ctx_local_paths)
     expected_path = tmp_path / '.vscode' / 'settings.json'
     out_content = expected_path.read_text()
     print(out_content)
@@ -35,6 +39,7 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
         valid = [l for l in lines if "//" not in l[:2]]
     # Valid JSON?
     expect_paths = [str(p.relative_to(tmp_path)) for p in ctx_paths]
+    expect_paths.append(str(ctx_local))  # add local path
     content = json.loads("\n".join(valid))
     assert sorted(expect_paths) == sorted(
         content["python.autoComplete.extraPaths"])
@@ -42,7 +47,7 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     # Test Update
     ctx_paths.append((tmp_path / "foobar" / "foo.py"))
     prov.update('vscode', tmp_path, stubs=stubs, paths=ctx_paths,
-                datadir=ctx_datadir)
+                datadir=ctx_datadir, local_paths=ctx_local_paths)
     content = json.loads(expected_path.read_text())
     expect_paths.append(
         str((tmp_path / "foobar" / "foo.py").relative_to(tmp_path)))
