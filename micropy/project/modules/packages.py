@@ -178,6 +178,7 @@ class PackagesModule(ProjectModule):
 
     def create(self):
         """Create project files."""
+        self.config.add(self.name, {})
         return self.update()
 
     def update(self):
