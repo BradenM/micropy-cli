@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import contextlib
 from copy import deepcopy
 from typing import Any, List, Sequence, Tuple, Type, Union
 

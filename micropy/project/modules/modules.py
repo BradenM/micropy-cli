@@ -50,14 +50,14 @@ class ProjectModule(metaclass=abc.ABCMeta):
         """Method to load component."""
 
     @abc.abstractmethod
-    def create(self):
+    def create(self, *args: Any, **kwargs: Any) -> Any:
         """Method to create component."""
 
     @abc.abstractmethod
     def update(self):
         """Method to update component."""
 
-    def add(self, component: Type['ProjectModule'], *args, **kwargs) -> Any:
+    def add(self, component: Type['ProjectModule'], *args: Any, **kwargs: Any) -> Any:
         """Adds component.
 
         Args:

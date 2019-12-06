@@ -209,7 +209,7 @@ class TestStubsModule:
     @pytest.fixture()
     def stub_module(self, mocker, tmp_path, micropy_stubs):
         mp = micropy_stubs()
-        parent_mock = mocker.Mock()
+        parent_mock = mocker.MagicMock()
         parent_mock.data_path = tmp_path / '.micropy'
         stub_item = list(mp.stubs)[0]
         stub_mod = modules.StubsModule(
