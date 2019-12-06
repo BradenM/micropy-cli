@@ -24,10 +24,10 @@ class StubsModule(ProjectModule):
     PRIORITY: int = 9
 
     def __init__(self, stub_manager: StubManager,
-                 stubs: Sequence[DeviceStub] = None):
+                 stubs: Sequence[DeviceStub] = None, **kwargs):
+        super().__init__(**kwargs)
         self.stub_manager: StubManager = stub_manager
         self._stubs: Sequence[DeviceStub] = stubs or []
-        self.log = None
 
     @property
     def context(self):
