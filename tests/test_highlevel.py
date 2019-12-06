@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+from pathlib import Path
 
 import pytest
 import requests
@@ -52,9 +53,9 @@ class TestCreateProject:
     }
 
     expect_vsc_data = [
-        ".micropy/esp32_test_stub/frozen",
-        ".micropy/esp32_test_stub/stubs",
-        ".micropy/NewProject"
+        str(Path(".micropy/esp32_test_stub/frozen")),
+        str(Path(".micropy/esp32_test_stub/stubs")),
+        str(Path(".micropy/NewProject"))
     ]
 
     def check_mp_data(self, path):
