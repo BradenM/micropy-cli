@@ -4,6 +4,8 @@ import json
 import shutil
 from pathlib import Path
 
+from boltons import strutils
+
 from micropy import data, utils
 from micropy.exceptions import StubError, StubValidationError
 from micropy.logger import Log
@@ -482,7 +484,8 @@ class DeviceStub(Stub):
             return self.firmware.firmware
         fware = self.firm_info.get('name', None)
         if not fware:
-            fware = self.firm_info.get('firmware')
+            fware = self.firm_info.get('firmware').strip()
+            fware.replace(' ', '-')
         return fware
 
     @property
@@ -514,7 +517,8 @@ class FirmwareStub(Stub):
 
         self.frozen = self.path / 'frozen'
         self.repo = self.info.get('repo')
-        self.firmware = self.info.get('firmware')
+        firmware = self.info.get('firmware').strip()
+        self.firmware = firmware.replace(' ', '-')
 
     @property
     def name(self):
