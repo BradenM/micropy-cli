@@ -5,6 +5,7 @@
 import json
 from itertools import chain
 from pathlib import Path
+from typing import Iterator, List
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -125,6 +126,31 @@ class Template:
         stream = self.template.stream(self.context)
         return stream
 
+    def iter_relative_paths(self, paths: List[Path], strict: bool = False) -> Iterator[Path]:
+        """Iterate over a list of paths relative to project root.
+
+        Args:
+            paths: List of paths to make relative.
+            strict: Raises ValueError if True and path cannot be made relative.
+                Defaults to False.
+
+        Raises:
+            ValueError: Path could not be made relative and `strict` is True.
+
+        Yields:
+            Path relative to project root.
+
+        """
+        for p in paths:
+            _path = p.absolute()
+            try:
+                _path = p.relative_to(self.datadir.parent)
+            except ValueError as e:
+                if strict:
+                    raise e
+            finally:
+                yield _path
+
     def __str__(self):
         cls_name = self.__class__.__name__
         return f"{cls_name}[{self.template.name}]::[{self.context}]"
@@ -159,10 +185,9 @@ class CodeTemplate(Template):
         """VScode Config Context."""
         paths = self.paths
         if self.datadir:
-            paths = [p.relative_to(self.datadir.parent)
-                     for p in self.paths]
+            paths = list(self.iter_relative_paths(self.paths, strict=True))
         if self.local_paths:
-            paths.extend(s for s in self.local_paths)
+            paths.extend(self.iter_relative_paths(self.local_paths))
         stub_paths = json.dumps([str(s) for s in paths])
         ctx = {
             "stubs": self.stubs or [],
@@ -185,9 +210,9 @@ class PylintTemplate(Template):
         """Pylint Config Context."""
         paths = self.paths
         if self.datadir:
-            paths = [p.relative_to(self.datadir.parent) for p in self.paths]
+            paths = list(self.iter_relative_paths(self.paths, strict=True))
         if self.local_paths:
-            paths.extend(str(p) for p in self.local_paths)
+            paths.extend(self.iter_relative_paths(self.local_paths))
         ctx = {
             "stubs": self.stubs or [],
             "paths": paths or []

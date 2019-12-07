@@ -27,7 +27,8 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     # Add test local path
     ctx_local = ctx_datadir / 'src' / 'lib' / 'somelib'
     ctx_local.mkdir(parents=True)
-    ctx_local_paths = [ctx_local]
+    ctx_absolute = Path('/fakedir/notinprojectdir/somelib')
+    ctx_local_paths = [ctx_local, ctx_absolute]
     prov.render_to('vscode', tmp_path, stubs=stubs,
                    paths=ctx_paths, datadir=ctx_datadir, local_paths=ctx_local_paths)
     expected_path = tmp_path / '.vscode' / 'settings.json'
@@ -39,7 +40,9 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
         valid = [l for l in lines if "//" not in l[:2]]
     # Valid JSON?
     expect_paths = [str(p.relative_to(tmp_path)) for p in ctx_paths]
-    expect_paths.append(str(ctx_local))  # add local path
+    expect_paths.append(str(ctx_local.relative_to(tmp_path)))  # add local path (should be relative)
+    # local path outside of project dir (must be absolute)
+    expect_paths.append(str(ctx_absolute))
     content = json.loads("\n".join(valid))
     assert sorted(expect_paths) == sorted(
         content["python.autoComplete.extraPaths"])
