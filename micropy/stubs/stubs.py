@@ -4,7 +4,6 @@ import json
 import shutil
 from pathlib import Path
 
-from boltons import strutils
 
 from micropy import data, utils
 from micropy.exceptions import StubError, StubValidationError
