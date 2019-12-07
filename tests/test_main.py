@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json
+
 from pathlib import Path
 from shutil import copytree, rmtree
 
@@ -48,7 +48,7 @@ def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     mock_pyb.side_effect = [SystemExit,
                             mock_pyb.return_value, mock_pyb.return_value,
                             mock_pyb.return_value]
-    mp = main.MicroPy()
+    mp = mock_micropy
     mocker.spy(mp.stubs, 'add')
     stub = mp.create_stubs("/dev/PORT")
     assert stub is None
@@ -59,13 +59,6 @@ def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     mp.stubs.add.assert_any_call((tmp_stub_path / 'esp32-1.11.0'))
     rmtree((tmp_stub_path / 'esp32-1.11.0'))
     assert isinstance(stub, stubs.DeviceStub)
-    # Test outpath with firmware
-    mod_path = tmp_stub_path / 'stubber_test_stub' / 'modules.json'
-    mod_data = json.load(mod_path.open())
-    mod_data['firmware']['name'] = 'micropython'
-    json.dump(mod_data, mod_path.open('w+'))
-    stub = mp.create_stubs("/dev/PORT")
-    mp.stubs.add.assert_any_call((tmp_stub_path / 'esp32-micropython-1.11.0'))
 
 
 def test_create_stubs_pymin_check(mocker, mock_micropy):
@@ -94,16 +87,3 @@ def test_resolve_project(mocker, mock_micropy):
     assert not mock_micropy.resolve_project('.').exists
     mock_proj.exists = True
     assert mock_micropy.resolve_project('.')
-
-
-# def test_create_project(mock_cwd, mock_micropy, get_stub_paths, tmp_path):
-#     """high-level test"""
-#     from micropy.project import Project, modules
-#     # Setup Micropy
-#     mp = mock_micropy
-#     stub_paths = get_stub_paths(count=2, valid=True)
-#     for i in stub_paths:
-#         mp.stubs.add(i)
-#     proj_stub = list(mp.stubs)[0]
-#     # Create Project
-#     proj = Project()

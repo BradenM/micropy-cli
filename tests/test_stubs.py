@@ -13,9 +13,10 @@ def mock_fware(mocker, shared_datadir):
     def mock_ready(self, *args, **kwargs):
         fware_stub = shared_datadir / 'fware_test_stub'
         return super().ready(path=fware_stub)
+    fware_stub = shared_datadir / 'fware_test_stub'
     mock_remote = mocker.patch.object(
         stubs.source, "RemoteStubSource").return_value
-    mock_remote.ready.return_value = mock_ready
+    mock_remote.ready.return_value.__enter__.return_value = fware_stub
 
 
 def test_stub_validation(shared_datadir):
@@ -147,13 +148,13 @@ def test_add_with_resource(datadir, mock_fware, tmp_path, mocker):
     manager.add(datadir)
     assert len(manager) == 2
     assert "esp8266_test_stub" in [p.name for p in resource.iterdir()]
-    assert load_spy.call_count == 5
+    assert load_spy.call_count == 4
     # Should not add any new stubs
     assert manager.add(datadir)
-    assert load_spy.call_count == 5
+    assert load_spy.call_count == 4
     # Should force load
     assert manager.add(datadir, force=True)
-    assert load_spy.call_count == 10
+    assert load_spy.call_count == 7
 
 
 def test_add_no_resource_no_dest(datadir, mock_fware):
