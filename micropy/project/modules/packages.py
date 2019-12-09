@@ -78,6 +78,16 @@ class PackagesModule(ProjectModule):
         """
         return self.parent.context
 
+    @property
+    def cache(self) -> Config:
+        """Project Cache.
+
+        Returns:
+            Project wide cache
+
+        """
+        return self.parent.cache
+
     def install_package(self, source: Union[LocalDependencySource, PackageDependencySource]) -> Any:
         with source as files:
             if source.is_local:
@@ -162,7 +172,7 @@ class PackagesModule(ProjectModule):
                     if pkg.editable:
                         self.context.extend('local_paths', [pkg.path], unique=True)
         pkg_keys = set(self.packages.keys())
-        pkg_cache = self.parent._get_cache(self.name)
+        pkg_cache = self.cache.get(self.name)
         new_pkgs = pkg_keys.copy()
         if pkg_cache:
             new_pkgs = new_pkgs - set(pkg_cache)
@@ -179,7 +189,7 @@ class PackagesModule(ProjectModule):
                     format_desc=lambda p: f"{self.log.get_service()} {format_desc(p)}")
                 self.install_package(source)
         self.update()
-        self.parent._set_cache(self.name, list(pkg_keys))
+        self.cache.upsert(self.name, list(pkg_keys))
 
     def create(self):
         """Create project files."""

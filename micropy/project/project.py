@@ -2,7 +2,6 @@
 
 """Hosts functionality relating to generation of user projects."""
 
-import json
 from pathlib import Path
 from typing import Any, Iterator, List, Optional, Type
 
@@ -29,6 +28,7 @@ class Project(ProjectModule):
         self.data_path: Path = self.path / '.micropy'
         self.info_path: Path = self.path / 'micropy.json'
         self.cache_path: Path = self.data_path / '.cache'
+        self._cache = Config(self.cache_path)
         self._context = Config(source_format=DictConfigSource,
                                default={'datadir': self.data_path})
         self.name: str = name or self.path.name
@@ -62,51 +62,30 @@ class Project(ProjectModule):
         """Project Configuration.
 
         Returns:
-            Config: Dictionary of Project Config Values
+            Config: Project Config Instance
 
         """
         return self._config
 
     @property
-    def context(self):
+    def context(self) -> Config:
         """Project context used in templates.
 
         Returns:
-            dict: Current context
+            Config: Current context
 
         """
         return self._context
 
-    def _set_cache(self, key, value):
-        """Set key in Project cache.
-
-        Args:
-            key (str): Key to set
-            value (obj): Value to set
-
-        """
-        if not self.cache_path.exists():
-            self.cache_path.write_text("{}")
-        data = json.loads(self.cache_path.read_text())
-        data[key] = value
-        with self.cache_path.open('w+') as f:
-            json.dump(data, f)
-
-    def _get_cache(self, key):
-        """Retrieve value from Project Cache.
-
-        Args:
-            key (str): Key to retrieve
+    @property
+    def cache(self) -> Config:
+        """Project wide cache.
 
         Returns:
-            obj: Value at key
+            Cache instance
 
         """
-        if not self.cache_path.exists():
-            return None
-        data = json.loads(self.cache_path.read_text())
-        value = data.pop(key, None)
-        return value
+        return self._cache
 
     def iter_children_by_priority(self) -> Iterator[Type[ProjectModule]]:
         """Iterate project modules by priority.
