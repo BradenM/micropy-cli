@@ -83,11 +83,13 @@ pytest-forked = [
     {version = "^1.1", platform = "linux"},
     {version = "^1.1", platform = "darwin"}
 ]
+flaky = "^3.6.1"
+pytest-randomly = "^3.1.0"
 
 [tool.dephell.main]
 from = {format = "poetry", path="pyproject.toml"}
 to = {format = "setuppy", path="setup.py"}
 
 [build-system]
-requires = ["poetry>=1.0.0b8"]
+requires = ["poetry>=1.0.0b9"]
 build-backend = "poetry.masonry.api"

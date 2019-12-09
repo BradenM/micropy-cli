@@ -19,7 +19,7 @@ class TemplatesModule(ProjectModule):
             Defaults to True.
 
     """
-    PRIORITY: int = 0
+    PRIORITY: int = 1
     TEMPLATES = TemplateProvider.TEMPLATES
     _dynamic = ['vscode', 'pylint']
 

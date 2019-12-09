@@ -3,8 +3,11 @@
 from pathlib import Path
 
 import pytest
+from boltons.namedutils import namedlist
 
 from micropy import packages
+
+EXPPKG = namedlist('ExpectPackage', ['name', 'specs', 'full_name'])
 
 
 class TestPackages:
@@ -92,3 +95,26 @@ class TestPackages:
                 # is module
                 assert files.is_dir()
                 assert files == source.package.path
+
+    @pytest.mark.parametrize(
+        'pkg,expect',
+        [
+            (('micropy-cli', '*'), EXPPKG('micropy-cli', '*', 'micropy-cli')),
+            (('blynklib', '==0.0.0'), EXPPKG('blynklib', '==0.0.0', 'blynklib==0.0.0')),
+            (('custompkg', '-e src/lib/custompackage'),
+             EXPPKG('custompkg',
+                    '-e src/lib/custompackage',
+                    '-e src/lib/custompackage'))
+        ]
+    )
+    def test_package_from_text(self, pkg, expect, utils):
+        pkg = packages.Package.from_text(*pkg)
+        assert pkg.name == expect.name
+        assert pkg.full_name == pkg.full_name
+        assert pkg.pretty_specs == expect.specs
+        is_e = ('-e' in pkg.full_name)
+        assert pkg.editable == is_e
+        if pkg.editable:
+            assert pkg.path == Path('src/lib/custompackage')
+        else:
+            assert pkg.path == None

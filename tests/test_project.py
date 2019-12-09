@@ -11,8 +11,6 @@ from micropy.project import modules
 
 @pytest.fixture
 def get_module(tmp_path):
-    tmp_reqs = tmp_path / 'requirements.txt'
-    tmp_devreqs = tmp_path / 'dev-requirements.txt'
 
     def _get_module(names, mp, **kwargs):
         _templates = list(modules.TemplatesModule.TEMPLATES.keys())
@@ -98,7 +96,7 @@ def get_context():
 
 
 @pytest.fixture
-def test_project(micropy_stubs, mock_cwd, tmp_path, get_module):
+def test_project(micropy_stubs, tmp_path, get_module):
     def _test_project(mods="", path=None):
         mp = micropy_stubs()
         proj_path = path if path else tmp_path / "NewProject"
@@ -107,7 +105,6 @@ def test_project(micropy_stubs, mock_cwd, tmp_path, get_module):
         for m in mods:
             proj.add(*m[0], **m[1])
         yield proj, mp
-        shutil.rmtree(proj_path)
     return _test_project
 
 
@@ -164,11 +161,11 @@ def test_project_queue(tmp_path, mock_cwd, mocker):
 )
 class TestProject:
 
-    def test_create(self, test_project, mock_checks, mods):
+    def test_create(self, test_project, mock_checks, mods, utils):
         test_proj, _ = next(test_project(mods))
         assert test_proj.config.get('name') == 'NewProject'
         resp = test_proj.create()
-        assert str(resp) == "NewProject"
+        assert str(resp) == utils.str_path(test_proj.path)
         assert test_proj.exists
         assert test_proj.info_path.exists()
         if test_proj._children:
@@ -251,20 +248,22 @@ class TestPackagesModule:
         proj.create()
         return proj
 
+    @pytest.mark.flaky
     def test_add_package(self, test_project, mock_pkg, tmp_path):
-        proj, mp = next(test_project('reqs', path=(tmp_path / 'nicenewpath')))
+        proj, mp = next(test_project('reqs'))
         proj.create()
-        proj.add_package('somepkg>=7')
-        print(proj.config._config)
-        assert proj.config.get('packages/somepkg') == '>=7'
-        assert len(list((proj.data_path / proj.name).iterdir())) > 0
+        proj.add_package('somepkg==7')
         # Shouldnt allow duplicate pkgs
         res = proj.add_package('somepkg')
         assert res is None
-        assert proj.config.get('packages/somepkg') == '>=7'
+
+    @pytest.mark.flaky()
+    def test_add_local_package(self, test_project, tmp_path, utils):
+        proj, mp = next(test_project('reqs'))
+        pkg = tmp_path / 'custompkg'
+        pkg.mkdir(parents=True)
         # Add from path
-        proj.add_package(f"-e {mock_pkg}", name="MockPack")
-        assert proj.config.get('packages/mockpack') == f'-e {mock_pkg}'
+        proj.add_package(f"-e {pkg}")
 
     def test_package_error(self, test_project, mock_pkg, mocker, tmp_path, caplog):
         packages.source_package.utils.extract_tarbytes.side_effect = [ValueError, Exception]
