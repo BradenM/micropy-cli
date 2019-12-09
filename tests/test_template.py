@@ -42,7 +42,7 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     expect_paths = [str(p.relative_to(tmp_path)) for p in ctx_paths]
     expect_paths.append(str(ctx_local.relative_to(tmp_path)))  # add local path (should be relative)
     # local path outside of project dir (must be absolute)
-    expect_paths.append(str(ctx_absolute))
+    expect_paths.append(str(ctx_absolute.absolute()))
     content = json.loads("\n".join(valid))
     assert sorted(expect_paths) == sorted(
         content["python.autoComplete.extraPaths"])

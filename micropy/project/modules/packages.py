@@ -26,7 +26,7 @@ class PackagesModule(ProjectModule):
 
     """
     name: str = "packages"
-    PRIORITY: int = 8
+    PRIORITY: int = 7
 
     def __init__(self, path, **kwargs):
         super().__init__(**kwargs)
@@ -129,8 +129,8 @@ class PackagesModule(ProjectModule):
             self.log.error(f"$[{pkg}] is already installed!")
             self.update()
             return None
+        self.config.add(self.name + '/' + pkg.name, pkg.pretty_specs)
         try:
-            self.config.add(self.name + '/' + pkg.name, pkg.pretty_specs)
             self.load()
         except ValueError as e:
             self.log.error(f"Failed to find package $[{pkg.name}]!")
@@ -142,27 +142,31 @@ class PackagesModule(ProjectModule):
                 exception=e)
             self.config.pop(self.name + '/' + pkg.name)
         else:
+            if pkg.editable:
+                self.context.extend('local_paths', [pkg.path], unique=True)
             self.log.success("Package installed!")
         finally:
+            self.parent.update()
             return self.packages
 
     def load(self, fetch=True, **kwargs):
         """Retrieves and stubs project requirements."""
         self.pkg_path.mkdir(exist_ok=True)
-        packages = self.config.get(self.name, {})
         if self.path.exists():
             reqs = utils.iter_requirements(self.path)
             for r in reqs:
                 pkg = create_dependency_source(r.line).package
-                if not packages.get(pkg.name):
-                    packages.update({pkg.name: pkg.pretty_specs})
-        pkg_keys = set(packages.keys())
+                if not self.packages.get(pkg.name):
+                    self.config.add(self.name + '/' + pkg.name, pkg.pretty_specs)
+                    if pkg.editable:
+                        self.context.extend('local_paths', [pkg.path], unique=True)
+        pkg_keys = set(self.packages.keys())
         pkg_cache = self.parent._get_cache(self.name)
         new_pkgs = pkg_keys.copy()
         if pkg_cache:
             new_pkgs = new_pkgs - set(pkg_cache)
         new_packages = [Package.from_text(name, spec)
-                        for name, spec in packages.items() if name in new_pkgs]
+                        for name, spec in self.packages.items() if name in new_pkgs]
         if fetch:
             if new_packages:
                 self.log.title("Fetching Requirements")
@@ -178,14 +182,16 @@ class PackagesModule(ProjectModule):
 
     def create(self):
         """Create project files."""
-        self.config.add(self.name, {})
+        if not self.config.get(self.name):
+            self.config.add(self.name, {})
         return self.update()
 
     def update(self):
         """Dumps packages to file at path."""
         if not self.path.exists():
             self.path.touch()
-        pkgs = [Package.from_text(name, spec) for name, spec in self.packages.items()]
+        pkgs = [Package.from_text(name, spec)
+                for name, spec in self.config.get(self.name).items()]
         self.log.debug(f'dumping to {self.path.name}')
         with self.path.open('r+') as f:
             content = [c.strip() for c in f.readlines() if c.strip() != '']
@@ -195,13 +201,14 @@ class PackagesModule(ProjectModule):
             f.seek(0)
             f.writelines(lines)
         local_paths = [p.path for p in pkgs if p.editable]
-        self.context.add('local_paths', local_paths)
+        if local_paths:
+            self.context.add('local_paths', local_paths)
         self.context.extend('paths', [self.pkg_path], unique=True)
 
 
 class DevPackagesModule(PackagesModule):
     """Project Module for Dev Packages."""
-    PRIORITY: int = 7
+    PRIORITY: int = 8
 
     def __init__(self, path, **kwargs):
         super().__init__(path, **kwargs)
@@ -209,8 +216,8 @@ class DevPackagesModule(PackagesModule):
 
     def create(self):
         """Creates component."""
-        super().create()
         self.config.add(f"{self.name}/micropy-cli", '*')
+        super().create()
 
     def load(self, *args, **kwargs):
         """Load component."""

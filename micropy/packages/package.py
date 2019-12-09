@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 
+from pathlib import Path
 from typing import List, Optional, Tuple
 
 import requirements
 from packaging.utils import canonicalize_name
-from pathlib import Path
 
 
 class Package:
 
-    def __init__(self, name: str, specs: List[Tuple[str, str]], path: Optional[str] = None):
+    def __init__(self, name: str, specs: List[Tuple[str, str]], path: Optional[Path] = None):
         """Generic Python Dependency.
 
         Args:
@@ -29,7 +29,9 @@ class Package:
         return canonicalize_name(self._name)
 
     @property
-    def path(self) -> Path:
+    def path(self) -> Optional[Path]:
+        if not self._path:
+            return None
         return Path(self._path)
 
     @property
