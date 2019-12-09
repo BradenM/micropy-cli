@@ -258,6 +258,17 @@ def create(mpy, port, verbose=False):
     at: https://github.com/Josverl/micropython-stubber
 
     """
+    if not utils.CREATE_STUBS_INSTALLED:
+        mpy.log.error("\nMissing requirements!")
+        mpy.log.info((
+            "To create stubs, Micropy Cli depends on "
+            "$[PyMinifier] and $[rshell]."
+        ))
+        mpy.log.info((
+            "To install the extra requirements needed, "
+            "please execute: $B[pip install micropy-cli[create_stubs]]"
+        ))
+        sys.exit(1)
     return mpy.create_stubs(port, verbose=verbose)
 
 
