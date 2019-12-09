@@ -88,7 +88,8 @@ class PackagesModule(ProjectModule):
                 # Iterates over flattened list of stubs tuple
                 file_paths = [(f, (self.pkg_path / f.name)) for f in list(sum(files, ()))]
                 for paths in file_paths:
-                    return shutil.move(*paths)  # overwrites if existing
+                    shutil.move(*paths)  # overwrites if existing
+                return file_paths
             self.log.debug(f'installing {source} as package')
             pkg_path = self.pkg_path / source.package.name
             return fileutils.copytree(files, pkg_path)
@@ -151,7 +152,7 @@ class PackagesModule(ProjectModule):
 
     def load(self, fetch=True, **kwargs):
         """Retrieves and stubs project requirements."""
-        self.pkg_path.mkdir(exist_ok=True)
+        self.pkg_path.mkdir(parents=True, exist_ok=True)
         if self.path.exists():
             reqs = utils.iter_requirements(self.path)
             for r in reqs:
@@ -182,6 +183,7 @@ class PackagesModule(ProjectModule):
 
     def create(self):
         """Create project files."""
+        self.pkg_path.mkdir(parents=True, exist_ok=True)
         if not self.config.get(self.name):
             self.config.add(self.name, {})
         return self.update()

@@ -100,8 +100,12 @@ def init(mpy, path, name=None, template=None):
     project.add(modules.PackagesModule, 'requirements.txt')
     project.add(modules.DevPackagesModule, 'dev-requirements.txt')
     project.add(modules.TemplatesModule, templates=template, run_checks=mpy.RUN_CHECKS)
-    proj_relative = project.create()
-    mpy.log.title(f"Created $w[{project.name}] at $w[./{proj_relative}]")
+    proj_path = project.create()
+    try:
+        rel_path = f"./{proj_path.relative_to(Path.cwd())}"
+    except ValueError:
+        rel_path = proj_path
+    mpy.log.title(f"Created $w[{project.name}] at $w[{rel_path}]")
 
 
 @cli.command(short_help="Install Project Requirements")

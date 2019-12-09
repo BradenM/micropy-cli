@@ -174,7 +174,7 @@ class Project(ProjectModule):
         self.info_path.touch()
         self.config.sync()
         self.log.success(f"Project Created!")
-        return self.path.relative_to(Path.cwd())
+        return self.path
 
     def update(self):
         """Updates all project components.

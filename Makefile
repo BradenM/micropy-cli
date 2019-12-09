@@ -34,7 +34,7 @@ lint: ## check style with flake8
 	flake8 --statistics --count -q
 
 test: ## run tests quickly with the default Python
-	pytest -n'auto' --forked -ra
+	pytest --forked -ra
 
 test-all: ## run tests on every Python version with tox
 	tox
@@ -44,7 +44,7 @@ watch-build: clean ## build pytest-testmon db
 
 watch: clean ## watch tests
 	- pytest --testmon
-	ptw --spool 500 --onpass "make watch-cov" --clear -- --testmon -vv -c setup.cfg
+	ptw --spool 2000 --onpass "make watch-cov" --clear -- --testmon -vv -c setup.cfg
 
 watch-cov: ## watch test coverage
 	pytest -n'auto' --forked --cov --cov-append --cov-config=setup.cfg --cov-report=xml:cov.xml --cov-report term

@@ -21,9 +21,8 @@ mock_vscode_exts = [
 ]
 
 
-@pytest.fixture(autouse=True)
-def mock_requests(mocker):
-    mocker.patch('requests.session')
+def pytest_collection_modifyitems(items):
+    items.reverse()
 
 
 @pytest.fixture(autouse=True)
@@ -243,6 +242,11 @@ class AssertUtils:
         print("==============")
         return match_d1 == match_d2
 
+    def list_equal(self, l1, l2):
+        list_one = sorted(l1)
+        list_two = sorted(l2)
+        return list_one == list_two
+
     def load_json(self, path):
         import json
         return json.loads(path.read_text())
@@ -250,6 +254,19 @@ class AssertUtils:
     def json_equal_dict(self, path, d2):
         data = self.load_json(path)
         return self.dict_equal(data, d2)
+
+    def str_path(self, path, absolute=False):
+        """x-platform path strings helper"""
+        path = Path(path)
+        if absolute:
+            path = path.absolute()
+        return str(path)
+
+    def get_rand_str(self, length=10):
+        import string
+        import random
+        letters = string.ascii_lowercase
+        return ''.join(random.choice(letters) for i in range(length))
 
 
 @pytest.fixture

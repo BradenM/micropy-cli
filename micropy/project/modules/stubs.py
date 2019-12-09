@@ -4,7 +4,7 @@
 
 import sys
 from pathlib import Path
-from typing import List, Sequence, Union
+from typing import Any, List, Sequence, Union
 
 from boltons import setutils
 
@@ -24,7 +24,7 @@ class StubsModule(ProjectModule):
     PRIORITY: int = 9
 
     def __init__(self, stub_manager: StubManager,
-                 stubs: Sequence[DeviceStub] = None, **kwargs):
+                 stubs: Sequence[DeviceStub] = None, **kwargs: Any):
         super().__init__(**kwargs)
         self.stub_manager: StubManager = stub_manager
         self._stubs: Sequence[DeviceStub] = stubs or []
