@@ -1,4 +1,35 @@
-## [3.1.1](https://github.com/BradenM/micropy-cli/compare/v3.1.0...v) (2019-12-03)
+## [3.2.0-rc.1](https://github.com/BradenM/micropy-cli/compare/v3.1.1...v) (2019-12-09)
+
+
+### Bug Fixes
+
+* Colorama Version Constraint ([f9269c8](https://github.com/BradenM/micropy-cli/commit/f9269c8))
+* Make rshell and pyminifier requirements optional ([#82](https://github.com/BradenM/micropy-cli/issues/82)) ([c004dcb](https://github.com/BradenM/micropy-cli/commit/c004dcb))
+* **config:** Remove cache method for better implementation later ([7e637e3](https://github.com/BradenM/micropy-cli/commit/7e637e3))
+* **project:** Populate Config with Empty Values on creation ([9e93ff7](https://github.com/BradenM/micropy-cli/commit/9e93ff7))
+* **project:** Context not being updated when needed ([0210034](https://github.com/BradenM/micropy-cli/commit/0210034))
+
+
+### Features
+
+* **cli:** Add Local Project Requirements by path ([fb4b898](https://github.com/BradenM/micropy-cli/commit/fb4b898))
+* **config:** New and Improved Config File Interface ([ee26641](https://github.com/BradenM/micropy-cli/commit/ee26641))
+* **config:** Config file/memory autosync and dot notation ([88f30cc](https://github.com/BradenM/micropy-cli/commit/88f30cc))
+* **context:** In-memory DictConfig for Project Context ([a83d5f7](https://github.com/BradenM/micropy-cli/commit/a83d5f7))
+* **deps:** Address Package Source Uniformly ([ef95c85](https://github.com/BradenM/micropy-cli/commit/ef95c85))
+* **deps:** Allow absolute or relative local requirements ([2d2c97f](https://github.com/BradenM/micropy-cli/commit/2d2c97f))
+* **deps:** New Package API for requirement handling ([c77d56f](https://github.com/BradenM/micropy-cli/commit/c77d56f))
+* **project:** Load Project Modules by Priority Queue ([462dd93](https://github.com/BradenM/micropy-cli/commit/462dd93))
+* **project:** Render Local Deps in Project Settings ([7c38ee9](https://github.com/BradenM/micropy-cli/commit/7c38ee9))
+* **project:** Update Config/Context automatically ([dbd4276](https://github.com/BradenM/micropy-cli/commit/dbd4276))
+
+### Performance Improvements
+
+* **project:** Replace Project Cache with Config Instance ([ff6f3db](https://github.com/BradenM/micropy-cli/commit/ff6f3db))
+
+
+
+## [3.1.1](https://github.com/BradenM/micropy-cli/compare/v3.1.0...v3.1.1) (2019-12-03)
 
 
 ### Bug Fixes
@@ -25,7 +56,7 @@
 
 
 
-## [3.1.0](https://github.com/BradenM/micropy-cli/compare/v3.0.1...v) (2019-11-13)
+# [3.1.0](https://github.com/BradenM/micropy-cli/compare/v3.0.1...v3.1.0) (2019-11-13)
 
 
 ### Bug Fixes
