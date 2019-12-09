@@ -74,14 +74,13 @@ test-release: dist ## release on pypi-test repo
 
 release: dist ## package and release
 	@printf '$(bold)Uploading package to PyPi...\n$(rsttxt)'
-	poetry publish -r pypi
+	poetry publish
 	git push --tags
 	@printf '$(bold)Done! Tags Pushed!\n$(rsttxt)'
 
 dist: clean ## builds package
 	@printf '$(bold)Building Source and Wheel...\n$(rsttxt)'
-	pipx run dephell deps convert
-	rm README.rst
+	- rm README.rst
 	poetry build
 	ls -l dist
 

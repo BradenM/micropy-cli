@@ -35,6 +35,7 @@ release = '3.2.0.rc.1'
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
               'sphinx.ext.napoleon',
+              'sphinx_autodoc_typehints',
               'sphinx.ext.autosummary',
               'sphinx.ext.autosectionlabel',
               'sphinx_click.ext',
