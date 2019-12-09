@@ -20,7 +20,7 @@ class DictConfigSource(ConfigSource):
         return any(self.config.keys())
 
     def process(self) -> dict:
-        return {}
+        return self.config
 
     def prepare(self):
         return super().prepare()

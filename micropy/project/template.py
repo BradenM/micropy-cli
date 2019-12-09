@@ -3,6 +3,7 @@
 """Module for handling jinja2 and MicroPy Templates."""
 
 import json
+import os
 from itertools import chain
 from pathlib import Path
 from typing import Iterator, List
@@ -142,14 +143,13 @@ class Template:
 
         """
         for p in paths:
-            _path = p.absolute()
+            path = p
+            if not p.is_absolute():
+                path = Path(os.path.relpath(path)).resolve()
             try:
-                _path = p.relative_to(self.datadir.parent)
-            except ValueError as e:
-                if strict:
-                    raise e
-            finally:
-                yield _path
+                yield path.relative_to(self.datadir.parent)
+            except ValueError:
+                yield path
 
     def __str__(self):
         cls_name = self.__class__.__name__
