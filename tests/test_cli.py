@@ -55,11 +55,14 @@ def test_stub_list(mock_mpy, mocker, runner):
         assert s in result.output
 
 
-def test_stub_create(runner, mock_mpy):
+def test_stub_create(runner, mock_mpy, mocker):
     """should call create_stubs"""
     result = runner.invoke(cli.create, ["/dev/PORT"], obj=mock_mpy)
     mock_mpy.create_stubs.assert_called_once_with("/dev/PORT", verbose=False)
     assert result.exit_code == 0
+    mocker.patch.object(cli.utils, 'CREATE_STUBS_INSTALLED', False)
+    result = runner.invoke(cli.create, ["/dev/PORT"], obj=mock_mpy)
+    assert result.exit_code == 1
 
 
 @pytest.mark.parametrize(

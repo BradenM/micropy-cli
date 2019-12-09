@@ -104,7 +104,7 @@ class MicroPy:
             self.log.error("\nPyminifier not found!")
             self.log.info(
                 ("For device stub creation, micropy-cli depends"
-                 " on $B[pyminifer]."))
+                 " on $B[Pyminifier]."))
             self.log.info(
                 ("Please install via: $[pip install micropy-cli[create_stubs]]"
                  " and try again."))

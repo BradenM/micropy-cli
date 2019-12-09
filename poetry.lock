@@ -566,7 +566,7 @@ isort = ">=4.2.5,<5"
 mccabe = ">=0.6,<0.7"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Python code minifier, obfuscator, and compressor"
 name = "pyminifier"
 optional = false
@@ -586,7 +586,7 @@ category = "main"
 description = "A python implmementation of GNU readline."
 marker = "sys_platform == \"win32\""
 name = "pyreadline"
-optional = false
+optional = true
 python-versions = "*"
 version = "2.1"
 
@@ -605,7 +605,7 @@ six = "*"
 category = "main"
 description = "Python Serial Port Extension"
 name = "pyserial"
-optional = false
+optional = true
 python-versions = "*"
 version = "3.4"
 
@@ -764,7 +764,7 @@ version = "2019.3"
 category = "main"
 description = "A libudev binding"
 name = "pyudev"
-optional = false
+optional = true
 python-versions = "*"
 version = "0.21.0"
 
@@ -880,7 +880,7 @@ version = "0.14.0"
 category = "main"
 description = "A remote shell for working with MicroPython boards."
 name = "rshell"
-optional = false
+optional = true
 python-versions = "*"
 version = "0.0.26"
 
@@ -1179,8 +1179,11 @@ more-itertools = "*"
 docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
+[extras]
+create_stubs = ["pyminifier", "rshell"]
+
 [metadata]
-content-hash = "c51d01b64b17283999a2a96a2ee4b94cc4a32a0302faffee6b4e4ae9b22c58d9"
+content-hash = "a6f0c1467e459cc438c569d359d8a4b3a1f3c7d9c35ff476acfd9fdd3d72b291"
 python-versions = "^3.6"
 
 [metadata.files]

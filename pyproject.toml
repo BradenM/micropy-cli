@@ -44,10 +44,11 @@ packaging = "^19.2"
 questionary = "^1.4"
 requests = "^2.22"
 requirements-parser = "^0.2.0"
-rshell = "^0.0.26"
+rshell = { version = "^0.0.26", optional = true }
+pyminifier = { version = "^2.1", optional = true }
 tqdm = "^4.39"
 click = "^7.0"
-colorama = {version = "^0.4.3", platform = "win32"}
+colorama = { version = "^0.4.3", platform = "win32" }
 jsonschema = "=3.2.0"
 dpath = "^1.4"
 
@@ -85,6 +86,9 @@ pytest-forked = [
 ]
 flaky = "^3.6.1"
 pytest-randomly = "^3.1.0"
+
+[tool.poetry.extras]
+create_stubs = ["pyminifier", "rshell"]
 
 [tool.dephell.main]
 from = {format = "poetry", path="pyproject.toml"}
