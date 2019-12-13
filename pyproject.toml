@@ -96,5 +96,5 @@ from = {format = "poetry", path="pyproject.toml"}
 to = {format = "setuppy", path="setup.py"}
 
 [build-system]
-requires = ["poetry>=1.0.0b9"]
+requires = ["poetry>=1.0.0"]
 build-backend = "poetry.masonry.api"
