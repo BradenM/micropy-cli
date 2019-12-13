@@ -172,8 +172,10 @@ class TestInstall:
     def test_from_requirements(self, runner, mock_proj):
         result = runner.invoke(cli.install, "")
         assert result.exit_code == 0
-        mock_proj.add_from_file.return_value = None
+        mock_proj.add_from_file.side_effect = [FileNotFoundError]
         result = runner.invoke(cli.install, "")
+        assert result.exit_code == 1
+        assert "Aborted!" in result.output
 
     def test_no_project_found(self, runner):
         result = runner.invoke(cli.install, ["package"])
@@ -184,3 +186,9 @@ class TestInstall:
         result = runner.invoke(cli.install, ["badpackage"])
         assert result.exit_code == 1
         assert "Aborted!" in result.output
+
+    def test_from_path(self, runner, mock_proj, tmp_path):
+        tmp_package = tmp_path / 'mycustompackage'
+        tmp_package.mkdir()
+        result = runner.invoke(cli.install, ['--path', str(tmp_package)])
+        assert result.exit_code == 0

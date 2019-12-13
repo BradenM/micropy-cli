@@ -157,7 +157,7 @@ def test_get_package_meta(mocker, requests_mock):
     assert result == {
         "url": "return-me.tar.gz"
     }
-    result = utils.get_package_meta("foobar", "https://pypi.org/pypi/foobar/json", spec="==0.0.0")
+    result = utils.get_package_meta("foobar==0.0.0", "https://pypi.org/pypi/foobar/json")
     assert result == {
         "url": "early-version.tar.gz"
     }
