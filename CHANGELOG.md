@@ -1,8 +1,12 @@
-## [3.2.0-rc.1](https://github.com/BradenM/micropy-cli/compare/v3.1.1...v) (2019-12-09)
+## [3.2.0-rc.2](https://github.com/BradenM/micropy-cli/compare/v3.1.1...v) (2019-12-09)
 
 
 ### Bug Fixes
 
+* **cli:** Handle and Report Invalid Package Name Error ([d8b2b06](https://github.com/BradenM/micropy-cli/commit/d8b2b06)), closes [#85](https://github.com/BradenM/micropy-cli/issues/85)
+* **cli:** Handle errors when reading requirements from path ([dfb9390](https://github.com/BradenM/micropy-cli/commit/dfb9390)), closes [#86](https://github.com/BradenM/micropy-cli/issues/86)
+* **deps:** Fix loading requirements from path ([850f37e](https://github.com/BradenM/micropy-cli/commit/850f37e))
+* **utils:** Follow redirects when testing for valid url ([abf8dfc](https://github.com/BradenM/micropy-cli/commit/abf8dfc))
 * Colorama Version Constraint ([f9269c8](https://github.com/BradenM/micropy-cli/commit/f9269c8))
 * Make rshell and pyminifier requirements optional ([#82](https://github.com/BradenM/micropy-cli/issues/82)) ([c004dcb](https://github.com/BradenM/micropy-cli/commit/c004dcb))
 * **config:** Remove cache method for better implementation later ([7e637e3](https://github.com/BradenM/micropy-cli/commit/7e637e3))
@@ -12,6 +16,7 @@
 
 ### Features
 
+* **poetry:** Update Poetry to Stable ([2a8b75e](https://github.com/BradenM/micropy-cli/commit/2a8b75e))
 * **cli:** Add Local Project Requirements by path ([fb4b898](https://github.com/BradenM/micropy-cli/commit/fb4b898))
 * **config:** New and Improved Config File Interface ([ee26641](https://github.com/BradenM/micropy-cli/commit/ee26641))
 * **config:** Config file/memory autosync and dot notation ([88f30cc](https://github.com/BradenM/micropy-cli/commit/88f30cc))
