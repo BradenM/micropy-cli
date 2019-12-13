@@ -194,6 +194,8 @@ def mock_pkg(mocker, tmp_path):
     tmp_pkg.mkdir()
     (tmp_pkg / 'module.py').touch()
     (tmp_pkg / 'file.py').touch()
+    mocker.patch.object(
+        packages.source_package.utils, 'is_downloadable', return_value=True)
     mock_tarbytes = mocker.patch.object(
         packages.source_package.utils, 'extract_tarbytes')
     mock_meta = mocker.patch.object(

@@ -259,10 +259,11 @@ def iter_requirements(path):
             yield req
 
 
-def get_package_meta(name, url=, spec=None):
+def get_package_meta(name, url, spec=None):
     """Retrieve package metadata from PyPi.
 
     Args:
+        name (str): Name of package.
         url (str): Url to package.
         spec (str, optional): Optional version spec.
             Defaults to None. If none, returns latest.
