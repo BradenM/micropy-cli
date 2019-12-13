@@ -4,8 +4,10 @@ import shutil
 
 import pytest
 from boltons import setutils
+from requests import RequestException
 
 from micropy import config, packages, project
+from micropy.exceptions import RequirementException
 from micropy.project import modules
 
 
@@ -266,17 +268,14 @@ class TestPackagesModule:
         proj.add_package(f"-e {pkg}")
 
     def test_package_error(self, test_project, mock_pkg, mocker, tmp_path, caplog):
-        packages.source_package.utils.extract_tarbytes.side_effect = [ValueError, Exception]
+        packages.source_package.utils.ensure_valid_url.side_effect = [RequestException]
         path = tmp_path / 'newdir'
         proj, mp = next(test_project('reqs', path=path))
         proj.create()
-        pkgs = proj.add_package('newpackage')
-        assert proj.config.get('packages/newpackage', None) is None
-        assert 'newpackage' not in pkgs.keys()
-        assert "Is it available on PyPi?" in caplog.text
-        pkgs = proj.add_package('anothaone')
-        assert 'anothaone' not in pkgs.keys()
-        assert 'An error occured during the installation' in caplog.text
+        with pytest.raises(RequirementException):
+            pkgs = proj.add_package('newpackage')
+            assert proj.config.get('packages/newpackage', None) is None
+            assert 'newpackage' not in pkgs.keys()
 
     def test_add_dev_package(self, mocker, mock_pkg, test_project):
         proj, mp = next(test_project('reqs,dev-reqs'))
