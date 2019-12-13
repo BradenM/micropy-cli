@@ -6,7 +6,10 @@ from pathlib import Path
 from tempfile import mkdtemp
 from typing import Any, Callable, List, Optional, Tuple, Union
 
+from requests.exceptions import RequestException
+
 from micropy import utils
+from micropy.exceptions import RequirementNotFound
 
 from .package import Package
 from .source import DependencySource
@@ -21,16 +24,25 @@ class PackageDependencySource(DependencySource):
             Defaults to None.
 
     """
+    repo: str = "https://pypi.org/pypi/{name}/json"
 
     def __init__(self, package: Package,
                  format_desc: Optional[Callable[..., Any]] = None):
         super().__init__(package)
-        self._meta: dict = utils.get_package_meta(str(self.package), self.package.pretty_specs)
+        if not utils.is_downloadable(self.source_url):
+            raise RequirementNotFound(
+                f"{self.source_url} is not a valid url!", package=self.package)
+        self._meta: dict = utils.get_package_meta(
+            str(self.package),
+            self.source_url,
+            self.package.pretty_specs
+        )
         self.format_desc = format_desc or (lambda n: n)
 
     @property
     def source_url(self) -> str:
-        return self._meta['url']
+        _url = self.repo.format(name=str(self.package))
+        return _url
 
     @property
     def file_name(self) -> str:

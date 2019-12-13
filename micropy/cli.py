@@ -165,7 +165,13 @@ def install(mpy, packages, dev=False, path=None):
         sys.exit(0)
     mpy.log.title("Installing Packages")
     for pkg in packages:
-        project.add_package(pkg, dev=dev)
+        try:
+            project.add_package(pkg, dev=dev)
+        except exc.RequirementNotFound as e:
+            pkg_name = str(e.package)
+            mpy.log.error((f"Could not find {pkg_name}!"
+                           " Is it available on PyPi?"), exception=e)
+            raise click.Abort()
 
 
 @stubs.command(short_help="Add Stubs from package or path")
