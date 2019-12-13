@@ -149,15 +149,10 @@ class PackagesModule(ProjectModule):
         self.config.add(self.name + '/' + pkg.name, pkg.pretty_specs)
         try:
             self.load()
-        except ValueError as e:
-            self.log.error(f"Failed to find package $[{pkg.name}]!")
-            self.log.error("Is it available on PyPi?", exception=e)
+        except Exception:
+            self.log.debug(f"failed to install: {pkg.name}")
             self.config.pop(self.name + '/' + pkg.name)
-        except Exception as e:
-            self.log.error(
-                f"An error occured during the installation of $[{pkg.name}]!",
-                exception=e)
-            self.config.pop(self.name + '/' + pkg.name)
+            raise
         else:
             if pkg.editable:
                 self.context.extend('local_paths', [pkg.path], unique=True)
