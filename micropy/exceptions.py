@@ -3,7 +3,11 @@
 """Micropy Exceptions."""
 
 
-class StubError(Exception):
+class MicropyException(Exception):
+    """Generic MicroPy Exception"""
+
+
+class StubError(MicropyException):
     """Exception for any errors raised by stubs."""
 
     def __init__(self, message=None, stub=None):
@@ -33,3 +37,15 @@ class StubNotFound(StubError):
         stub_name = stub_name or "Unknown"
         msg = f"{stub_name} is not available!"
         return super().__init__(msg)
+
+
+class RequirementException(MicropyException):
+    """A Requirement Exception Occurred"""
+
+    def __init__(self, *args, **kwargs):
+        self.package = kwargs.pop('package', None)
+        super().__init__(*args, **kwargs)
+
+
+class RequirementNotFound(RequirementException):
+    """A requirement could not be found."""
