@@ -33,7 +33,7 @@ class PackageDependencySource(DependencySource):
             raise RequirementNotFound(
                 f"{self.source_url} is not a valid url!", package=self.package)
         self._meta: dict = utils.get_package_meta(
-            str(self.package),
+            self.package.name,
             self.source_url,
             self.package.pretty_specs
         )
@@ -41,7 +41,7 @@ class PackageDependencySource(DependencySource):
 
     @property
     def source_url(self) -> str:
-        _url = self.repo.format(name=str(self.package))
+        _url = self.repo.format(name=self.package.name)
         return _url
 
     @property

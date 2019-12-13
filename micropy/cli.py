@@ -167,9 +167,9 @@ def install(mpy, packages, dev=False, path=None):
     for pkg in packages:
         try:
             project.add_package(pkg, dev=dev)
-        except exc.RequirementNotFound as e:
+        except exc.RequirementException as e:
             pkg_name = str(e.package)
-            mpy.log.error((f"Could not find {pkg_name}!"
+            mpy.log.error((f"Failed to install {pkg_name}!"
                            " Is it available on PyPi?"), exception=e)
             raise click.Abort()
 

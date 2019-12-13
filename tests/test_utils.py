@@ -133,9 +133,8 @@ def test_generate_stub(shared_datadir, tmp_path, mocker):
     assert print_mock.call_count >= 1
 
 
-def test_get_package_meta(mocker):
+def test_get_package_meta(mocker, requests_mock):
     """should get package meta"""
-    mock_req = mocker.patch.object(utils.helpers, 'requests')
     mock_data = {
         "releases": {
             "0.0.0": [
@@ -153,13 +152,12 @@ def test_get_package_meta(mocker):
             ],
         }
     }
-    mock_req.get.return_value.json.return_value = mock_data
-    result = utils.get_package_meta("foobar")
+    requests_mock.get("https://pypi.org/pypi/foobar/json", json=mock_data)
+    result = utils.get_package_meta("foobar", "https://pypi.org/pypi/foobar/json")
     assert result == {
         "url": "return-me.tar.gz"
     }
-    mock_req.get.assert_called_once_with("https://pypi.org/pypi/foobar/json")
-    result = utils.get_package_meta("foobar", spec="==0.0.0")
+    result = utils.get_package_meta("foobar", "https://pypi.org/pypi/foobar/json", spec="==0.0.0")
     assert result == {
         "url": "early-version.tar.gz"
     }

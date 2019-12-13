@@ -7,6 +7,7 @@ import pytest
 from click.testing import CliRunner
 
 from micropy import cli
+from micropy.exceptions import RequirementException
 
 
 @pytest.fixture
@@ -154,22 +155,32 @@ def test_cli_stubs_search(mock_mpy, runner):
     assert result.exit_code == 0
 
 
-def test_cli_install(mocker, runner, mock_mpy):
-    """should install packages"""
-    mock_project = mocker.patch.object(cli, 'Project')
-    mock_proj = mock_project.return_value
-    mock_mpy.project = mock_proj
-    # Test Normal
-    result = runner.invoke(cli.install, ["package", "--dev"])
-    assert result.exit_code == 0
-    mock_proj.add_package.assert_called_once_with("package", dev=True)
-    # Test from requirements
-    result = runner.invoke(cli.install, "")
-    assert result.exit_code == 0
-    mock_proj.add_from_file.return_value = None
-    result = runner.invoke(cli.install, "")
-    assert result.exit_code == 1
-    # Test no project found
-    mock_mpy.project = None
-    result = runner.invoke(cli.install, ["package"])
-    assert result.exit_code == 1
+class TestInstall:
+
+    @pytest.fixture
+    def mock_proj(self, mocker, mock_mpy):
+        mock_project = mocker.patch.object(cli, 'Project')
+        mock_proj = mock_project.return_value
+        mock_mpy.project = mock_proj
+        return mock_proj
+
+    def test_normal(self, runner, mock_proj):
+        result = runner.invoke(cli.install, ["package", "--dev"])
+        assert result.exit_code == 0
+        mock_proj.add_package.assert_called_once_with("package", dev=True)
+
+    def test_from_requirements(self, runner, mock_proj):
+        result = runner.invoke(cli.install, "")
+        assert result.exit_code == 0
+        mock_proj.add_from_file.return_value = None
+        result = runner.invoke(cli.install, "")
+
+    def test_no_project_found(self, runner):
+        result = runner.invoke(cli.install, ["package"])
+        assert result.exit_code == 1
+
+    def test_bad_package_name(self, runner, mock_proj):
+        mock_proj.add_package.side_effect = [RequirementException]
+        result = runner.invoke(cli.install, ["badpackage"])
+        assert result.exit_code == 1
+        assert "Aborted!" in result.output
