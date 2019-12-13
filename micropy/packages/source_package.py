@@ -6,7 +6,7 @@ from pathlib import Path
 from tempfile import mkdtemp
 from typing import Any, Callable, List, Optional, Tuple, Union
 
-from requests.exceptions import RequestException
+from requests import RequestException
 
 from micropy import utils
 from micropy.exceptions import RequirementNotFound
@@ -29,20 +29,26 @@ class PackageDependencySource(DependencySource):
     def __init__(self, package: Package,
                  format_desc: Optional[Callable[..., Any]] = None):
         super().__init__(package)
-        if not utils.is_downloadable(self.source_url):
+        try:
+            utils.ensure_valid_url(self.repo_url)
+        except RequestException:
             raise RequirementNotFound(
                 f"{self.source_url} is not a valid url!", package=self.package)
-        self._meta: dict = utils.get_package_meta(
-            self.package.name,
-            self.source_url,
-            self.package.pretty_specs
-        )
-        self.format_desc = format_desc or (lambda n: n)
+        else:
+            self._meta: dict = utils.get_package_meta(
+                str(self.package),
+                self.repo_url
+            )
+            self.format_desc = format_desc or (lambda n: n)
+
+    @property
+    def repo_url(self) -> str:
+        _url = self.repo.format(name=str(self.package))
+        return _url
 
     @property
     def source_url(self) -> str:
-        _url = self.repo.format(name=self.package.name)
-        return _url
+        return self._meta['url']
 
     @property
     def file_name(self) -> str:
