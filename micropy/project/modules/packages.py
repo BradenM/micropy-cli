@@ -4,7 +4,7 @@
 
 import shutil
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 from boltons import fileutils
 
@@ -105,19 +105,25 @@ class PackagesModule(ProjectModule):
             return fileutils.copytree(files, pkg_path)
 
     @ProjectModule.hook(dev=False)
-    def add_from_file(self, path=None, dev=False, **kwargs):
+    def add_from_file(self, path: Optional[Path] = None, dev: bool = False, **kwargs: Any) -> dict:
         """Loads all requirements from file.
 
         Args:
-            path (str): Path to file. Defaults to self.path.
-            dev (bool, optional): If dev requirements should be loaded.
+            path: Path to file. Defaults to self.path.
+            dev: If dev requirements should be loaded.
                 Defaults to False.
 
         """
-        reqs = utils.iter_requirements(self.path)
-        for req in reqs:
-            self.add_package(req)
-        return reqs
+        path = path or self.path
+        reqs = utils.iter_requirements(path)
+        self.log.debug(f"loading requirements from: {path}")
+        for r in reqs:
+            pkg = create_dependency_source(r.line).package
+            if not self.packages.get(pkg.name):
+                self.config.add(self.name + '/' + pkg.name, pkg.pretty_specs)
+                if pkg.editable:
+                    self.context.extend('local_paths', [pkg.path], unique=True)
+        return self.packages
 
     @ProjectModule.hook()
     def add_package(self, package, dev=False, **kwargs):
@@ -164,13 +170,7 @@ class PackagesModule(ProjectModule):
         """Retrieves and stubs project requirements."""
         self.pkg_path.mkdir(parents=True, exist_ok=True)
         if self.path.exists():
-            reqs = utils.iter_requirements(self.path)
-            for r in reqs:
-                pkg = create_dependency_source(r.line).package
-                if not self.packages.get(pkg.name):
-                    self.config.add(self.name + '/' + pkg.name, pkg.pretty_specs)
-                    if pkg.editable:
-                        self.context.extend('local_paths', [pkg.path], unique=True)
+            self.add_from_file(self.path)
         pkg_keys = set(self.packages.keys())
         pkg_cache = self.cache.get(self.name)
         new_pkgs = pkg_keys.copy()

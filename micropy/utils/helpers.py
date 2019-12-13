@@ -259,14 +259,12 @@ def iter_requirements(path):
             yield req
 
 
-def get_package_meta(name, url, spec=None):
+def get_package_meta(name, url):
     """Retrieve package metadata from PyPi.
 
     Args:
-        name (str): Name of package.
+        name (str): Name of package with specs.
         url (str): Url to package.
-        spec (str, optional): Optional version spec.
-            Defaults to None. If none, returns latest.
 
     Returns:
         dict: Dictionary of Metadata
@@ -279,12 +277,11 @@ def get_package_meta(name, url, spec=None):
                 yield t
     resp = requests.get(url)
     data = resp.json()
-    pkg_name = f"{name}{spec}" if spec and spec != "*" else name
-    pkg = next(requirements.parse(pkg_name))
+    pkg = next(requirements.parse(name))
     releases = data['releases']
     # Latest version
     spec_data = list(releases.items())[-1][1]
-    if pkg.specs and spec != '*':
+    if pkg.specs:
         spec_comp, spec_v = pkg.specs[0]
         spec_v = version.parse(spec_v)
         rel_versions = [version.parse(k) for k in releases.keys()]
