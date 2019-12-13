@@ -71,12 +71,8 @@ def ensure_valid_url(url):
     """
     if not is_url(url):
         raise reqexc.InvalidURL(f"{url} is not a valid url!")
-    try:
-        resp = requests.head(url)
-    except reqexc.ConnectionError as e:
-        raise e
-    else:
-        resp.raise_for_status()
+    resp = requests.head(url, allow_redirects=True)
+    resp.raise_for_status()
     return url
 
 
