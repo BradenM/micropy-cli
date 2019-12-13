@@ -157,12 +157,14 @@ def install(mpy, packages, dev=False, path=None):
         sys.exit(0)
     if not packages:
         mpy.log.title("Installing all Requirements")
-        reqs = project.add_from_file(dev=dev)
-        if not reqs:
-            mpy.log.error("No requirements.txt file found!")
-            sys.exit(1)
-        mpy.log.success("\nRequirements Installed!")
-        sys.exit(0)
+        try:
+            project.add_from_file(dev=dev)
+        except Exception as e:
+            mpy.error(f"Failed to load requirements!", exception=e)
+            raise click.Abort()
+        else:
+            mpy.log.success("\nRequirements Installed!")
+            sys.exit(0)
     mpy.log.title("Installing Packages")
     for pkg in packages:
         try:

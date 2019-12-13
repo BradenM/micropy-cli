@@ -4,7 +4,7 @@
 
 
 class MicropyException(Exception):
-    """Generic MicroPy Exception"""
+    """Generic MicroPy Exception."""
 
 
 class StubError(MicropyException):
@@ -40,7 +40,7 @@ class StubNotFound(StubError):
 
 
 class RequirementException(MicropyException):
-    """A Requirement Exception Occurred"""
+    """A Requirement Exception Occurred."""
 
     def __init__(self, *args, **kwargs):
         self.package = kwargs.pop('package', None)
