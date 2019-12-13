@@ -14,14 +14,21 @@
 import os
 import sys
 
+import recommonmark
+from recommonmark.transform import AutoStructify
+
 sys.path.insert(0, os.path.abspath('..'))
 
+
+source_suffix = ['.rst', '.md']
 
 # -- Project information -----------------------------------------------------
 
 project = 'micropy-cli'
 copyright = '2019, Braden Mars'
 author = 'Braden Mars'
+
+github_doc_root = 'https://github.com/BradenM/micropy-cli/tree/master/docs/'
 
 # The full version, including alpha/beta/rc tags
 release = '3.2.0.rc.1'
@@ -61,9 +68,24 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+# At the bottom of conf.py
+
+
+def setup(app):
+    app.add_config_value(
+        'recommonmark_config',
+        {
+            'url_resolver': lambda url: github_doc_root + url,
+            'auto_toc_tree_section': 'Contents',
+            'enable_eval_rst': True,
+        },
+        True)
+    app.add_transform(AutoStructify)

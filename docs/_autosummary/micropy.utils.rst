@@ -26,7 +26,6 @@ micropy.utils
       is_update_available
       get_cached_data
       get_class_that_defined_method
-      merge_dicts
 
 
 

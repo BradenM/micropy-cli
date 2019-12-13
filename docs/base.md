@@ -1,30 +1,3 @@
-# Micropy Cli [![PyPI][pypi-img]][pypi-url] [![PyPI - Python Version][pypiv-img]][pypi-url] [![Github - Test Micropy Cli][build-img]][build-url] [![Coverage Status][cover-img]][cover-url]
-
-
-Micropy Cli is a project management/generation tool for writing [Micropython](https://micropython.org/) code in modern IDEs such as VSCode.
-Its primary goal is to automate the process of creating a workspace complete with:
-
-* **Linting** compatible with Micropython
-* VSCode **Intellisense**
-* **Autocompletion**
-* Dependency Management
-* VCS Compatibility
-
-
-<p align='center'>
-    <img width='95%' src='.github/img/micropy.svg' alt="Micropy Demo SVG">
-</p>
-
-[pypi-img]: https://img.shields.io/pypi/v/micropy-cli?logo=pypi&logoColor=white&style=flat-square
-[pypi-url]: https://pypi.org/project/micropy-cli/
-[pypiv-img]: https://img.shields.io/pypi/pyversions/micropy-cli.svg?style=flat-square&logo=python&logoColor=green
-[build-img]: https://img.shields.io/github/workflow/status/BradenM/micropy-cli/Test%20MicropyCli/master?logo=github&style=flat-square
-[build-url]: https://github.com/BradenM/micropy-cli/actions
-[cover-img]: https://img.shields.io/coveralls/github/BradenM/micropy-cli/master?style=flat-square&logo=coveralls
-[cover-url]: https://coveralls.io/github/BradenM/micropy-cli
-
-# Getting Started
-
 ## Installation
 
 You can download and install the latest version of this software from the Python package index (PyPI) as follows:
@@ -36,6 +9,7 @@ If applicable, you can test out a pre-release by executing:
 `pip install --upgrade --pre micropy-cli`
 
 
+# Getting Started
 
 ## Creating a Project
 
@@ -108,7 +82,7 @@ You can also install all requirements found in `micropy.json`/`requirements.txt`
 Lets say your new project will depend on [picoweb](https://pypi.org/project/picoweb/) and [blynklib](https://pypi.org/project/blynklib/). Plus, you'd like to use [rshell](https://pypi.org/project/rshell/) to communicate directly with your device. After creating your project via `micropy init`, you can install your requirements as so:
 
 <p align='center'>
-    <img width="70%" src='.github/img/install_demo.svg' alt="Micropy Pkg Install Demo">
+    <img width="70%" src='https://github.com/BradenM/micropy-cli/raw/master/.github/img/install_demo.svg' alt="Micropy Pkg Install Demo">
 </p>
 
 Now you or anybody cloning your project can import those requirements normally, and have the benefits of all the features micropy brings:
