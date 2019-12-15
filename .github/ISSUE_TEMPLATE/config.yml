@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+    - name: Micropy Stubs
+      url: https://github.com/BradenM/micropy-stubs
+      about: Module missing or can't find your device? Make an issue on micropy-stubs.
