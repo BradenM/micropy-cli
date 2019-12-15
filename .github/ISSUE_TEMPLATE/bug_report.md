@@ -50,9 +50,13 @@ assignees: ''
 <!-- Micropy Version? -->
 <!-- Can be found by running: micropy --version -->
 
+<!-- Python Version? -->
+<!-- Current Python version. -->
+
 <!-- VSCode Version? -->
 <!-- Current VSCode version. (If applicable)  -->
 
 * OS:
 * Micropy Version:
+* Python Version:
 * VSCode Version:
