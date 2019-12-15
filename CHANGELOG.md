@@ -1,4 +1,4 @@
-## [3.2.0-rc.2](https://github.com/BradenM/micropy-cli/compare/v3.1.1...v) (2019-12-09)
+## [3.2.0](https://github.com/BradenM/micropy-cli/compare/v3.1.1...v) (2019-12-09)
 
 
 ### Bug Fixes
