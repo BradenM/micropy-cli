@@ -360,7 +360,7 @@ def is_dir_link(path):
 
 
 def is_update_available():
-    """Check if micropy-cli update is available`
+    """Check if micropy-cli update is available.
 
     Returns:
         bool: True if update available, else False.
@@ -368,11 +368,12 @@ def is_update_available():
     """
     url = f"https://pypi.org/pypi/micropy-cli/json"
     data = get_cached_data(url)
-    versions = list(data['releases'].keys())
-    latest = version.parse(versions[-1])
-    cur_version = version.parse(micropy.__version__)
-    if cur_version < latest:
-        return str(latest)
+    versions = [k for k in data['releases'].keys() if 'rc' not in k]
+    if versions:
+        latest = version.parse(versions[-1])
+        cur_version = version.parse(micropy.__version__)
+        if cur_version < latest:
+            return str(latest)
     return False
 
 
