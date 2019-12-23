@@ -159,7 +159,7 @@ class Config:
         self.log.debug(f"popped config value {value} <- [{key}]")
         return self.sync()
 
-    def extend(self, key: str, value: List[Any], unique: bool = False):
+    def extend(self, key: str, value: List[Any], unique: bool = False) -> dict:
         """Extend a list in config at key path.
 
         Args:
@@ -171,14 +171,14 @@ class Config:
             Updated Config
 
         """
-        to_update = deepcopy(self.get(key, value))
+        to_update = list(deepcopy(self.get(key, value)))
         if unique:
             value = [v for v in value if v not in to_update]
         dpath.merge(to_update, value, flags=dpath.MERGE_ADDITIVE)
         self.set(key, to_update)
         return self.sync()
 
-    def upsert(self, key: str, value: Union[List[Any], dict]):
+    def upsert(self, key: str, value: Union[List[Any], dict]) -> dict:
         """Update or insert values into key list or dict.
 
         Args:
