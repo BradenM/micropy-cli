@@ -1,3 +1,18 @@
+## [3.3.0](https://github.com/BradenM/micropy-cli/compare/v3.2.0...v) (2019-12-23)
+
+
+### Bug Fixes
+
+* **config:** Ensure any values to be extended in config are of type list ([#94](https://github.com/BradenM/micropy-cli/issues/94)) ([0da09fa](https://github.com/BradenM/micropy-cli/commit/0da09fa)), closes [#92](https://github.com/BradenM/micropy-cli/issues/92)
+* **utils:** Ignore candidate releases when checking for update ([8ce6686](https://github.com/BradenM/micropy-cli/commit/8ce6686))
+
+
+### Features
+
+* **project:** Generate recommended extensions with vscode integration ([#95](https://github.com/BradenM/micropy-cli/issues/95)) ([eff9c59](https://github.com/BradenM/micropy-cli/commit/eff9c59)), closes [#84](https://github.com/BradenM/micropy-cli/issues/84)
+
+
+
 ## [3.2.0](https://github.com/BradenM/micropy-cli/compare/v3.1.1...v) (2019-12-09)
 
 
