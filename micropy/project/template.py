@@ -225,6 +225,7 @@ class TemplateProvider:
     _template_files = {
         'vscode': CodeTemplate,
         'pylint': PylintTemplate,
+        'vsextensions': '.vscode/extensions.json',
         'pymakr': "pymakr.conf",
         'main': "src/main.py",
         'boot': "src/boot.py",
@@ -233,8 +234,8 @@ class TemplateProvider:
     ENVIRONMENT = None
     TEMPLATE_DIR = Path(__file__).parent / 'template'
     TEMPLATES = {
-        'vscode': (['vscode'], ("VSCode Settings for "
-                                "Autocompletion/Intellisense")),
+        'vscode': (['vscode', 'vsextensions'], ("VSCode Settings for "
+                                                "Autocompletion/Intellisense")),
         'pymakr': (['pymakr'], "Pymakr Configuration"),
         'pylint': (['pylint'], "Pylint MicroPython Settings"),
         'gitignore': (['gitignore'], "Git Ignore Template"),
