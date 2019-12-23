@@ -241,16 +241,20 @@ def test_is_dir_link(mocker, tmp_path):
     assert not utils.is_dir_link(link_path)
 
 
-def test_is_update_available(mocker):
+@pytest.mark.parametrize('versions,expect', [
+    (['1.0.0rc.1'], False),
+    (['1.0.0rc.1', '1.0.0'], '1.0.0'),
+    (['1.0.0rc.1', '1.0.0', '2.0.0rc.1', '2.0.0'], '2.0.0')
+])
+def test_is_update_available(mocker, requests_mock, versions, expect):
     """Test self-update check method"""
-    mock_req = mocker.patch.object(utils.helpers, 'requests')
+    fake_data = {
+        'releases': {k: [] for k in versions}
+    }
+    requests_mock.get("https://pypi.org/pypi/micropy-cli/json", json=fake_data)
     mocker.patch('micropy.__version__', '0.0.0')
-    mock_req.get.return_value.json.return_value = {'releases': {'1.0.0': []}}
     utils.helpers.get_cached_data.clear_cache()
-    assert utils.helpers.is_update_available() == '1.0.0'
-    mocker.patch('micropy.__version__', '2.0.0')
-    utils.helpers.get_cached_data.clear_cache()
-    assert not utils.helpers.is_update_available()
+    assert utils.helpers.is_update_available() == expect
 
 
 def test_stream_download(mocker):
