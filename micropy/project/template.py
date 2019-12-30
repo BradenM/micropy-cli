@@ -89,6 +89,9 @@ class Template:
     def update_as_json(self, path):
         """Update template file as JSON.
 
+        Aims to merge any manually added json data
+        with the rendered template.
+
         Args:
             path (str): File path to update
 
@@ -101,6 +104,9 @@ class Template:
 
     def update_as_text(self, path, by_contains=None):
         """Update template file as text.
+
+        Aims merge any manually added text content with the rendered
+        template.
 
         Args:
             path (str): file path to update.
@@ -202,7 +208,7 @@ class PylintTemplate(Template):
 
     def __init__(self, *args, **kwargs):
         self.update_method = self.update_as_text
-        self.update_kwargs = {'by_contains': ['sys.path.insert']}
+        self.update_kwargs = {'by_contains': ['init-hook']}
         super().__init__(*args, **kwargs)
 
     @property

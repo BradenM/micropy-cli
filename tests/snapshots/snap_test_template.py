@@ -8,8 +8,8 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots['test_pylint_template 1'] = '''[MASTER]
-# Loaded Stubs: esp8266-micropython-1.9.4, esp32-micropython-1.11.0
-init-hook=\'import sys;sys.path[1:1] = [".micropy/stubs/esp8266_test_stub/stubs", ".micropy/stubs/esp32_test_stub/stubs", ".micropy/stubs/esp8266_test_stub/frozen", ".micropy/stubs/esp32_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen"]\'
+# Loaded Stubs: esp32-micropython-1.11.0, esp8266-micropython-1.9.4
+init-hook=\'import sys;sys.path[1:1] = [".micropy/stubs/esp32_test_stub/stubs", ".micropy/stubs/esp8266_test_stub/stubs", ".micropy/stubs/esp32_test_stub/frozen", ".micropy/stubs/esp8266_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen", ".micropy/foobar/foo"]\'
 
 [MESSAGES CONTROL]
 # Only show warnings with the listed confidence levels. Leave empty to show
