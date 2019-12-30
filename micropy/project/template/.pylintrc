@@ -1,5 +1,5 @@
 [MASTER]
-# Loaded Stubs: {% for stub in stubs %} {{ stub }} {% endfor %}
+# Loaded Stubs: {{ stubs|join(', ') }}
 init-hook='import sys;sys.path[1:1] = {{ paths|map('string')|list|tojson }}'
 
 [MESSAGES CONTROL]
