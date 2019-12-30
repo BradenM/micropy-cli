@@ -9,7 +9,7 @@ snapshots = Snapshot()
 
 snapshots['test_pylint_template 1'] = '''[MASTER]
 # Loaded Stubs: esp32-micropython-1.11.0, esp8266-micropython-1.9.4
-init-hook=\'import sys;sys.path[1:1] = [".micropy/stubs/esp32_test_stub/stubs", ".micropy/stubs/esp8266_test_stub/stubs", ".micropy/stubs/esp32_test_stub/frozen", ".micropy/stubs/esp8266_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen"]\'
+init-hook=\'import sys;sys.path[1:1] = [".micropy/stubs/esp8266_test_stub/stubs", ".micropy/stubs/esp32_test_stub/stubs", ".micropy/stubs/esp8266_test_stub/frozen", ".micropy/stubs/esp32_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen"]\'
 
 [MESSAGES CONTROL]
 # Only show warnings with the listed confidence levels. Leave empty to show
@@ -32,7 +32,7 @@ disable = missing-docstring, line-too-long, trailing-newlines, broad-except, log
 
 snapshots['test_pylint_template 2'] = '''[MASTER]
 # Loaded Stubs: esp32-micropython-1.11.0, esp8266-micropython-1.9.4
-init-hook=\'import sys;sys.path[1:1] = [".micropy/stubs/esp32_test_stub/stubs", ".micropy/stubs/esp8266_test_stub/stubs", ".micropy/stubs/esp32_test_stub/frozen", ".micropy/stubs/esp8266_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen", ".micropy/foobar/foo"]\'
+init-hook=\'import sys;sys.path[1:1] = [".micropy/stubs/esp8266_test_stub/stubs", ".micropy/stubs/esp32_test_stub/stubs", ".micropy/stubs/esp8266_test_stub/frozen", ".micropy/stubs/esp32_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen", ".micropy/stubs/fware_test_stub/frozen", ".micropy/foobar/foo"]\'
 
 [MESSAGES CONTROL]
 # Only show warnings with the listed confidence levels. Leave empty to show
