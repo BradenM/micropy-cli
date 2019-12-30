@@ -193,7 +193,7 @@ class CodeTemplate(Template):
         if self.datadir:
             paths = list(self.iter_relative_paths(self.paths, strict=True))
         if self.local_paths:
-            paths.extend(self.iter_relative_paths(self.local_paths))
+            paths = [*list(self.iter_relative_paths(self.local_paths)), *paths]
         stub_paths = json.dumps([str(s) for s in paths])
         ctx = {
             "stubs": self.stubs or [],
@@ -218,7 +218,7 @@ class PylintTemplate(Template):
         if self.datadir:
             paths = list(self.iter_relative_paths(self.paths, strict=True))
         if self.local_paths:
-            paths.extend(self.iter_relative_paths(self.local_paths))
+            paths = [*list(self.iter_relative_paths(self.local_paths)), *paths]
         ctx = {
             "stubs": self.stubs or [],
             "paths": paths or []

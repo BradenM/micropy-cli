@@ -1,6 +1,6 @@
 [MASTER]
 # Loaded Stubs: {{ stubs|map('string')|list|sort|join(', ') }}
-init-hook='import sys;sys.path[1:1] = {{ paths|map('string')|list|tojson }}'
+init-hook='import sys;sys.path[1:1] = {{ paths|map('string')|unique|list|tojson }}'
 
 [MESSAGES CONTROL]
 # Only show warnings with the listed confidence levels. Leave empty to show
