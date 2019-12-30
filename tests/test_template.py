@@ -63,7 +63,7 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     assert expected_path.exists()
 
 
-def test_pylint_template(stub_context, tmp_path):
+def test_pylint_template(stub_context, tmp_path, snapshot):
     def test_pylint_load():
         try:
             lint_args = ["--rcfile", str(expected_path.absolute())]
@@ -87,10 +87,8 @@ def test_pylint_template(stub_context, tmp_path):
     ctx_paths.append(new_path)
     prov.update("pylint", tmp_path, stubs=stubs,
                 paths=ctx_paths, datadir=ctx_datadir)
-    init_hook = expected_path.read_text().splitlines(True)[2]
-    hook_imports = init_hook.split(";")
-    hook_path = str(Path(".micropy/foobar/foo"))
-    assert f'sys.path.insert(1, "{hook_path}")' in hook_imports
+    pylint_config = expected_path.read_text()
+    snapshot.assert_match(pylint_config)
     test_pylint_load()
 
 
