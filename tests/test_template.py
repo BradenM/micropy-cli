@@ -79,6 +79,8 @@ def test_pylint_template(stub_context, tmp_path, snapshot):
     prov.render_to("pylint", tmp_path, stubs=stubs,
                    paths=ctx_paths, datadir=ctx_datadir)
     expected_path = tmp_path / '.pylintrc'
+    pylint_config = expected_path.read_text()
+    snapshot.assert_match(pylint_config)
     assert expected_path.exists()
     # Will Pylint load it?
     test_pylint_load()
