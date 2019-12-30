@@ -63,7 +63,7 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     assert expected_path.exists()
 
 # TODO: snapshots are flaky in stub ordering due to bad test dependency. will fix.
-@pytest.mark.flaky(max_runs=3, min_passes=1)
+@pytest.mark.flaky(max_runs=6, min_passes=1)
 def test_pylint_template(stub_context, tmp_path, snapshot):
     def test_pylint_load():
         try:
@@ -93,6 +93,13 @@ def test_pylint_template(stub_context, tmp_path, snapshot):
     pylint_config = expected_path.read_text()
     snapshot.assert_match(pylint_config)
     test_pylint_load()
+    # Test automatic src/lib adding
+    lib_path = (tmp_path / 'src' / 'lib')
+    lib_path.mkdir(parents=True)
+    prov.update("pylint", tmp_path, stubs=stubs,
+                paths=ctx_paths, datadir=ctx_datadir)
+    pylint_config = expected_path.read_text()
+    snapshot.assert_match(pylint_config)
 
 
 def test_generic_template(mock_mp_stubs, tmp_path):

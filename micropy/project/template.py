@@ -219,6 +219,10 @@ class PylintTemplate(Template):
             paths = list(self.iter_relative_paths(self.paths, strict=True))
         if self.local_paths:
             paths = [*list(self.iter_relative_paths(self.local_paths)), *paths]
+        # automatically add src/lib if it exists
+        lib_path = self.datadir.parent / 'src' / 'lib'
+        if lib_path.exists():
+            paths = [*list(self.iter_relative_paths([lib_path])), *paths]
         ctx = {
             "stubs": self.stubs or [],
             "paths": paths or []
