@@ -16,7 +16,8 @@ def stub_context(mock_mp_stubs):
     frozen_paths = [stub.frozen for stub in stubs]
     fware_paths = [stub.firmware.frozen for stub in stubs]
     ctx_paths = [*stub_paths, *frozen_paths, *fware_paths]
-    return (stubs, (stub_paths, frozen_paths, fware_paths), ctx_paths)
+    return (stubs, (sorted(stub_paths), sorted(frozen_paths), sorted(fware_paths)),
+            sorted(ctx_paths))
 
 
 def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
