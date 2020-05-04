@@ -12,10 +12,12 @@ import inspect
 import io
 import subprocess as subproc
 import sys
+import os
 import tarfile
 import xml.etree.ElementTree as ET
 from datetime import timedelta
 from pathlib import Path
+import shutil
 
 import requests
 import requirements
@@ -328,7 +330,15 @@ def create_dir_link(source, target):
     except OSError as e:
         # Handle non-admin/non-dev windows links
         if not platform == "win32":
-            raise e
+            # handles exFAT disk format (links not working)
+            if e.errno == 38: 
+                shutil.copytree(str(target.absolute()), str(source.absolute()), symlinks=False, ignore=None)
+                return
+            elif e.errno == 17: # folder exists
+                return 
+            else:
+                raise e
+        
         # Fall back to directory junction
         cmd = ["MKLINK", "/J", str(source.absolute()), str(target.absolute())]
         exit_code = subproc.call(
