@@ -299,13 +299,19 @@ class TemplateProvider:
         if self.run_checks:
             self.log.debug(f"Verifying {template} requirements...")
             template.run_checks()
-        parent_dir.mkdir(exist_ok=True)
         out_dir = parent_dir / template.FILENAME
-        out_dir.parent.mkdir(exist_ok=True, parents=True)
-        self.log.debug(f"Rendered: {name} to {str(out_dir)}")
-        self.log.info(f"$[{name.capitalize()}] File Generated!")
-        stream = template.render_stream()
-        return stream.dump(str(out_dir))
+        if not os.path.isfile(out_dir):
+            self.log.debug(f"Create: {out_dir}")
+            parent_dir.mkdir(exist_ok=True)
+            out_dir.parent.mkdir(exist_ok=True, parents=True)
+            self.log.debug(f"Rendered: {name} to {str(out_dir)}")
+            self.log.info(f"$[{name.capitalize()}] File Generated!")
+            stream = template.render_stream()
+            return stream.dump(str(out_dir))
+        else:
+            self.log.debug(f"Update: {out_dir}")
+            template.update(parent_dir)
+            self.log.info(f"$[{name.capitalize()}] File Updated!")
 
     def update(self, name, root_dir, **kwargs):
         """Update existing Template.
