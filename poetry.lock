@@ -256,7 +256,7 @@ description = "Filesystem-like pathing and searching for dictionaries"
 name = "dpath"
 optional = false
 python-versions = "*"
-version = "1.4.2"
+version = "2.0.1"
 
 [[package]]
 category = "dev"
@@ -1213,7 +1213,7 @@ create_stubs = ["pyminifier", "rshell"]
 docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "sphinx_rtd_theme"]
 
 [metadata]
-content-hash = "4e048f126fe5f5ffeabfb261bb835d342659c1ebf538efa81daf168005d6717d"
+content-hash = "ca69e8f1b92d92300284d9abd2e27a3f3c91068ed38f55ebf27a9828f197f084"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1341,7 +1341,7 @@ docutils = [
     {file = "docutils-0.15.2.tar.gz", hash = "sha256:a2aeea129088da402665e92e0b25b04b073c04b2dce4ab65caaa38b7ce2e1a99"},
 ]
 dpath = [
-    {file = "dpath-1.4.2.tar.gz", hash = "sha256:0f635f49e88843a4a519aca1c599faee271730f818a81860827e7d7b4d40273f"},
+    {file = "dpath-2.0.1.tar.gz", hash = "sha256:bea06b5f4ff620a28dfc9848cf4d6b2bfeed34238edeb8ebe815c433b54eb1fa"},
 ]
 entrypoints = [
     {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
