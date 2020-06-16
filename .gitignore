@@ -135,3 +135,4 @@ dmypy.json
 !micropy/project/template/**/*
 !micropy/lib
 !tests/data/project_test/**/*
+!src/lob
