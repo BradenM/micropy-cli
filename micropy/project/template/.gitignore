@@ -144,3 +144,4 @@ dmypy.json
 ### Micropy Cli ###
 .micropy/
 !micropy.json
+!src/lib
