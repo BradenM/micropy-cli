@@ -117,14 +117,15 @@ description = "Persistent, stale-free, local and cross-machine caching for Pytho
 name = "cachier"
 optional = false
 python-versions = "*"
-version = "1.2.8"
+version = "1.4.2"
 
 [package.dependencies]
+pathtools = "*"
 portalocker = "*"
 watchdog = "*"
 
 [package.extras]
-test = ["pytest", "coverage", "pytest-cov", "pymongo"]
+test = ["pytest", "coverage", "pytest-cov", "pymongo", "pandas"]
 
 [[package]]
 category = "main"
@@ -1260,8 +1261,8 @@ bump2version = [
     {file = "bump2version-0.5.11.tar.gz", hash = "sha256:524bde030318fe2543038defe0f77739605636fef96924883813cb290cf79c1e"},
 ]
 cachier = [
-    {file = "cachier-1.2.8-py2.py3-none-any.whl", hash = "sha256:dcde365fb965777d0125081d27591857b31dd2fbafdee66b74e22031fdc981b5"},
-    {file = "cachier-1.2.8.tar.gz", hash = "sha256:abeb106a439db2957abcd15d35a3641b030735ddaf933b1b70aedca91f2af184"},
+    {file = "cachier-1.4.2-py2.py3-none-any.whl", hash = "sha256:60f110e9a77c605b925ebc83965af3d2c2509d3dc87cbea4206490fde5b3e6f4"},
+    {file = "cachier-1.4.2.tar.gz", hash = "sha256:21c27f18f21f175862cc18ce16dca33d0639404d873d993e54ad93d15a6fafef"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},
