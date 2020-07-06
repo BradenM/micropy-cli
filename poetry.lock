@@ -898,8 +898,8 @@ category = "main"
 description = "Python 2 and 3 compatibility utilities"
 name = "six"
 optional = false
-python-versions = ">=2.6, !=3.0.*, !=3.1.*"
-version = "1.13.0"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "1.15.0"
 
 [[package]]
 category = "main"
@@ -1070,25 +1070,25 @@ description = "tox is a generic virtualenv management and test command line tool
 name = "tox"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
-version = "3.14.2"
+version = "3.16.1"
 
 [package.dependencies]
 colorama = ">=0.4.1"
-filelock = ">=3.0.0,<4"
+filelock = ">=3.0.0"
 packaging = ">=14"
-pluggy = ">=0.12.0,<1"
-py = ">=1.4.17,<2"
-six = ">=1.0.0,<2"
+pluggy = ">=0.12.0"
+py = ">=1.4.17"
+six = ">=1.14.0"
 toml = ">=0.9.4"
-virtualenv = ">=16.0.0"
+virtualenv = ">=16.0.0,<20.0.0 || >20.0.0,<20.0.1 || >20.0.1,<20.0.2 || >20.0.2,<20.0.3 || >20.0.3,<20.0.4 || >20.0.4,<20.0.5 || >20.0.5,<20.0.6 || >20.0.6,<20.0.7 || >20.0.7"
 
 [package.dependencies.importlib-metadata]
 python = "<3.8"
-version = ">=1.1.0,<2"
+version = ">=0.12,<2"
 
 [package.extras]
-docs = ["sphinx (>=2.0.0,<3)", "towncrier (>=18.5.0)", "pygments-github-lexers (>=0.0.5)", "sphinxcontrib-autoprogram (>=0.1.5)"]
-testing = ["freezegun (>=0.3.11,<1)", "pathlib2 (>=2.3.3,<3)", "pytest (>=4.0.0,<6)", "pytest-cov (>=2.5.1,<3)", "pytest-mock (>=1.10.0,<2)", "pytest-xdist (>=1.22.2,<2)", "pytest-randomly (>=1.0.0,<4)", "flaky (>=3.4.0,<4)", "psutil (>=5.6.1,<6)"]
+docs = ["sphinx (>=2.0.0)", "towncrier (>=18.5.0)", "pygments-github-lexers (>=0.0.5)", "sphinxcontrib-autoprogram (>=0.1.5)"]
+testing = ["freezegun (>=0.3.11)", "pathlib2 (>=2.3.3)", "pytest (>=4.0.0)", "pytest-cov (>=2.5.1)", "pytest-mock (>=1.10.0)", "pytest-xdist (>=1.22.2)", "pytest-randomly (>=1.0.0)", "flaky (>=3.4.0)", "psutil (>=5.6.1)"]
 
 [[package]]
 category = "dev"
@@ -1214,7 +1214,7 @@ create_stubs = ["pyminifier", "rshell"]
 docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "sphinx_rtd_theme"]
 
 [metadata]
-content-hash = "596de89f6d8535ac304ef29a58720ac696ec8e741375ef1e19e427970f365223"
+content-hash = "0d59004ff71c539df0d81ff7fc1eabd0fa5921ecaf5795f9223f0a016672de84"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1642,8 +1642,8 @@ rshell = [
     {file = "rshell-0.0.26.tar.gz", hash = "sha256:cc447a3c9853a50585d7fdd6356922e8a89debb67932e60cf241f23fbd72db16"},
 ]
 six = [
-    {file = "six-1.13.0-py2.py3-none-any.whl", hash = "sha256:1f1b7d42e254082a9db6279deae68afb421ceba6158efa6131de7b3003ee93fd"},
-    {file = "six-1.13.0.tar.gz", hash = "sha256:30f610279e8b2578cab6db20741130331735c781b56053c59c4076da27f06b66"},
+    {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
+    {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
 ]
 snowballstemmer = [
     {file = "snowballstemmer-2.0.0-py2.py3-none-any.whl", hash = "sha256:209f257d7533fdb3cb73bdbd24f436239ca3b2fa67d56f6ff88e86be08cc5ef0"},
@@ -1699,8 +1699,8 @@ toml = [
     {file = "toml-0.10.0.tar.gz", hash = "sha256:229f81c57791a41d65e399fc06bf0848bab550a9dfd5ed66df18ce5f05e73d5c"},
 ]
 tox = [
-    {file = "tox-3.14.2-py2.py3-none-any.whl", hash = "sha256:8dd653bf0c6716a435df363c853cad1f037f9d5fddd0abc90d0f48ad06f39d03"},
-    {file = "tox-3.14.2.tar.gz", hash = "sha256:7efd010a98339209f3a8292f02909b51c58417bfc6838ab7eca14cf90f96117a"},
+    {file = "tox-3.16.1-py2.py3-none-any.whl", hash = "sha256:60c3793f8ab194097ec75b5a9866138444f63742b0f664ec80be1222a40687c5"},
+    {file = "tox-3.16.1.tar.gz", hash = "sha256:9a746cda9cadb9e1e05c7ab99f98cfcea355140d2ecac5f97520be94657c3bc7"},
 ]
 tox-gh-actions = [
     {file = "tox-gh-actions-0.3.0.tar.gz", hash = "sha256:f943d9a7009d97ed1aac1b0051b3eef97b07176bc040a2307de9461629fcdf88"},
