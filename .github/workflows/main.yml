@@ -1,6 +1,10 @@
 name: Test MicropyCli
 
-on: [push, pull_request]
+on:
+  pull_request: ~
+  push:
+    branches:
+      - master
 
 jobs:
     build:
@@ -19,7 +23,7 @@ jobs:
                   submodules: recursive
 
             - name: Setup Python ${{ matrix.python }}
-              uses: actions/setup-python@v1.1.1
+              uses: actions/setup-python@v2
               with:
                   python-version: ${{ matrix.python }}
                   architecture: x64
@@ -27,7 +31,7 @@ jobs:
             - name: Install Poetry
               uses: dschep/install-poetry-action@v1.2
               with:
-                  version: 1.0.0
+                  version: 1.0.10
 
             - name: Install Dependencies
               run: poetry install -v
