@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "micropy-cli"
-version = "3.3.0"
+version = "3.4.0"
 description = "Micropython Project Management Tool with VSCode support, Linting, Intellisense, Dependency Management, and more!"
 authors = ["Braden Mars <bradenmars@bradenmars.me>"]
 license = "MIT"
