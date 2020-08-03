@@ -1,3 +1,20 @@
+## [3.4.0](https://github.com/BradenM/micropy-cli/compare/v3.3.0...v3.4.0) (2020-07-25)
+
+
+### Bug Fixes
+
+* **project:** OSError thrown on filesystems where neither symlinks/hardlinks are supported (such as exFAT). Thanks @lemariva! ([#105](https://github.com/BradenM/micropy-cli/issues/105)) ([b6f8efc](https://github.com/BradenM/micropy-cli/commit/b6f8efc2108006bf347b8360993e270713eb0c8d)), closes [#104](https://github.com/BradenM/micropy-cli/issues/104)
+* **project:** Micropy overwrites pre-existing vscode settings when adding to workspace. Thanks @askpatrickw! ([#112](https://github.com/BradenM/micropy-cli/issues/112)) ([08f6d21](https://github.com/BradenM/micropy-cli/commit/08f6d216c4b343f5de302db36ce55488e5b9b988)), closes [#108](https://github.com/BradenM/micropy-cli/issues/108)
+* **deps:** Fix dpath dependency constraint to >=1.4,<2.0. ([#153](https://github.com/BradenM/micropy-cli/issues/153)) ([3d0ac5d](https://github.com/BradenM/micropy-cli/commit/3d0ac5d8307278736348d220d009d0a4cc66a793))
+
+
+### Features
+
+* **package:** Officially support Python 3.8 and update minor versions. Thanks @askpatrickw! ([#113](https://github.com/BradenM/micropy-cli/issues/113)) ([4943326](https://github.com/BradenM/micropy-cli/commit/494332662da46a4f3005b0d8688f1dabfbbec3a9)), closes [#109](https://github.com/BradenM/micropy-cli/issues/109)
+* **deps:** Update click, dpath, pytest-cov, cachier, tox, requests, and more.
+
+
+
 ## [3.3.0](https://github.com/BradenM/micropy-cli/compare/v3.2.0...v) (2019-12-23)
 
 

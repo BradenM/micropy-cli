@@ -91,6 +91,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
                 hook = HookProxy(name)
                 ProjectModule._hooks.append(hook)
             hook.add_method(func, **kwargs)
+
             @wraps(func)
             def wrapper(*args: Any, **kwargs: Any) -> T:
                 return func(*args, **kwargs)
