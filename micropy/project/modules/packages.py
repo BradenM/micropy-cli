@@ -150,7 +150,7 @@ class PackagesModule(ProjectModule):
         try:
             self.load()
         except Exception:
-            self.log.debug(f"failed to install: {pkg.name}")
+            self.log.error(f"Failed to install: {pkg.name}")
             self.config.pop(self.name + '/' + pkg.name)
             raise
         else:
