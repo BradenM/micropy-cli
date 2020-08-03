@@ -43,7 +43,7 @@ class Package:
 
     @property
     def full_name(self) -> str:
-        if self._line:
+        if self._line and self._vcs:
             return self._line
         if self._path:
             return self.pretty_specs
