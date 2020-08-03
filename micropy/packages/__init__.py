@@ -13,14 +13,14 @@ from typing import Any, Optional, Union
 import requirements
 
 from .package import Package
-from .source_package import PackageDependencySource
+from .source_package import PackageDependencySource, VCSDependencySource
 from .source_path import LocalDependencySource
 
 
 def create_dependency_source(
         requirement: str,
         name: Optional[str] = None,
-        **kwargs: Any) -> Union[LocalDependencySource, PackageDependencySource]:
+        **kwargs: Any) -> Union[LocalDependencySource, PackageDependencySource, VCSDependencySource]:
     """Factory for creating a dependency source object.
 
     Args:
@@ -39,7 +39,9 @@ def create_dependency_source(
         pkg = Package(name, req.specs, path=req.path)
         source = LocalDependencySource(pkg, path)
         return source
-    pkg = Package(req.name, req.specs)
+    pkg = Package(**req.__dict__)
+    if pkg.vcs is not None or pkg.revision is not None:
+        return VCSDependencySource(pkg, **kwargs)
     return PackageDependencySource(pkg, **kwargs)
 
 
