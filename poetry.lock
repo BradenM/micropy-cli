@@ -797,13 +797,13 @@ description = "Python library to build pretty command line user prompts ⭐️"
 name = "questionary"
 optional = false
 python-versions = "*"
-version = "1.4.0"
+version = "1.5.2"
 
 [package.dependencies]
-prompt-toolkit = ">=2.0,<3.0"
+prompt-toolkit = ">=2.0,<4.0"
 
 [package.extras]
-test = ["pytest (>=4.0,<5.0)", "pytest-pycodestyle (>=1.3,<2.0)", "pytest-cov (>=2.6,<3.0)", "coveralls (>=1.3,<2.0)"]
+test = ["pytest", "pytest-pycodestyle", "pytest-cov", "coveralls"]
 
 [[package]]
 category = "main"
@@ -1607,8 +1607,8 @@ pyyaml = [
     {file = "PyYAML-5.2.tar.gz", hash = "sha256:c0ee8eca2c582d29c3c2ec6e2c4f703d1b7f1fb10bc72317355a746057e7346c"},
 ]
 questionary = [
-    {file = "questionary-1.4.0-py3-none-any.whl", hash = "sha256:87ffc9dab940ec962c54fe2eec3a4eecb10f7cfa91994fc94c839476f4099154"},
-    {file = "questionary-1.4.0.tar.gz", hash = "sha256:7d4f98c9e5a1c0cd7e45a2c13959d5df9de3f55cb208d7b0265e4dd53dede584"},
+    {file = "questionary-1.5.2-py3-none-any.whl", hash = "sha256:6998a1fe0639daec0da44e0a973f387e7c778bdc418d76ecfa45a7b3a0997049"},
+    {file = "questionary-1.5.2.tar.gz", hash = "sha256:f6e41e36b6c86fe0c3ff12a30c6c6a4e80129efba5ad0a115d71fd5df119c726"},
 ]
 recommonmark = [
     {file = "recommonmark-0.6.0-py2.py3-none-any.whl", hash = "sha256:2ec4207a574289355d5b6ae4ae4abb29043346ca12cdd5f07d374dc5987d2852"},
