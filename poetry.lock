@@ -118,7 +118,7 @@ description = "Persistent, stale-free, local and cross-machine caching for Pytho
 name = "cachier"
 optional = false
 python-versions = "*"
-version = "1.4.2"
+version = "1.4.3"
 
 [package.dependencies]
 pathtools = "*"
@@ -1261,8 +1261,8 @@ bump2version = [
     {file = "bump2version-0.5.11.tar.gz", hash = "sha256:524bde030318fe2543038defe0f77739605636fef96924883813cb290cf79c1e"},
 ]
 cachier = [
-    {file = "cachier-1.4.2-py2.py3-none-any.whl", hash = "sha256:60f110e9a77c605b925ebc83965af3d2c2509d3dc87cbea4206490fde5b3e6f4"},
-    {file = "cachier-1.4.2.tar.gz", hash = "sha256:21c27f18f21f175862cc18ce16dca33d0639404d873d993e54ad93d15a6fafef"},
+    {file = "cachier-1.4.3-py2.py3-none-any.whl", hash = "sha256:b9e6483842c8011013f4019c37a0630b74e6d808bc14be3d493928baacfbc724"},
+    {file = "cachier-1.4.3.tar.gz", hash = "sha256:ab0196b22eb96c19ea2c71281ae954a07e0f82433b7e621c76799d79a758bb32"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},
