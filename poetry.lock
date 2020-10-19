@@ -280,7 +280,7 @@ python-versions = "*"
 
 [[package]]
 name = "flake8"
-version = "3.8.3"
+version = "3.8.4"
 description = "the modular source code checker: pep8 pyflakes and co"
 category = "dev"
 optional = false
@@ -1326,8 +1326,8 @@ filelock = [
     {file = "filelock-3.0.12.tar.gz", hash = "sha256:18d82244ee114f543149c66a6e0c14e9c4f8a1044b5cdaadd0f82159d6a6ff59"},
 ]
 flake8 = [
-    {file = "flake8-3.8.3-py2.py3-none-any.whl", hash = "sha256:15e351d19611c887e482fb960eae4d44845013cc142d42896e9862f775d8cf5c"},
-    {file = "flake8-3.8.3.tar.gz", hash = "sha256:f04b9fcbac03b0a3e58c0ab3a0ecc462e023a9faf046d57794184028123aa208"},
+    {file = "flake8-3.8.4-py2.py3-none-any.whl", hash = "sha256:749dbbd6bfd0cf1318af27bf97a14e28e5ff548ef8e5b1566ccfb25a11e7c839"},
+    {file = "flake8-3.8.4.tar.gz", hash = "sha256:aadae8761ec651813c24be05c6f7b4680857ef6afaae4651a4eccaef97ce6c3b"},
 ]
 flaky = [
     {file = "flaky-3.7.0-py2.py3-none-any.whl", hash = "sha256:d6eda73cab5ae7364504b7c44670f70abed9e75f77dd116352f662817592ec9c"},
