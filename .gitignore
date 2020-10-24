@@ -132,7 +132,7 @@ dmypy.json
 
 # End of https://www.gitignore.io/api/python
 
-.vscode
+
 !micropy/project/template/**/*
 !micropy/lib
 !tests/data/project_test/**/*
@@ -231,3 +231,4 @@ modules.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all
 
+temp/*
