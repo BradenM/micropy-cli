@@ -1,6 +1,8 @@
 [MASTER]
 # Loaded Stubs: {% for stub in stubs %} {{ stub }} {% endfor %}
-init-hook='import sys;{% for path in paths %}sys.path.insert(1, "{{ path }}");{% endfor %}'
+init-hook='import sys;sys.path[1:1]=["src/lib",{% for path in paths %}"{{ path|replace("\\", "/") }}", {% endfor %} ]'
+
+# Version @2@
 
 [MESSAGES CONTROL]
 # Only show warnings with the listed confidence levels. Leave empty to show
