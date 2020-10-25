@@ -202,7 +202,7 @@ class PylintTemplate(Template):
 
     def __init__(self, *args, **kwargs):
         self.update_method = self.update_as_text
-        self.update_kwargs = {'by_contains': ['sys.path.insert']}
+        self.update_kwargs = {'by_contains': ['sys.path[1:1]']}
         super().__init__(*args, **kwargs)
 
     @property
