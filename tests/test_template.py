@@ -88,9 +88,9 @@ def test_pylint_template(stub_context, tmp_path):
     prov.update("pylint", tmp_path, stubs=stubs,
                 paths=ctx_paths, datadir=ctx_datadir)
     init_hook = expected_path.read_text().splitlines(True)[2]
-    hook_imports = init_hook.split(";")
-    hook_path = str(Path(".micropy/foobar/foo"))
-    assert f'sys.path.insert(1, "{hook_path}")' in hook_imports
+    hook_imports = init_hook.split(",")
+    hook_path = str(Path(".micropy/foobar/foo")).replace('\\','/') # no need to use \\ on pylint Windows
+    assert f' "{hook_path}"' in hook_imports
     test_pylint_load()
 
 
