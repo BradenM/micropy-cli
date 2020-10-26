@@ -208,7 +208,7 @@ yaml = ["PyYAML (>=3.10)"]
 
 [[package]]
 name = "doc8"
-version = "0.8.0"
+version = "0.8.1"
 description = "Style checker for Sphinx (or other) RST documentation"
 category = "dev"
 optional = false
@@ -217,6 +217,7 @@ python-versions = "*"
 [package.dependencies]
 chardet = "*"
 docutils = "*"
+Pygments = "*"
 restructuredtext-lint = ">=0.7"
 six = "*"
 stevedore = "*"
@@ -531,7 +532,7 @@ name = "pygments"
 version = "2.5.2"
 description = "Pygments is a syntax highlighting package written in Python."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
@@ -1188,7 +1189,7 @@ docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "s
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "e56352509aaf4c1ef9377584501904df7203928221b3d05a2ddbdbd57952ff70"
+content-hash = "dc092af17660dc393955369316ffceecfb81a68f1a8c6947bfd401c5b0e2090e"
 
 [metadata.files]
 alabaster = [
@@ -1300,8 +1301,8 @@ coveralls = [
     {file = "coveralls-2.1.2.tar.gz", hash = "sha256:4430b862baabb3cf090d36d84d331966615e4288d8a8c5957e0fd456d0dd8bd6"},
 ]
 doc8 = [
-    {file = "doc8-0.8.0-py2.py3-none-any.whl", hash = "sha256:d12f08aa77a4a65eb28752f4bc78f41f611f9412c4155e2b03f1f5d4a45efe04"},
-    {file = "doc8-0.8.0.tar.gz", hash = "sha256:2df89f9c1a5abfb98ab55d0175fed633cae0cf45025b8b1e0ee5ea772be28543"},
+    {file = "doc8-0.8.1-py2.py3-none-any.whl", hash = "sha256:4d58a5c8c56cedd2b2c9d6e3153be5d956cf72f6051128f0f2255c66227df721"},
+    {file = "doc8-0.8.1.tar.gz", hash = "sha256:4d1df12598807cf08ffa9a1d5ef42d229ee0de42519da01b768ff27211082c12"},
 ]
 docformatter = [
     {file = "docformatter-1.3.1.tar.gz", hash = "sha256:d8db663665becccac75737b2635a06076f2c832bf861322a7bfc512f0a9fa7e3"},
