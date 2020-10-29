@@ -313,6 +313,28 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
+name = "gitdb"
+version = "4.0.5"
+description = "Git Object Database"
+category = "main"
+optional = false
+python-versions = ">=3.4"
+
+[package.dependencies]
+smmap = ">=3.0.1,<4"
+
+[[package]]
+name = "gitpython"
+version = "3.1.11"
+description = "Python Git Library"
+category = "main"
+optional = false
+python-versions = ">=3.4"
+
+[package.dependencies]
+gitdb = ">=4.0.1,<5"
+
+[[package]]
 name = "idna"
 version = "2.10"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -893,6 +915,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
+name = "smmap"
+version = "3.0.4"
+description = "A pure Python implementation of a sliding window memory map manager"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
 name = "snowballstemmer"
 version = "2.0.0"
 description = "This package provides 26 stemmers for 25 languages generated from Snowball algorithms."
@@ -1213,7 +1243,7 @@ docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "s
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "e56352509aaf4c1ef9377584501904df7203928221b3d05a2ddbdbd57952ff70"
+content-hash = "00befb6e6350d7a1356328bcd1ea2aa49136aa3fbba22bf32b234059051ca9b5"
 
 [metadata.files]
 alabaster = [
@@ -1368,8 +1398,8 @@ gitdb = [
     {file = "gitdb-4.0.5.tar.gz", hash = "sha256:c9e1f2d0db7ddb9a704c2a0217be31214e91a4fe1dea1efad19ae42ba0c285c9"},
 ]
 gitpython = [
-    {file = "GitPython-3.1.7-py3-none-any.whl", hash = "sha256:fa3b92da728a457dd75d62bb5f3eb2816d99a7fe6c67398e260637a40e3fafb5"},
-    {file = "GitPython-3.1.7.tar.gz", hash = "sha256:2db287d71a284e22e5c2846042d0602465c7434d910406990d5b74df4afb0858"},
+    {file = "GitPython-3.1.11-py3-none-any.whl", hash = "sha256:6eea89b655917b500437e9668e4a12eabdcf00229a0df1762aabd692ef9b746b"},
+    {file = "GitPython-3.1.11.tar.gz", hash = "sha256:befa4d101f91bad1b632df4308ec64555db684c360bd7d2130b4807d49ce86b8"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
