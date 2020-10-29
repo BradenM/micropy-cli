@@ -38,6 +38,7 @@ class TestPackages:
     @pytest.mark.parametrize(
         'package,expect',
         [
+            ('git+https://github.com/jczic/MicroWebSrv2.git@master#egg=MicroWebSrv2', packages.VCSDependencySource),
             ('picoweb', packages.PackageDependencySource),
             ('-e /foobar/pkg', packages.LocalDependencySource)
         ]
@@ -49,6 +50,7 @@ class TestPackages:
     @pytest.mark.parametrize(
         'requirement,expect',
         [
+            (['git+https://github.com/jczic/MicroWebSrv2.git@master#egg=MicroWebSrv2'], ['microwebsrv2', 'git+https://github.com/jczic/MicroWebSrv2.git@master#egg=MicroWebSrv2', 'git+https://github.com/jczic/MicroWebSrv2.git@master#egg=MicroWebSrv2']),
             (['picoweb'], ['picoweb', '*', 'picoweb']),
             (['picoweb==^7.1'], ['picoweb', '==^7.1', 'picoweb==^7.1']),
             (['BlynkLib==0.0.0'], ['blynklib', '==0.0.0', 'blynklib==0.0.0']),
