@@ -139,9 +139,9 @@ class VCSDependencySource(DependencySource):
 
     def __enter__(self) -> Union[Path, List[Tuple[Path, Path]]]:
         """Prepare VCS repository for installation.
-        
+
         See PackageDependencySource.__enter__
-        
+
         Returns:
             Root package path or list of files.
 
