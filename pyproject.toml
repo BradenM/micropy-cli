@@ -36,12 +36,12 @@ include = [
 micropy = 'micropy.cli:cli'
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = ">=3.6,<3.10"
 boltons = "^19.3"
 cachier = "^1.2"
 Jinja2 = "^2.10"
 packaging = ">=19.2,<21.0"
-questionary = ">=1.6,<1.8"
+questionary = "^1.8.1"
 requests = "^2.22"
 requirements-parser = "^0.2.0"
 tqdm = "^4.39"
