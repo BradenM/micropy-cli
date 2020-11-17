@@ -29,9 +29,9 @@ jobs:
                   architecture: x64
 
             - name: Install Poetry
-              uses: dschep/install-poetry-action@v1.2
+              uses: snok/install-poetry@v1.1.1
               with:
-                  version: 1.0.10
+                  version: 1.1.4
 
             - name: Install Dependencies
               run: poetry install -v
