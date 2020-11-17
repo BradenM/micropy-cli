@@ -20,6 +20,6 @@ from micropy import data, lib, project, stubs, utils
 from .main import MicroPy
 
 __author__ = """Braden Mars"""
-__version__ = '3.5.0.rc.1'
+__version__ = '3.5.0'
 
 __all__ = ["MicroPy", "data", "lib", "project", "stubs", "utils"]
