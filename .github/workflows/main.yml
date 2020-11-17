@@ -35,7 +35,7 @@ jobs:
                   poetry-version: 1.1.4
 
             - name: Install Dependencies
-              run: poetry install -v
+              run: poetry install -E docs -E create_stubs -v
 
             - name: Test with Tox
               env:
