@@ -32,6 +32,7 @@ jobs:
               uses: snok/install-poetry@v1.1.1
               with:
                   version: 1.1.4
+                  virtualenvs-create: false
 
             - name: Install Dependencies
               run: poetry install -v
