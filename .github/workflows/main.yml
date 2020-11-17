@@ -13,6 +13,7 @@ jobs:
         env:
             COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         strategy:
+            fail-fast: false
             matrix:
                 os: [windows-latest, macOS-10.14, ubuntu-18.04]
                 python: ["3.6", "3.7", "3.8"]
@@ -29,10 +30,9 @@ jobs:
                   architecture: x64
 
             - name: Install Poetry
-              uses: snok/install-poetry@v1.1.1
+              uses: abatilo/actions-poetry@v2.1.0
               with:
-                  version: 1.1.4
-                  virtualenvs-create: false
+                  poetry-version: 1.1.4
 
             - name: Install Dependencies
               run: poetry install -v
