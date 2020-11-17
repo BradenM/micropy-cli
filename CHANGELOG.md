@@ -1,3 +1,30 @@
+## [3.5.0](https://github.com/BradenM/micropy-cli/compare/v3.4.0...v3.5.0) (2020-11-17)
+
+
+#### Features
+
+* **project:**
+  *  Update pylint template with better syntax and inclusions. Thanks @josverl! (#174)
+  *  Track changes in src/lib. Thanks @askpatrickw! ([e8707cf0f](https://github.com/BradenM/micropy-cli/commit/e8707cf0f4a71aea6ca9b6bc4d035480bf212764)) (#137)
+* **package:**
+  *  detect and return VCSDependencySource when needed in create dep source factory ([7b0b40b0](https://github.com/BradenM/micropy-cli/commit/7b0b40b04f8059a3cc4476bccfcf9e6cec5b615f))
+  *  add VCSDependencySource class for supporting VCS requirements ([e590ea6c](https://github.com/BradenM/micropy-cli/commit/e590ea6c1806d0405da739e23fea7ad8a534d15e))
+  *  add attributes and logic for VCS packages ([e78d32c5](https://github.com/BradenM/micropy-cli/commit/e78d32c5d47d4809e9566b5e91fa3447142f8236))
+* **pkg:**
+  *  bump questionary dependency to ^1.8.1 ([585a5b95](https://github.com/BradenM/micropy-cli/commit/585a5b9559e0450f514439d47b63d5281f1d053d))
+  *  add GitPython dependency ([263ae07a](https://github.com/BradenM/micropy-cli/commit/263ae07a2fec97c845fe385accbce98de4b8eb71))
+  *  add VSCode debugging config. Thanks @josverl! (#174)
+  
+
+#### Bug Fixes
+
+*   full name case mismatch for pypi packages ([7bb976d5](https://github.com/BradenM/micropy-cli/commit/7bb976d594e00ce2d1390c7fb371c068148eaee4))
+*   package installation failures were silent ([d21bb2fc](https://github.com/BradenM/micropy-cli/commit/d21bb2fc7618504a93dbc38b0e6630a7fee9f54d))
+* **pkg:**
+  *  setuptools editable installation issues ([525b4b0f](https://github.com/BradenM/micropy-cli/commit/525b4b0f769163b88a1cb21d499f49ade3872fac))
+
+
+
 ## [3.4.0](https://github.com/BradenM/micropy-cli/compare/v3.3.0...v3.4.0) (2020-07-25)
 
 
