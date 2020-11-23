@@ -1127,11 +1127,11 @@ testing = ["pytest (>=4.0.0,<6)", "pytest-randomly (>=3)"]
 
 [[package]]
 name = "tqdm"
-version = "4.52.0"
+version = "4.53.0"
 description = "Fast, Extensible Progress Meter"
 category = "main"
 optional = false
-python-versions = ">=2.6, !=3.0.*, !=3.1.*"
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
 
 [package.extras]
 dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown", "wheel"]
@@ -1731,8 +1731,8 @@ tox-gh-actions = [
     {file = "tox_gh_actions-0.3.0-py2.py3-none-any.whl", hash = "sha256:202c23c7de04f060d956961c65bfabcb6a13f08321225a05f902470b1a3e824a"},
 ]
 tqdm = [
-    {file = "tqdm-4.52.0-py2.py3-none-any.whl", hash = "sha256:80d9d5165d678dbd027dd102dfb99f71bf05f333b61fb761dbba13b4ab719ead"},
-    {file = "tqdm-4.52.0.tar.gz", hash = "sha256:18d6a615aedd09ec8456d9524489dab330af4bd5c2a14a76eb3f9a0e14471afe"},
+    {file = "tqdm-4.53.0-py2.py3-none-any.whl", hash = "sha256:5ff3f5232b19fa4c5531641e480b7fad4598819f708a32eb815e6ea41c5fa313"},
+    {file = "tqdm-4.53.0.tar.gz", hash = "sha256:3d3f1470d26642e88bd3f73353cb6ff4c51ef7d5d7efef763238f4bc1f7e4e81"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.1-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:73d785a950fc82dd2a25897d525d003f6378d1cb23ab305578394694202a58c3"},
