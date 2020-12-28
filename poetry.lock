@@ -235,7 +235,7 @@ stevedore = "*"
 
 [[package]]
 name = "docformatter"
-version = "1.3.1"
+version = "1.4"
 description = "Formats docstrings to follow PEP 257."
 category = "dev"
 optional = false
@@ -1241,7 +1241,7 @@ docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "s
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6,<3.10"
-content-hash = "bf942d6d194b3ff5c99b77a2311a07bb6ea7bce3c2c47fd0435b0b9da5658b3f"
+content-hash = "897d6a3d3046975dcdc2f046c197d4669a1b91b61654de1b71d958c479ca3d78"
 
 [metadata.files]
 alabaster = [
@@ -1363,7 +1363,7 @@ doc8 = [
     {file = "doc8-0.8.1.tar.gz", hash = "sha256:4d1df12598807cf08ffa9a1d5ef42d229ee0de42519da01b768ff27211082c12"},
 ]
 docformatter = [
-    {file = "docformatter-1.3.1.tar.gz", hash = "sha256:d8db663665becccac75737b2635a06076f2c832bf861322a7bfc512f0a9fa7e3"},
+    {file = "docformatter-1.4.tar.gz", hash = "sha256:064e6d81f04ac96bc0d176cbaae953a0332482b22d3ad70d47c8a7f2732eef6f"},
 ]
 docopt = [
     {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
