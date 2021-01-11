@@ -804,7 +804,7 @@ python-versions = "*"
 
 [[package]]
 name = "questionary"
-version = "1.8.1"
+version = "1.9.0"
 description = "Python library to build pretty command line user prompts ⭐️"
 category = "main"
 optional = false
@@ -812,6 +812,9 @@ python-versions = ">=3.6,<3.10"
 
 [package.dependencies]
 prompt_toolkit = ">=2.0,<4.0"
+
+[package.extras]
+docs = ["Sphinx (>=3.3,<4.0)", "sphinx-rtd-theme (>=0.5.0,<0.6.0)", "sphinx-autobuild (>=2020.9.1,<2021.0.0)", "sphinx-copybutton (>=0.3.1,<0.4.0)", "sphinx-autodoc-typehints (>=1.11.1,<2.0.0)"]
 
 [[package]]
 name = "recommonmark"
@@ -1633,8 +1636,8 @@ pywin32 = [
     {file = "pywin32-300-cp39-cp39-win_amd64.whl", hash = "sha256:b1609ce9bd5c411b81f941b246d683d6508992093203d4eb7f278f4ed1085c3f"},
 ]
 questionary = [
-    {file = "questionary-1.8.1-py3-none-any.whl", hash = "sha256:e03ec1a585b2ff5a1463238fe63c12d82c740834e17e7b8efae9be58393a8fc9"},
-    {file = "questionary-1.8.1.tar.gz", hash = "sha256:f2999f01735db77a80d6cb119766cb15b84c468cab325168941a3e0d91207437"},
+    {file = "questionary-1.9.0-py3-none-any.whl", hash = "sha256:fa50c06af4e3826d986efbc90be16e42ff367a634e6a169e42a3f9fccd90648b"},
+    {file = "questionary-1.9.0.tar.gz", hash = "sha256:a050fdbb81406cddca679a6f492c6272da90cb09988963817828f697cf091c55"},
 ]
 recommonmark = [
     {file = "recommonmark-0.6.0-py2.py3-none-any.whl", hash = "sha256:2ec4207a574289355d5b6ae4ae4abb29043346ca12cdd5f07d374dc5987d2852"},
