@@ -722,15 +722,15 @@ pytest = "*"
 
 [[package]]
 name = "pytest-runner"
-version = "5.2"
+version = "5.3.0"
 description = "Invoke py.test as distutils command with dependency resolution"
 category = "dev"
 optional = false
-python-versions = ">=2.7"
+python-versions = ">=3.6"
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs", "pytest-flake8", "pytest-black-multipy", "pytest-cov", "pytest-virtualenv"]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "pytest-virtualenv", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [[package]]
 name = "pytest-testmon"
@@ -1244,7 +1244,7 @@ docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "s
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6,<3.10"
-content-hash = "e021ed488b1ce4f85601fa8054a302082689052b5209fd1b5f0dabb19eccc0ea"
+content-hash = "ef33b56622c126e9266abecc33d33cdf49d556d68ab5dae5305feb9843a05f4e"
 
 [metadata.files]
 alabaster = [
@@ -1623,8 +1623,8 @@ pytest-randomly = [
     {file = "pytest_randomly-3.5.0-py3-none-any.whl", hash = "sha256:9db10d160237f3f8ee60cef72e4cb9ea88d2893c9dd5c8aa334b060cdeb67c3a"},
 ]
 pytest-runner = [
-    {file = "pytest-runner-5.2.tar.gz", hash = "sha256:96c7e73ead7b93e388c5d614770d2bae6526efd997757d3543fe17b557a0942b"},
-    {file = "pytest_runner-5.2-py2.py3-none-any.whl", hash = "sha256:5534b08b133ef9a5e2c22c7886a8f8508c95bb0b0bdc6cc13214f269c3c70d51"},
+    {file = "pytest-runner-5.3.0.tar.gz", hash = "sha256:ca3f58ff4957e8be6c54c55d575b235725cbbcf4dc0d5091c29c6444cfc8a5fe"},
+    {file = "pytest_runner-5.3.0-py3-none-any.whl", hash = "sha256:448959d9ada752de2b369cf05c1c0f9e6d2027e7d32441187c16c24c1d4d6e77"},
 ]
 pytest-testmon = [
     {file = "pytest-testmon-1.0.3.tar.gz", hash = "sha256:927a73dd510b90a2e4a48ea4d37e82c4490b56caa745663262024ea0cd278169"},
