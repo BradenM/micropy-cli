@@ -895,7 +895,7 @@ dev = ["pytest"]
 
 [[package]]
 name = "rshell"
-version = "0.0.26"
+version = "0.0.29"
 description = "A remote shell for working with MicroPython boards."
 category = "main"
 optional = true
@@ -1244,7 +1244,7 @@ docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "s
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6,<3.10"
-content-hash = "17666f93fe2493d9ca10e7d17b50c8bf310d848a808ec871180c7a2528a9265f"
+content-hash = "85499300e794d2090c30a706f08ca47b25a3bda5595a7a1698e527041a978898"
 
 [metadata.files]
 alabaster = [
@@ -1690,7 +1690,7 @@ rope = [
     {file = "rope-0.18.0.tar.gz", hash = "sha256:786b5c38c530d4846aa68a42604f61b4e69a493390e3ca11b88df0fbfdc3ed04"},
 ]
 rshell = [
-    {file = "rshell-0.0.26.tar.gz", hash = "sha256:cc447a3c9853a50585d7fdd6356922e8a89debb67932e60cf241f23fbd72db16"},
+    {file = "rshell-0.0.29.tar.gz", hash = "sha256:d05a35b8acf9f38ff469fc69bf750467e70f928cf43f778392b61ff932b538ef"},
 ]
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
