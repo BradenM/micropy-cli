@@ -194,7 +194,7 @@ toml = ["toml"]
 
 [[package]]
 name = "coveralls"
-version = "3.0.0"
+version = "3.0.1"
 description = "Show coverage stats online via coveralls.io"
 category = "dev"
 optional = false
@@ -1358,8 +1358,8 @@ coverage = [
     {file = "coverage-5.3.tar.gz", hash = "sha256:280baa8ec489c4f542f8940f9c4c2181f0306a8ee1a54eceba071a449fb870a0"},
 ]
 coveralls = [
-    {file = "coveralls-3.0.0-py2.py3-none-any.whl", hash = "sha256:f8384968c57dee4b7133ae701ecdad88e85e30597d496dcba0d7fbb470dca41f"},
-    {file = "coveralls-3.0.0.tar.gz", hash = "sha256:5399c0565ab822a70a477f7031f6c88a9dd196b3de2877b3facb43b51bd13434"},
+    {file = "coveralls-3.0.1-py2.py3-none-any.whl", hash = "sha256:7bd173b3425733661ba3063c88f180127cc2b20e9740686f86d2622b31b41385"},
+    {file = "coveralls-3.0.1.tar.gz", hash = "sha256:cbb942ae5ef3d2b55388cb5b43e93a269544911535f1e750e1c656aef019ce60"},
 ]
 distlib = [
     {file = "distlib-0.3.1-py2.py3-none-any.whl", hash = "sha256:8c09de2c67b3e7deef7184574fc060ab8a793e7adbb183d942c389c8b13c52fb"},
