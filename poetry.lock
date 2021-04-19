@@ -389,7 +389,7 @@ python-versions = "*"
 
 [[package]]
 name = "isort"
-version = "5.7.0"
+version = "5.8.0"
 description = "A Python utility / library to sort Python imports."
 category = "dev"
 optional = false
@@ -1248,7 +1248,7 @@ docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "s
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6,<3.10"
-content-hash = "9ca39f438d7cbeffba4d83d04cfdcb23fe72155e92672bd6d0a81bfed7ed1df1"
+content-hash = "1850329c8d685e7d365e09f6ee17402b25f6352c79f13053b4170a2cbe136bb1"
 
 [metadata.files]
 alabaster = [
@@ -1428,8 +1428,8 @@ iniconfig = [
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 isort = [
-    {file = "isort-5.7.0-py3-none-any.whl", hash = "sha256:fff4f0c04e1825522ce6949973e83110a6e907750cd92d128b0d14aaaadbffdc"},
-    {file = "isort-5.7.0.tar.gz", hash = "sha256:c729845434366216d320e936b8ad6f9d681aab72dc7cbc2d51bedc3582f3ad1e"},
+    {file = "isort-5.8.0-py3-none-any.whl", hash = "sha256:2bb1680aad211e3c9944dbce1d4ba09a989f04e238296c87fe2139faa26d655d"},
+    {file = "isort-5.8.0.tar.gz", hash = "sha256:0a943902919f65c5684ac4e0154b1ad4fac6dcaa5d9f3426b732f1c8b5419be6"},
 ]
 jinja2 = [
     {file = "Jinja2-2.11.3-py2.py3-none-any.whl", hash = "sha256:03e47ad063331dd6a3f04a43eddca8a966a26ba0c5b7207a9a9e4e08f1b29419"},
