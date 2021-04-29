@@ -1,0 +1,26 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "11:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: sphinx
+    versions:
+    - 3.4.3
+    - 3.5.0
+    - 3.5.1
+    - 3.5.2
+    - 3.5.3
+  - dependency-name: tqdm
+    versions:
+    - 4.59.0
+  - dependency-name: sphinx-rtd-theme
+    versions:
+    - 0.5.1
+  - dependency-name: rshell
+    versions:
+    - 0.0.28
+    - 0.0.29
