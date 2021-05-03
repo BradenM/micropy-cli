@@ -93,7 +93,7 @@ pytz = ">=2015.7"
 
 [[package]]
 name = "boltons"
-version = "19.3.0"
+version = "20.2.1"
 description = "When they're not builtins, they're boltons."
 category = "main"
 optional = false
@@ -1249,7 +1249,7 @@ docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "s
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6,<3.10"
-content-hash = "134042f4eb8789c68658080cd21d4cd6d1de68fe8acbb111c2a8919cdfcefad1"
+content-hash = "e1bcbed484613d6958833848f8d68bb2292dc46e913dea21d29f789905ff2289"
 
 [metadata.files]
 alabaster = [
@@ -1288,8 +1288,8 @@ babel = [
     {file = "Babel-2.9.0.tar.gz", hash = "sha256:da031ab54472314f210b0adcff1588ee5d1d1d0ba4dbd07b94dba82bde791e05"},
 ]
 boltons = [
-    {file = "boltons-19.3.0-py2.py3-none-any.whl", hash = "sha256:8f8ed28b99b99074144482e69c0c566c56888ac1c2f6216e74b60b3ac2bec911"},
-    {file = "boltons-19.3.0.tar.gz", hash = "sha256:7b3344098aa0d593e1a04cd290f61310d5aefc66aeb1e07262d5afdabdb88a67"},
+    {file = "boltons-20.2.1-py2.py3-none-any.whl", hash = "sha256:3dd8a8e3c1886e7f7ba3422b50f55a66e1700161bf01b919d098e7d96dd2d9b6"},
+    {file = "boltons-20.2.1.tar.gz", hash = "sha256:dd362291a460cc1e0c2e91cc6a60da3036ced77099b623112e8f833e6734bdc5"},
 ]
 bump2version = [
     {file = "bump2version-0.5.11-py2.py3-none-any.whl", hash = "sha256:bfcc051498dda9fd9ac8634689f4516e1c20fdeeace3278932cc6e1248418b36"},

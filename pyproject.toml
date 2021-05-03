@@ -37,7 +37,7 @@ micropy = 'micropy.cli:cli'
 
 [tool.poetry.dependencies]
 python = ">=3.6,<3.10"
-boltons = "^19.3"
+boltons = ">=19.3,<21.0"
 cachier = "^1.2"
 Jinja2 = "^2.10"
 packaging = ">=19.2,<21.0"
