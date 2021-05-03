@@ -821,7 +821,7 @@ docs = ["Sphinx (>=3.3,<4.0)", "sphinx-rtd-theme (>=0.5.0,<0.6.0)", "sphinx-auto
 
 [[package]]
 name = "recommonmark"
-version = "0.6.0"
+version = "0.7.1"
 description = "A docutils-compatibility bridge to CommonMark, enabling you to write CommonMark inside of Docutils & Sphinx projects."
 category = "main"
 optional = true
@@ -1249,7 +1249,7 @@ docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "s
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6,<3.10"
-content-hash = "134042f4eb8789c68658080cd21d4cd6d1de68fe8acbb111c2a8919cdfcefad1"
+content-hash = "022a524305c26f4371582347f68034524fbf8091380fda72e64c7c0bfef9ac5d"
 
 [metadata.files]
 alabaster = [
@@ -1673,8 +1673,8 @@ questionary = [
     {file = "questionary-1.9.0.tar.gz", hash = "sha256:a050fdbb81406cddca679a6f492c6272da90cb09988963817828f697cf091c55"},
 ]
 recommonmark = [
-    {file = "recommonmark-0.6.0-py2.py3-none-any.whl", hash = "sha256:2ec4207a574289355d5b6ae4ae4abb29043346ca12cdd5f07d374dc5987d2852"},
-    {file = "recommonmark-0.6.0.tar.gz", hash = "sha256:29cd4faeb6c5268c633634f2d69aef9431e0f4d347f90659fd0aab20e541efeb"},
+    {file = "recommonmark-0.7.1-py2.py3-none-any.whl", hash = "sha256:1b1db69af0231efce3fa21b94ff627ea33dee7079a01dd0a7f8482c3da148b3f"},
+    {file = "recommonmark-0.7.1.tar.gz", hash = "sha256:bdb4db649f2222dcd8d2d844f0006b958d627f732415d399791ee436a3686d67"},
 ]
 requests = [
     {file = "requests-2.25.1-py2.py3-none-any.whl", hash = "sha256:c210084e36a42ae6b9219e00e48287def368a26d03a048ddad7bfee44f75871e"},
