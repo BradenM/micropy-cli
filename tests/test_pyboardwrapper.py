@@ -5,7 +5,10 @@ from pathlib import Path
 import pytest
 
 from micropy.utils import PyboardWrapper, pybwrapper
-from micropy.utils.pybwrapper import PyboardError
+try:
+    from micropy.utils.pybwrapper import PyboardError
+except ImportError:
+    pytest.exit('Failed to import pybwrapper. Did you install micropy-cli[create_stubs] extra?')
 
 
 @pytest.fixture
