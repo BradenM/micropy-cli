@@ -5,13 +5,14 @@
         "firmware": {
             "type": "object",
             "required": [
-                "machine",
-                "firmware",
                 "nodename",
                 "version",
                 "sysname"
             ],
             "properties": {
+                "family": {
+                    "type": "string"
+                },
                 "machine": {
                     "type": "string"
                 },
