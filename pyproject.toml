@@ -61,6 +61,7 @@ sphinx_rtd_theme = {version = "^0.4.3", optional = true}
 GitPython = "^3.1.7"
 
 [tool.poetry.dev-dependencies]
+micropy-cli = {path = "../micropy-cli", extras = ["create_stubs", "docs"]}
 autoflake = "^1.4"
 autopep8 = "^1.5"
 bump2version = "^0.5.11"
@@ -88,6 +89,7 @@ requests-mock = "^1.9"
 pytest-forked = "^1.3"
 flaky = "^3.7.0"
 pytest-randomly = "^3.7.0"
+pytest-sugar = "^0.9.4"
 
 [tool.poetry.extras]
 create_stubs = ["pyminifier", "rshell"]
