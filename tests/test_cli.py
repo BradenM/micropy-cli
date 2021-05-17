@@ -5,7 +5,6 @@ from pathlib import Path
 import click
 import pytest
 from click.testing import CliRunner
-
 from micropy import cli
 from micropy.exceptions import RequirementException
 
@@ -25,17 +24,15 @@ def mock_mpy(mocker):
 
 def test_cli_micropy(runner, mocker, mock_cwd):
     """should execute"""
-    if (mock_cwd / '.micropy').exists():
-        (mock_cwd / '.micropy').unlink()
+    if (mock_cwd / ".micropy").exists():
+        (mock_cwd / ".micropy").unlink()
     result = runner.invoke(cli.cli)
     assert result.exit_code == 0
-    expected = ("CLI Application for creating/managing"
-                " Micropython Projects.")
+    expected = "CLI Application for creating/managing" " Micropython Projects."
     assert expected in result.output
     # should alert about update
-    mocker.patch.object(
-        cli.utils, 'is_update_available', return_value='1.0.0')
-    log_spy = mocker.spy(cli, 'Log')
+    mocker.patch.object(cli.utils, "is_update_available", return_value="1.0.0")
+    log_spy = mocker.spy(cli, "Log")
     runner.invoke(cli.cli, ["stubs"])
     log_spy.get_logger.assert_called_once_with("MicroPy")
 
@@ -61,7 +58,7 @@ def test_stub_create(runner, mock_mpy, mocker):
     result = runner.invoke(cli.create, ["/dev/PORT"], obj=mock_mpy)
     mock_mpy.create_stubs.assert_called_once_with("/dev/PORT", verbose=False)
     assert result.exit_code == 0
-    mocker.patch.object(cli.utils, 'CREATE_STUBS_INSTALLED', False)
+    mocker.patch.object(cli.utils, "CREATE_STUBS_INSTALLED", False)
     result = runner.invoke(cli.create, ["/dev/PORT"], obj=mock_mpy)
     assert result.exit_code == 1
 
@@ -72,18 +69,18 @@ def test_stub_create(runner, mock_mpy, mocker):
         (
             "TestProject -t vscode",
             {
-                'project': {'path': "TestProject", 'name': None},
-                'template': {'templates': ('vscode', )}
-            }
+                "project": {"path": "TestProject", "name": None},
+                "template": {"templates": ("vscode",)},
+            },
         ),
         (
             "-t vscode",
             {
-                'project': {'path': Path.cwd(), 'name': "TestProject"},
-                'template': {'templates': ('vscode', )}
-            }
+                "project": {"path": Path.cwd(), "name": "TestProject"},
+                "template": {"templates": ("vscode",)},
+            },
         ),
-    ]
+    ],
 )
 def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner, cliargs, expargs):
     """should create project"""
@@ -91,7 +88,7 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner, cliargs
     mock_project = mocker.patch.object(cli, "Project")
     mock_modules = mocker.patch.object(cli, "modules")
     # Mock Text Prompt
-    ptext_mock = mocker.patch.object(cli.prompt, 'text').return_value
+    ptext_mock = mocker.patch.object(cli.prompt, "text").return_value
     ptext_mock.ask.return_value = "TestProject"
     # Test with no stubs (should fail)
     result = runner.invoke(cli.init, cliargs.split())
@@ -100,16 +97,16 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner, cliargs
     mock_mpy.stubs = ["stub"]
     result = runner.invoke(cli.init, cliargs.split())
     # Assert Project
-    exp_project = expargs.pop('project', {})
+    exp_project = expargs.pop("project", {})
     exp_path = exp_project.pop("path", mocker.ANY)
     mock_project.assert_called_once_with(exp_path, **exp_project)
     # mock_add = mock_project.return_value.add
     # Assert Templates
     expect_calls = [
-        mocker.call(mock_modules.StubsModule, mock_mpy.stubs, stubs=['stub']),
+        mocker.call(mock_modules.StubsModule, mock_mpy.stubs, stubs=["stub"]),
         mocker.call(mock_modules.PackagesModule, "requirements.txt"),
         mocker.call(mock_modules.DevPackagesModule, "dev-requirements.txt"),
-        mocker.call(mock_modules.TemplatesModule, templates=('vscode', ), run_checks=mocker.ANY),
+        mocker.call(mock_modules.TemplatesModule, templates=("vscode",), run_checks=mocker.ANY),
     ]
     mock_project.return_value.add.assert_has_calls(expect_calls, any_order=True)
     # # Assert Exit Code
@@ -117,18 +114,15 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner, cliargs
     assert result.exit_code == 0
 
 
-def test_cli_stubs_add(mocker, mock_mpy, shared_datadir,
-                       runner, tmp_path, mock_checks):
+def test_cli_stubs_add(mocker, mock_mpy, shared_datadir, runner, tmp_path, mock_checks):
     """should add stub"""
-    mock_proj = mocker.patch.object(cli, 'Project').return_value
+    mock_proj = mocker.patch.object(cli, "Project").return_value
     mock_proj.exists.return_value = True
     mock_mpy.project = mock_proj
-    mock_mpy.stubs.add.side_effect = [cli.exc.StubError,
-                                      cli.exc.StubNotFound,
-                                      mocker.MagicMock()]
+    mock_mpy.stubs.add.side_effect = [cli.exc.StubError, cli.exc.StubNotFound, mocker.MagicMock()]
     mock_mpy.log.error = print
 
-    mocker.spy(cli.sys, 'exit')
+    mocker.spy(cli.sys, "exit")
 
     result = runner.invoke(cli.add, ["invalid-stub"], obj=mock_mpy)
     assert cli.sys.exit.called_with(1)
@@ -148,18 +142,23 @@ def test_cli_stubs_add(mocker, mock_mpy, shared_datadir,
 def test_cli_stubs_search(mock_mpy, runner):
     """should search stubs"""
     mock_mpy.stubs.search_remote.return_value = [
-        ("esp8266-micropython-1.11.0", True, ),
-        ("esp8266-micropython-1.10.0", False, )
+        (
+            "esp8266-micropython-1.11.0",
+            True,
+        ),
+        (
+            "esp8266-micropython-1.10.0",
+            False,
+        ),
     ]
     result = runner.invoke(cli.search, ["esp8266"])
     assert result.exit_code == 0
 
 
 class TestInstall:
-
     @pytest.fixture
     def mock_proj(self, mocker, mock_mpy):
-        mock_project = mocker.patch.object(cli, 'Project')
+        mock_project = mocker.patch.object(cli, "Project")
         mock_proj = mock_project.return_value
         mock_mpy.project = mock_proj
         return mock_proj
@@ -188,7 +187,7 @@ class TestInstall:
         assert "Aborted!" in result.output
 
     def test_from_path(self, runner, mock_proj, tmp_path):
-        tmp_package = tmp_path / 'mycustompackage'
+        tmp_package = tmp_path / "mycustompackage"
         tmp_package.mkdir()
-        result = runner.invoke(cli.install, ['--path', str(tmp_package)])
+        result = runner.invoke(cli.install, ["--path", str(tmp_package)])
         assert result.exit_code == 0

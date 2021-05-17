@@ -15,8 +15,3 @@ micropy.stubs
 
       StubManager
       source
-
-
-
-
-

@@ -19,9 +19,8 @@ from functools import partial
 from pathlib import Path, PurePosixPath
 from urllib import parse
 
-import requests
-
 import micropy.exceptions as exc
+import requests
 from micropy import utils
 from micropy.logger import Log
 
@@ -35,6 +34,7 @@ class StubRepo:
         ref (str): path to repo definition file
 
     """
+
     repos = set()
 
     def __init__(self, name, location, path, **kwargs):
@@ -42,7 +42,7 @@ class StubRepo:
         self.path = path
         self.log = Log.add_logger(self.name)
         self.location = location
-        self.packages = kwargs.get('packages', [])
+        self.packages = kwargs.get("packages", [])
         self.repos.add(self)
 
     def has_package(self, name):
@@ -85,7 +85,7 @@ class StubRepo:
 
         """
         query = query.strip().lower()
-        pkg_names = [p['name'] for p in self.packages]
+        pkg_names = [p["name"] for p in self.packages]
         results = set([p for p in pkg_names if query in p.lower()])
         return results
 
@@ -125,13 +125,13 @@ class StubRepo:
         """
         data = json.loads(content)
         for source in data:
-            source_url = source['source']
+            source_url = source["source"]
             source_data = requests.get(source_url).json()
             cls(**source_data)
         return cls.repos
 
     def __eq__(self, other):
-        return self.location == getattr(other, 'location', None)
+        return self.location == getattr(other, "location", None)
 
     def __hash__(self):
         return hash(self.location)
@@ -240,7 +240,8 @@ class RemoteStubSource(StubSource):
         filename = utils.get_url_filename(self.location).split(".tar.gz")[0]
         _file_name = "".join(self.log.iter_formatted(f"$B[{filename}]"))
         content = utils.stream_download(
-            self.location, desc=f"{self.log.get_service()} {_file_name}")
+            self.location, desc=f"{self.log.get_service()} {_file_name}"
+        )
         source_path = self._unpack_archive(content, tmp_path)
         teardown = partial(shutil.rmtree, tmp_path)
         return super().ready(path=source_path, teardown=teardown)

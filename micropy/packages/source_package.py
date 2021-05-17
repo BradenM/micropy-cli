@@ -5,9 +5,8 @@ import shutil
 from pathlib import Path
 from tempfile import mkdtemp
 from typing import Any, Callable, List, Optional, Tuple, Union
+
 from git import Repo
-
-
 from micropy import utils
 from micropy.exceptions import RequirementNotFound
 
@@ -24,21 +23,17 @@ class PackageDependencySource(DependencySource):
             Defaults to None.
 
     """
+
     repo: str = "https://pypi.org/pypi/{name}/json"
 
-    def __init__(self, package: Package,
-                 format_desc: Optional[Callable[..., Any]] = None):
+    def __init__(self, package: Package, format_desc: Optional[Callable[..., Any]] = None):
         super().__init__(package)
         try:
             utils.ensure_valid_url(self.repo_url)
         except Exception:
-            raise RequirementNotFound(
-                f"{self.repo_url} is not a valid url!", package=self.package)
+            raise RequirementNotFound(f"{self.repo_url} is not a valid url!", package=self.package)
         else:
-            self._meta: dict = utils.get_package_meta(
-                str(self.package),
-                self.repo_url
-            )
+            self._meta: dict = utils.get_package_meta(str(self.package), self.repo_url)
             self.format_desc = format_desc or (lambda n: n)
 
     @property
@@ -48,7 +43,7 @@ class PackageDependencySource(DependencySource):
 
     @property
     def source_url(self) -> str:
-        return self._meta.get('url', None)
+        return self._meta.get("url", None)
 
     @property
     def file_name(self) -> str:
@@ -100,13 +95,15 @@ class VCSDependencySource(DependencySource):
     def __init__(self, package: Package, format_desc: Optional[Callable[..., Any]] = None):
         super().__init__(package)
         self.log.debug(
-            f'VCS package!, {self.package.revision}@{self.package.vcs}@{self.package.full_name}')
+            f"VCS package!, {self.package.revision}@{self.package.vcs}@{self.package.full_name}"
+        )
         self._repo: Optional[Repo] = None
         try:
             utils.ensure_valid_url(self.repo_url)
         except Exception:
             raise RequirementNotFound(
-                f"{self.repo_url} is not a valid VCS url!", package=self.package)
+                f"{self.repo_url} is not a valid VCS url!", package=self.package
+            )
         else:
             self.format_desc = format_desc or (lambda n: n)
 

@@ -8,8 +8,25 @@ This module provides utility functions that are used within
 MicropyCli.
 """
 
-from .stub import generate_stub
 from .decorators import lazy_property
-from .helpers import search_xml, stream_download, is_downloadable, is_url, get_url_filename, ensure_valid_url, ensure_existing_dir, is_dir_link, is_existing_dir, create_dir_link, is_update_available, get_cached_data, get_package_meta, get_class_that_defined_method, extract_tarbytes, iter_requirements
+from .helpers import (
+    create_dir_link,
+    ensure_existing_dir,
+    ensure_valid_url,
+    extract_tarbytes,
+    get_cached_data,
+    get_class_that_defined_method,
+    get_package_meta,
+    get_url_filename,
+    is_dir_link,
+    is_downloadable,
+    is_existing_dir,
+    is_update_available,
+    is_url,
+    iter_requirements,
+    search_xml,
+    stream_download,
+)
 from .pybwrapper import CREATE_STUBS_INSTALLED, PyboardWrapper
+from .stub import generate_stub
 from .validate import Validator

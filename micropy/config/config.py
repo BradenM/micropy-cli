@@ -5,7 +5,6 @@ from typing import Any, List, Sequence, Tuple, Type, Union
 
 import dpath
 from boltons import iterutils
-
 from micropy.logger import Log, ServiceLog
 
 from .config_json import JSONConfigSource
@@ -29,10 +28,9 @@ class Config:
 
     """
 
-    def __init__(self,
-                 *args: Any,
-                 source_format: Type[ConfigSource] = JSONConfigSource,
-                 default: dict = {}):
+    def __init__(
+        self, *args: Any, source_format: Type[ConfigSource] = JSONConfigSource, default: dict = {}
+    ):
         self.log: ServiceLog = Log.add_logger(f"{__name__}")
         self.format = source_format
         self._source: ConfigSource = self.format(*args)
@@ -86,7 +84,7 @@ class Config:
             Tuple[Sequence[str], str]: Parsed key
 
         """
-        full_path = tuple(i for i in key.split('/'))
+        full_path = tuple(i for i in key.split("/"))
         path = full_path[:-1]
         p_key = full_path[-1]
         return (path, p_key)
@@ -153,8 +151,9 @@ class Config:
         """
         path, target = self.parse_key(key)
         value = self.get(key)
-        remapped = iterutils.remap(self._config, lambda p, k,
-                                   v: False if p == path and k == target else True)
+        remapped = iterutils.remap(
+            self._config, lambda p, k, v: False if p == path and k == target else True
+        )
         self._config = remapped
         self.log.debug(f"popped config value {value} <- [{key}]")
         return self.sync()

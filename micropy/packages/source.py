@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 from boltons import fileutils
-
 from micropy import utils
 from micropy.logger import Log, ServiceLog
 
@@ -20,7 +19,8 @@ class DependencySource(AbstractContextManager):
         package (Package): package the source points too.
 
     """
-    _ignore_stubs: List[str] = ['setup.py', '__version__', 'test_']
+
+    _ignore_stubs: List[str] = ["setup.py", "__version__", "test_"]
 
     def __init__(self, package: Package):
         self.is_local = False
@@ -49,7 +49,7 @@ class DependencySource(AbstractContextManager):
             bool: True if is package
 
         """
-        init = next(path.rglob('__init__.py'), None)
+        init = next(path.rglob("__init__.py"), None)
         if init:
             return init.parent
         return None
@@ -65,7 +65,7 @@ class DependencySource(AbstractContextManager):
                  a path to the original file and stub, respectively.
 
         """
-        py_files = fileutils.iter_find_files(str(path), patterns='*.py', ignored=self._ignore_stubs)
+        py_files = fileutils.iter_find_files(str(path), patterns="*.py", ignored=self._ignore_stubs)
         stubs = [utils.generate_stub(f) for f in py_files]
         return stubs
 

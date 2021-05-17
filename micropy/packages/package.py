@@ -9,11 +9,17 @@ from packaging.utils import canonicalize_name
 
 
 class Package:
-
     def __init__(
-            self, name: str, specs: List[Tuple[str, str]],
-            path: Optional[Path] = None, uri: Optional[str] = None, vcs: Optional[str] = None,
-            revision: Optional[str] = None, line: Optional[str] = None, **kwargs):
+        self,
+        name: str,
+        specs: List[Tuple[str, str]],
+        path: Optional[Path] = None,
+        uri: Optional[str] = None,
+        vcs: Optional[str] = None,
+        revision: Optional[str] = None,
+        line: Optional[str] = None,
+        **kwargs,
+    ):
         """Generic Python Dependency.
 
         Args:
@@ -29,7 +35,7 @@ class Package:
         self._vcs = vcs
         self._revision = revision
         self._line = line
-        self.editable = (self._path is not None)
+        self.editable = self._path is not None
 
     @property
     def name(self) -> str:
@@ -86,7 +92,7 @@ class Package:
         return "".join(_specs)
 
     @classmethod
-    def from_text(cls, name: str, specs: str) -> 'Package':
+    def from_text(cls, name: str, specs: str) -> "Package":
         """Create package from text.
 
         Args:
@@ -97,14 +103,14 @@ class Package:
             Package instance
 
         """
-        if 'http' in specs:
+        if "http" in specs:
             req = next(requirements.parse(specs))
             return cls(**req.__dict__)
-        if '-e' in specs:
+        if "-e" in specs:
             req = next(requirements.parse(specs))
             return cls(name, req.specs, path=req.path)
         req_name = name
-        if specs != '*':
+        if specs != "*":
             req_name = f"{name}{specs}"
         req = next(requirements.parse(req_name))
         return cls(req.name, req.specs)

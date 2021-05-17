@@ -10,14 +10,15 @@ used by MicropyCli
 
 import inspect
 import io
+import shutil
 import subprocess as subproc
 import sys
 import tarfile
 import xml.etree.ElementTree as ET
 from datetime import timedelta
 from pathlib import Path
-import shutil
 
+import micropy
 import requests
 import requirements
 from cachier import cachier
@@ -26,17 +27,24 @@ from requests import exceptions as reqexc
 from requests import utils as requtil
 from tqdm import tqdm
 
-import micropy
-
-__all__ = ["is_url", "get_url_filename",
-           "ensure_existing_dir", "ensure_valid_url",
-           "is_downloadable", "is_existing_dir",
-           "stream_download", "search_xml",
-           "get_package_meta",
-           "extract_tarbytes", "iter_requirements",
-           "create_dir_link", "is_dir_link",
-           "is_update_available", "get_cached_data",
-           "get_class_that_defined_method"]
+__all__ = [
+    "is_url",
+    "get_url_filename",
+    "ensure_existing_dir",
+    "ensure_valid_url",
+    "is_downloadable",
+    "is_existing_dir",
+    "stream_download",
+    "search_xml",
+    "get_package_meta",
+    "extract_tarbytes",
+    "iter_requirements",
+    "create_dir_link",
+    "is_dir_link",
+    "is_update_available",
+    "get_cached_data",
+    "get_class_that_defined_method",
+]
 
 
 def is_url(url):
@@ -50,7 +58,10 @@ def is_url(url):
 
     """
     scheme = requtil.urlparse(str(url)).scheme
-    return scheme in ('http', 'https',)
+    return scheme in (
+        "http",
+        "https",
+    )
 
 
 @cachier(stale_after=timedelta(days=1))
@@ -140,7 +151,14 @@ def is_downloadable(url):
     headers = requests.head(url).headers
     content_type = headers.get("content-type").lower()
     ctype = content_type.split("/")
-    if any(t in ('text', 'html', ) for t in ctype):
+    if any(
+        t
+        in (
+            "text",
+            "html",
+        )
+        for t in ctype
+    ):
         return False
     return True
 
@@ -172,8 +190,8 @@ def stream_download(url, **kwargs):
     """
     stream = requests.get(url, stream=True)
     content = bytearray()
-    total_size = int(stream.headers.get('content-length', len(stream.content)))
-    block_size = 32*1024
+    total_size = int(stream.headers.get("content-length", len(stream.content)))
+    block_size = 32 * 1024
     bar_format = "{l_bar}{bar}| [{n_fmt}/{total_fmt} @ {rate_fmt}]"
     tqdm_kwargs = {
         "unit_scale": True,
@@ -182,7 +200,7 @@ def stream_download(url, **kwargs):
         "bar_format": bar_format,
     }
     tqdm_kwargs.update(kwargs)
-    with tqdm(total=total_size, unit='B', **tqdm_kwargs) as pbar:
+    with tqdm(total=total_size, unit="B", **tqdm_kwargs) as pbar:
         for block in stream.iter_content(block_size):
             pbar.update(len(block))
             content.extend(block)
@@ -204,8 +222,8 @@ def search_xml(url, node):
     resp = requests.get(url)
     xml = resp.content.decode("UTF-8")
     root = ET.fromstring(xml)
-    root_ns = root.tag[1:root.tag.find('}')]
-    namespace = {'ns': root_ns}
+    root_ns = root.tag[1 : root.tag.find("}")]
+    namespace = {"ns": root_ns}
     _results = root.findall(f"./*/ns:{node}", namespace)
     results = [k.text for k in _results]
     return results
@@ -219,7 +237,7 @@ def iter_requirements(path):
 
     """
     req_path = Path(path).absolute()
-    with req_path.open('r') as rfile:
+    with req_path.open("r") as rfile:
         for req in requirements.parse(rfile):
             yield req
 
@@ -235,15 +253,17 @@ def get_package_meta(name, url):
         dict: Dictionary of Metadata
 
     """
+
     def _iter_compare(in_val, comp_to, operator):
         for t in comp_to:
             state = eval(f"in_val {operator} t")
             if state:
                 yield t
+
     resp = requests.get(url)
     data = resp.json()
     pkg = next(requirements.parse(name))
-    releases = data['releases']
+    releases = data["releases"]
     # Latest version
     spec_data = list(releases.items())[-1][1]
     if pkg.specs:
@@ -253,7 +273,7 @@ def get_package_meta(name, url):
         spec_key = str(next(_iter_compare(spec_v, rel_versions, spec_comp)))
         spec_data = releases[spec_key]
     # Find .tar.gz meta
-    tar_meta = next((i for i in spec_data if ".tar.gz" in Path(i['url']).name))
+    tar_meta = next((i for i in spec_data if ".tar.gz" in Path(i["url"]).name))
     return tar_meta
 
 
@@ -300,9 +320,8 @@ def create_dir_link(source, target):
             # handles exFAT disk format (links not working)
             if e.errno == 38:
                 shutil.copytree(
-                    str(target.absolute()),
-                    str(source.absolute()),
-                    symlinks=False, ignore=None)
+                    str(target.absolute()), str(source.absolute()), symlinks=False, ignore=None
+                )
                 return
             elif e.errno == 17:  # folder exists
                 return
@@ -311,8 +330,7 @@ def create_dir_link(source, target):
 
         # Fall back to directory junction
         cmd = ["MKLINK", "/J", str(source.absolute()), str(target.absolute())]
-        exit_code = subproc.call(
-            cmd, shell=True, stdout=subproc.PIPE, stderr=subproc.PIPE)
+        exit_code = subproc.call(cmd, shell=True, stdout=subproc.PIPE, stderr=subproc.PIPE)
         if exit_code:
             raise e
 
@@ -331,7 +349,7 @@ def is_dir_link(path):
     path = Path(path)
     if path.is_symlink():
         return True
-    if platform == 'win32':
+    if platform == "win32":
         # Test for Directory Junction
         resolved = str(path.resolve())
         if not str(path.absolute()) == resolved:
@@ -348,7 +366,7 @@ def is_update_available():
     """
     url = f"https://pypi.org/pypi/micropy-cli/json"
     data = get_cached_data(url)
-    versions = [k for k in data['releases'].keys() if 'rc' not in k]
+    versions = [k for k in data["releases"].keys() if "rc" not in k]
     if versions:
         latest = version.parse(versions[-1])
         cur_version = version.parse(micropy.__version__)
@@ -382,8 +400,9 @@ def get_class_that_defined_method(meth):
                 return cls
         meth = meth.__func__  # fallback to __qualname__ parsing
     if inspect.isfunction(meth):
-        cls = getattr(inspect.getmodule(meth),
-                      meth.__qualname__.split('.<locals>', 1)[0].rsplit('.', 1)[0])
+        cls = getattr(
+            inspect.getmodule(meth), meth.__qualname__.split(".<locals>", 1)[0].rsplit(".", 1)[0]
+        )
         if isinstance(cls, type):
             return cls
-    return getattr(meth, '__objclass__', None)  # handle special descriptor objects
+    return getattr(meth, "__objclass__", None)  # handle special descriptor objects

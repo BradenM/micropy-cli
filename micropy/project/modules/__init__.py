@@ -8,5 +8,11 @@ from .packages import DevPackagesModule, PackagesModule
 from .stubs import StubsModule
 from .templates import TemplatesModule
 
-__all__ = ['TemplatesModule', 'PackagesModule', 'StubsModule',
-           'ProjectModule', 'DevPackagesModule', 'HookProxy']
+__all__ = [
+    "TemplatesModule",
+    "PackagesModule",
+    "StubsModule",
+    "ProjectModule",
+    "DevPackagesModule",
+    "HookProxy",
+]

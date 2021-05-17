@@ -15,10 +15,11 @@ from micropy.stubs import StubManager, source
 
 class MicroPy:
     """Handles App State Management."""
+
     RUN_CHECKS = True
 
     def __init__(self):
-        self.log = Log.get_logger('MicroPy')
+        self.log = Log.get_logger("MicroPy")
         self.verbose = True
         self.log.debug("MicroPy Loaded")
         if not data.STUB_DIR.exists():
@@ -51,7 +52,7 @@ class MicroPy:
             Project: Instance of Current Project
 
         """
-        proj = self.resolve_project('.', verbose=self.verbose)
+        proj = self.resolve_project(".", verbose=self.verbose)
         return proj
 
     def resolve_project(self, path, verbose=True):
@@ -68,8 +69,8 @@ class MicroPy:
         path = Path(path).absolute()
         proj = Project(path)
         proj.add(modules.StubsModule, self.stubs)
-        proj.add(modules.PackagesModule, 'requirements.txt')
-        proj.add(modules.DevPackagesModule, 'dev-requirements.txt')
+        proj.add(modules.PackagesModule, "requirements.txt")
+        proj.add(modules.DevPackagesModule, "dev-requirements.txt")
         proj.add(modules.TemplatesModule, run_checks=self.RUN_CHECKS)
         if proj.exists:
             if verbose:
@@ -94,25 +95,21 @@ class MicroPy:
         try:
             pyb = utils.PyboardWrapper(port, verbose=verbose)
         except SystemExit:
-            self.log.error(
-                f"Failed to connect, are you sure $[{port}] is correct?")
+            self.log.error(f"Failed to connect, are you sure $[{port}] is correct?")
             return None
         self.log.success("Connected!")
         try:
             script = stubber.minify_script()
         except AttributeError:
             self.log.error("\nPyminifier not found!")
+            self.log.info(("For device stub creation, micropy-cli depends" " on $B[Pyminifier]."))
             self.log.info(
-                ("For device stub creation, micropy-cli depends"
-                 " on $B[Pyminifier]."))
-            self.log.info(
-                ("Please install via: $[pip install micropy-cli[create_stubs]]"
-                 " and try again."))
+                ("Please install via: $[pip install micropy-cli[create_stubs]]" " and try again.")
+            )
             sys.exit(1)
         self.log.info("Executing stubber on pyboard...")
         try:
-            pyb.run(script,
-                    format_output=lambda x: x.split("to file:")[0].strip())
+            pyb.run(script, format_output=lambda x: x.split("to file:")[0].strip())
         except Exception as e:
             # TODO: Handle more usage cases
             self.log.error(f"Failed to execute script: {str(e)}")

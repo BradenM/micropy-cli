@@ -8,11 +8,11 @@ This module contains generic decorators
 used by MicropyCli
 """
 
-__all__ = ['lazy_property']
+__all__ = ["lazy_property"]
 
 
 def lazy_property(fn):
-    attr = '_lazy__' + fn.__name__
+    attr = "_lazy__" + fn.__name__
 
     @property
     def _lazy_property(self):
