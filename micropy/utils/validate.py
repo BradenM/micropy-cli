@@ -15,7 +15,7 @@ from jsonschema import Draft7Validator
 
 
 class Validator:
-    """"jsonschema wrapper for file validation.
+    """ "jsonschema wrapper for file validation.
 
     Returns:
         object: Validator Instance

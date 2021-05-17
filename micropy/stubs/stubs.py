@@ -4,7 +4,6 @@ import json
 import shutil
 from pathlib import Path
 
-
 from micropy import data, utils
 from micropy.exceptions import StubError, StubValidationError
 from micropy.logger import Log
@@ -26,15 +25,16 @@ class StubManager:
         object: Instance of StubManager
 
     """
-    _schema = data.SCHEMAS / 'stubs.json'
-    _firm_schema = data.SCHEMAS / 'firmware.json'
+
+    _schema = data.SCHEMAS / "stubs.json"
+    _firm_schema = data.SCHEMAS / "firmware.json"
 
     def __init__(self, resource=None, repos=None):
         self._loaded = set()
         self._firmware = set()
         self.resource = resource
         self.repos = repos
-        self.log = Log.add_logger('Stubs', stdout=False, show_title=False)
+        self.log = Log.add_logger("Stubs", stdout=False, show_title=False)
         if self.resource:
             self.load_from(resource, strict=False)
 
@@ -126,15 +126,13 @@ class StubManager:
         fware = next(results, None)
         if not fware:
             try:
-                self.log.info(
-                    "Firmware not found locally, attempting to install it...")
+                self.log.info("Firmware not found locally, attempting to install it...")
                 fware = self.add(fware_name)
             except Exception:
                 self.log.error("Failed to resolve firmware!")
                 return None
             else:
-                self.log.success(
-                    f"{fware_name} firmware added!")
+                self.log.success(f"{fware_name} firmware added!")
                 return fware
         return fware
 
@@ -154,7 +152,7 @@ class StubManager:
         self.log.debug(f"Validating: {path}")
         schema = schema or self._schema
         path = Path(path).resolve()
-        stub_info = path / 'info.json'
+        stub_info = path / "info.json"
         val = utils.Validator(schema)
         try:
             val.validate(stub_info)
@@ -223,9 +221,14 @@ class StubManager:
                 for s in (self._check_existing(p) for p in location.iterdir()):
                     yield next(s, None)
             path_name = Path(location).name
-            stub = next((s for s in self._loaded if any(
-                t in (s.name, s.path.name) for t in
-                (path_name, location))), None)
+            stub = next(
+                (
+                    s
+                    for s in self._loaded
+                    if any(t in (s.name, s.path.name) for t in (path_name, location))
+                ),
+                None,
+            )
             if stub:
                 yield stub
 
@@ -249,8 +252,7 @@ class StubManager:
                 if stub_type is FirmwareStub:
                     sources.remove(stub)
                     self._load(stub, *args, **kwargs)
-        stubs.extend([self._load(s, *args, **kwargs)
-                      for s in sources])
+        stubs.extend([self._load(s, *args, **kwargs) for s in sources])
         return stubs
 
     def _should_recurse(self, location):
@@ -328,18 +330,18 @@ class StubManager:
         mod_file = next(_path.rglob("modules.json"))
         path = mod_file.parent
         mod_data = json.load(mod_file.open())
-        dev_fware = mod_data['firmware']
-        fname = dev_fware.get('name', None)
+        dev_fware = mod_data["firmware"]
+        fname = dev_fware.get("name", None)
         out_name = f"{dev_fware['sysname']}"
         # TODO: Attempt to Autoresolve Firmware name and add it to info.json
         if fname:
             out_name = f"{out_name}-{fname}"
         out_name = f"{out_name}-{dev_fware['version']}"
         out_stub = dest / out_name
-        info_file = out_stub / 'info.json'
-        stub_path = out_stub / 'stubs'
+        info_file = out_stub / "info.json"
+        stub_path = out_stub / "stubs"
         out_stub.mkdir(exist_ok=True, parents=True)
-        json.dump(mod_data, info_file.open('w+'))
+        json.dump(mod_data, info_file.open("w+"))
         shutil.copytree(path, stub_path)
         return out_stub
 
@@ -400,7 +402,7 @@ class Stub:
 
     def __init__(self, path, copy_to=None, **kwargs):
         self.path = Path(path)
-        ref = self.path / 'info.json'
+        ref = self.path / "info.json"
         self.info = json.load(ref.open())
         if copy_to is not None:
             self.copy_to(copy_to)
@@ -437,7 +439,7 @@ class Stub:
         raise NotImplementedError
 
     def __eq__(self, other):
-        return self.name == getattr(other, 'name', None)
+        return self.name == getattr(other, "name", None)
 
     def __hash__(self):
         return hash(self.name)
@@ -461,15 +463,15 @@ class DeviceStub(Stub):
     def __init__(self, path, copy_to=None, **kwargs):
         super().__init__(path, copy_to, **kwargs)
 
-        self.stubs = self.path / 'stubs'
-        self.frozen = self.path / 'frozen'
+        self.stubs = self.path / "stubs"
+        self.frozen = self.path / "frozen"
         stubber = self.info.get("stubber")
         self.stub_version = stubber.get("version")
 
         self.firm_info = self.info.get("firmware")
         self.firmware = kwargs.get("firmware", None)
-        self.sysname = self.firm_info.get('sysname')
-        self.version = self.firm_info.get('version')
+        self.sysname = self.firm_info.get("sysname")
+        self.version = self.firm_info.get("version")
 
     @property
     def firmware_name(self):
@@ -481,10 +483,10 @@ class DeviceStub(Stub):
         """
         if isinstance(self.firmware, FirmwareStub):
             return self.firmware.firmware
-        fware = self.firm_info.get('name', None)
+        fware = self.firm_info.get("name", None)
         if not fware:
-            fware = self.firm_info.get('firmware').strip()
-            fware.replace(' ', '-')
+            fware = self.firm_info.get("firmware").strip()
+            fware.replace(" ", "-")
         return fware
 
     @property
@@ -494,9 +496,11 @@ class DeviceStub(Stub):
         return f"{self.sysname}-{self.firmware_name}-{self.version}"
 
     def __repr__(self):
-        return (f"DeviceStub(sysname={self.sysname}, firmware="
-                f"{self.firmware_name}, version={self.version}, "
-                f"path={self.path})")
+        return (
+            f"DeviceStub(sysname={self.sysname}, firmware="
+            f"{self.firmware_name}, version={self.version}, "
+            f"path={self.path})"
+        )
 
 
 class FirmwareStub(Stub):
@@ -514,10 +518,10 @@ class FirmwareStub(Stub):
     def __init__(self, path, copy_to=None, **kwargs):
         super().__init__(path, copy_to=copy_to, **kwargs)
 
-        self.frozen = self.path / 'frozen'
-        self.repo = self.info.get('repo')
-        firmware = self.info.get('firmware').strip()
-        self.firmware = firmware.replace(' ', '-')
+        self.frozen = self.path / "frozen"
+        self.repo = self.info.get("repo")
+        firmware = self.info.get("firmware").strip()
+        self.firmware = firmware.replace(" ", "-")
 
     @property
     def name(self):

@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Any, List, Sequence, Union
 
 from boltons import setutils
-
 from micropy.project.modules import ProjectModule
 from micropy.stubs import StubManager
 from micropy.stubs.stubs import DeviceStub
@@ -21,10 +20,12 @@ class StubsModule(ProjectModule):
         stubs (List[Type[Stub]], optional): Initial Stubs to use.
 
     """
+
     PRIORITY: int = 9
 
-    def __init__(self, stub_manager: StubManager,
-                 stubs: Sequence[DeviceStub] = None, **kwargs: Any):
+    def __init__(
+        self, stub_manager: StubManager, stubs: Sequence[DeviceStub] = None, **kwargs: Any
+    ):
         super().__init__(**kwargs)
         self.stub_manager: StubManager = stub_manager
         self._stubs: Sequence[DeviceStub] = stubs or []
@@ -69,13 +70,13 @@ class StubsModule(ProjectModule):
         stub_tree = setutils.IndexedSet()
         base_stubs = setutils.IndexedSet([s.stubs for s in stubs])
         frozen = [s.frozen for s in stubs]
-        fware_mods = [s.firmware.frozen
-                      for s in stubs if s.firmware is not None]
+        fware_mods = [s.firmware.frozen for s in stubs if s.firmware is not None]
         stub_tree.update(*frozen, *fware_mods, *base_stubs)
         return list(stub_tree)
 
-    def _resolve_subresource(self,
-                             stubs: List[DeviceStub]) -> Union[StubManager, Sequence[DeviceStub]]:
+    def _resolve_subresource(
+        self, stubs: List[DeviceStub]
+    ) -> Union[StubManager, Sequence[DeviceStub]]:
         """Resolves stub resource.
 
         Args:
@@ -87,14 +88,12 @@ class StubsModule(ProjectModule):
         if not self.parent.exists:
             return self._stubs
         try:
-            resource = set(
-                self.stub_manager.resolve_subresource(stubs,
-                                                      self.parent.data_path))
+            resource = set(self.stub_manager.resolve_subresource(stubs, self.parent.data_path))
         except OSError as e:
             self.log.error("Failed to Create Stub Links!", exception=e)
             sys.exit(1)
         else:
-            self.config.upsert('stubs', {s.name: s.stub_version for s in stubs})
+            self.config.upsert("stubs", {s.name: s.stub_version for s in stubs})
             return resource
 
     def _load_stub_data(self, stub_data=None, **kwargs):
@@ -117,8 +116,8 @@ class StubsModule(ProjectModule):
             stub_list (dict): Dict of Stubs
 
         """
-        self.config.upsert('stubs', {s.name: s.stub_version for s in self._stubs})
-        stubs = list(self._load_stub_data(stub_data=self.config.get('stubs')))
+        self.config.upsert("stubs", {s.name: s.stub_version for s in self._stubs})
+        stubs = list(self._load_stub_data(stub_data=self.config.get("stubs")))
         stubs.extend(self.stubs)
         stubs = self._resolve_subresource(stubs)
         self.context.upsert("stubs", stubs)
@@ -127,8 +126,7 @@ class StubsModule(ProjectModule):
 
     def create(self):
         """Create stub project files."""
-        self.log.info(
-            f"Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
+        self.log.info(f"Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
         return self.load()
 
     def update(self):
@@ -147,12 +145,11 @@ class StubsModule(ProjectModule):
             [Stubs]: Project Stubs
 
         """
-        self.context.extend('stubs', [stub])
+        self.context.extend("stubs", [stub])
         self.log.info("Loading project...")
         self._resolve_subresource(self.stubs)
         self.log.info("Updating Project Info...")
         self.parent.update()
-        self.log.info(
-            f"Project Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
+        self.log.info(f"Project Stubs: $[{' '.join(str(s) for s in self.stubs)}]")
         self.log.success("\nProject Updated!")
         return self.stubs

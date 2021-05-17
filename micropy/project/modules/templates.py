@@ -19,9 +19,10 @@ class TemplatesModule(ProjectModule):
             Defaults to True.
 
     """
+
     PRIORITY: int = 1
     TEMPLATES = TemplateProvider.TEMPLATES
-    _dynamic = ['vscode', 'pylint']
+    _dynamic = ["vscode", "pylint"]
 
     def __init__(self, templates=None, run_checks=True, **kwargs):
         self._templates = templates or []
@@ -43,8 +44,8 @@ class TemplatesModule(ProjectModule):
 
     def load(self, **kwargs):
         """Loads project templates."""
-        self.provider = self.get_provider(self.config.get('config'))
-        templates = [k for k, v in self.config.get('config').items() if v]
+        self.provider = self.get_provider(self.config.get("config"))
+        templates = [k for k, v in self.config.get("config").items() if v]
         self.log.debug(f"Loading Templates: {templates}")
         self.provider = TemplateProvider(templates, **kwargs)
         self.update()
@@ -60,7 +61,7 @@ class TemplatesModule(ProjectModule):
         self.log.info("Populating Stub Info...")
         for key in self._templates:
             if key in self._dynamic:
-                self.config.add('config' + '/' + key, True)
+                self.config.add("config" + "/" + key, True)
         self.provider = self.get_provider(self._templates)
         for t in self.provider.templates:
             self.provider.render_to(t, self.parent.path, **self.parent.context.raw())
@@ -74,7 +75,7 @@ class TemplatesModule(ProjectModule):
             dict: Project context
 
         """
-        self.provider = self.get_provider(self.config.get('config'))
+        self.provider = self.get_provider(self.config.get("config"))
         self.log.debug(f"updating templates with context: {self.parent.context.raw()}")
         for tmp in self.provider.templates:
             self.provider.update(tmp, self.parent.path, **self.parent.context.raw())

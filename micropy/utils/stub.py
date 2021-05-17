@@ -1,10 +1,10 @@
 """Micropy stub utils."""
 
 import importlib.util
+import sys
 from pathlib import Path
 from types import ModuleType
 
-import sys
 import micropy.data
 
 
@@ -32,8 +32,8 @@ def import_stubber() -> ModuleType:
     we can't import from it as you would normally.
 
     """
-    src_path = micropy.data.STUBBER / 'src' / 'make_stub_files.py'
-    return import_source_code('stubber', src_path)
+    src_path = micropy.data.STUBBER / "src" / "make_stub_files.py"
+    return import_source_code("stubber", src_path)
 
 
 def generate_stub(path, log_func=None):
@@ -54,12 +54,12 @@ def generate_stub(path, log_func=None):
     stubgen.print = lambda *args: None
     if log_func:
         stubgen.print = log_func
-    cfg_path = (mod_path / 'make_stub_files.cfg').absolute()
+    cfg_path = (mod_path / "make_stub_files.cfg").absolute()
     ctrl = stubgen.StandAloneMakeStubFile()
     ctrl.update_flag = True
     ctrl.config_fn = str(cfg_path)
     file_path = Path(path).absolute()
-    stubbed_path = file_path.with_suffix('.pyi')
+    stubbed_path = file_path.with_suffix(".pyi")
     ctrl.files = [file_path]
     ctrl.silent = True
     ctrl.scan_options()

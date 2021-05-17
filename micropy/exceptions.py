@@ -22,8 +22,7 @@ class StubValidationError(StubError):
     """Raised when a stub fails validation."""
 
     def __init__(self, path, errors, *args, **kwargs):
-        msg = (f"Stub at[{str(path)}] encountered"
-               f" the following validation errors: {str(errors)}")
+        msg = f"Stub at[{str(path)}] encountered" f" the following validation errors: {str(errors)}"
         super().__init__(message=msg, *args, **kwargs)
 
     def __str__(self):
@@ -43,7 +42,7 @@ class RequirementException(MicropyException):
     """A Requirement Exception Occurred."""
 
     def __init__(self, *args, **kwargs):
-        self.package = kwargs.pop('package', None)
+        self.package = kwargs.pop("package", None)
         super().__init__(*args, **kwargs)
 
 

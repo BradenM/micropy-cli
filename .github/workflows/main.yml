@@ -41,4 +41,3 @@ jobs:
               env:
                   CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
               run: poetry run tox
-
