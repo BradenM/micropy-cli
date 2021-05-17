@@ -57,7 +57,7 @@ coverage-html: ## generate coverage html
 
 codestyle: ## cleanup code
 	@printf '$(bold)Cleaning Code...\n$(rsttxt)'
-	- autoflake -r --exclude ./micropy/lib --remove-all-unused-imports --remove-unused-variables ./micropy --in-place
+	- autoflake -r --exclude ./micropy/lib --remove-all-unused-imports --remove-unused-variables --ignore-init-module-imports ./micropy --in-place
 	- autopep8 -i -r --max-line-length=100 --exclude ./micropy/lib --experimental ./micropy/
 	- docformatter -r micropy -i --blank
 	$(MAKE) lint
