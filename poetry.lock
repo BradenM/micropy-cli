@@ -615,11 +615,11 @@ virtualenv = ">=20.0.8"
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.3"
+version = "3.0.18"
 description = "Library for building powerful interactive command lines in Python"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.6.1"
 
 [package.dependencies]
 wcwidth = "*"
@@ -1004,7 +1004,7 @@ dev = ["pytest"]
 
 [[package]]
 name = "rshell"
-version = "0.0.26"
+version = "0.0.30"
 description = "A remote shell for working with MicroPython boards."
 category = "main"
 optional = false
@@ -1360,7 +1360,7 @@ docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "s
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<3.10"
-content-hash = "a69f318e42dae3f10dcec2548a1614a708f1cb4b0cd6c2484d8f187b8ec0f0d6"
+content-hash = "a50e749adc703fd569d5814f6eb512cc660d4edd08bcdd270cb08b24cfb4039d"
 
 [metadata.files]
 alabaster = [
@@ -1705,8 +1705,8 @@ pre-commit = [
     {file = "pre_commit-2.12.1.tar.gz", hash = "sha256:900d3c7e1bf4cf0374bb2893c24c23304952181405b4d88c9c40b72bda1bb8a9"},
 ]
 prompt-toolkit = [
-    {file = "prompt_toolkit-3.0.3-py3-none-any.whl", hash = "sha256:c93e53af97f630f12f5f62a3274e79527936ed466f038953dfa379d4941f651a"},
-    {file = "prompt_toolkit-3.0.3.tar.gz", hash = "sha256:a402e9bf468b63314e37460b68ba68243d55b2f8c4d0192f85a019af3945050e"},
+    {file = "prompt_toolkit-3.0.18-py3-none-any.whl", hash = "sha256:bf00f22079f5fadc949f42ae8ff7f05702826a97059ffcc6281036ad40ac6f04"},
+    {file = "prompt_toolkit-3.0.18.tar.gz", hash = "sha256:e1b4f11b9336a28fa11810bc623c357420f69dfdb6d2dac41ca2c21a55c033bc"},
 ]
 py = [
     {file = "py-1.10.0-py2.py3-none-any.whl", hash = "sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a"},
@@ -1908,7 +1908,7 @@ rope = [
     {file = "rope-0.19.0.tar.gz", hash = "sha256:64e6d747532e1f5c8009ec5aae3e5523a5bcedf516f39a750d57d8ed749d90da"},
 ]
 rshell = [
-    {file = "rshell-0.0.26.tar.gz", hash = "sha256:cc447a3c9853a50585d7fdd6356922e8a89debb67932e60cf241f23fbd72db16"},
+    {file = "rshell-0.0.30.tar.gz", hash = "sha256:d2002d40d735204037d6142a6c2d51beecc763c124faaf759cabf7acd945be95"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

@@ -108,7 +108,7 @@ setup(
     ],
     dependency_links=["/home/bradenmars/projects/micropy/micropy-cli"],
     extras_require={
-        "create_stubs": ["pyminifier==2.*,>=2.1.0", "rshell==0.*,>=0.0.26"],
+        "create_stubs": ["pyminifier==2.*,>=2.1.0", "rshell==0.*,>=0.0.30"],
         "dev": [
             "autoflake==1.*,>=1.4.0",
             "autopep8==1.*,>=1.5.0",
@@ -118,7 +118,6 @@ setup(
             "coveralls==3.*,>=3.0.0",
             "doc8==0.*,>=0.8.0",
             "docformatter==1.*,>=1.4.0",
-            "flake8==3.*,>=3.9.0",
             "flaky==3.*,>=3.7.0",
             "isort==5.*,>=5.8.0",
             "micropy-cli[create_stubs,docs]",
