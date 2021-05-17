@@ -1,4 +1,4 @@
 [submodule "micropy/lib/stubber"]
 	path = micropy/lib/stubber
-	url = https://github.com/BradenM/micropython-stubber.git
-	branch = pkg/slim
+	url = https://github.com/Josverl/micropython-stubber.git
+	branch = master
