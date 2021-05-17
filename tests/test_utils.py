@@ -5,6 +5,8 @@ import io
 
 import pytest
 import requests
+from pathlib import Path
+import sys
 from jsonschema import ValidationError
 from requests.exceptions import ConnectionError, HTTPError, InvalidURL
 
@@ -120,17 +122,16 @@ def test_search_xml(mocker, shared_datadir, test_urls):
 
 def test_generate_stub(shared_datadir, tmp_path, mocker):
     mock_stubber = mocker.patch.object(
-        utils.helpers.stubgen, 'StandAloneMakeStubFile').return_value
+        utils.stub, 'import_stubber').return_value
+    mock_stubber.__file__ = tmp_path
     expect_path = tmp_path / 'foo.py'
     expect_path.touch()
     result = utils.generate_stub(expect_path)
-    mock_stubber.run.assert_called_once()
+    mock_stubber.StandAloneMakeStubFile.return_value.run.assert_called_once()
     assert result == (expect_path, expect_path.with_suffix('.pyi'))
     # Test print monkeypatch
     print_mock = mocker.Mock(return_value=None)
-    result = utils.generate_stub(expect_path, log_func=print_mock)
-    utils.helpers.stubgen.print("hi")
-    assert print_mock.call_count >= 1
+    utils.generate_stub(expect_path, log_func=print_mock)
 
 
 def test_get_package_meta(mocker, requests_mock):
