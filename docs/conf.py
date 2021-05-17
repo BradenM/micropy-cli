@@ -24,13 +24,13 @@ source_suffix = [".rst", ".md"]
 # -- Project information -----------------------------------------------------
 
 project = "micropy-cli"
-copyright = "2019, Braden Mars"
+copyright = "2021, Braden Mars"
 author = "Braden Mars"
 
 github_doc_root = "https://github.com/BradenM/micropy-cli/tree/master/docs/"
 
 # The full version, including alpha/beta/rc tags
-release = "3.5.0"
+release = "3.6.0"
 
 
 # -- General configuration ---------------------------------------------------

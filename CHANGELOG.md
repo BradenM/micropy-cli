@@ -1,3 +1,26 @@
+## [3.6.0](https://github.com/BradenM/micropy-cli/compare/v3.5.0...v3.6.0) (2021-05-17)
+
+#### Bug Fixes
+
+* **data:**  update stubs schema for compat with latest stubber ([a14d70b8](a14d70b8))
+
+#### Features
+
+* **deps:**
+    *  update rshell dependency ([31249ad9](31249ad9))
+    *  setup black, pre-commit ([4c1c8f9b](4c1c8f9b))
+* **pkg:**  update setup file ([aebba9f9](aebba9f9))
+* **pre-commit:**  add pre-commit config ([bc4cb63c](bc4cb63c))
+* **stubber:**  update micropython-stubber submodule to latest ([69b022ee](69b022ee))
+* **utils:**
+    *  remove dynamic init imports ([7c509ef9](7c509ef9))
+    *  refactor stub-gen to stubs, dynamically create stubber module for import ([79ac19a7](79ac19a7))
+
+#### Style
+
+* Format codebase with black, isort, and autoflake.
+
+
 ## [3.5.0](https://github.com/BradenM/micropy-cli/compare/v3.4.0...v3.5.0) (2020-11-17)
 
 
@@ -14,7 +37,7 @@
   *  bump questionary dependency to ^1.8.1 ([585a5b95](https://github.com/BradenM/micropy-cli/commit/585a5b9559e0450f514439d47b63d5281f1d053d))
   *  add GitPython dependency ([263ae07a](https://github.com/BradenM/micropy-cli/commit/263ae07a2fec97c845fe385accbce98de4b8eb71))
   *  add VSCode debugging config. Thanks @josverl! (#174)
-  
+
 
 #### Bug Fixes
 
