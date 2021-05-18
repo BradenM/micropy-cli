@@ -160,9 +160,27 @@ To search for stubs for your device, use `micropy stubs search <QUERY>`.
 
 # See Also
 
-* [VSCode IntelliSense, Autocompletion & Linting capabilities](https://lemariva.com/blog/2019/08/micropython-vsc-ide-intellisense)
+* [VSCode IntelliSense, Autocompletion & Linting capabilities][lemariva-blog]
     - An awesome article written by [lemariva](https://github.com/lemariva). It covers creating a micropython project environment from scratch using `micropy-cli` and [pymakr-vsc](pymakr-vsc). Great place to start if you're new to this!
 
+* [Developing for the Raspberry Pi Pico in VS Code][cpwood-medium]
+    - A getting started guide for developing in micropython on the Raspberry Pi Pico by [cpwood][cpwood-git].
+    - Also see: [Pico-Go: Micropy-Cli][cpwood-picogo]
+
+* [Awesome MicroPython][awesome-micropy]
+    - Collection of awesome micropython libraries / resources.
+    - Features `micropy-cli` along with several other great development tools under the [Development][awesome-micropy-develop] category.
+
+
+[lemariva-blog]: https://lemariva.com/blog/2019/08/micropython-vsc-ide-intellisense
+[lemariva-git]:  https://github.com/lemariva
+
+[cpwood-medium]: https://medium.com/all-geek-to-me/developing-for-the-raspberry-pi-pico-in-vs-code-getting-started-6dbb3da5ba97
+[cpwood-picogo]: http://pico-go.net/docs/help/micropy/
+[cpwood-git]: https://github.com/cpwood/
+
+[awesome-micropy]: https://awesome-micropython.com/
+[awesome-micropy-develop]: https://awesome-micropython.com/#development
 
 # Acknowledgements
 
