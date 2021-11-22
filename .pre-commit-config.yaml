@@ -19,7 +19,7 @@ exclude: |
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.0.1
     hooks:
       - id: debug-statements
       - id: detect-private-key
@@ -35,10 +35,10 @@ repos:
           - "--remove-all-unused-imports"
           - "--ignore-init-module-imports"
   - repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 21.11b1
     hooks:
       - id: black
   - repo: https://github.com/pycqa/isort
-    rev: 5.8.0
+    rev: 5.10.1
     hooks:
       - id: isort
