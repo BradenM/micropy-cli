@@ -59,6 +59,11 @@ jobs:
                   curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
                   echo "$HOME/.local/bin" >> $GITHUB_PATH
 
+            - name: Setup Win Path
+              if: matrix.os == 'windows'
+              shell: pwsh
+              run: echo "C:\Users\runneradmin\AppData\Roaming\Python\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Append
+
             - name: Install Dependencies
               run: poetry install -E docs -E create_stubs -v
 
