@@ -99,10 +99,12 @@ class MicroPy:
             return None
         self.log.success("Connected!")
         try:
-            script = stubber.minify_script()
+            script = stubber.minify_script(stubber.source_script)
         except AttributeError:
-            self.log.error("\nPyminifier not found!")
-            self.log.info(("For device stub creation, micropy-cli depends" " on $B[Pyminifier]."))
+            self.log.error("\npython-minifier not found!")
+            self.log.info(
+                ("For device stub creation, micropy-cli depends" " on $B[python-minifier].")
+            )
             self.log.info(
                 ("Please install via: $[pip install micropy-cli[create_stubs]]" " and try again.")
             )

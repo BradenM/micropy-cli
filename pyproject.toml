@@ -51,7 +51,8 @@ jsonschema = "=3.2.0"
 dpath = ">=1.4,<2.0"
 # create_stubs extras
 rshell = { version = "^0.0.30", optional = true }
-pyminifier = { version = "^2.1", optional = true }
+python-minifier = { version = "^2.5.0", optional = true }
+mypy = { version = "^0.910", optional = true }
 # docs extras
 sphinx = { version = "^2.2", optional = true }
 sphinx-click = { version = "^2.3", optional = true }
@@ -68,7 +69,6 @@ bump2version = "^0.5.11"
 coveralls = "^3.0"
 isort = "^5.8"
 pylint = "^2.7"
-pyminifier = "^2.1"
 pytest = "^6.2"
 pytest-cov = "^2.11"
 pytest-datadir = "^1.3"
@@ -80,7 +80,7 @@ pytest-xdist = "^1.30"
 rope = "^0.19.0"
 tox = "^3.23"
 tox-gh-actions = "^0.3.0"
-mypy = "^0.812"
+mypy = "^0.910"
 doc8 = "^0.8.0"
 docformatter = "^1.4"
 codacy-coverage = "^1.3"
@@ -93,7 +93,7 @@ black = "^21.5b1"
 pre-commit = "^2.12.1"
 
 [tool.poetry.extras]
-create_stubs = ["pyminifier", "rshell"]
+create_stubs = ["rshell", "python-minifier", "mypy"]
 docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "sphinx_rtd_theme"]
 
 [tool.dephell.main]
