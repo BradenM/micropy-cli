@@ -22,7 +22,8 @@ def import_source_code(module_name: str, path: Path) -> ModuleType:
     spec = importlib.util.spec_from_file_location(module_name, path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
-    return spec.loader.load_module(module_name)
+    spec.loader.exec_module(module)
+    return module
 
 
 def import_stubber() -> ModuleType:
@@ -32,8 +33,12 @@ def import_stubber() -> ModuleType:
     we can't import from it as you would normally.
 
     """
-    src_path = micropy.data.STUBBER / "src" / "make_stub_files.py"
-    return import_source_code("stubber", src_path)
+    vers_path = micropy.data.STUBBER / "src" / "version.py"
+    src_path = micropy.data.STUBBER / "src" / "utils.py"
+    # stubber utils expects an ambiguous 'version' import
+    import_source_code("version", vers_path)
+    mod = import_source_code("stubber.utils", src_path)
+    return mod
 
 
 def generate_stub(path, log_func=None):
@@ -49,20 +54,18 @@ def generate_stub(path, log_func=None):
 
     """
     stubgen = import_stubber()
-    mod_path = Path(stubgen.__file__).parent
     # Monkeypatch print to prevent or wrap output
-    stubgen.print = lambda *args: None
-    if log_func:
-        stubgen.print = log_func
-    cfg_path = (mod_path / "make_stub_files.cfg").absolute()
-    ctrl = stubgen.StandAloneMakeStubFile()
-    ctrl.update_flag = True
-    ctrl.config_fn = str(cfg_path)
+    logfn = log_func or (lambda *a: None)
+    stubgen.print = logfn
+    stubgen.stubgen.print = logfn
     file_path = Path(path).absolute()
     stubbed_path = file_path.with_suffix(".pyi")
-    ctrl.files = [file_path]
-    ctrl.silent = True
-    ctrl.scan_options()
-    ctrl.run()
+    stubgen.generate_pyi_from_file(file_path)  # noqa
+    # ensure stubs reside next to their source.
+    result = next((file_path.parent.rglob(f"**/{stubbed_path.name}")), stubbed_path)
+    if result.exists():
+        result.replace(stubbed_path)
+    if not any(result.parent.iterdir()):
+        result.parent.rmdir()
     files = (file_path, stubbed_path)
     return files
