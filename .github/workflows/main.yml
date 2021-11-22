@@ -60,7 +60,7 @@ jobs:
                   echo "$HOME/.local/bin" >> $GITHUB_PATH
 
             - name: Setup Win Path
-              if: matrix.os == 'windows'
+              if: matrix.os == 'windows-latest'
               shell: pwsh
               run: echo "C:\Users\runneradmin\AppData\Roaming\Python\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Append
 
