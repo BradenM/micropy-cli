@@ -122,7 +122,7 @@ def test_generate_stub(shared_datadir, tmp_path, mocker):
     expect_path = tmp_path / "foo.py"
     expect_path.touch()
     result = utils.generate_stub(expect_path)
-    mock_stubber.StandAloneMakeStubFile.return_value.run.assert_called_once()
+    mock_stubber.generate_pyi_from_file.assert_called_once()
     assert result == (expect_path, expect_path.with_suffix(".pyi"))
     # Test print monkeypatch
     print_mock = mocker.Mock(return_value=None)
