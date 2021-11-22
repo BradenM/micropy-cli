@@ -12,12 +12,12 @@ from contextlib import contextmanager
 from logging.handlers import RotatingFileHandler
 
 import click
-
 from micropy import data
 
 
 class Log:
     """Borg for easy access to any Log from anywhere in the package."""
+
     __shared_state = {}
 
     def __init__(self):
@@ -30,8 +30,7 @@ class Log:
         """Creates a new child ServiceLog instance."""
         _self = cls()
         parent = kwargs.pop("parent", _self.parent_logger)
-        logger = ServiceLog(service_name, base_color,
-                            parent=parent, **kwargs)
+        logger = ServiceLog(service_name, base_color, parent=parent, **kwargs)
         _self.loggers.append(logger)
         return logger
 
@@ -39,8 +38,7 @@ class Log:
     def get_logger(cls, service_name):
         """Retrieves a child logger by service name."""
         _self = cls()
-        logger = next(
-            (i for i in _self.loggers if i.service_name == service_name))
+        logger = next((i for i in _self.loggers if i.service_name == service_name))
         return logger
 
 
@@ -53,20 +51,20 @@ class ServiceLog:
     :type base_color: str
 
     """
+
     LOG_FILE = data.LOG_FILE
 
-    def __init__(
-            self, service_name='MicroPy', base_color='bright_green', **kwargs):
-        self.parent = kwargs.get('parent', None)
+    def __init__(self, service_name="MicroPy", base_color="bright_green", **kwargs):
+        self.parent = kwargs.get("parent", None)
         self.LOG_FILE.parent.mkdir(exist_ok=True)
         self.base_color = base_color
         self.service_name = service_name
         self.load_handler()
-        self.info_color = kwargs.get('info_color', 'white')
-        self.accent_color = kwargs.get('accent_color', 'yellow')
-        self.warn_color = kwargs.get('warn_color', 'green')
+        self.info_color = kwargs.get("info_color", "white")
+        self.accent_color = kwargs.get("accent_color", "yellow")
+        self.warn_color = kwargs.get("warn_color", "green")
         self.show_title = kwargs.get("show_title", True)
-        self.stdout = kwargs.get('stdout', True)
+        self.stdout = kwargs.get("stdout", True)
 
     @contextmanager
     def silent(self):
@@ -80,16 +78,17 @@ class ServiceLog:
         if not self.log.hasHandlers():
             self.log.setLevel(logging.DEBUG)
             self.log_handler = RotatingFileHandler(
-                str(self.LOG_FILE), mode='a', maxBytes=2*1024*1024,
-                backupCount=2, encoding=None, delay=0)
+                str(self.LOG_FILE),
+                mode="a",
+                maxBytes=2 * 1024 * 1024,
+                backupCount=2,
+                encoding=None,
+                delay=0,
+            )
             self.log_handler.setLevel(logging.DEBUG)
             self.log.addHandler(self.log_handler)
         self.log_handler = self.log.handlers[0]
-        log_format = (
-            "[%(asctime)s] %(levelname)s: "
-            f"{self.service_name.lower()}: "
-            "%(message)s"
-        )
+        log_format = "[%(asctime)s] %(levelname)s: " f"{self.service_name.lower()}: " "%(message)s"
         self.log_handler.setFormatter(logging.Formatter(log_format, "%Y-%m-%d %H:%M:%S"))
 
     def parse_msg(self, msg, accent_color=None):
@@ -101,21 +100,21 @@ class ServiceLog:
         :rtype: str
 
         """
-        msg_special = re.findall(r'\$(.*?)\[(.*?)\]', msg)
+        msg_special = re.findall(r"\$(.*?)\[(.*?)\]", msg)
         color = accent_color or self.accent_color
         special = {"fg": color, "bold": True}
         clean = msg
-        _parts = re.split(r'\$.*?\[(.*?)\]', msg)
+        _parts = re.split(r"\$.*?\[(.*?)\]", msg)
         parts = [(p, None) for p in _parts]
         for w in msg_special:
-            if w[0] == 'w':
-                special['fg'] = self.warn_color
-            if w[0] == 'B':
-                special.pop('fg')
+            if w[0] == "w":
+                special["fg"] = self.warn_color
+            if w[0] == "B":
+                special.pop("fg")
             sindex = _parts.index(w[1])
             parts[sindex] = (w[1], special)
             clean = msg.replace(f"${w[0]}[{w[1]}]", w[1])
-        clean = clean.encode('ascii', 'ignore').decode('utf-8').strip()
+        clean = clean.encode("ascii", "ignore").decode("utf-8").strip()
         return (parts, clean)
 
     def get_parents(self, names=[]):
@@ -137,9 +136,8 @@ class ServiceLog:
         """
         if not self.show_title:
             return f"{self.parent.get_service(bold=True)}"
-        color = kwargs.pop('fg', self.base_color)
-        title = click.style(
-            f"{self.service_name}", fg=color, **kwargs)
+        color = kwargs.pop("fg", self.base_color)
+        title = click.style(f"{self.service_name}", fg=color, **kwargs)
         title = f"{title}{click.style(' ', fg=color)}"
         if self.parent is not None:
             title = f"{self.parent.get_service(bold=True)} {title}"
@@ -166,9 +164,9 @@ class ServiceLog:
         :param **kwargs:
 
         """
-        title_color = kwargs.pop('title_color', self.base_color)
-        title_bold = kwargs.pop('title_bold', True)
-        accent_color = kwargs.pop('accent', self.accent_color)
+        title_color = kwargs.pop("title_color", self.base_color)
+        title_bold = kwargs.pop("title_bold", True)
+        accent_color = kwargs.pop("accent", self.accent_color)
         service_title = self.get_service(fg=title_color, bold=title_bold)
         message, clean = self.parse_msg(msg, accent_color)
         log_attr = kwargs.pop("log", None)
@@ -179,17 +177,16 @@ class ServiceLog:
         if self.stdout:
             init_msg, init_style = message[0]
             first_part, nl_part, _ = init_msg.partition("\n")
-            fp_clean = first_part.encode(
-                'ascii', 'ignore').decode('unicode_escape')
+            fp_clean = first_part.encode("ascii", "ignore").decode("unicode_escape")
             if not fp_clean.strip() and nl_part == "\n":
                 init_msg = init_msg.replace("\n", "")
                 message[0] = (init_msg, init_style)
                 click.secho("")
             click.secho(f"{service_title} ", nl=False)
-            post_nl = kwargs.pop('nl', None)
+            post_nl = kwargs.pop("nl", None)
             formatted = list(self.iter_formatted(message, **kwargs))
             for msg in formatted:
-                do_nl = (msg == formatted[-1])
+                do_nl = msg == formatted[-1]
                 click.echo(msg, nl=do_nl)
             if post_nl:
                 click.echo("")
@@ -223,9 +220,17 @@ class ServiceLog:
         :rtype: method
 
         """
-        bold = kwargs.pop('bold', (exception != None))
-        self.echo(msg, log="error", title_color='red', title_bold=True,
-                  fg='red', accent='red', bold=bold, **kwargs)
+        bold = kwargs.pop("bold", (exception != None))
+        self.echo(
+            msg,
+            log="error",
+            title_color="red",
+            title_bold=True,
+            fg="red",
+            accent="red",
+            bold=bold,
+            **kwargs,
+        )
         if exception:
             return self.exception(exception)
 
@@ -238,8 +243,7 @@ class ServiceLog:
         :rtype: method
 
         """
-        return self.echo(msg, log="warning",
-                         title_color='red', title_bold=True)
+        return self.echo(msg, log="warning", title_color="red", title_bold=True)
 
     def exception(self, error, **kwargs):
         """Prints message with exception formatting.
@@ -252,11 +256,7 @@ class ServiceLog:
         """
         name = type(error).__name__
         msg = f"{name}: {str(error)}"
-        return self.echo(
-            msg,
-            log="exception",
-            title_color='red',
-            fg='red', accent='red', ** kwargs)
+        return self.echo(msg, log="exception", title_color="red", fg="red", accent="red", **kwargs)
 
     def success(self, msg, **kwargs):
         """Prints message with success formatting.
@@ -270,7 +270,7 @@ class ServiceLog:
 
         """
         message = f"\u2714 {msg}"
-        return self.echo(message, log="info", fg='green', **kwargs)
+        return self.echo(message, log="info", fg="green", **kwargs)
 
     def debug(self, msg, **kwargs):
         """Prints message with debug formatting.

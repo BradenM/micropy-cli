@@ -4,9 +4,8 @@
 from pathlib import Path
 from shutil import copytree, rmtree
 
-import pytest
-
 import micropy.exceptions as exc
+import pytest
 from micropy import data, main
 from micropy.stubs import stubs
 
@@ -14,7 +13,7 @@ from micropy.stubs import stubs
 def test_setup(mock_micropy_path):
     """Tests MicroPy Initial Setup"""
     expect_mp_dir = mock_micropy_path
-    expect_stubs_dir = mock_micropy_path / 'stubs'
+    expect_stubs_dir = mock_micropy_path / "stubs"
     mp = main.MicroPy()
     assert expect_mp_dir.exists()
     assert expect_stubs_dir.exists()
@@ -25,8 +24,8 @@ def test_setup(mock_micropy_path):
 
 def test_add_stub(mock_micropy, shared_datadir):
     """Test Adding Valid Stub"""
-    fware_path = shared_datadir / 'fware_test_stub'
-    stub_path = shared_datadir / 'esp8266_test_stub'
+    fware_path = shared_datadir / "fware_test_stub"
+    stub_path = shared_datadir / "esp8266_test_stub"
     stubs = mock_micropy.stubs
     fware_stub = stubs.add(fware_path, data.STUB_DIR)
     stub = stubs.add(stub_path, data.STUB_DIR)
@@ -38,26 +37,28 @@ def test_add_stub(mock_micropy, shared_datadir):
 
 def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     """should create and add stubs"""
-    mock_micropy.stubs.add((shared_datadir / 'fware_test_stub'))
-    tmp_stub_path = tmp_path / 'createtest'
+    mock_micropy.stubs.add((shared_datadir / "fware_test_stub"))
+    tmp_stub_path = tmp_path / "createtest"
     tmp_stub_path.mkdir()
-    copytree(str(shared_datadir / 'stubber_test_stub'),
-             str(tmp_stub_path / 'stubber_test_stub'))
+    copytree(str(shared_datadir / "stubber_test_stub"), str(tmp_stub_path / "stubber_test_stub"))
     mock_pyb = mocker.patch("micropy.main.utils.PyboardWrapper")
     mock_pyb.return_value.copy_dir.return_value = Path(str(tmp_stub_path))
-    mock_pyb.side_effect = [SystemExit,
-                            mock_pyb.return_value, mock_pyb.return_value,
-                            mock_pyb.return_value]
+    mock_pyb.side_effect = [
+        SystemExit,
+        mock_pyb.return_value,
+        mock_pyb.return_value,
+        mock_pyb.return_value,
+    ]
     mp = mock_micropy
-    mocker.spy(mp.stubs, 'add')
+    mocker.spy(mp.stubs, "add")
     stub = mp.create_stubs("/dev/PORT")
     assert stub is None
     mock_pyb.return_value.run.side_effect = [Exception, mocker.ANY, mocker.ANY]
     stub = mp.create_stubs("/dev/PORT")
     assert stub is None
     stub = mp.create_stubs("/dev/PORT")
-    mp.stubs.add.assert_any_call((tmp_stub_path / 'esp32-1.11.0'))
-    rmtree((tmp_stub_path / 'esp32-1.11.0'))
+    mp.stubs.add.assert_any_call((tmp_stub_path / "esp32-1.11.0"))
+    rmtree((tmp_stub_path / "esp32-1.11.0"))
     assert isinstance(stub, stubs.DeviceStub)
 
 
@@ -66,7 +67,7 @@ def test_create_stubs_pymin_check(mocker, mock_micropy):
     mocker.patch("micropy.main.utils.PyboardWrapper")
     mocker.patch("micropy.main.StubManager")
     mock_stubber = mocker.patch.object(main, "stubber")
-    mock_exit = mocker.spy(main.sys, 'exit')
+    mock_exit = mocker.spy(main.sys, "exit")
     mock_stubber.minify_script.side_effect = [AttributeError, mocker.ANY]
     # Should exit
     with pytest.raises(SystemExit):
@@ -84,6 +85,6 @@ def test_stub_error():
 def test_resolve_project(mocker, mock_micropy):
     mock_proj = mocker.patch.object(main, "Project").return_value
     mock_proj.exists = False
-    assert not mock_micropy.resolve_project('.').exists
+    assert not mock_micropy.resolve_project(".").exists
     mock_proj.exists = True
-    assert mock_micropy.resolve_project('.')
+    assert mock_micropy.resolve_project(".")

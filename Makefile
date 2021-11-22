@@ -29,10 +29,6 @@ clean-test: ## remove test and coverage artifacts
 	- rm -rf .tmontmp
 	- rm cov.xml test_log.xml
 
-lint: ## check style with flake8
-	flake8 micropy tests --config=setup.cfg
-	flake8 --statistics --count -q
-
 test: ## run tests quickly with the default Python
 	pytest --forked -ra
 
@@ -54,13 +50,6 @@ coverage: ## generate coverage
 
 coverage-html: ## generate coverage html
 	pytest -n'auto' --cov --cov-config=setup.cfg --cov-report html
-
-codestyle: ## cleanup code
-	@printf '$(bold)Cleaning Code...\n$(rsttxt)'
-	- autoflake -r --exclude ./micropy/lib --remove-all-unused-imports --remove-unused-variables ./micropy --in-place
-	- autopep8 -i -r --max-line-length=100 --exclude ./micropy/lib --experimental ./micropy/
-	- docformatter -r micropy -i --blank
-	$(MAKE) lint
 
 gendoc: ## Generate Docs
 	$(MAKE) -C docs clean

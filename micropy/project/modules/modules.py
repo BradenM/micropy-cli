@@ -12,16 +12,17 @@ from micropy.logger import Log, ServiceLog
 
 """Project Packages Module Abstract Implementation"""
 
-T = TypeVar('T')
+T = TypeVar("T")
 ProxyItem = List[Tuple[T, str]]
 
 
 class ProjectModule(metaclass=abc.ABCMeta):
     """Abstract Base Class for Project Modules."""
-    PRIORITY: int = 0
-    _hooks: List['HookProxy'] = []
 
-    def __init__(self, parent: Optional['ProjectModule'] = None, log: Optional[ServiceLog] = None):
+    PRIORITY: int = 0
+    _hooks: List["HookProxy"] = []
+
+    def __init__(self, parent: Optional["ProjectModule"] = None, log: Optional[ServiceLog] = None):
         self._parent = parent
         self.log = log
 
@@ -31,7 +32,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
         return self._parent
 
     @parent.setter
-    def parent(self, parent: Type['ProjectModule']) -> Type['ProjectModule']:
+    def parent(self, parent: Type["ProjectModule"]) -> Type["ProjectModule"]:
         """Sets component parent.
 
         Args:
@@ -57,7 +58,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
     def update(self):
         """Method to update component."""
 
-    def add(self, component: Type['ProjectModule'], *args: Any, **kwargs: Any) -> Any:
+    def add(self, component: Type["ProjectModule"], *args: Any, **kwargs: Any) -> Any:
         """Adds component.
 
         Args:
@@ -65,7 +66,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
 
         """
 
-    def remove(self, component: Type['ProjectModule']) -> Any:
+    def remove(self, component: Type["ProjectModule"]) -> Any:
         """Removes component.
 
         Args:
@@ -84,8 +85,9 @@ class ProjectModule(metaclass=abc.ABCMeta):
             Callable: Decorated function.
 
         """
+
         def _hook(func: T) -> Callable[..., Any]:
-            name = kwargs.get('name', func.__name__)
+            name = kwargs.get("name", func.__name__)
             hook = next((i for i in cls._hooks if i._name == name), None)
             if not hook:
                 hook = HookProxy(name)
@@ -95,10 +97,12 @@ class ProjectModule(metaclass=abc.ABCMeta):
             @wraps(func)
             def wrapper(*args: Any, **kwargs: Any) -> T:
                 return func(*args, **kwargs)
+
             return wrapper
+
         return _hook
 
-    def resolve_hook(self, name: str) -> Union[Optional['HookProxy'], T]:
+    def resolve_hook(self, name: str) -> Union[Optional["HookProxy"], T]:
         """Resolves appropriate hook for attribute name.
 
         Args:
@@ -176,7 +180,8 @@ class HookProxy:
                 return (instance, method.__name__)
         if proxy_kwargs:
             self.log.debug(
-                f'could not resolve proxy: {self._name}[{proxy_kwargs}], broadening search...')
+                f"could not resolve proxy: {self._name}[{proxy_kwargs}], broadening search..."
+            )
             proxy_kwargs.popitem()
             return self.resolve_proxy(**proxy_kwargs)
         return None
@@ -260,8 +265,11 @@ class HookProxy:
         """
         params = params or {}
         sig = inspect.signature(func)
-        _default = {p.name: p.default for p in sig.parameters.values() if p.kind ==
-                    p.POSITIONAL_OR_KEYWORD and p.default is not p.empty}
+        _default = {
+            p.name: p.default
+            for p in sig.parameters.values()
+            if p.kind == p.POSITIONAL_OR_KEYWORD and p.default is not p.empty
+        }
         params = {**_default, **params}
         name = f"_hook__{self._name}__{'__'.join(f'{k}_{v}' for k, v in params.items())}"
         return name

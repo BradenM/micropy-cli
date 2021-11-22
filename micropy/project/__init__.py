@@ -5,4 +5,4 @@
 from . import modules
 from .project import Project
 
-__all__ = ['Project', 'modules']
+__all__ = ["Project", "modules"]

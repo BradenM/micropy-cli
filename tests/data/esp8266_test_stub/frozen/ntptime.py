@@ -12,9 +12,10 @@ NTP_DELTA = 3155673600
 
 host = "pool.ntp.org"
 
+
 def time():
     NTP_QUERY = bytearray(48)
-    NTP_QUERY[0] = 0x1b
+    NTP_QUERY[0] = 0x1B
     addr = socket.getaddrinfo(host, 123)[0][-1]
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(1)
@@ -24,12 +25,14 @@ def time():
     val = struct.unpack("!I", msg[40:44])[0]
     return val - NTP_DELTA
 
+
 # There's currently no timezone support in MicroPython, so
 # utime.localtime() will return UTC time (as if it was .gmtime())
 def settime():
     t = time()
     import machine
     import utime
+
     tm = utime.localtime(t)
     tm = tm[0:3] + (0,) + tm[3:6] + (0,)
     machine.RTC().datetime(tm)

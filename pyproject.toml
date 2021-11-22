@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "micropy-cli"
-version = "3.5.0"
+version = "3.6.0"
 description = "Micropython Project Management Tool with VSCode support, Linting, Intellisense, Dependency Management, and more!"
 authors = ["Braden Mars <bradenmars@bradenmars.me>"]
 license = "MIT"
@@ -36,7 +36,7 @@ include = [
 micropy = 'micropy.cli:cli'
 
 [tool.poetry.dependencies]
-python = ">=3.6,<3.10"
+python = ">=3.6.2,<3.10"
 boltons = "^19.3"
 cachier = "^1.2"
 Jinja2 = "^2.10"
@@ -50,7 +50,7 @@ colorama = { version = "^0.4.3", platform = "win32" }
 jsonschema = "=3.2.0"
 dpath = ">=1.4,<2.0"
 # create_stubs extras
-rshell = { version = "^0.0.26", optional = true }
+rshell = { version = "^0.0.30", optional = true }
 pyminifier = { version = "^2.1", optional = true }
 # docs extras
 sphinx = { version = "^2.2", optional = true }
@@ -61,11 +61,11 @@ sphinx_rtd_theme = {version = "^0.4.3", optional = true}
 GitPython = "^3.1.7"
 
 [tool.poetry.dev-dependencies]
+micropy-cli = {path = "../micropy-cli", extras = ["create_stubs", "docs"]}
 autoflake = "^1.4"
 autopep8 = "^1.5"
 bump2version = "^0.5.11"
 coveralls = "^3.0"
-flake8 = "^3.9"
 isort = "^5.8"
 pylint = "^2.7"
 pyminifier = "^2.1"
@@ -77,17 +77,20 @@ pytest-runner = "^5.3"
 pytest-testmon = "^1.0"
 pytest-watch = "^4.2"
 pytest-xdist = "^1.30"
-rope = "^0.18.0"
+rope = "^0.19.0"
 tox = "^3.23"
 tox-gh-actions = "^0.3.0"
 mypy = "^0.812"
 doc8 = "^0.8.0"
 docformatter = "^1.4"
 codacy-coverage = "^1.3"
-requests-mock = "^1.8"
+requests-mock = "^1.9"
 pytest-forked = "^1.3"
 flaky = "^3.7.0"
 pytest-randomly = "^3.7.0"
+pytest-sugar = "^0.9.4"
+black = "^21.5b1"
+pre-commit = "^2.12.1"
 
 [tool.poetry.extras]
 create_stubs = ["pyminifier", "rshell"]
@@ -100,3 +103,37 @@ to = {format = "setuppy", path="setup.py"}
 [build-system]
 requires = ["poetry>=1.0.0", "setuptools!=50.0", "wheel"]
 build-backend = "poetry.masonry.api"
+
+[tool.black]
+line-length = 100
+skip-string-normalization = false
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | build
+    | dist
+    | micropy/lib
+  )/
+  | foo.py           # also separately exclude a file named foo.py in
+                     # the root of the project
+)
+'''
+
+[tool.isort]
+profile = "black"
+src_paths = ["src"]
+line_length = 100
+honor_noqa = true
+
+[tool.coverage.run]
+omit = ["tests/*"]

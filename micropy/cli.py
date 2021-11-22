@@ -6,21 +6,25 @@ import sys
 from pathlib import Path
 
 import click
-import questionary as prompt
-from questionary import Choice
-
 import micropy.exceptions as exc
+import questionary as prompt
 from micropy import main, utils
 from micropy.logger import Log
 from micropy.project import Project, modules
+from questionary import Choice
 
 pass_mpy = click.make_pass_decorator(main.MicroPy, ensure=True)
 
 
 @click.group(invoke_without_command=True)
 @click.version_option()
-@click.option('--skip-checks', '-s', is_flag=True,
-              default=False, help='Skip Project Checks. Defaults to False.')
+@click.option(
+    "--skip-checks",
+    "-s",
+    is_flag=True,
+    default=False,
+    help="Skip Project Checks. Defaults to False.",
+)
 @pass_mpy
 @click.pass_context
 def cli(ctx, mpy, skip_checks=False):
@@ -30,11 +34,10 @@ def cli(ctx, mpy, skip_checks=False):
             return click.echo(ctx.get_help())
     latest = utils.is_update_available()
     if latest:
-        log = Log.get_logger('MicroPy')
+        log = Log.get_logger("MicroPy")
         log.title("Update Available!")
         log.info(f"Version $B[v{latest}] is now available")
-        log.info(
-            "You can update via: $[pip install --upgrade micropy-cli]\n")
+        log.info("You can update via: $[pip install --upgrade micropy-cli]\n")
     mpy.RUN_CHECKS = not skip_checks
 
 
@@ -58,15 +61,18 @@ def stubs():
 
 
 @cli.command(short_help="Create new Micropython Project")
-@click.argument('path', required=False, default=None)
-@click.option('--name', '-n', required=False, default=None,
-              help="Project Name. Defaults to Path name.")
-@click.option('--template', '-t',
-              type=click.Choice(modules.TemplatesModule.TEMPLATES.keys()),
-              multiple=True,
-              required=False,
-              help=("Templates to generate for project."
-                    " Multiple options can be passed."))
+@click.argument("path", required=False, default=None)
+@click.option(
+    "--name", "-n", required=False, default=None, help="Project Name. Defaults to Path name."
+)
+@click.option(
+    "--template",
+    "-t",
+    type=click.Choice(modules.TemplatesModule.TEMPLATES.keys()),
+    multiple=True,
+    required=False,
+    help=("Templates to generate for project." " Multiple options can be passed."),
+)
 @pass_mpy
 def init(mpy, path, name=None, template=None):
     """Create new Micropython Project.
@@ -83,22 +89,18 @@ def init(mpy, path, name=None, template=None):
         name = prompt_name.strip()
     if not template:
         templates = modules.TemplatesModule.TEMPLATES.items()
-        templ_choices = [Choice(str(val[1]), value=t)
-                         for t, val in templates]
-        template = prompt.checkbox(
-            f"Choose any Templates to Generate", choices=templ_choices).ask()
+        templ_choices = [Choice(str(val[1]), value=t) for t, val in templates]
+        template = prompt.checkbox(f"Choose any Templates to Generate", choices=templ_choices).ask()
     stubs = [Choice(str(s), value=s) for s in mpy.stubs]
     if not stubs:
         mpy.log.error("You don't have any stubs!")
-        mpy.log.title(
-            "To add stubs to micropy, use $[micropy stubs add <STUB_NAME>]")
+        mpy.log.title("To add stubs to micropy, use $[micropy stubs add <STUB_NAME>]")
         sys.exit(1)
-    stub_choices = prompt.checkbox(
-        f"Which stubs would you like to use?", choices=stubs).ask()
+    stub_choices = prompt.checkbox(f"Which stubs would you like to use?", choices=stubs).ask()
     project = Project(path, name=name)
     project.add(modules.StubsModule, mpy.stubs, stubs=stub_choices)
-    project.add(modules.PackagesModule, 'requirements.txt')
-    project.add(modules.DevPackagesModule, 'dev-requirements.txt')
+    project.add(modules.PackagesModule, "requirements.txt")
+    project.add(modules.DevPackagesModule, "dev-requirements.txt")
     project.add(modules.TemplatesModule, templates=template, run_checks=mpy.RUN_CHECKS)
     proj_path = project.create()
     try:
@@ -109,11 +111,16 @@ def init(mpy, path, name=None, template=None):
 
 
 @cli.command(short_help="Install Project Requirements")
-@click.argument('packages', nargs=-1)
-@click.option('-d', '--dev', is_flag=True, default=False,
-              help=("Add dependency to dev requirements"))
-@click.option('-p', '--path', type=click.Path(exists=True, path_type=str),
-              help=("Add dependency from local path. Can be a file or directory."))
+@click.argument("packages", nargs=-1)
+@click.option(
+    "-d", "--dev", is_flag=True, default=False, help=("Add dependency to dev requirements")
+)
+@click.option(
+    "-p",
+    "--path",
+    type=click.Path(exists=True, path_type=str),
+    help=("Add dependency from local path. Can be a file or directory."),
+)
 @pass_mpy
 def install(mpy, packages, dev=False, path=None):
     """Install Packages as Project Requirements.
@@ -171,15 +178,15 @@ def install(mpy, packages, dev=False, path=None):
             project.add_package(pkg, dev=dev)
         except exc.RequirementException as e:
             pkg_name = str(e.package)
-            mpy.log.error((f"Failed to install {pkg_name}!"
-                           " Is it available on PyPi?"), exception=e)
+            mpy.log.error(
+                (f"Failed to install {pkg_name}!" " Is it available on PyPi?"), exception=e
+            )
             raise click.Abort()
 
 
 @stubs.command(short_help="Add Stubs from package or path")
-@click.argument('stub_name', required=True)
-@click.option('-f', '--force', is_flag=True, default=False,
-              help="Overwrite Stub if it exists.")
+@click.argument("stub_name", required=True)
+@click.option("-f", "--force", is_flag=True, default=False, help="Overwrite Stub if it exists.")
 @pass_mpy
 def add(mpy, stub_name, force=False):
     """Add Stubs from package or path.
@@ -217,7 +224,7 @@ def add(mpy, stub_name, force=False):
 
 
 @stubs.command()
-@click.argument('query', required=True)
+@click.argument("query", required=True)
 @pass_mpy
 def search(mpy, query):
     """Search available Stubs."""
@@ -233,6 +240,7 @@ def search(mpy, query):
 @pass_mpy
 def list(mpy):
     """List installed stubs."""
+
     def print_stubs(stub_list):
         for firm, stubs in stub_list:
             if stubs:
@@ -240,6 +248,7 @@ def list(mpy):
                 mpy.log.title(f"$[{title}]:")
                 for stub in stubs:
                     mpy.log.info(str(stub))
+
     mpy.log.title("Installed Stubs:")
     mpy.log.info(f"Total: {len(mpy.stubs)}")
     print_stubs(mpy.stubs.iter_by_firmware())
@@ -253,9 +262,8 @@ def list(mpy):
 
 
 @stubs.command(short_help="Create Stubs from Pyboard")
-@click.argument('port', required=True)
-@click.option('-v', '--verbose', is_flag=True, default=False,
-              help="Enable verbose output")
+@click.argument("port", required=True)
+@click.option("-v", "--verbose", is_flag=True, default=False, help="Enable verbose output")
 @pass_mpy
 def create(mpy, port, verbose=False):
     """Create stubs from a pyboard at <PORT>
@@ -268,14 +276,13 @@ def create(mpy, port, verbose=False):
     """
     if not utils.CREATE_STUBS_INSTALLED:
         mpy.log.error("\nMissing requirements!")
-        mpy.log.info((
-            "To create stubs, Micropy Cli depends on "
-            "$[PyMinifier] and $[rshell]."
-        ))
-        mpy.log.info((
-            "To install the extra requirements needed, "
-            "please execute: $B[pip install micropy-cli[create_stubs]]"
-        ))
+        mpy.log.info(("To create stubs, Micropy Cli depends on " "$[PyMinifier] and $[rshell]."))
+        mpy.log.info(
+            (
+                "To install the extra requirements needed, "
+                "please execute: $B[pip install micropy-cli[create_stubs]]"
+            )
+        )
         sys.exit(1)
     return mpy.create_stubs(port, verbose=verbose)
 

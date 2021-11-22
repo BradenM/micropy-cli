@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any, Iterator, List, Optional, Type
 
 from boltons.queueutils import PriorityQueue
-
 from micropy.config import Config, DictConfigSource
 from micropy.logger import Log, ServiceLog
 from micropy.project.modules import ProjectModule
@@ -25,18 +24,16 @@ class Project(ProjectModule):
     def __init__(self, path: str, name: Optional[str] = None, **kwargs: Any):
         self._children: List[Type[ProjectModule]] = []
         self.path: Path = Path(path).absolute()
-        self.data_path: Path = self.path / '.micropy'
-        self.info_path: Path = self.path / 'micropy.json'
-        self.cache_path: Path = self.data_path / '.cache'
+        self.data_path: Path = self.path / ".micropy"
+        self.info_path: Path = self.path / "micropy.json"
+        self.cache_path: Path = self.data_path / ".cache"
         self._cache = Config(self.cache_path)
-        self._context = Config(source_format=DictConfigSource,
-                               default={'datadir': self.data_path})
+        self._context = Config(source_format=DictConfigSource, default={"datadir": self.data_path})
         self.name: str = name or self.path.name
         default_config = {
-            'name': self.name,
+            "name": self.name,
         }
-        self._config: Config = Config(self.info_path,
-                                      default=default_config)
+        self._config: Config = Config(self.info_path, default=default_config)
         self.log: ServiceLog = Log.add_logger(self.name, show_title=False)
 
     def __getattr__(self, name: str) -> Any:
@@ -111,7 +108,7 @@ class Project(ProjectModule):
         """
         child = component(*args, **kwargs, log=self.log, parent=self)
         self._children.append(child)
-        self.log.debug(f'adding module: {type(child).__name__}')
+        self.log.debug(f"adding module: {type(child).__name__}")
 
     def remove(self, component):
         """Removes project component.
@@ -123,14 +120,14 @@ class Project(ProjectModule):
         child = next(i for i in self._children if isinstance(i, component))
         self._children.remove(child)
 
-    def load(self, **kwargs: Any) -> 'Project':
+    def load(self, **kwargs: Any) -> "Project":
         """Loads all components in Project.
 
         Returns:
             Current Project Instance
 
         """
-        self.name = self._config.get('name')
+        self.name = self._config.get("name")
         self.data_path.mkdir(exist_ok=True)
         for child in self.iter_children_by_priority():
             child.load(**kwargs)
@@ -145,8 +142,8 @@ class Project(ProjectModule):
         """
         self.log.title(f"Initiating $[{self.name}]")
         self.data_path.mkdir(exist_ok=True, parents=True)
-        ignore_data = self.data_path / '.gitignore'
-        ignore_data.write_text('*')
+        ignore_data = self.data_path / ".gitignore"
+        ignore_data.write_text("*")
         self.log.debug(f"Generated Project Context: {self.context}")
         for child in self.iter_children_by_priority():
             child.create()

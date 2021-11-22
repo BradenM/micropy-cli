@@ -1,7 +1,7 @@
 # (c) 2019 Paul Sokolovsky, MIT license
 from token import *
-from ucollections import namedtuple
 
+from ucollections import namedtuple
 
 NL = 55
 ENCODING = 56
@@ -10,10 +10,12 @@ tok_name[ENCODING] = "ENCODING"
 
 
 class TokenInfo(namedtuple("TokenInfo", ("type", "string", "start", "end", "line"))):
-
     def __str__(self):
         return "TokenInfo(type=%d (%s), string=%r, line=%r)" % (
-            self.type, tok_name[self.type], self.string, self.line
+            self.type,
+            tok_name[self.type],
+            self.string,
+            self.line,
         )
 
 

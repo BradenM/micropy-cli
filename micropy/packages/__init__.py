@@ -18,9 +18,8 @@ from .source_path import LocalDependencySource
 
 
 def create_dependency_source(
-        requirement: str,
-        name: Optional[str] = None,
-        **kwargs: Any) -> Union[LocalDependencySource, PackageDependencySource, VCSDependencySource]:
+    requirement: str, name: Optional[str] = None, **kwargs: Any
+) -> Union[LocalDependencySource, PackageDependencySource, VCSDependencySource]:
     """Factory for creating a dependency source object.
 
     Args:
@@ -45,5 +44,9 @@ def create_dependency_source(
     return PackageDependencySource(pkg, **kwargs)
 
 
-__all__ = ["Package", "PackageDependencySource",
-           "LocalDependencySource", "create_dependency_source"]
+__all__ = [
+    "Package",
+    "PackageDependencySource",
+    "LocalDependencySource",
+    "create_dependency_source",
+]

@@ -44,7 +44,7 @@ class PyboardWrapper:
         self.rsh = rsh
         self.rsh.ASCII_XFER = False
         self.rsh.QUIET = not verbose
-        self.log = Log.add_logger('Pyboard', 'bright_white')
+        self.log = Log.add_logger("Pyboard", "bright_white")
         self._outline = []
         self.format_output = None
         if connect:
@@ -58,7 +58,7 @@ class PyboardWrapper:
 
         """
         _path = path
-        if path[0] == '/':
+        if path[0] == "/":
             _path = path[1:]
         pyb_path = f"{self.pyb_root}{_path}"
         return pyb_path
@@ -96,7 +96,7 @@ class PyboardWrapper:
         """pyboard root dirname."""
         if self.connected:
             dev = rsh.find_serial_device_by_port(self.port)
-            return getattr(dev, 'name_path', '/pyboard/')
+            return getattr(dev, "name_path", "/pyboard/")
 
     def copy_file(self, source, dest=None):
         """Copies file to pyboard.
@@ -143,7 +143,7 @@ class PyboardWrapper:
             str: Converted char
 
         """
-        char = char.decode('utf-8')
+        char = char.decode("utf-8")
         line = next(self._output(char), None)
         if line:
             if self.format_output:
@@ -153,10 +153,9 @@ class PyboardWrapper:
 
     def _exec(self, command):
         """Execute bytes on pyboard."""
-        ret, ret_err = self.pyboard.exec_raw(
-            command, data_consumer=self._consumer)
+        ret, ret_err = self.pyboard.exec_raw(command, data_consumer=self._consumer)
         if ret_err:
-            raise PyboardError('exception', ret, ret_err)
+            raise PyboardError("exception", ret, ret_err)
         return ret
 
     def run(self, file, format_output=None):
@@ -170,17 +169,17 @@ class PyboardWrapper:
         """
         self.format_output = format_output
         try:
-            with file.open('rb') as f:
+            with file.open("rb") as f:
                 pyfile = f.read()
         except AttributeError:
-            pyfile = file.encode('utf-8')
+            pyfile = file.encode("utf-8")
         with self.repl():
             try:
                 out_bytes = self._exec(pyfile)
             except PyboardError as e:
                 self.log.debug(f"Failed to run script on pyboard: {str(e)}")
                 raise Exception(str(e))
-            out = out_bytes.decode('utf-8')
+            out = out_bytes.decode("utf-8")
             return out
 
     def list_dir(self, path):
@@ -210,8 +209,8 @@ class PyboardWrapper:
             "recursed": True,
             "mirror": False,
             "dry_run": False,
-            "print_func": lambda * args: None,
-            "sync_hidden": False
+            "print_func": lambda *args: None,
+            "sync_hidden": False,
         }
         rsync_args.update(rsync)
         self.rsh.rsync(dir_path, str(dest_path), **rsync_args)

@@ -7,12 +7,14 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 from boltons import fileutils
-
 from micropy import utils
 from micropy.config import Config
-from micropy.packages import (LocalDependencySource, Package,
-                              PackageDependencySource,
-                              create_dependency_source)
+from micropy.packages import (
+    LocalDependencySource,
+    Package,
+    PackageDependencySource,
+    create_dependency_source,
+)
 from micropy.project.modules import ProjectModule
 
 
@@ -25,6 +27,7 @@ class PackagesModule(ProjectModule):
             Defaults to None.
 
     """
+
     name: str = "packages"
     PRIORITY: int = 7
 
@@ -100,7 +103,7 @@ class PackagesModule(ProjectModule):
                 for paths in file_paths:
                     shutil.move(*paths)  # overwrites if existing
                 return file_paths
-            self.log.debug(f'installing {source} as package')
+            self.log.debug(f"installing {source} as package")
             pkg_path = self.pkg_path / source.package.name
             return fileutils.copytree(files, pkg_path)
 
@@ -120,9 +123,9 @@ class PackagesModule(ProjectModule):
         for r in reqs:
             pkg = create_dependency_source(r.line).package
             if not self.packages.get(pkg.name):
-                self.config.add(self.name + '/' + pkg.name, pkg.pretty_specs)
+                self.config.add(self.name + "/" + pkg.name, pkg.pretty_specs)
                 if pkg.editable:
-                    self.context.extend('local_paths', [pkg.path], unique=True)
+                    self.context.extend("local_paths", [pkg.path], unique=True)
         return self.packages
 
     @ProjectModule.hook()
@@ -146,16 +149,16 @@ class PackagesModule(ProjectModule):
             self.log.error(f"$[{pkg}] is already installed!")
             self.update()
             return None
-        self.config.add(self.name + '/' + pkg.name, pkg.pretty_specs)
+        self.config.add(self.name + "/" + pkg.name, pkg.pretty_specs)
         try:
             self.load()
         except Exception:
             self.log.error(f"Failed to install: {pkg.name}")
-            self.config.pop(self.name + '/' + pkg.name)
+            self.config.pop(self.name + "/" + pkg.name)
             raise
         else:
             if pkg.editable:
-                self.context.extend('local_paths', [pkg.path], unique=True)
+                self.context.extend("local_paths", [pkg.path], unique=True)
             self.log.success("Package installed!")
         finally:
             self.parent.update()
@@ -171,17 +174,24 @@ class PackagesModule(ProjectModule):
         new_pkgs = pkg_keys.copy()
         if pkg_cache:
             new_pkgs = new_pkgs - set(pkg_cache)
-        new_packages = [Package.from_text(name, spec)
-                        for name, spec in self.packages.items() if name in new_pkgs]
+        new_packages = [
+            Package.from_text(name, spec)
+            for name, spec in self.packages.items()
+            if name in new_pkgs
+        ]
         if fetch:
             if new_packages:
                 self.log.title("Fetching Requirements")
             for req in new_packages:
-                def format_desc(p): return "".join(self.log.iter_formatted(f"$B[{p}]"))
+
+                def format_desc(p):
+                    return "".join(self.log.iter_formatted(f"$B[{p}]"))
+
                 source = create_dependency_source(
                     str(req),
                     name=req.name,
-                    format_desc=lambda p: f"{self.log.get_service()} {format_desc(p)}")
+                    format_desc=lambda p: f"{self.log.get_service()} {format_desc(p)}",
+                )
                 self.install_package(source)
         self.update()
         self.cache.upsert(self.name, list(pkg_keys))
@@ -197,11 +207,10 @@ class PackagesModule(ProjectModule):
         """Dumps packages to file at path."""
         if not self.path.exists():
             self.path.touch()
-        pkgs = [Package.from_text(name, spec)
-                for name, spec in self.config.get(self.name).items()]
-        self.log.debug(f'dumping to {self.path.name}')
-        with self.path.open('r+') as f:
-            content = [c.strip() for c in f.readlines() if c.strip() != '']
+        pkgs = [Package.from_text(name, spec) for name, spec in self.config.get(self.name).items()]
+        self.log.debug(f"dumping to {self.path.name}")
+        with self.path.open("r+") as f:
+            content = [c.strip() for c in f.readlines() if c.strip() != ""]
             _lines = sorted(set(str(p) for p in pkgs) | set(content))
             lines = [l + "\n" for l in _lines]
             self.log.debug(f"dumping: {lines}")
@@ -209,12 +218,13 @@ class PackagesModule(ProjectModule):
             f.writelines(lines)
         local_paths = [p.path for p in pkgs if p.editable]
         if local_paths:
-            self.context.add('local_paths', local_paths)
-        self.context.extend('paths', [self.pkg_path], unique=True)
+            self.context.add("local_paths", local_paths)
+        self.context.extend("paths", [self.pkg_path], unique=True)
 
 
 class DevPackagesModule(PackagesModule):
     """Project Module for Dev Packages."""
+
     PRIORITY: int = 8
 
     def __init__(self, path, **kwargs):
@@ -223,7 +233,7 @@ class DevPackagesModule(PackagesModule):
 
     def create(self):
         """Creates component."""
-        self.config.add(f"{self.name}/micropy-cli", '*')
+        self.config.add(f"{self.name}/micropy-cli", "*")
         super().create()
 
     def load(self, *args, **kwargs):

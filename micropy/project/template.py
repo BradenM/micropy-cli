@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Iterator, List
 
 from jinja2 import Environment, FileSystemLoader
-
 from micropy.logger import Log
 
 from .checks import TEMPLATE_CHECKS
@@ -25,6 +24,7 @@ class Template:
         NotImplementedError: Method must be overriden by subclass
 
     """
+
     FILENAME = None
     CHECKS = []
 
@@ -79,8 +79,8 @@ class Template:
             func: Template Update Func
 
         """
-        update_func = getattr(self, 'update_method', None)
-        update_kwargs = getattr(self, 'update_kwargs', {})
+        update_func = getattr(self, "update_method", None)
+        update_kwargs = getattr(self, "update_kwargs", {})
         if not update_func:
             return None
         path = root / self.FILENAME
@@ -96,7 +96,7 @@ class Template:
         render = json.loads("".join(self.iter_clean()))
         data = json.loads("".join(self.iter_clean(path.read_text())))
         data.update(render)
-        with path.open('w+') as f:
+        with path.open("w+") as f:
             json.dump(data, f, indent=4)
 
     def update_as_text(self, path, by_contains=None):
@@ -111,9 +111,8 @@ class Template:
         r_lines = list(self.iter_clean())
         upd_lines = []
         if by_contains:
-            upd_lines = [r_lines.index(l) for l in r_lines if any(
-                i in l for i in by_contains)]
-        with path.open('r+') as f:
+            upd_lines = [r_lines.index(l) for l in r_lines if any(i in l for i in by_contains)]
+        with path.open("r+") as f:
             c_lines = self.iter_clean(f.read())
             f.seek(0)
             for it, line in enumerate(c_lines):
@@ -171,10 +170,9 @@ class GenericTemplate(Template):
 
 class CodeTemplate(Template):
     """Template for VSCode settings."""
+
     FILENAME = ".vscode/settings.json"
-    CHECKS = [
-        TEMPLATE_CHECKS['ms-python']
-    ]
+    CHECKS = [TEMPLATE_CHECKS["ms-python"]]
 
     def __init__(self, *args, **kwargs):
         self.update_method = self.update_as_json
@@ -198,11 +196,12 @@ class CodeTemplate(Template):
 
 class PylintTemplate(Template):
     """Template for Pylint settings."""
+
     FILENAME = ".pylintrc"
 
     def __init__(self, *args, **kwargs):
         self.update_method = self.update_as_text
-        self.update_kwargs = {'by_contains': ['sys.path[1:1]']}
+        self.update_kwargs = {"by_contains": ["sys.path[1:1]"]}
         super().__init__(*args, **kwargs)
 
     @property
@@ -213,33 +212,33 @@ class PylintTemplate(Template):
             paths = list(self.iter_relative_paths(self.paths, strict=True))
         if self.local_paths:
             paths.extend(self.iter_relative_paths(self.local_paths))
-        ctx = {
-            "stubs": self.stubs or [],
-            "paths": paths or []
-        }
+        ctx = {"stubs": self.stubs or [], "paths": paths or []}
         return ctx
 
 
 class TemplateProvider:
     """Template Factory."""
+
     _template_files = {
-        'vscode': CodeTemplate,
-        'pylint': PylintTemplate,
-        'vsextensions': '.vscode/extensions.json',
-        'pymakr': "pymakr.conf",
-        'main': "src/main.py",
-        'boot': "src/boot.py",
-        'gitignore': ".gitignore"
+        "vscode": CodeTemplate,
+        "pylint": PylintTemplate,
+        "vsextensions": ".vscode/extensions.json",
+        "pymakr": "pymakr.conf",
+        "main": "src/main.py",
+        "boot": "src/boot.py",
+        "gitignore": ".gitignore",
     }
     ENVIRONMENT = None
-    TEMPLATE_DIR = Path(__file__).parent / 'template'
+    TEMPLATE_DIR = Path(__file__).parent / "template"
     TEMPLATES = {
-        'vscode': (['vscode', 'vsextensions'], ("VSCode Settings for "
-                                                "Autocompletion/Intellisense")),
-        'pymakr': (['pymakr'], "Pymakr Configuration"),
-        'pylint': (['pylint'], "Pylint MicroPython Settings"),
-        'gitignore': (['gitignore'], "Git Ignore Template"),
-        'bootstrap': (['main', 'boot'], "main.py & boot.py files")
+        "vscode": (
+            ["vscode", "vsextensions"],
+            ("VSCode Settings for " "Autocompletion/Intellisense"),
+        ),
+        "pymakr": (["pymakr"], "Pymakr Configuration"),
+        "pylint": (["pylint"], "Pylint MicroPython Settings"),
+        "gitignore": (["gitignore"], "Git Ignore Template"),
+        "bootstrap": (["main", "boot"], "main.py & boot.py files"),
     }
 
     def __init__(self, templates, log=None, **kwargs):
@@ -253,18 +252,17 @@ class TemplateProvider:
                 Defaults to True.
 
         """
-        self.run_checks = kwargs.get('run_checks', True)
-        self.template_names = set(chain.from_iterable(
-            [self.TEMPLATES.get(t)[0] for t in templates]))
-        self.files = {k: v for k, v in self._template_files.items()
-                      if k in self.template_names}
-        self.log = log or Log.add_logger('Templater')
+        self.run_checks = kwargs.get("run_checks", True)
+        self.template_names = set(
+            chain.from_iterable([self.TEMPLATES.get(t)[0] for t in templates])
+        )
+        self.files = {k: v for k, v in self._template_files.items() if k in self.template_names}
+        self.log = log or Log.add_logger("Templater")
         if self.__class__.ENVIRONMENT is None:
             loader = FileSystemLoader(str(self.TEMPLATE_DIR))
             self.__class__.ENVIRONMENT = Environment(loader=loader)
             self.log.debug("Created Jinja2 Environment")
-            self.log.debug(
-                f"Detected Templates: {self.ENVIRONMENT.list_templates()}")
+            self.log.debug(f"Detected Templates: {self.ENVIRONMENT.list_templates()}")
 
     def get(self, name, *args, **kwargs):
         """Retrieve appropriate Template instance by name.
@@ -281,8 +279,7 @@ class TemplateProvider:
         filename = temp_def if file_attr is None else file_attr
         temp_cls = GenericTemplate if file_attr is None else temp_def
         file_temp = self.ENVIRONMENT.get_template(filename)
-        self.log.debug(
-            f"Retrieving {name} as {temp_cls} from {file_temp.name}")
+        self.log.debug(f"Retrieving {name} as {temp_cls} from {file_temp.name}")
         template = temp_cls(file_temp, *args, **kwargs)
         return template
 
