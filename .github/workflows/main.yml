@@ -1,13 +1,21 @@
 name: Test MicropyCli
 
 on:
-  pull_request: ~
-  push:
-    branches:
-      - master
+    pull_request: ~
+    push:
+        branches:
+            - master
+
+env:
+    POETRY_VERSION: 1.1.11
+    POETRY_URL: https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py
+
+concurrency:
+    group: main-${{ github.event_name }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-    build:
+    test:
         name: ${{ matrix.os }} @ Py v${{ matrix.python }}
         runs-on: ${{ matrix.os }}
         env:
@@ -15,7 +23,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [windows-latest, macOS-10.14, ubuntu-18.04]
+                os: [windows-latest, macOS-latest, ubuntu-latest]
                 python: ["3.6", "3.7", "3.8"]
 
         steps:
@@ -23,21 +31,60 @@ jobs:
               with:
                   submodules: recursive
 
-            - name: Setup Python ${{ matrix.python }}
+            # Poetry cache depends on OS, Python version and Poetry version.
+            - name: Cache Poetry cache
+              uses: actions/cache@v2
+              with:
+                  path: ~/.cache/pypoetry
+                  key: poetry-cache-${{ runner.os }}-${{ matrix.python }}-${{ env.POETRY_VERSION }}
+
+            # virtualenv cache should depends on OS, Python version and `poetry.lock` (and optionally workflow files).
+            - name: Cache Packages
+              uses: actions/cache@v2
+              with:
+                  path: ~/.local
+                  key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
+
+            - name: Set up Python ${{ matrix.python }}
               uses: actions/setup-python@v2
               with:
                   python-version: ${{ matrix.python }}
-                  architecture: x64
 
             - name: Install Poetry
-              uses: abatilo/actions-poetry@v2.1.2
-              with:
-                  poetry-version: 1.1.6
+              run: |
+                  curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
+                  echo "$HOME/.local/bin" >> $GITHUB_PATH
 
             - name: Install Dependencies
               run: poetry install -E docs -E create_stubs -v
 
-            - name: Test with Tox
+            - name: Run Tests
+              run: poetry run pytest --cov --cov-config=setup.cfg --junit-xml=test_log.xml --cov-report=xml:cov.xml -vv -ra -n0
+
+            - name: Coveralls Job Report
+              continue-on-error: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  COVERALLS_FLAG_NAME: ${{ matrix.os }}-${{ matrix.python }}
+                  COVERALLS_PARALLEL: true
+              run: poetry run coveralls --service=github
+
+            - name: Codacy Report
+              continue-on-error: true
               env:
                   CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-              run: poetry run tox
+              run: poetry run python-codacy-coverage -r cov.xml
+
+    coveralls:
+        name: Coveralls Finalize Report
+        needs: test
+        runs-on: ubuntu-latest
+        continue-on-error: true
+        container: python:3-slim
+        steps:
+            - name: Upload Report
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  pip3 install --upgrade coveralls
+                  coveralls --service=github --finish
