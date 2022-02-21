@@ -39,7 +39,7 @@ micropy = 'micropy.cli:cli'
 python = ">=3.7,<3.11"
 boltons = "^19.3"
 cachier = "^1.2"
-Jinja2 = "^2.10"
+Jinja2 = "=3.0.3"
 packaging = ">=19.2,<21.0"
 questionary = "^1.8.1"
 requests = "^2.22"
