@@ -7,7 +7,7 @@ on:
             - master
 
 env:
-    POETRY_VERSION: 1.1.11
+    POETRY_VERSION: 1.1.13
     POETRY_URL: https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py
 
 concurrency:
@@ -28,7 +28,7 @@ jobs:
             fail-fast: false
             matrix:
                 os: [windows-latest, macOS-latest, ubuntu-latest]
-                python: ["3.6", "3.7", "3.8"]
+                python: ["3.7", "3.8", "3.9", "3.10"]
 
         steps:
             - uses: actions/checkout@v2.1.0

@@ -36,7 +36,7 @@ include = [
 micropy = 'micropy.cli:cli'
 
 [tool.poetry.dependencies]
-python = ">=3.6.2,<3.10"
+python = ">=3.7,<3.11"
 boltons = "^19.3"
 cachier = "^1.2"
 Jinja2 = "^2.10"
