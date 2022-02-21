@@ -33,7 +33,7 @@ jobs:
         steps:
             - uses: actions/checkout@v2.1.0
               with:
-                  submodules: recursive
+                  submodules: true
 
             # Poetry cache depends on OS, Python version and Poetry version.
             - name: Cache Poetry cache
