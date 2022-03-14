@@ -54,7 +54,7 @@ python-minifier = "^2.5.0"
 mypy = "^0.940"
 ## rshell is broken on windows (with python >=3.10) due to pyreadline dependency.
 rshell = [
-    { version = "^0.0.31", platform = "win32", python = ">=3.9" },
+    { version = "^0.0.31", platform = "win32", python = "<3.10" },
     { version = "^0.0.31", platform = "!=win32" },
 ]
 
