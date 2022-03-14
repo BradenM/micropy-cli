@@ -49,14 +49,13 @@ colorama = { version = "^0.4.3", platform = "win32" }
 jsonschema = "=3.2.0"
 dpath = ">=1.4,<2.0"
 GitPython = "^3.1.7"
-
+packaging = "^21.3"
 
 [tool.poetry.group.create_stubs.dependencies]
 python-minifier = "^2.5.0"
 mypy = "^0.940"
 ## rshell is broken on windows (with python >=3.10) due to pyreadline dependency.
 rshell = { version = "^0.0.31", markers = "sys_platform != 'win32' or (python_version < '3.10' and sys_platform == 'win32')" }
-
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "^1.4"
@@ -70,10 +69,8 @@ doc8 = "^0.8.0"
 docformatter = "^1.4"
 mypy = "*"
 
-
 [tool.poetry.group.test]
 optional = true
-
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.0"
@@ -92,7 +89,6 @@ flaky = "^3.7.0"
 coveralls = "^3.0"
 codacy-coverage = "^1.3"
 
-
 [tool.poetry.group.docs]
 optional = true
 
@@ -103,11 +99,9 @@ sphinx-autodoc-typehints = "^1.10.3"
 recommonmark = "^0.6.0"
 sphinx_rtd_theme = "^0.4.3"
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
 
 [tool.black]
 line-length = 100
