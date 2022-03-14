@@ -4,15 +4,22 @@ version = "3.6.0"
 description = "Micropython Project Management Tool with VSCode support, Linting, Intellisense, Dependency Management, and more!"
 authors = ["Braden Mars <bradenmars@bradenmars.me>"]
 license = "MIT"
-packages = [
-    { include = "micropy" }
+packages = [{ include = "micropy" }]
+include = [
+    { path = "tests", format = "sdist" },
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "micropy/lib/stubber/src/*",
+    "micropy/lib/stubber/board/*",
+    "micropy/lib/stubber/process.py",
+    "micropy/lib/stubber/minified/*"
 ]
-
+exclude = ["micropy/lib/stubber/*"]
 readme = "README.md"
 homepage = "https://github.com/BradenM/micropy-cli"
 repository = "https://github.com/BradenM/micropy-cli"
 documentation = "https://micropy-cli.readthedocs.io"
-
 keywords = ["micropython", "stubs", "linting", "vscode", "intellisense"]
 classifiers = [
     "Topic :: Software Development :: Code Generators",
@@ -23,13 +30,6 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
-]
-
-include = [
-    "README.md", "CHANGELOG.md", "LICENSE",
-    "micropy/project/template/*",
-    "micropy/**/*.json",
-    "micropy/lib/*"
 ]
 
 [tool.poetry.scripts]
