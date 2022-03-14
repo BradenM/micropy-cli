@@ -18,7 +18,7 @@ CREATE_STUBS_INSTALLED = False
 try:
     import rshell.main as rsh
     from rshell.pyboard import PyboardError
-except ImportError:
+except Exception:
     CREATE_STUBS_INSTALLED = False
 else:
     CREATE_STUBS_INSTALLED = True
