@@ -30,26 +30,23 @@ clean-test: ## remove test and coverage artifacts
 	- rm cov.xml test_log.xml
 
 test: ## run tests quickly with the default Python
-	pytest --forked -ra
-
-test-all: ## run tests on every Python version with tox
-	tox
+	pytest
 
 watch-build: clean ## build pytest-testmon db
-	pytest --testmon -c setup.cfg
+	pytest --testmon -c pyproject.toml
 
 watch: clean ## watch tests
 	- pytest --testmon
-	ptw --spool 2000 --onpass "make watch-cov" --clear -- --testmon -vv -c setup.cfg
+	ptw --spool 2000 --onpass "make watch-cov" --clear -- --testmon -vv -c pyproject.toml
 
 watch-cov: ## watch test coverage
-	pytest -n'auto' --forked --cov --cov-append --cov-config=setup.cfg --cov-report=xml:cov.xml --cov-report term
+	pytest -n'auto' --forked --cov --cov-append --cov-config=pyproject.toml --cov-report=xml:cov.xml --cov-report term
 
 coverage: ## generate coverage
-	pytest -n'auto' --cov --cov-config=setup.cfg
+	pytest -n'auto' --cov --cov-config=pyproject.toml
 
 coverage-html: ## generate coverage html
-	pytest -n'auto' --cov --cov-config=setup.cfg --cov-report html
+	pytest -n'auto' --cov --cov-config=pyproject.toml --cov-report html
 
 gendoc: ## Generate Docs
 	$(MAKE) -C docs clean
