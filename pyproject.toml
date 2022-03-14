@@ -50,8 +50,6 @@ jsonschema = "=3.2.0"
 dpath = ">=1.4,<2.0"
 GitPython = "^3.1.7"
 packaging = "^21.3"
-
-[tool.poetry.group.create_stubs.dependencies]
 python-minifier = "^2.5.0"
 mypy = "^0.940"
 ## rshell is broken on windows (with python >=3.10) due to pyreadline dependency.
