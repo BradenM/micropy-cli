@@ -518,7 +518,7 @@ python-versions = "*"
 name = "packaging"
 version = "21.3"
 description = "Core utilities for Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -673,7 +673,7 @@ typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""
 name = "pyparsing"
 version = "3.0.7"
 description = "Python parsing module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -1326,7 +1326,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "a0856c9b7cb9d803571e74211f5382dacc66248dea89c689f76cfe2566a2185c"
+content-hash = "ea1dc300c8fece25a337537073f9129c0518cffe2b476222284789e1f8c7f5b8"
 
 [metadata.files]
 alabaster = [
