@@ -53,7 +53,10 @@ packaging = "^21.3"
 python-minifier = "^2.5.0"
 mypy = "^0.940"
 ## rshell is broken on windows (with python >=3.10) due to pyreadline dependency.
-rshell = { version = "^0.0.31", markers = "sys_platform != 'win32' or (python_version < '3.10' and sys_platform == 'win32')" }
+rshell = [
+    { version = "^0.0.31", platform = "win32", python = ">=3.9" },
+    { version = "^0.0.31", platform = "!=win32" },
+]
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "^1.4"
