@@ -1,8 +1,13 @@
-# -*- coding: utf-8 -*-
-
+import sys
 from pathlib import Path
 
 import pytest
+
+if sys.version_info >= (3, 10) and sys.platform.startswith("win"):
+    pytest.skip(
+        "skipping due to rshell/pyreadline broken for >=py310 on windows.", allow_module_level=True
+    )
+
 from micropy.utils import PyboardWrapper, pybwrapper
 
 try:
