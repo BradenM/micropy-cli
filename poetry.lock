@@ -1361,7 +1361,7 @@ docs = ["sphinx", "sphinx-click", "sphinx-autodoc-typehints", "recommonmark", "s
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "22d342010e626396627518e6046c0dc2dc738b6f2623638365d63a4f7bc4a193"
+content-hash = "2a21e3178b76ebe5ec6b8234dbf5da0d73db9ee7f9fe124b18b61f4b1f6f83f3"
 
 [metadata.files]
 alabaster = [
