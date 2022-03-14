@@ -23,7 +23,8 @@ jobs:
         name: ${{ matrix.os }} @ Py v${{ matrix.python }}
         runs-on: ${{ matrix.os }}
         env:
-            COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+            OS: ${{ matrix.os }}
+            PYTHON: ${{ matrix.python }}
         strategy:
             fail-fast: false
             matrix:
@@ -68,33 +69,12 @@ jobs:
               run: poetry install --with docs --with test -v
 
             - name: Run Tests
-              run: poetry run pytest --cov --cov-config=setup.cfg --junit-xml=test_log.xml --cov-report=xml:cov.xml -vv -ra -n0
+              run: poetry run pytest --cov --cov-config=pyproject.toml --junit-xml=test_log.xml --cov-report=xml:cov.xml -vv -ra -n0
 
-            - name: Coveralls Job Report
-              continue-on-error: true
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  COVERALLS_FLAG_NAME: ${{ matrix.os }}-${{ matrix.python }}
-                  COVERALLS_PARALLEL: true
-              run: poetry run coveralls --service=github
-
-            - name: Codacy Report
-              continue-on-error: true
-              env:
-                  CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-              run: poetry run python-codacy-coverage -r cov.xml
-
-    coveralls:
-        name: Coveralls Finalize Report
-        needs: test
-        runs-on: ubuntu-latest
-        continue-on-error: true
-        container: python:3-slim
-        steps:
-            - name: Upload Report
-              continue-on-error: true
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  pip3 install --upgrade coveralls
-                  coveralls --service=github --finish
+            - name: Upload Codecov
+              uses: codecov/codecov-action@v2
+              with:
+                files: ./cov.xml
+                fail_ci_if_error: true
+                flags: unittests
+                env_vars: OS,PYTHON
