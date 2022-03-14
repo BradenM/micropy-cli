@@ -30,7 +30,7 @@ author = "Braden Mars"
 github_doc_root = "https://github.com/BradenM/micropy-cli/tree/master/docs/"
 
 # The full version, including alpha/beta/rc tags
-release = "3.6.0"
+release = "release = '4.0.0.rc.1'"
 
 
 # -- General configuration ---------------------------------------------------

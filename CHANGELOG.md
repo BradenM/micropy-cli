@@ -1,3 +1,33 @@
+## [4.0.0.rc.1](https://github.com/BradenM/micropy-cli/compare/v3.5.0...v4.0.0.rc.1) (2022-03-14)
+
+
+#### Bug Fixes
+
+* **dev-deps:**  update pytest to ^7.0 to resolve py10+win pyreadline crash ([c3af69aa](https://github.com/BradenM/micropy-cli/commit/c3af69aaeff62d33db8fb4608be9f4093e22eae2))
+* **pkg:**
+  *  win32 rshell python marker ([31f772c9](https://github.com/BradenM/micropy-cli/commit/31f772c9bff70daf4c15c8e913ff0875ad75ec61))
+  *  rshell markers for win32 ([c017722e](https://github.com/BradenM/micropy-cli/commit/c017722ed2721203d6d42acf1b31228a0e449c15))
+  *  fix mistake in rshell marker ([69905b7c](https://github.com/BradenM/micropy-cli/commit/69905b7cb8eae26e78db65c1f532517baba2bcfa))
+  *  do not install rshell when py>=3.10 and on windows due to pyreadline. ([4090d9e9](https://github.com/BradenM/micropy-cli/commit/4090d9e9440ba6f96ef18e2cd28559061c1abfb3))
+  *  upgrade too and pin jinja2 @ 3.0.3 ([4c97b10e](https://github.com/BradenM/micropy-cli/commit/4c97b10eaecb909ab4f0c9e19c1d849f9cb4154d))
+* **project:**  report exception on install failure to stdout ([ca96a373](https://github.com/BradenM/micropy-cli/commit/ca96a373ac49ff4beafd8159a8cdf04ccc9d6a77))
+* **stubber:**  replace pyminifer with python-minifer ([a53ab4c6](https://github.com/BradenM/micropy-cli/commit/a53ab4c6719ae7e63bca20483d19f6c2924547d3))
+* **utils:**
+  *  capture attribue err that occurs on py310 win32 rshell import ([a58591f3](https://github.com/BradenM/micropy-cli/commit/a58591f3f4f686fee60040e5378177512586fd43))
+  *  utilize mp-stubbers new logic for generating stubs ([b2b37082](https://github.com/BradenM/micropy-cli/commit/b2b37082c573654a29045bf07f139eb2edec05df))
+
+#### Features
+
+* **deps:**
+  *  update micropython-stubber to latest master commit ([43b6d4cd](https://github.com/BradenM/micropy-cli/commit/43b6d4cdc317e8114b6fe6e4b481893b4ed88d3d))
+  *  update dependencies scoped ([3d6cbcc9](https://github.com/BradenM/micropy-cli/commit/3d6cbcc978f592c22fbcc5242b4433a57ede6099))
+* **pkg:**
+  * merge create_stubs group into default ([a4365462](https://github.com/BradenM/micropy-cli/commit/a436546232da6becf260c7a0e175fb5981bc0566))
+  * move pytest+coverage cfg to pyproject ([b5ca8564](https://github.com/BradenM/micropy-cli/commit/b5ca85646907d4cc71c0a07bb3bea55a0201e938))
+  * add missing packaging dep ([d41e8031](https://github.com/BradenM/micropy-cli/commit/d41e8031108af4cd0742146f9540cc3b3afa629f))
+  * update includes to be more strict ([5bed645c](https://github.com/BradenM/micropy-cli/commit/5bed645c258309791025ed8dad1559a438ebd6f4))
+  * restructure and cleanup pyproject with dependency groups ([d0347efa](https://github.com/BradenM/micropy-cli/commit/d0347efaa2eb1b98556312eebacdae02803f59c7))
+
 ## [3.6.0](https://github.com/BradenM/micropy-cli/compare/v3.5.0...v3.6.0) (2021-05-17)
 
 #### Bug Fixes
