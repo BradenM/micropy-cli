@@ -134,5 +134,18 @@ src_paths = ["src"]
 line_length = 100
 honor_noqa = true
 
+[tool.pytest.ini_options]
+collect_ignore = ['setup.py', 'micropy/lib/*', 'micropy/lib/**/*']
+testpaths = "tests"
+addopts = "--maxprocesses=4 -ra -q"
+norecursedirs = "micropy/lib"
+
 [tool.coverage.run]
-omit = ["tests/*"]
+source = ["micropy"]
+omit = ["micropy/project/template/*", "micropy/lib/*", "micropy/lib/**/*"]
+
+[tool.coverage.report]
+exclude_lines = ["if __name__ == .__main__.:"]
+
+[tool.mypy]
+warn_redundant_casts = true
