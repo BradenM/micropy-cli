@@ -58,6 +58,9 @@ rshell = [
     { version = "^0.0.31", platform = "!=win32" },
 ]
 MarkupSafe = "2.0.1"
+upydevice = "^0.3.5"
+netifaces = "^0.11.0"
+nmap = "^0.0.1"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "^1.4"
@@ -69,7 +72,9 @@ black = "^21.5b1"
 pre-commit = "^2.17.0"
 doc8 = "^0.8.0"
 docformatter = "^1.4"
-mypy = "*"
+mypy = { version = "^0.940", extras = ["dmypy"] }
+types-requests = "^2.27.14"
+types-click = "^7.1.8"
 
 [tool.poetry.group.test]
 optional = true
@@ -151,3 +156,8 @@ exclude_lines = ["if __name__ == .__main__.:"]
 
 [tool.mypy]
 warn_redundant_casts = true
+follow_imports = "normal"
+
+[[tool.mypy.overrides]]
+module = ["boltons", "upydevice", "upydevice.*", "rshell", "tqdm"]
+ignore_missing_imports = true
