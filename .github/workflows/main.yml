@@ -7,7 +7,7 @@ on:
             - master
 
 env:
-    POETRY_VERSION: 1.2.0a2
+    POETRY_VERSION: 1.2.0b1
     POETRY_URL: https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py
 
 concurrency:
