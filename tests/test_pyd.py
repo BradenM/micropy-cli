@@ -51,6 +51,10 @@ class MockAdapter:
     def connect(self) -> MagicMock:
         return self.mock.Device.return_value.connect if self.is_upy else self.mock.connect
 
+    @property
+    def device(self):
+        return self.mock.Device.return_value if self.is_upy else self.mock
+
 
 MOCK_PORT = "/dev/port"
 
@@ -100,3 +104,51 @@ class TestPyDevice:
         m.connect.side_effect = [SystemExit, SystemExit]
         with pytest.raises(PyDeviceError):
             self.pyd_cls(MOCK_PORT)
+
+    def test_disconnect(self, pymock):
+        m = pymock
+        pyd = self.pyd_cls(MOCK_PORT)
+        pyd.disconnect()
+        if m.is_upy:
+            m.mock.Device.return_value.disconnect.assert_called_once()
+
+    def test_reset(self, pymock, mocker: MockFixture):
+        mocker.patch("time.sleep")
+        m = pymock
+        pyd = self.pyd_cls(MOCK_PORT)
+        pyd.reset()
+        if m.is_upy:
+            m.device.reset.assert_called_once()
+            assert m.device.connect.call_count == 2
+
+    @property
+    def read_file_effects(self):
+        cmd_effects = [
+            None,  # import ubin
+            None,  # open file
+            8,  # content size
+            0,  # seek start
+            0,  # pos
+            b"Hi there",  # read,
+            8,  # pos
+            None,  # close
+        ]
+        return cmd_effects
+
+    def test_read_file(self, pymock):
+        m = pymock
+        if m.is_rsh:
+            return
+        pyb = self.pyd_cls(MOCK_PORT)
+        m.device.cmd.side_effect = self.read_file_effects
+        res = pyb.read_file("/some/path")
+        assert res == "Hi there"
+
+    def test_copy_file(self, pymock, tmp_path):
+        m = pymock
+        if m.is_rsh:
+            return
+        pyb = self.pyd_cls(MOCK_PORT)
+        m.device.cmd.side_effect = self.read_file_effects
+        pyb.copy_file("/some/path", (tmp_path / "out.txt"))
+        assert (tmp_path / "out.txt").read_text() == "Hi there"
