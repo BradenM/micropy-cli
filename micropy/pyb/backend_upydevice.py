@@ -8,24 +8,21 @@ import string
 import time
 from functools import wraps
 from pathlib import Path, PurePosixPath
-from typing import Any, Callable, Generator, TypeVar, Union
+from typing import AnyStr, Callable, Generator, TypeVar, Union
 
 import upydevice
 from boltons import iterutils
 from micropy.exceptions import PyDeviceConnectionError, PyDeviceError
-from tqdm import tqdm
 from typing_extensions import ParamSpec, TypeAlias
 from upydevice.phantom import UOS as UPY_UOS
 
-from . import abc
-from .abc import DevicePath, HostPath
+from .abc import DevicePath, HostPath, MessageConsumer, MetaPyDeviceBackend, StreamConsumer
 
 AnyUPyDevice: TypeAlias = Union[upydevice.SerialDevice, upydevice.WebSocketDevice]
 
 BUFFER_SIZE = 512
 
 T = TypeVar("T")
-T_co = TypeVar("T_co", covariant=True)
 P = ParamSpec("P")
 
 
@@ -37,7 +34,7 @@ class UOS(UPY_UOS):
 
 def retry(fn: Callable[P, T]) -> Callable[P, T | None]:
     @wraps(fn)
-    def _wrapper(self_: UPYPyDevice, *args: P.args, **kwargs: P.kwargs) -> T | None:
+    def _wrapper(self_: UPyDeviceBackend, *args: P.args, **kwargs: P.kwargs) -> T | None:
         _result: T | None = None
         retry_count = 0
 
@@ -57,9 +54,10 @@ def retry(fn: Callable[P, T]) -> Callable[P, T | None]:
     return _wrapper  # type: ignore
 
 
-class UPYPyDevice(abc.PyDevice[AnyUPyDevice]):
+class UPyDeviceBackend(MetaPyDeviceBackend):
     BUFFER_SIZE: int = BUFFER_SIZE
 
+    _pydevice: AnyUPyDevice
     _uos: UOS | None = None
 
     def _ensure_connected(self):
@@ -68,7 +66,7 @@ class UPYPyDevice(abc.PyDevice[AnyUPyDevice]):
 
     def _rand_device_path(self) -> DevicePath:
         name = "".join(random.sample(string.ascii_lowercase, 6))
-        return self._pyb_path(name)
+        return self.resolve_path(DevicePath(name))
 
     @property
     def uos(self) -> UOS:
@@ -83,7 +81,7 @@ class UPYPyDevice(abc.PyDevice[AnyUPyDevice]):
             return DevicePath("/")
         return DevicePath("/flash")
 
-    def _pyb_path(self, path: str) -> DevicePath:
+    def resolve_path(self, path: DevicePath) -> DevicePath:
         _root = PurePosixPath(self._pyb_root())
         _path = PurePosixPath(path)
         if _path.is_absolute():
@@ -116,10 +114,10 @@ class UPYPyDevice(abc.PyDevice[AnyUPyDevice]):
         return False if self._pydevice is None else self._pydevice.connected
 
     def list_dir(self, path: DevicePath) -> list[DevicePath]:
-        return [DevicePath(p) for p in self.uos.listdir(self._pyb_path(path))]
+        return [DevicePath(p) for p in self.uos.listdir(self.resolve_path(path))]
 
     def iter_files(self, path: DevicePath) -> Generator[DevicePath, None, None]:
-        path = self._pyb_path(path)
+        path = self.resolve_path(path)
         self._pydevice.cmd("import uos", silent=True)
         results = self._pydevice.cmd(f"list(uos.ilistdir('{path}'))", silent=True, rtn_resp=True)
         if not results:
@@ -131,25 +129,31 @@ class UPYPyDevice(abc.PyDevice[AnyUPyDevice]):
             else:
                 yield abs_path
 
-    def copy_dir(self, source_path: DevicePath, target_path: HostPath):
-        target_path = Path(target_path)
-        source_path = self._pyb_path(source_path)
+    def copy_dir(self, source_path: DevicePath, target_path: HostPath, **kwargs):
+        target_path = Path(str(target_path))  # type: ignore
+        source_path = self.resolve_path(source_path)
         for file_path in self.iter_files(source_path):
             rel_path = PurePosixPath(file_path).relative_to(
                 list(PurePosixPath(file_path).parents)[-1]
             )
-            file_dest = target_path / rel_path
+            # handles os-path conversion
+            file_dest = Path(target_path / rel_path)
             file_dest.parent.mkdir(parents=True, exist_ok=True)
-            self.copy_file(file_path, file_dest)
+            self.pull_file(file_path, HostPath(str(file_dest)), **kwargs)
 
-    def copy_file(self, source_path: DevicePath, target_path: HostPath) -> None:
-        source_path = self._pyb_path(source_path)
-        target_path = Path(target_path)
-        source_contents = self.read_file(source_path)
+    def push_file(self, source_path: HostPath, target_path: DevicePath, **kwargs) -> None:
+        src_path = Path(str(source_path))
+        src_contents = src_path.read_text()
+        self.write_file(src_contents, target_path, **kwargs)
+
+    def pull_file(self, source_path: DevicePath, target_path: HostPath, **kwargs) -> None:
+        src_path = self.resolve_path(source_path)
+        targ_path = Path(str(target_path))
+        source_contents = self.read_file(src_path, **kwargs)
         if source_contents is None:
             # TODO: properly report failure to read/copy file.
             return None
-        target_path.write_text(source_contents)
+        targ_path.write_text(source_contents)
 
     def _iter_hex_chunks(self, content: str):
         chunked_content = iterutils.chunked_iter(content, self.BUFFER_SIZE)
@@ -158,35 +162,43 @@ class UPYPyDevice(abc.PyDevice[AnyUPyDevice]):
             yield hex_chunk
 
     @retry
-    def write_file(self, contents: str, target_path: DevicePath) -> None:
-        target_path = self._pyb_path(target_path)
+    def write_file(
+        self, contents: str, target_path: DevicePath, *, consumer: StreamConsumer | None = None
+    ) -> None:
+        target_path = self.resolve_path(target_path)
         self._pydevice.cmd("import ubinascii")
         self._pydevice.cmd(f"f = open('{str(target_path)}', 'wb')")
         content_size = len(binascii.hexlify(contents.encode())) // 2
-        self._data_consumer.on_start(name=f"Writing {str(target_path)}", size=content_size)
+        if consumer:
+            consumer.on_start(name=f"Writing {str(target_path)}", size=content_size)
         for chunk in self._iter_hex_chunks(contents):
             cmd = f"contents = ubinascii.unhexlify('{chunk.decode()}'); f.write(contents)"
             self._pydevice.cmd(cmd, silent=True)
-            self._data_consumer.on_update(size=len(chunk) // 2)
-        self._data_consumer.on_end()
+            if consumer:
+                consumer.on_update(size=len(chunk) // 2)
+        if consumer:
+            consumer.on_end()
         self._pydevice.cmd("f.close()")
 
     @retry
-    def read_file(self, target_path: DevicePath) -> str:
-        target_path = self._pyb_path(target_path)
+    def read_file(self, target_path: DevicePath, *, consumer: StreamConsumer | None = None) -> str:
+        target_path = self.resolve_path(target_path)
         self._pydevice.cmd("import ubinascii", silent=True)
         self._pydevice.cmd(f"f = open('{str(target_path)}', 'rb')", silent=True)
         content_size = self._pydevice.cmd(f"f.seek(0,2)", rtn_resp=True, silent=True)
         self._pydevice.cmd("f.seek(0)", silent=True)
         buffer = io.BytesIO()
-        self._data_consumer.on_start(name=f"Reading {target_path}", size=content_size // 2)
+        if consumer:
+            consumer.on_start(name=f"Reading {target_path}", size=content_size // 2)
         last_pos = 0
         while True:
             pos = self._pydevice.cmd(f"f.tell()", rtn_resp=True, silent=True)
-            self._data_consumer.on_update(size=(pos - last_pos) // 2)
+            if consumer:
+                consumer.on_update(size=(pos - last_pos) // 2)
             last_pos = pos
             if pos == content_size:
-                self._data_consumer.on_end()
+                if consumer:
+                    consumer.on_end()
                 break
             next_chunk = self._pydevice.cmd(
                 f"f.read({self.BUFFER_SIZE})", rtn_resp=True, silent=True
@@ -196,14 +208,26 @@ class UPYPyDevice(abc.PyDevice[AnyUPyDevice]):
         value = buffer.getvalue().decode()
         return value
 
-    def run_script(self, contents: str, target_path: DevicePath | None = None):
-        target_path = (
-            self._pyb_path(target_path) if target_path else f"{self._rand_device_path()}.py"
+    def eval(self, command: str, *, consumer: MessageConsumer = None):
+        if consumer:
+            return self._pydevice.cmd(
+                command, follow=True, pipe=lambda m, *args, **kws: consumer.on_message(m)
+            )
+        return self._pydevice.cmd(command)
+
+    def eval_script(
+        self,
+        contents: AnyStr,
+        target_path: DevicePath | None = None,
+        *,
+        stream_consumer: StreamConsumer = None,
+        message_consumer: MessageConsumer = None,
+    ):
+        _target_path = (
+            self.resolve_path(target_path) if target_path else f"{self._rand_device_path()}.py"
         )
-        self.write_file(contents, target_path)
-        self._pydevice.cmd(
-            f"import {Path(target_path).stem}",
-            follow=True,
-            pipe=lambda m, *args, **kws: self._data_consumer.consumer(m),
-        )
-        self.uos.remove(str(target_path))
+        if isinstance(contents, bytes):
+            contents = contents.decode()  # type: ignore
+        self.write_file(str(contents), DevicePath(_target_path), consumer=stream_consumer)
+        self.eval(f"import {Path(_target_path).stem}", consumer=message_consumer)
+        self.uos.remove(str(_target_path))
