@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import abc
-from typing import Any, AnyStr, Callable, Generic, NewType, TypeVar
+from typing import Any, AnyStr, NewType, TypeVar
+
+from typing_extensions import Protocol
 
 HostPath = NewType("HostPath", str)
 DevicePath = NewType("DevicePath", str)
@@ -9,107 +11,112 @@ DevicePath = NewType("DevicePath", str)
 DeviceT = TypeVar("DeviceT")
 
 
-class PyDeviceConsumer(abc.ABC):
-    def __init__(self, on_message: Callable[[str], Any]):
-        self.on_message = on_message
+class StartHandler(Protocol):
+    def __call__(self, *, name: str = None, size: int | None = None) -> Any:
+        ...
+
+
+class UpdateHandler(Protocol):
+    def __call__(self, *, size: int | None = None) -> Any:
+        ...
+
+
+class EndHandler(Protocol):
+    def __call__(self) -> Any:
+        ...
+
+
+class MessageHandler(Protocol):
+    def __call__(self, data: AnyStr) -> Any:
+        ...
+
+
+class StreamConsumer(Protocol):
+    on_start: StartHandler
+    on_update: UpdateHandler
+    on_end: EndHandler
+
+
+class MessageConsumer(Protocol):
+    on_message: MessageHandler
+
+
+AnyPyDevice = TypeVar("AnyPyDevice", bound="MetaPyDeviceBackend")
+
+
+class MetaPyDeviceBackend(abc.ABC):
+    location: str
 
     @abc.abstractmethod
-    def consumer(self, data: bytes | str) -> None:
-        raise NotImplementedError
-
-
-class PyDeviceStreamConsumer(PyDeviceConsumer, abc.ABC):
-    @abc.abstractmethod
-    def on_start(self, *, name: str = None, size: int | None = None):
-        raise NotImplementedError()
+    def establish(self, target: str) -> AnyPyDevice:
+        ...
 
     @abc.abstractmethod
-    def on_update(self, *, size: int | None = None):
-        raise NotImplementedError()
+    def connect(self) -> None:
+        ...
 
     @abc.abstractmethod
-    def on_end(self):
-        raise NotImplementedError()
-
-
-class NoOpStreamConsumer(PyDeviceStreamConsumer):
-    def __init__(self):
-        super().__init__(on_message=lambda *a, **k: None)
-
-    def on_start(self, *, name: str = None, size: int | None = None):
-        pass
-
-    def on_update(self, *, size: int | None = None):
-        pass
-
-    def on_end(self):
-        pass
-
-    def consumer(self, data: bytes | str) -> None:
-        pass
-
-
-class MetaPyDevice(abc.ABC):
-    @abc.abstractmethod
-    def copy_file(self, source_path: HostPath, target_path: DevicePath) -> None:
-        raise NotImplementedError()
+    def disconnect(self) -> None:
+        ...
 
     @abc.abstractmethod
-    def list_dir(self, path: DevicePath) -> list[DevicePath]:
-        raise NotImplementedError()
+    def reset(self) -> None:
+        ...
 
     @abc.abstractmethod
-    def copy_dir(self, source_path: DevicePath, target_path: HostPath):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def run_script(self, content: HostPath | AnyStr, target_path: DevicePath | None = None):
-        raise NotImplementedError()
-
-
-class MetaDeviceBackend(Generic[DeviceT], abc.ABC):
-    @abc.abstractmethod
-    def establish(self, target: str) -> DeviceT | None:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def connect(self):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def disconnect(self):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def reset(self):
-        raise NotImplementedError()
+    def resolve_path(self, target_path: DevicePath) -> DevicePath:
+        ...
 
     @property
     @abc.abstractmethod
     def connected(self) -> bool:
-        raise NotImplementedError()
+        ...
 
+    @abc.abstractmethod
+    def push_file(self, source_path: HostPath, target_path: DevicePath, **kwargs) -> None:
+        ...
 
-class PyDevice(Generic[DeviceT], MetaPyDevice, MetaDeviceBackend[DeviceT], abc.ABC):
-    _location: str
-    _pydevice: DeviceT
-    _data_consumer: PyDeviceConsumer | PyDeviceStreamConsumer
+    @abc.abstractmethod
+    def pull_file(self, source_path: DevicePath, target_path: HostPath, **kwargs) -> None:
+        ...
 
-    def __init__(
+    @abc.abstractmethod
+    def list_dir(self, path: DevicePath) -> list[DevicePath]:
+        ...
+
+    @abc.abstractmethod
+    def copy_dir(self, source_path: DevicePath, target_path: HostPath, **kwargs):
+        ...
+
+    @abc.abstractmethod
+    def eval(self, command: str, *, consumer: MessageConsumer | None = None):
+        ...
+
+    @abc.abstractmethod
+    def eval_script(
         self,
-        location: str,
-        auto_connect: bool = True,
-        data_consumer: PyDeviceConsumer | PyDeviceStreamConsumer | None = None,
+        contents: AnyStr,
+        target_path: DevicePath | None = None,
+        *,
+        stream_consumer: StreamConsumer = None,
+        message_consumer: MessageConsumer | None = None,
     ):
-        self._location = location
-        # TODO: can use walrus (:=) here when 3.7 support is dropped.
-        pyd = self.establish(self._location)
-        if pyd is not None:
-            self._pydevice = pyd
-        self._data_consumer = data_consumer or NoOpStreamConsumer()
-        if auto_connect:
-            self.connect()
+        ...
 
-    @property
-    def location(self) -> str:
-        return self._location
+
+class MetaPyDevice(abc.ABC):
+    pydevice: MetaPyDeviceBackend
+    stream_consumer: StreamConsumer | None
+    message_consumer: MessageConsumer | None
+
+    @abc.abstractmethod
+    def copy_to(self, source_path: HostPath, target_path: DevicePath) -> None:
+        ...
+
+    @abc.abstractmethod
+    def copy_from(self, source_path: DevicePath, target_path: HostPath) -> None:
+        ...
+
+    @abc.abstractmethod
+    def run_script(self, content: AnyStr, target_path: DevicePath | None = None):
+        ...
