@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-from pathlib import Path
 from shutil import copytree, rmtree
 
 import micropy.exceptions as exc
@@ -41,40 +40,16 @@ def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     tmp_stub_path = tmp_path / "createtest"
     tmp_stub_path.mkdir()
     copytree(str(shared_datadir / "stubber_test_stub"), str(tmp_stub_path / "stubber_test_stub"))
-    mock_pyb = mocker.patch("micropy.main.utils.PyboardWrapper")
-    mock_pyb.return_value.copy_dir.return_value = Path(str(tmp_stub_path))
-    mock_pyb.side_effect = [
-        SystemExit,
-        mock_pyb.return_value,
-        mock_pyb.return_value,
-        mock_pyb.return_value,
-    ]
+    mock_tmpdir = mocker.patch("micropy.main.tempfile.TemporaryDirectory")
+    mock_tmpdir.return_value.__enter__.return_value = tmp_stub_path
+    mock_pyb = mocker.patch("micropy.main.PyDevice")
     mp = mock_micropy
     mocker.spy(mp.stubs, "add")
-    stub = mp.create_stubs("/dev/PORT")
-    assert stub is None
-    mock_pyb.return_value.run.side_effect = [Exception, mocker.ANY, mocker.ANY]
-    stub = mp.create_stubs("/dev/PORT")
-    assert stub is None
+    mock_pyb.return_value.run_script.side_effect = [mocker.ANY, mocker.ANY]
     stub = mp.create_stubs("/dev/PORT")
     mp.stubs.add.assert_any_call((tmp_stub_path / "esp32-1.11.0"))
     rmtree((tmp_stub_path / "esp32-1.11.0"))
     assert isinstance(stub, stubs.DeviceStub)
-
-
-def test_create_stubs_pymin_check(mocker, mock_micropy):
-    """should exit without pymin"""
-    mocker.patch("micropy.main.utils.PyboardWrapper")
-    mocker.patch("micropy.main.StubManager")
-    mock_stubber = mocker.patch.object(main, "stubber")
-    mock_exit = mocker.spy(main.sys, "exit")
-    mock_stubber.minify_script.side_effect = [AttributeError, mocker.ANY]
-    # Should exit
-    with pytest.raises(SystemExit):
-        mock_micropy.create_stubs("/dev/PORT")
-    # Should continue
-    mock_micropy.create_stubs("/dev/PORT")
-    mock_exit.assert_called_once_with(1)
 
 
 def test_stub_error():
