@@ -113,7 +113,7 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
 
     @property
     def connected(self) -> bool:
-        return False if self._pydevice is None else self._pydevice.connected
+        return False if getattr(self, "_pydevice", None) is None else self._pydevice.connected
 
     def list_dir(self, path: DevicePath) -> list[DevicePath]:
         return [DevicePath(p) for p in self.uos.listdir(self.resolve_path(path))]
