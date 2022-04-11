@@ -2,12 +2,17 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AnyStr, Callable, cast
+from typing import TYPE_CHECKING, AnyStr, cast
 
 from micropy.exceptions import PyDeviceConnectionError
-
-from . import abc
-from .abc import DevicePath, HostPath
+from micropy.pyb.abc import (
+    DevicePath,
+    HostPath,
+    MessageConsumer,
+    MessageHandler,
+    MetaPyDeviceBackend,
+    PyDeviceConsumer,
+)
 
 if TYPE_CHECKING:
     from typing import type_check_only
@@ -24,10 +29,10 @@ if TYPE_CHECKING:
 CREATE_STUBS_INSTALLED = False
 
 try:
-    import rshell.main as rsh
-    from rshell.pyboard import Pyboard, PyboardError
+    import rshell.main as rsh  # type: ignore
+    from rshell.pyboard import Pyboard, PyboardError  # type: ignore
 except ImportError:
-    rsh: RShell = cast(RShell, object())
+    rsh: RShell = cast(RShell, object())  # type: ignore
     PyboardError = RuntimeError
     Pyboard = object()
     CREATE_STUBS_INSTALLED = False
@@ -36,12 +41,13 @@ else:
 
 
 class RShellConsumer:
-    def __init__(self, on_message: Callable[[str], Any]):
-        self._outline = []
-        self.format_output = None
-        self.on_message = on_message
+    consumer: MessageHandler
 
-    def _output(self, data):
+    def __init__(self, child_consumer: MessageHandler):
+        self._outline: list[str] = []
+        self.consumer = child_consumer
+
+    def _output(self, data: str):
         """Yields everything up to a newline.
 
         Args:
@@ -54,7 +60,7 @@ class RShellConsumer:
             yield line
         self._outline.append(data)
 
-    def consumer(self, char: bytes):
+    def on_message(self, char: bytes):
         """Pyboard data consumer.
 
         When a full line of output is detected,
@@ -68,26 +74,21 @@ class RShellConsumer:
             str: Converted char
 
         """
-        char = char.decode("utf-8")
-        line = next(self._output(char), None)
+        _char = char.decode("utf-8")
+        line = next(self._output(_char), None)
         if line:
-            if self.format_output:
-                line = self.format_output(line)
-            self.on_message(line)
+            self.consumer(line)
         return char
 
 
-class RShellPyDevice(abc.PyDevice[Pyboard]):
+class RShellPyDeviceBackend(MetaPyDeviceBackend):
     _connected: bool = False
     _verbose: bool = False
     _rsh: rsh
+    _pydevice: Pyboard
 
-    def __init__(
-        self, location: str, verbose: bool = False, data_consumer=None, auto_connect: bool = True
-    ):
-        super().__init__(location, auto_connect)
-        self._verbose = verbose
-        self._data_consumer = data_consumer
+    _dev_port: str
+    _repl_active: bool = False
 
     @property
     def _pyb_root(self) -> str:
@@ -95,23 +96,25 @@ class RShellPyDevice(abc.PyDevice[Pyboard]):
         if self.connected:
             dev = rsh.find_serial_device_by_port(self.location)
             return getattr(dev, "name_path", "/pyboard/")
+        return ""
 
     @property
     def connected(self) -> bool:
         return self._connected
 
-    def _pyb_path(self, path: str) -> DevicePath:
+    def resolve_path(self, path: str | DevicePath | Path) -> DevicePath:
         _path = path
-        if path[0] == "/":
-            _path = path[1:]
+        if str(path)[0] == "/":
+            _path = str(path)[1:]
         pyb_path = f"{self._pyb_root}{_path}"
         return DevicePath(pyb_path)
 
-    def establish(self, *_) -> rsh:
+    def establish(self, target: str) -> RShellPyDeviceBackend:
         self._rsh = rsh
         self._rsh.ASCII_XFER = False
         self._rsh.QUIET = not self._verbose
-        return self._rsh
+        self.location = target
+        return self
 
     def connect(self) -> None:
         try:
@@ -130,7 +133,7 @@ class RShellPyDevice(abc.PyDevice[Pyboard]):
     def reset(self) -> None:
         return
 
-    def copy_file(self, source_path: HostPath, target_path: DevicePath = None) -> None:
+    def push_file(self, source_path: HostPath, target_path: DevicePath = None, **_) -> None:
         """Copies file to pyboard.
 
         Args:
@@ -144,9 +147,13 @@ class RShellPyDevice(abc.PyDevice[Pyboard]):
         """
         src_path = Path(source_path).resolve()
         _dest = target_path or src_path.name
-        dest = self._pyb_path(_dest)
+        dest = self.resolve_path(_dest)
         self._rsh.cp(str(src_path), str(dest))
-        return dest
+
+    def pull_file(self, source_path: DevicePath, target_path: HostPath, **kwargs) -> None:
+        host_dest = Path(target_path).resolve()
+        device_src = self.resolve_path(source_path)
+        self._rsh.cp(str(device_src), str(host_dest))
 
     def list_dir(self, path: DevicePath) -> list[DevicePath]:
         """List directory on pyboard.
@@ -155,7 +162,7 @@ class RShellPyDevice(abc.PyDevice[Pyboard]):
             path: path to directory
 
         """
-        dir_path = self._pyb_path(path)
+        dir_path = self.resolve_path(path)
         tree = self._rsh.auto(rsh.listdir, str(dir_path))
         return tree
 
@@ -171,7 +178,7 @@ class RShellPyDevice(abc.PyDevice[Pyboard]):
                 Defaults to {}
 
         """
-        dir_path = self._pyb_path(source_path)
+        dir_path = self.resolve_path(source_path)
         dest_path = Path(str(target_path))
         rsync_args = {
             "recursed": True,
@@ -186,35 +193,38 @@ class RShellPyDevice(abc.PyDevice[Pyboard]):
     @contextmanager
     def repl(self):
         """Pyboard raw repl context manager."""
-        self._pydevice.enter_raw_repl()
-        try:
+        if self._repl_active:
             yield self._pydevice
-        finally:
-            self._pydevice.exit_raw_repl()
+        else:
+            self._pydevice.enter_raw_repl()
+            self._repl_active = True
+            try:
+                yield self._pydevice
+            finally:
+                self._pydevice.exit_raw_repl()
+                self._repl_active = False
 
-    def _exec(self, command):
+    def eval(self, command: str, *, consumer: MessageConsumer = None):
         """Execute bytes on pyboard."""
-        consumer = None if self._data_consumer is None else self._data_consumer.consumer
-        ret, ret_err = self._pydevice.exec_raw(command, data_consumer=consumer)
+        _handler = None if consumer is None else RShellConsumer(consumer.on_message).on_message
+        ret, ret_err = self._pydevice.exec_raw(command, data_consumer=_handler)
         if ret_err:
             raise PyboardError("exception", ret, ret_err)
         return ret
 
-    def run_script(self, file: Path | AnyStr, *_):
-        """Execute a local script on the pyboard.
-
-        Args:
-            file (str): path to file or string to run
-
-        """
-        try:
-            with file.open("rb") as f:
-                pyfile = f.read()
-        except AttributeError:
-            pyfile = file.encode("utf-8")
+    def eval_script(
+        self,
+        contents: AnyStr,
+        target_path: DevicePath | None = None,
+        *,
+        consumer: PyDeviceConsumer = None,
+    ):
+        _contents: str | bytes = contents
+        if isinstance(_contents, bytes):
+            _contents = _contents.decode()
         with self.repl():
             try:
-                out_bytes = self._exec(pyfile)
+                out_bytes = self.eval(_contents, consumer=consumer)
             except PyboardError as e:
                 raise Exception(str(e))
             out = out_bytes.decode("utf-8")
