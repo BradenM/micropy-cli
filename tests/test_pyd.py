@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import sys
 from typing import Type
-from unittest.mock import MagicMock
+from unittest.mock import ANY, MagicMock
 
 import pytest
 from micropy.exceptions import PyDeviceError
-from micropy.pyd import backend_rshell, backend_upydevice
+from micropy.pyd import backend_rshell, backend_upydevice, consumers
 from micropy.pyd.abc import MetaPyDeviceBackend, PyDeviceConsumer
 from micropy.pyd.pydevice import PyDevice
 from pytest_mock import MockFixture
@@ -269,3 +269,38 @@ class TestPyDevice:
             mock_backend.return_value.push_file.assert_called_once_with(
                 "/host/path/f.txt", p, consumer=mocker.ANY
             )
+
+
+class TestConsumers:
+    @pytest.mark.parametrize(
+        "on_desc,expected_tqdm",
+        [
+            [None, dict(total=5, unit="B", unit_scale=True, unit_divisor=1024, bar_format=ANY)],
+            [
+                lambda n, cfg: ("other", dict(override=True)),
+                dict(
+                    total=5,
+                    unit="B",
+                    unit_scale=True,
+                    unit_divisor=1024,
+                    bar_format=ANY,
+                    override=True,
+                ),
+            ],
+        ],
+    )
+    def test_progress_consumer(self, mocker: MockFixture, on_desc, expected_tqdm):
+        tqdm_mock = mocker.patch.object(consumers, "tqdm")
+        cons = consumers.ProgressStreamConsumer(on_desc)
+        cons.on_start(name="abc", size=5)
+        tqdm_mock.assert_called_once_with(**expected_tqdm)
+        cons.on_update(size=1)
+        tqdm_mock.return_value.update.assert_called_once_with(1)
+        cons.on_end()
+        tqdm_mock.return_value.close.assert_called_once()
+
+    def test_delegate(self):
+        delegate = consumers.ConsumerDelegate()
+        assert delegate.on_message("") is None
+        delegate = consumers.ConsumerDelegate(consumers.MessageHandlers(on_message=lambda m: m))
+        assert delegate.on_message("a") is "a"
