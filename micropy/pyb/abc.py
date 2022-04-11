@@ -2,14 +2,12 @@ from __future__ import annotations
 
 import abc
 from pathlib import Path
-from typing import Any, AnyStr, NewType, TypeVar
+from typing import Any, AnyStr
 
-from typing_extensions import Protocol
+from typing_extensions import NewType, Protocol
 
 HostPath = NewType("HostPath", str)
 DevicePath = NewType("DevicePath", str)
-
-DeviceT = TypeVar("DeviceT")
 
 
 class StartHandler(Protocol):
@@ -144,6 +142,14 @@ class MetaPyDevice(abc.ABC):
     pydevice: MetaPyDeviceBackend
     stream_consumer: StreamConsumer | None
     message_consumer: MessageConsumer | None
+
+    @abc.abstractmethod
+    def connect(self) -> None:
+        ...
+
+    @abc.abstractmethod
+    def disconnect(self) -> None:
+        ...
 
     @abc.abstractmethod
     def copy_to(self, source_path: HostPath, target_path: DevicePath) -> None:
