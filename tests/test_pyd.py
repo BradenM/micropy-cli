@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import stat
 import sys
+from pathlib import PurePosixPath
 from typing import Type
 from unittest.mock import ANY, MagicMock
 
@@ -218,6 +220,28 @@ class TestPyDeviceBackend:
             m.mock.find_serial_device_by_port.return_value.name_path = "/"
             pyd.pull_file("/some/path", (tmp_path / "out.txt"))
             m.mock.cp.assert_called_once_with("/some/path", str(tmp_path / "out.txt"))
+
+    def test_iter_files(self, pymock):
+        m = pymock
+        if m.is_rsh:
+            return
+        pyd = self.pyd_cls().establish(MOCK_PORT)
+        pyd.connect()
+        m.device.cmd.side_effect = [
+            None,
+            None,
+            None,
+            [("name", "stat", "", "")],
+            None,
+            [("name", stat.S_IFDIR, "", "")],
+            None,
+            [("underName", "", "", "")],
+        ]
+        assert list(pyd.iter_files("/some/path")) == []
+        m.device.cmd.assert_any_call("import uos", silent=True)
+        m.device.cmd.assert_any_call("list(uos.ilistdir('/some/path'))", silent=True, rtn_resp=True)
+        assert list(pyd.iter_files("/some/path")) == [PurePosixPath("/some/path/name")]
+        assert list(pyd.iter_files("/some/path")) == [PurePosixPath("/some/path/name/underName")]
 
 
 class TestPyDevice:
