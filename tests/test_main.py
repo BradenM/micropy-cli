@@ -34,6 +34,14 @@ def test_add_stub(mock_micropy, shared_datadir):
     assert fware_stub in list(mock_micropy.stubs._firmware)
 
 
+def test_create_stub__connect_error(mock_micropy, mocker, shared_datadir, tmp_path):
+    mock_pyb = mocker.patch("micropy.main.PyDevice")
+    mock_pyb.side_effect = [SystemExit, exc.PyDeviceError]
+    mp = mock_micropy
+    assert mp.create_stubs("/dev/PORT") is None
+    assert mp.create_stubs("/dev/PORT") is None
+
+
 def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     """should create and add stubs"""
     mock_micropy.stubs.add((shared_datadir / "fware_test_stub"))
@@ -45,7 +53,9 @@ def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     mock_pyb = mocker.patch("micropy.main.PyDevice")
     mp = mock_micropy
     mocker.spy(mp.stubs, "add")
-    mock_pyb.return_value.run_script.side_effect = [mocker.ANY, mocker.ANY]
+    mock_pyb.return_value.run_script.side_effect = [Exception, mocker.ANY, mocker.ANY]
+    with pytest.raises(Exception):
+        stub = mp.create_stubs("/dev/PORT")
     stub = mp.create_stubs("/dev/PORT")
     mp.stubs.add.assert_any_call((tmp_stub_path / "esp32-1.11.0"))
     rmtree((tmp_stub_path / "esp32-1.11.0"))
