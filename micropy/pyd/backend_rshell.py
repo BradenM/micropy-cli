@@ -15,9 +15,9 @@ from micropy.pyd.abc import (
 )
 
 if TYPE_CHECKING:
-    from typing import type_check_only
+    from typing import type_check_only  # pragma: no cover
 
-    @type_check_only
+    @type_check_only  # pragma: no cover
     class RShell:
         ASCII_XFER: bool
         QUIET: bool
@@ -32,7 +32,7 @@ try:
 except (
     ImportError,
     ModuleNotFoundError,
-):
+):  # pragma: no cover
     rsh = object()  # type: ignore
     if TYPE_CHECKING:
         rsh: RShell = cast(RShell, object())  # type: ignore
