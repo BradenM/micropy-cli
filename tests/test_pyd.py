@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, Type
+from typing import Type
 from unittest.mock import MagicMock
 
 import pytest
@@ -9,6 +9,7 @@ from micropy.pyd import backend_rshell, backend_upydevice
 from micropy.pyd.abc import MetaPyDeviceBackend
 from micropy.pyd.pydevice import PyDevice
 from pytest_mock import MockFixture
+from typing_extensions import Literal
 
 
 @pytest.fixture
