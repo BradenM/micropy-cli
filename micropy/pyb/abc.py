@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import abc
+from pathlib import Path
 from typing import Any, AnyStr, NewType, TypeVar
 
 from typing_extensions import Protocol
@@ -55,14 +56,15 @@ class MessageConsumer(Protocol):
         ...
 
 
-AnyPyDevice = TypeVar("AnyPyDevice", bound="MetaPyDeviceBackend")
+class PyDeviceConsumer(MessageConsumer, StreamConsumer, Protocol):
+    ...
 
 
 class MetaPyDeviceBackend(abc.ABC):
     location: str
 
     @abc.abstractmethod
-    def establish(self, target: str) -> AnyPyDevice:
+    def establish(self, target: str) -> "MetaPyDeviceBackend":
         ...
 
     @abc.abstractmethod
@@ -78,7 +80,7 @@ class MetaPyDeviceBackend(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def resolve_path(self, target_path: DevicePath) -> DevicePath:
+    def resolve_path(self, target_path: DevicePath | str | Path) -> DevicePath:
         ...
 
     @property
@@ -87,11 +89,25 @@ class MetaPyDeviceBackend(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def push_file(self, source_path: HostPath, target_path: DevicePath, **kwargs) -> None:
+    def push_file(
+        self,
+        source_path: HostPath,
+        target_path: DevicePath,
+        *,
+        consumer: PyDeviceConsumer | None,
+        **kwargs,
+    ) -> None:
         ...
 
     @abc.abstractmethod
-    def pull_file(self, source_path: DevicePath, target_path: HostPath, **kwargs) -> None:
+    def pull_file(
+        self,
+        source_path: DevicePath,
+        target_path: HostPath,
+        *,
+        consumer: PyDeviceConsumer | None,
+        **kwargs,
+    ) -> None:
         ...
 
     @abc.abstractmethod
@@ -99,7 +115,14 @@ class MetaPyDeviceBackend(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def copy_dir(self, source_path: DevicePath, target_path: HostPath, **kwargs):
+    def copy_dir(
+        self,
+        source_path: DevicePath,
+        target_path: HostPath,
+        *,
+        consumer: PyDeviceConsumer | None,
+        **kwargs,
+    ):
         ...
 
     @abc.abstractmethod
@@ -112,8 +135,7 @@ class MetaPyDeviceBackend(abc.ABC):
         contents: AnyStr,
         target_path: DevicePath | None = None,
         *,
-        stream_consumer: StreamConsumer = None,
-        message_consumer: MessageConsumer | None = None,
+        consumer: PyDeviceConsumer | None = None,
     ):
         ...
 
