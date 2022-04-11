@@ -27,6 +27,5 @@ from .helpers import (
     search_xml,
     stream_download,
 )
-from .pybwrapper import CREATE_STUBS_INSTALLED, PyboardWrapper
 from .stub import generate_stub
 from .validate import Validator
