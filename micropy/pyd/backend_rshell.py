@@ -26,18 +26,16 @@ if TYPE_CHECKING:
             ...
 
 
-CREATE_STUBS_INSTALLED = False
-
 try:
     import rshell.main as rsh  # type: ignore
     from rshell.pyboard import Pyboard, PyboardError  # type: ignore
-except ImportError:
+except (
+    ImportError,
+    ModuleNotFoundError,
+):
     rsh: RShell = cast(RShell, object())  # type: ignore
     PyboardError = RuntimeError
     Pyboard = object()
-    CREATE_STUBS_INSTALLED = False
-else:
-    CREATE_STUBS_INSTALLED = True
 
 
 class RShellConsumer:
