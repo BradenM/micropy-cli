@@ -45,7 +45,8 @@ class PyDevice(MetaPyDevice):
 
     def copy_to(self, source_path: HostPath, target_path: DevicePath) -> None:
         src_path = Path(str(source_path))
-        if not src_path.suffix:
+        host_exists = src_path.exists()
+        if (host_exists and src_path.is_dir()) or (not host_exists and not src_path.suffix):
             raise RuntimeError("Copying dirs to device is not yet supported!")
         return self.pydevice.push_file(source_path, target_path, consumer=self.consumer)
 
