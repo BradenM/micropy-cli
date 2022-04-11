@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from typing import Type
 from unittest.mock import MagicMock
 
@@ -60,12 +61,25 @@ class MockAdapter:
 
 MOCK_PORT = "/dev/port"
 
+IS_WIN_PY310 = sys.version_info >= (3, 10) and sys.platform.startswith("win")
+
 
 class TestPyDeviceBackend:
     backend: Literal["upy", "rsh"]
     pyd_cls: Type[MetaPyDeviceBackend]
 
-    @pytest.fixture(params=["upy", "rsh"])
+    @pytest.fixture(
+        params=[
+            "upy",
+            pytest.param(
+                "rsh",
+                marks=pytest.mark.skipif(
+                    IS_WIN_PY310,
+                    reason="skipping due to rshell/pyreadline broken for >=py310 on windows.",
+                ),
+            ),
+        ]
+    )
     def pymock_setup(self, request: pytest.FixtureRequest) -> MockAdapter:
         self.backend = request.param
         self.pyd_cls = (
