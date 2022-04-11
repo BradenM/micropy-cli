@@ -304,3 +304,16 @@ class TestConsumers:
         assert delegate.on_message("") is None
         delegate = consumers.ConsumerDelegate(consumers.MessageHandlers(on_message=lambda m: m))
         assert delegate.on_message("a") is "a"
+
+    @pytest.mark.skipif(
+        IS_WIN_PY310, reason="skipping due to rshell/pyreadline broken for >=py310 on windows."
+    )
+    def test_rsh_consumer(self):
+        calls = []
+        message_cons = consumers.MessageHandlers(on_message=lambda m: calls.append(m))
+        rsh_cons = backend_rshell.RShellConsumer(message_cons.on_message)
+        chars = iter(list("a line.\nnext line.\n"))
+        for i in chars:
+            rsh_cons.on_message(i.encode())
+        assert len(calls) == 2
+        assert calls == ["a line.", "next line."]
