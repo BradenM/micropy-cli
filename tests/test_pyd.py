@@ -123,6 +123,9 @@ class TestPyDeviceBackend:
         m = pymock
         pyd = self.pyd_cls()
         assert not pyd.connected
+        if m.is_upy:
+            with pytest.raises(PyDeviceError):
+                pyd._ensure_connected()
 
     def test_connected(self, pymock):
         m = pymock
@@ -164,6 +167,17 @@ class TestPyDeviceBackend:
             else:
                 pyd._pydevice.exec_raw.assert_called_once_with("abc", data_consumer=None)
 
+    def test_eval_script(self, pymock, mocker: MockFixture, with_consumer):
+        m = pymock
+        pyd = self.pyd_cls().establish(MOCK_PORT)
+        pyd.connect()
+        pyd._pydevice.exec_raw = mocker.Mock(return_value=[b"", b""])
+        pyd.eval_script(b"import something", "somefile.py", **with_consumer)
+        if m.is_upy:
+            if "consumer" in with_consumer:
+                with_consumer["consumer"].on_start.assert_called_once()
+            m.device.cmd.assert_any_call("import ubinascii")
+
     @property
     def read_file_effects(self):
         cmd_effects = [
@@ -187,14 +201,18 @@ class TestPyDeviceBackend:
         res = pyd.read_file("/some/path")
         assert res == "Hi there"
 
-    def test_copy_file(self, pymock, tmp_path):
+    def test_pull_file(self, pymock, tmp_path):
         m = pymock
-        if m.is_rsh:
-            return
         pyd = self.pyd_cls().establish(MOCK_PORT)
-        m.device.cmd.side_effect = self.read_file_effects
-        pyd.pull_file("/some/path", (tmp_path / "out.txt"))
-        assert (tmp_path / "out.txt").read_text() == "Hi there"
+        pyd.connect()
+        if m.is_upy:
+            m.device.cmd.side_effect = self.read_file_effects
+            pyd.pull_file("/some/path", (tmp_path / "out.txt"))
+            assert (tmp_path / "out.txt").read_text() == "Hi there"
+        else:
+            m.mock.find_serial_device_by_port.return_value.name_path = "/"
+            pyd.pull_file("/some/path", (tmp_path / "out.txt"))
+            m.mock.cp.assert_called_once_with("/some/path", str(tmp_path / "out.txt"))
 
 
 class TestPyDevice:
