@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import partialmethod
 from typing import Any, Callable, NamedTuple, cast
 
-from micropy.pyb.abc import (
+from micropy.pyd.abc import (
     EndHandler,
     MessageConsumer,
     MessageHandler,

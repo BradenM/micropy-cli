@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, AnyStr, cast
 
 from micropy.exceptions import PyDeviceConnectionError
-from micropy.pyb.abc import (
+from micropy.pyd.abc import (
     DevicePath,
     HostPath,
     MessageConsumer,
