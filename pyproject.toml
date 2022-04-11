@@ -157,7 +157,8 @@ exclude_lines = [
     'raise AssertionError',
     'def __repr__',
     'noqa',
-    '@(abc\.)?abstractmethod'
+    '@(abc\.)?abstractmethod',
+    'pragma: no cover'
 ]
 
 [tool.mypy]
