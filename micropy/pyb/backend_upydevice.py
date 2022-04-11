@@ -16,7 +16,7 @@ from micropy.exceptions import PyDeviceConnectionError, PyDeviceError
 from typing_extensions import ParamSpec, TypeAlias
 from upydevice.phantom import UOS as UPY_UOS
 
-from .abc import DevicePath, HostPath, MessageConsumer, MetaPyDeviceBackend, StreamConsumer
+from .abc import DevicePath, HostPath, MessageConsumer, MetaPyDeviceBackend, PyDeviceConsumer
 
 AnyUPyDevice: TypeAlias = Union[upydevice.SerialDevice, upydevice.WebSocketDevice]
 
@@ -81,7 +81,7 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
             return DevicePath("/")
         return DevicePath("/flash")
 
-    def resolve_path(self, path: DevicePath) -> DevicePath:
+    def resolve_path(self, path: DevicePath | str | Path) -> DevicePath:
         _root = PurePosixPath(self._pyb_root())
         _path = PurePosixPath(path)
         if _path.is_absolute():
@@ -90,8 +90,10 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
             _path = _path.relative_to(list(_path.parents)[-1])
         return DevicePath(str(_root / _path))
 
-    def establish(self, target: str) -> AnyUPyDevice:
-        return upydevice.Device(target, init=True, autodetect=True)
+    def establish(self, target: str) -> UPyDeviceBackend:
+        self.location = target
+        self._pydevice = upydevice.Device(target, init=True, autodetect=True)
+        return self
 
     def connect(self):
         try:
@@ -163,7 +165,7 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
 
     @retry
     def write_file(
-        self, contents: str, target_path: DevicePath, *, consumer: StreamConsumer | None = None
+        self, contents: str, target_path: DevicePath, *, consumer: PyDeviceConsumer | None = None
     ) -> None:
         target_path = self.resolve_path(target_path)
         self._pydevice.cmd("import ubinascii")
@@ -181,7 +183,9 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
         self._pydevice.cmd("f.close()")
 
     @retry
-    def read_file(self, target_path: DevicePath, *, consumer: StreamConsumer | None = None) -> str:
+    def read_file(
+        self, target_path: DevicePath, *, consumer: PyDeviceConsumer | None = None
+    ) -> str:
         target_path = self.resolve_path(target_path)
         self._pydevice.cmd("import ubinascii", silent=True)
         self._pydevice.cmd(f"f = open('{str(target_path)}', 'rb')", silent=True)
@@ -220,14 +224,13 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
         contents: AnyStr,
         target_path: DevicePath | None = None,
         *,
-        stream_consumer: StreamConsumer = None,
-        message_consumer: MessageConsumer = None,
+        consumer: PyDeviceConsumer = None,
     ):
         _target_path = (
             self.resolve_path(target_path) if target_path else f"{self._rand_device_path()}.py"
         )
         if isinstance(contents, bytes):
             contents = contents.decode()  # type: ignore
-        self.write_file(str(contents), DevicePath(_target_path), consumer=stream_consumer)
-        self.eval(f"import {Path(_target_path).stem}", consumer=message_consumer)
+        self.write_file(str(contents), DevicePath(_target_path), consumer=consumer)
+        self.eval(f"import {Path(_target_path).stem}", consumer=consumer)
         self.uos.remove(str(_target_path))
