@@ -27,9 +27,10 @@ class PyDevice(MetaPyDevice):
         auto_connect: bool = True,
         stream_consumer: StreamConsumer = None,
         message_consumer: MessageConsumer = None,
+        delegate_cls: Type[ConsumerDelegate] = ConsumerDelegate,
     ):
         self.pydevice = backend().establish(location)
-        self.consumer = ConsumerDelegate(stream_consumer, message_consumer)
+        self.consumer = delegate_cls(stream_consumer, message_consumer)
         if auto_connect and self.pydevice:
             self.pydevice.connect()
 
