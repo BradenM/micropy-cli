@@ -5,8 +5,9 @@ from unittest.mock import MagicMock
 
 import pytest
 from micropy.exceptions import PyDeviceError
-from micropy.pyb import backend_rshell, backend_upydevice
-from micropy.pyb.abc import PyDevice
+from micropy.pyd import backend_rshell, backend_upydevice
+from micropy.pyd.abc import MetaPyDeviceBackend
+from micropy.pyd.pydevice import PyDevice
 from pytest_mock import MockFixture
 
 
@@ -59,55 +60,45 @@ class MockAdapter:
 MOCK_PORT = "/dev/port"
 
 
-@pytest.fixture(params=["upy", "rsh"], scope="class")
-def pymock_setup(request: pytest.FixtureRequest) -> MockAdapter:
-    request.cls.backend = request.param
-    request.cls.pyd_cls = (
-        backend_upydevice.UPYPyDevice
-        if request.cls.backend == "upy"
-        else backend_rshell.RShellPyDevice
-    )
-    _cls = (
-        backend_upydevice.UPYPyDevice if request.param == "upy" else backend_rshell.RShellPyDevice
-    )
-    _consumer = (
-        backend_upydevice.UPYConsumer if request.param == "upy" else backend_rshell.RShellConsumer
-    )
-    yield
-
-
-@pytest.fixture
-def pymock(request: MockFixture, mock_upy_uos):
-    mod_mock = request.getfixturevalue(f"mock_{request.cls.backend}")
-    return MockAdapter(request.cls.backend, mod_mock, mock_upy_uos)
-
-
-@pytest.mark.usefixtures("pymock_setup")
-class TestPyDevice:
+class TestPyDeviceBackend:
     backend: Literal["upy", "rsh"]
-    pyd_cls: Type[PyDevice]
+    pyd_cls: Type[MetaPyDeviceBackend]
+
+    @pytest.fixture(params=["upy", "rsh"])
+    def pymock_setup(self, request: pytest.FixtureRequest) -> MockAdapter:
+        self.backend = request.param
+        self.pyd_cls = (
+            backend_upydevice.UPyDeviceBackend
+            if self.backend == "upy"
+            else backend_rshell.RShellPyDeviceBackend
+        )
+
+    @pytest.fixture
+    def pymock(self, pymock_setup, request: pytest.FixtureRequest, mock_upy_uos):
+        mod_mock = request.getfixturevalue(f"mock_{self.backend}")
+        m = MockAdapter(self.backend, mod_mock, mock_upy_uos)
+        yield m
+        m.mock.reset_mock()
 
     def test_init(self, pymock):
         m = pymock
-        pyd = self.pyd_cls(MOCK_PORT)
+        pyd = self.pyd_cls().establish(MOCK_PORT)
         if self.backend == "upy":
             m.mock.Device.assert_called_once_with(MOCK_PORT, init=True, autodetect=True)
         else:
             assert m.mock.ASCII_XFER is False
             assert m.mock.QUIET is True
-        m.connect.assert_called_once()
-        assert pyd.connected
         assert pyd.location == MOCK_PORT
 
     def test_init__connect_fail(self, pymock):
         m = pymock
         m.connect.side_effect = [SystemExit, SystemExit]
         with pytest.raises(PyDeviceError):
-            self.pyd_cls(MOCK_PORT)
+            self.pyd_cls().establish(MOCK_PORT).connect()
 
     def test_disconnect(self, pymock):
         m = pymock
-        pyd = self.pyd_cls(MOCK_PORT)
+        pyd = self.pyd_cls().establish(MOCK_PORT)
         pyd.disconnect()
         if m.is_upy:
             m.mock.Device.return_value.disconnect.assert_called_once()
@@ -115,11 +106,11 @@ class TestPyDevice:
     def test_reset(self, pymock, mocker: MockFixture):
         mocker.patch("time.sleep")
         m = pymock
-        pyd = self.pyd_cls(MOCK_PORT)
+        pyd = self.pyd_cls().establish(MOCK_PORT)
         pyd.reset()
         if m.is_upy:
             m.device.reset.assert_called_once()
-            assert m.device.connect.call_count == 2
+            m.device.connect.assert_called_once()
 
     @property
     def read_file_effects(self):
@@ -139,16 +130,90 @@ class TestPyDevice:
         m = pymock
         if m.is_rsh:
             return
-        pyb = self.pyd_cls(MOCK_PORT)
+        pyd = self.pyd_cls().establish(MOCK_PORT)
         m.device.cmd.side_effect = self.read_file_effects
-        res = pyb.read_file("/some/path")
+        res = pyd.read_file("/some/path")
         assert res == "Hi there"
 
     def test_copy_file(self, pymock, tmp_path):
         m = pymock
         if m.is_rsh:
             return
-        pyb = self.pyd_cls(MOCK_PORT)
+        pyd = self.pyd_cls().establish(MOCK_PORT)
         m.device.cmd.side_effect = self.read_file_effects
-        pyb.copy_file("/some/path", (tmp_path / "out.txt"))
+        pyd.pull_file("/some/path", (tmp_path / "out.txt"))
         assert (tmp_path / "out.txt").read_text() == "Hi there"
+
+
+class TestPyDevice:
+    @pytest.fixture
+    def mock_backend(self, mocker: MockFixture):
+        mock = mocker.MagicMock(MetaPyDeviceBackend)
+        mock.return_value.establish.return_value = mock.return_value
+        return mock
+
+    @pytest.fixture(
+        params=[
+            ["dir", "/some/dir"],
+            ["file", "/some/file.txt"],
+            ["dir", r"c:\\some\\dos\\dir"],
+            ["file", r"c:\\some\\dos\\file.txt"],
+        ]
+    )
+    def path_type(self, request: pytest.FixtureRequest):
+        return request.param
+
+    @pytest.mark.parametrize(
+        "pyd_kwargs",
+        [
+            dict(),
+            dict(auto_connect=False),
+            dict(delegate_cls=lambda *x: x, stream_consumer="stream", message_consumer="message"),
+        ],
+    )
+    def test_init(self, mock_backend, pyd_kwargs):
+        pyd = PyDevice(MOCK_PORT, backend=mock_backend, **pyd_kwargs)
+        mock_backend.assert_called_once()
+        mock_backend.return_value.establish.assert_called_once_with(MOCK_PORT)
+        if pyd_kwargs.get("auto_connect", True):
+            mock_backend.return_value.connect.assert_called_once()
+        if "delegate_cls" in pyd_kwargs:
+            assert pyd.consumer == (
+                "stream",
+                "message",
+            )
+
+    def test_connect(self, mock_backend):
+        pyd = PyDevice(MOCK_PORT, backend=mock_backend, auto_connect=False)
+        pyd.connect()
+        mock_backend.return_value.connect.assert_called_once()
+
+    def test_disconnect(self, mock_backend):
+        pyd = PyDevice(MOCK_PORT, backend=mock_backend)
+        pyd.disconnect()
+        mock_backend.return_value.disconnect.assert_called_once()
+
+    def test_copy_from(self, mock_backend, path_type, mocker):
+        pyd = PyDevice(MOCK_PORT, backend=mock_backend)
+        ptype, p = path_type
+        pyd.copy_from(p, "/host/path")
+        if ptype == "dir":
+            mock_backend.return_value.copy_dir.assert_called_once_with(
+                p, "/host/path", consumer=mocker.ANY
+            )
+        else:
+            mock_backend.return_value.pull_file.assert_called_once_with(
+                p, "/host/path", consumer=mocker.ANY
+            )
+
+    def test_copy_to(self, mock_backend, path_type, mocker):
+        pyd = PyDevice(MOCK_PORT, backend=mock_backend)
+        ptype, p = path_type
+        if ptype == "dir":
+            with pytest.raises(RuntimeError):
+                pyd.copy_to("/host/path", p)
+        else:
+            pyd.copy_to("/host/path/f.txt", p)
+            mock_backend.return_value.push_file.assert_called_once_with(
+                "/host/path/f.txt", p, consumer=mocker.ANY
+            )
