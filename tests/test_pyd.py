@@ -111,6 +111,17 @@ class TestPyDeviceBackend:
         with pytest.raises(PyDeviceError):
             self.pyd_cls().establish(MOCK_PORT).connect()
 
+    def test_connected__default(self, pymock):
+        m = pymock
+        pyd = self.pyd_cls()
+        assert not pyd.connected
+
+    def test_connected(self, pymock):
+        m = pymock
+        pyd = self.pyd_cls().establish(MOCK_PORT)
+        pyd.connect()
+        assert pyd.connected
+
     def test_disconnect(self, pymock):
         m = pymock
         pyd = self.pyd_cls().establish(MOCK_PORT)
