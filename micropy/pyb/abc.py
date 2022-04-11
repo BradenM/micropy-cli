@@ -32,13 +32,27 @@ class MessageHandler(Protocol):
 
 
 class StreamConsumer(Protocol):
-    on_start: StartHandler
-    on_update: UpdateHandler
-    on_end: EndHandler
+    @property
+    @abc.abstractmethod
+    def on_start(self) -> StartHandler:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def on_update(self) -> UpdateHandler:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def on_end(self) -> EndHandler:
+        ...
 
 
 class MessageConsumer(Protocol):
-    on_message: MessageHandler
+    @property
+    @abc.abstractmethod
+    def on_message(self) -> MessageHandler:
+        ...
 
 
 AnyPyDevice = TypeVar("AnyPyDevice", bound="MetaPyDeviceBackend")
