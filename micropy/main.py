@@ -2,7 +2,6 @@
 
 """Main Module."""
 
-import sys
 import tempfile
 from pathlib import Path
 
@@ -10,6 +9,7 @@ from micropy import data, utils
 from micropy.lib.stubber import process as stubber
 from micropy.logger import Log
 from micropy.project import Project, modules
+from micropy.pyd import DevicePath, MessageHandlers, ProgressStreamConsumer, PyDevice
 from micropy.stubs import StubManager, source
 
 
@@ -84,6 +84,9 @@ class MicroPy:
     def create_stubs(self, port, verbose=False):
         """Create and add stubs from Pyboard.
 
+        Todo:
+            Extract and cleanup this mess.
+
         Args:
             port (str): Port of Pyboard
 
@@ -92,37 +95,43 @@ class MicroPy:
 
         """
         self.log.title(f"Connecting to Pyboard @ $[{port}]")
+        pyb_log = Log.add_logger("Pyboard", "bright_white")
+
+        def _get_desc(name: str, cfg: dict):
+            desc = f"{pyb_log.get_service()} {name}"
+            return name, cfg | dict(desc=desc)
+
+        message_handler = MessageHandlers(
+            on_message=lambda x: isinstance(x, str) and pyb_log.info(x.strip())
+        )
         try:
-            pyb = utils.PyboardWrapper(port, verbose=verbose)
+            pyb = PyDevice(
+                port,
+                auto_connect=True,
+                stream_consumer=ProgressStreamConsumer(on_description=_get_desc),
+                message_consumer=message_handler,
+            )
         except SystemExit:
             self.log.error(f"Failed to connect, are you sure $[{port}] is correct?")
             return None
         self.log.success("Connected!")
-        try:
-            script = stubber.minify_script(stubber.source_script)
-        except AttributeError:
-            self.log.error("\npython-minifier not found!")
-            self.log.info(
-                ("For device stub creation, micropy-cli depends" " on $B[python-minifier].")
-            )
-            self.log.info(
-                ("Please install via: $[pip install micropy-cli[create_stubs]]" " and try again.")
-            )
-            sys.exit(1)
+        script = stubber.minify_script(stubber.source_script)
         self.log.info("Executing stubber on pyboard...")
         try:
-            pyb.run(script, format_output=lambda x: x.split("to file:")[0].strip())
+            pyb.run_script(script, DevicePath("createstubs.py"))
         except Exception as e:
             # TODO: Handle more usage cases
-            self.log.error(f"Failed to execute script: {str(e)}")
-            return None
+            self.log.error(f"Failed to execute script: {str(e)}", exception=e)
+            raise
         self.log.success("Done!")
         self.log.info("Copying stubs...")
         with tempfile.TemporaryDirectory() as tmpdir:
-            out_dir = pyb.copy_dir("/stubs", tmpdir)
+            pyb.copy_from(DevicePath("/stubs"), tmpdir)
+            out_dir = Path(tmpdir)
             stub_path = next(out_dir.iterdir())
             self.log.info(f"Copied Stubs: $[{stub_path.name}]")
             stub_path = self.stubs.from_stubber(stub_path, out_dir)
             stub = self.stubs.add(stub_path)
+        pyb.disconnect()
         self.log.success(f"Added {stub.name} to stubs!")
         return stub
