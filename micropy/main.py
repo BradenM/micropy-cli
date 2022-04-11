@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 
 from micropy import data, utils
+from micropy.exceptions import PyDeviceError
 from micropy.lib.stubber import process as stubber
 from micropy.logger import Log
 from micropy.project import Project, modules
@@ -111,7 +112,7 @@ class MicroPy:
                 stream_consumer=ProgressStreamConsumer(on_description=_get_desc),
                 message_consumer=message_handler,
             )
-        except SystemExit:
+        except (SystemExit, PyDeviceError):
             self.log.error(f"Failed to connect, are you sure $[{port}] is correct?")
             return None
         self.log.success("Connected!")
