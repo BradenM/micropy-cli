@@ -156,7 +156,7 @@ exclude_lines = ["if __name__ == .__main__.:"]
 
 [tool.mypy]
 warn_redundant_casts = true
-follow_imports = "normal"
+follow_imports = "skip"
 
 [[tool.mypy.overrides]]
 module = ["boltons", "upydevice", "upydevice.*", "rshell", "tqdm"]
