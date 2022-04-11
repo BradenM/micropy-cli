@@ -33,7 +33,9 @@ except (
     ImportError,
     ModuleNotFoundError,
 ):
-    rsh: RShell = cast(RShell, object())  # type: ignore
+    rsh = object()  # type: ignore
+    if TYPE_CHECKING:
+        rsh: RShell = cast(RShell, object())  # type: ignore
     PyboardError = RuntimeError
     Pyboard = object()
 
