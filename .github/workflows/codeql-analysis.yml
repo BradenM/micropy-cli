@@ -11,6 +11,8 @@
 #
 name: "CodeQL"
 
+
+
 on:
   push:
     branches: [ master ]
@@ -19,6 +21,10 @@ on:
     branches: [ master ]
   schedule:
     - cron: '24 9 * * 4'
+
+env:
+    POETRY_VERSION: 1.2.0a2
+    POETRY_URL: https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py
 
 jobs:
   analyze:
@@ -66,5 +72,29 @@ jobs:
     #   make bootstrap
     #   make release
 
+    # Poetry cache depends on OS, Python version and Poetry version.
+    - name: Cache Poetry cache
+      uses: actions/cache@v3
+      with:
+          path: ~/.cache/pypoetry
+          key: poetry-cache-${{ runner.os }}-${{ matrix.python }}-${{ env.POETRY_VERSION }}
+
+    # virtualenv cache should depends on OS, Python version and `poetry.lock` (and optionally workflow files).
+    - name: Cache Packages
+      uses: actions/cache@v3
+      with:
+          path: ~/.local
+          key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
+
+    - name: Install Poetry
+      run: |
+          curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Install Dependencies
+      run: poetry install --with docs --with test -v
+
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+      with:
+        setup-python-dependencies: false
