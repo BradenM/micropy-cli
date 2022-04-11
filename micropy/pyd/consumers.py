@@ -34,7 +34,9 @@ class ProgressStreamConsumer:
             "bar_format": bar_format,
         }
         _name, _tqdm_kws = self._on_description(name or "", tqdm_kwargs)
-        self.bar = tqdm(total=size, unit="B", **(tqdm_kwargs | (_tqdm_kws or dict())))
+        # todo: use union operator when min py version is 3.9.
+        tqdm_kwargs.update(_tqdm_kws or dict())
+        self.bar = tqdm(total=size, unit="B", **tqdm_kwargs)
 
     def on_update(self, *, size: int | None = None):
         self.bar.update(size)
