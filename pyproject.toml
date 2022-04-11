@@ -150,7 +150,15 @@ source = ["micropy"]
 omit = ["micropy/project/template/*", "micropy/lib/*", "micropy/lib/**/*"]
 
 [tool.coverage.report]
-exclude_lines = ["if __name__ == .__main__.:"]
+exclude_lines = [
+    "if __name__ == .__main__.:",
+    'class .*\bProtocol\):',
+    'raise NotImplementedError',
+    'raise AssertionError',
+    'def __repr__',
+    'noqa',
+    '@(abc\.)?abstractmethod'
+]
 
 [tool.mypy]
 warn_redundant_casts = true
