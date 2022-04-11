@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 import pytest
 from micropy.exceptions import PyDeviceError
 from micropy.pyd import backend_rshell, backend_upydevice
-from micropy.pyd.abc import MetaPyDeviceBackend
+from micropy.pyd.abc import MetaPyDeviceBackend, PyDeviceConsumer
 from micropy.pyd.pydevice import PyDevice
 from pytest_mock import MockFixture
 from typing_extensions import Literal
@@ -62,6 +62,14 @@ class MockAdapter:
 MOCK_PORT = "/dev/port"
 
 IS_WIN_PY310 = sys.version_info >= (3, 10) and sys.platform.startswith("win")
+
+
+@pytest.fixture(params=[True, False])
+def with_consumer(request: pytest.FixtureRequest, mocker: MockFixture):
+    if request.param is True:
+        consumer_mock = mocker.MagicMock(PyDeviceConsumer)
+        return dict(consumer=consumer_mock)
+    return dict()
 
 
 class TestPyDeviceBackend:
@@ -137,6 +145,24 @@ class TestPyDeviceBackend:
         if m.is_upy:
             m.device.reset.assert_called_once()
             m.device.connect.assert_called_once()
+
+    def test_eval(self, pymock, mocker: MockFixture, with_consumer):
+        m = pymock
+        pyd = self.pyd_cls().establish(MOCK_PORT)
+        pyd.connect()
+        pyd._pydevice.exec_raw = mocker.Mock(return_value=["", ""])
+        pyd.eval("abc", **with_consumer)
+        has_cons = "consumer" in with_consumer
+        if m.is_upy:
+            if has_cons:
+                m.device.cmd.assert_called_once_with("abc", follow=True, pipe=mocker.ANY)
+            else:
+                m.device.cmd.assert_called_once_with("abc")
+        else:
+            if has_cons:
+                pyd._pydevice.exec_raw.assert_called_once_with("abc", data_consumer=mocker.ANY)
+            else:
+                pyd._pydevice.exec_raw.assert_called_once_with("abc", data_consumer=None)
 
     @property
     def read_file_effects(self):
