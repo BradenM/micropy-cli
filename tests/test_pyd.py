@@ -177,6 +177,11 @@ class TestPyDeviceBackend:
             if "consumer" in with_consumer:
                 with_consumer["consumer"].on_start.assert_called_once()
             m.device.cmd.assert_any_call("import ubinascii")
+            mock_random = mocker.patch("random.sample", return_value="abc.py")
+            pyd = self.pyd_cls().establish(MOCK_PORT)
+            pyd.connect()
+            pyd.eval_script(b"import something", None, **with_consumer)
+            mock_random.assert_called_once()
 
     @property
     def read_file_effects(self):
