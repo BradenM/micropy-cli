@@ -1,26 +1,41 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="v4.0.0-rc.2"></a>
+## [v4.0.0-rc.2] - 2022-04-17
+### Bug Fixes
+- **pyd:** remove dict union operator till py3.9 min support
+- **pyd:** only type-cast rshell if type checking is enabled
+- **pyd:** capture module not found error during rshell import attempt
+- **pyd:** upydevice connect proper attr error if before established
+- **pyd:** use host path suffix check only as fallback in copy_to
+- **pyd:** consumer handler protocol methods should not be writable
+
 ### Chore
+- **chlog:** update changelog config+template
+- **deps:** update scoped deps+lockfile
+- **pkg:** remove setup.cfg
+- **pre-commit:** update pre-commit, pin black till click upgrade
 - **tools:** update poetry to v1.2.0b1
 
-### Ci
-- update poetry version to v1.2.0b1
-- **codeql:** install deps prior to analyze
-
-### Feat
-- **deps:** upgrade upydevice and remove prev missing deps
+### Features
 - **deps:** add upydevice+deps, missing type-stubs to dev, update mypy config
+- **deps:** upgrade upydevice and remove prev missing deps
 - **exc:** add PyDeviceError, PyDeviceConnectionError exceptions
 - **main:** update to utilize new pyd module
+- **pkg:** add pypi-test source to pyproject
+- **pkg:** regenerate changelog
 - **pkg:** add poetry+local pre-commit hook for docs export
+- **pkg:** export pyd from pkg root
+- **pkg:** add git-chlog config
 - **pyb:** add abcs for PyDevice, MetaPyDevice, Consumer/StreamConsumer
-- **pyd:** add PyDevice implementation
+- **pyd:** establish should return pyd instance, update consumer types
 - **pyd:** use/pass consumer handlers via delegate, expose connect/dc
 - **pyd:** add ConsumerDelegate, StreamHandlers, MessageHandlers
-- **pyd:** establish should return pyd instance, update consumer types
-- **pyd:** add PyDeviceConsumer protocol
 - **pyd:** update rshell backend to implement MetaPyDeviceBackend
+- **pyd:** add PyDeviceConsumer protocol
+- **pyd:** add PyDevice implementation
 - **pyd:** update upyd backend to interfaces + cleanup
 - **pyd:** move tqdm-progress consumer to pyd.consumers
 - **pyd:** add Stream/Message consumer protocols+handler protos, Split MetaPyDevice/MetaPyDeviceBackend
@@ -32,40 +47,21 @@
 - **scripts:** add script for exporting docs requirements
 - **utils:** remove pybwrapper
 
-### Fix
-- **pyd:** remove dict union operator till py3.9 min support
-- **pyd:** only type-cast rshell if type checking is enabled
-- **pyd:** capture module not found error during rshell import attempt
-- **pyd:** upydevice connect proper attr error if before established
-- **pyd:** use host path suffix check only as fallback in copy_to
-- **pyd:** consumer handler protocol methods should not be writable
-
-### Style
-- **mypy:** set follow_imports to skip
-
-### Test
-- **cfg:** update coverage line exclusions
-- **cli:** update cli create_stubs test
-- **main:** add additional create stubs tests
-- **main:** update create stubs main tests
-- **pyd:** add upydevice iter files test
-- **pyd:** skip cov on type casts/maybe import
-- **pyd:** add consumers tests
-- **pyd:** add test for rshell consumer
-- **pyd:** add unit test for rsh/upy eval
-- **pyd:** add test for pyd backend connected property
-- **pyd:** skip rshell backend tests when in incompat environment
-- **pyd:** fix >py37 compat issue in pyd tests
-- **pyd:** add rsh test for pull file, add eval script test, others
-- **pyd:** add test for default random script name
-- **pyd:** add tests for upy read file / copy file
-- **pyd:** add PyDevice tests, update backend tests
-- **pyd:** setup and add basic init tests for pyd backends
-- **utils:** remove pybwrapper test
-
 
 <a name="v4.0.0.rc.1"></a>
 ## [v4.0.0.rc.1] - 2022-03-14
+### Bug Fixes
+- **dev-deps:** update pytest to ^7.0 to resolve py10+win pyreadline crash
+- **pkg:** rshell markers for win32
+- **pkg:** fix mistake in rshell marker
+- **pkg:** do not install rshell when py>=3.10 and on windows due to pyreadline.
+- **pkg:** win32 rshell python marker
+- **pkg:** upgrade too and pin jinja2 @ 3.0.3
+- **project:** report exception on install failure to stdout
+- **stubber:** replace pyminifer with python-minifer
+- **utils:** capture attribue err that occurs on py310 win32 rshell import
+- **utils:** utilize mp-stubbers new logic for generating stubs
+
 ### Chore
 - **pkg:** update lock file
 - **pkg:** remove setup from bump2version
@@ -82,22 +78,7 @@
 - **tools:** update poetry to v1.1.13
 - **tools:** update poetry version in tools-versions
 
-### Ci
-- utilize codecov
-- update target poetry version
-- do not fetch submodule recursively
-- ignore coveralls fail
-- fix windows check
-- setup win path
-- force bash default shell
-- fix windows poetry install
-- remove tox from test flow, cache deps, update coverage report
-
-### Docs
-- **deps:** update docs requirements
-- **readme:** add more article/other resource links to readme see also
-
-### Feat
+### Features
 - **deps:** update dependencies scoped
 - **deps:** update micropython-stubber to latest master commit
 - **pkg:** move pytest+coverage cfg to pyproject
@@ -106,31 +87,11 @@
 - **pkg:** restructure and cleanup pyproject with dependency groups
 - **pkg:** merge create_stubs group into default
 
-### Fix
-- **dev-deps:** update pytest to ^7.0 to resolve py10+win pyreadline crash
-- **pkg:** rshell markers for win32
-- **pkg:** fix mistake in rshell marker
-- **pkg:** do not install rshell when py>=3.10 and on windows due to pyreadline.
-- **pkg:** win32 rshell python marker
-- **pkg:** upgrade too and pin jinja2 @ 3.0.3
-- **project:** report exception on install failure to stdout
-- **stubber:** replace pyminifer with python-minifer
-- **utils:** capture attribue err that occurs on py310 win32 rshell import
-- **utils:** utilize mp-stubbers new logic for generating stubs
-
-### Style
-- **precommit:** update pre-commit hooks
-
-### Test
-- **cli:** do not assume can create from start
-- **utils:** skip pyboard wrapper tests on win+py310
-- **utils:** update generate stubs test
-
 
 <a name="v3.6.0"></a>
 ## [v3.6.0] - 2021-05-17
-### Build
-- **make:** ignore __init__ files during autoflake
+### Bug Fixes
+- **data:** update stubs schema for compat with latest stubber
 
 ### Chore
 - **cleanup:** remove .vscode folder
@@ -184,14 +145,7 @@
 - **release:** bump version to v3.6.0
 - **tools:** update poetry to latest
 
-### Ci
-- update poetry version
-
-### Docs
-- fix rtd requirements file
-- **req:** update docs requirements
-
-### Feat
+### Features
 - **deps:** update rshell dependency
 - **deps:** update deps, add micropy-cli w/ extras as dev-dep
 - **deps:** setup black, pre-commit
@@ -201,22 +155,18 @@
 - **utils:** remove dynamic
 - **utils:** refactor stub-gen to stubs, dynamically create stubber module for import
 
-### Fix
-- **data:** update stubs schema for compat with latest stubber
-
-### Style
-- **format:** format all files with pre-commit->black, isort, autoflake and other hooks
-
-### Test
-- **pyb:** warn if missing extras in test_pyboard
-- **utils:** update utils tests
-
 
 <a name="v3.5.0"></a>
 ## [v3.5.0] - 2020-11-17
 
 <a name="v3.5.0.rc.1"></a>
 ## [v3.5.0.rc.1] - 2020-11-17
+### Bug Fixes
+- full name case mismatch for pypi packages
+- package installation failures were silent
+- **pkg:** constrain questionary version to <1.8.0
+- **pkg:** setuptools editable installation issues
+
 ### Chore
 - **deps:** update dependencies
 - **deps:** bump more-itertools from 8.0.2 to 8.6.0
@@ -246,32 +196,22 @@
 - **deps-dev:** bump pytest-forked from 1.1.3 to 1.3.0
 - **pkg:** fix/update setup.py
 
-### Ci
-- specify extras to install when installing deps
-- do not fail fast, utilize actions-poetry
-- update tox and disable venv create for ci
-- update poetry install action to newer maintained fork
-- **tox:** update tox config and remove poetry from it
-
-### Feat
+### Features
 - **package:** detect and return VCSDependencySource when needed in create dep source factory
 - **package:** add VCSDependencySource class for supporting VCS requirements
 - **package:** add attributes and logic for VCS packages
 - **pkg:** bump questionary dependency to ^1.8.1
 - **pkg:** add GitPython dependency
 
-### Fix
-- full name case mismatch for pypi packages
-- package installation failures were silent
-- **pkg:** constrain questionary version to <1.8.0
-- **pkg:** setuptools editable installation issues
-
-### Test
-- **vcs:** add basic vcs package tests
+### Reverts
+- chore(deps): update setup.py
 
 
 <a name="v3.4.0"></a>
 ## [v3.4.0] - 2020-07-25
+### Bug Fixes
+- **deps:** update dpath constraint to >=1.4,<2.0
+
 ### Chore
 - **deps:** bump sphinx-click from 2.3.1 to 2.3.2
 - **deps:** bump dpath from 1.4.2 to 2.0.1
@@ -295,30 +235,15 @@
 - **pkg:** add .tool-versions, ignore pycharm workspace
 - **pkg:** update setup.py
 
-### Ci
-- fix redundant PR check runs, update actions
-- add py 3.8 to workflows
-- update and fix workflow
-
-### Fix
-- **deps:** update dpath constraint to >=1.4,<2.0
-
-### Style
-- format codestyle
-
 
 <a name="v3.3.0"></a>
 ## [v3.3.0] - 2019-12-23
-### Docs
-- Fetch submodules on build
-- Fix API Reference failing to generate
-
-### Feat
-- **project:** generate recommended extensions with vscode integration ([#95](https://github.com/BradenM/micropy-cli/issues/95))
-
-### Fix
+### Bug Fixes
 - ensure any values to be extended in config are of type list ([#94](https://github.com/BradenM/micropy-cli/issues/94))
 - **utils:** ignore candidate releases when checking for update
+
+### Features
+- **project:** generate recommended extensions with vscode integration ([#95](https://github.com/BradenM/micropy-cli/issues/95))
 
 
 <a name="v3.2.0"></a>
@@ -326,44 +251,44 @@
 
 <a name="v3.2.0.rc.2"></a>
 ## [v3.2.0.rc.2] - 2019-12-13
-### Docs
-- Restructure and Cleanup
-- Move Doc Dependencies to docs extra
-- Update Docs
-
-### Feat
-- Add Base and Requirement Exceptions
-- **poetry:** Update Poetry to Stable
-
-### Fix
+### Bug Fixes
 - Handle Invalid Requirements
 - **cli:** Handle errors when reading requirements from path
 - **cli:** Handle and Report Invalid Package Name Error
 - **deps:** Fix loading requirements from path
 - **utils:** Follow redirects when testing for valid url
 
-### Refactor
+### Code Refactoring
 - **deps:** Remove Exception handling from Packages Module
+
+### Features
+- Add Base and Requirement Exceptions
+- **poetry:** Update Poetry to Stable
 
 
 <a name="v3.2.0.rc.1"></a>
 ## [v3.2.0.rc.1] - 2019-12-09
+### Bug Fixes
+- Make rshell and pyminifier requirements optional ([#82](https://github.com/BradenM/micropy-cli/issues/82))
+- Colorama Version Constraint
+- Colorama Broken Release, Style
+- VSCode Settings failed to populate on reload ([#81](https://github.com/BradenM/micropy-cli/issues/81))
+- **config:** Remove concrete path from ConfigSource
+- **config:** Remove cache method for better implementation later
+- **deps:** Temporary Directory would be removed before it was ready
+- **logger:** Exception formatting
+- **project:** Context not being updated when needed
+- **project:** Add empty dict to config on create
+
 ### Chore
 - Setup pre-releases in bump2version config
 - Update Deps
 
-### Ci
-- Update Poetry to 1.0.0b9
-- Update Poetry
-- Pin Checkout Action Version
-- Upload Coverage to Codacy
+### Code Refactoring
+- Cleanup Stubs Module Context Handling
+- **packages:** Use new Dependency Api in Packages Module
 
-### Docs
-- Add packages module to docs
-- Updated Docs
-- **config:** Update Documentation with config module
-
-### Feat
+### Features
 - **cli:** Basic install from path option implementation
 - **config:** Manage sync via callback
 - **config:** New Interface with file/memory autosync and dot notation
@@ -389,65 +314,13 @@
 - **project:** Replace Project Cache with Config Instance
 - **template:** Update TemplateModule
 
-### Fix
-- Make rshell and pyminifier requirements optional ([#82](https://github.com/BradenM/micropy-cli/issues/82))
-- Colorama Version Constraint
-- Colorama Broken Release, Style
-- VSCode Settings failed to populate on reload ([#81](https://github.com/BradenM/micropy-cli/issues/81))
-- **config:** Remove concrete path from ConfigSource
-- **config:** Remove cache method for better implementation later
-- **deps:** Temporary Directory would be removed before it was ready
-- **logger:** Exception formatting
-- **project:** Context not being updated when needed
-- **project:** Add empty dict to config on create
-
-### Perf
+### Performance Improvements
 - **size:** Slimmed Package Size
-
-### Refactor
-- Cleanup Stubs Module Context Handling
-- **packages:** Use new Dependency Api in Packages Module
-
-### Style
-- Cleanup Docstrings
-- Fix typing errors, Add docstrings
-- **config:** Format docstrings
-- **packages:** Add docstrings, Code Cleanup
-- **typing:** Add Type Hints to ProjectModule
-
-### Test
-- Remove forked mark
-- Fix Project Context Tests
-- **config:** Test config module
-- **deps:** Add Tests for Package module
-- **project:** Update and add Project Tests
-- **template:** Cover Local Paths Template Context, Cleanup
-
-### Tests
-- Fix Template Path on Windows
-- Fix Stub Tests
-- Cleanup Tests and Code Style
-- Fix package source test
 
 
 <a name="v3.1.1"></a>
 ## [v3.1.1] - 2019-12-03
-### Chore
-- Update Requirements
-- Update Requirements
-- Remove Pipfile
-
-### Ci
-- Annotate Test Failures
-- Upload Coverage to Codacy
-- Update Test Workflow to use Poetry
-- Use Poetry in Tox
-
-### Feat
-- Cleanup Log File Formatting
-- Use Poetry for Dependency Management
-
-### Fix
+### Bug Fixes
 - HookProxy failed to resolve with kwargs
 - **checks:** VSCode check failing on py36
 - **logger:** Exception formatting
@@ -457,38 +330,22 @@
 - **project:** Exception Raised if no Templates are used in Project
 - **project:** VSCode check always failed silently
 
-### Perf
-- **size:** Slimmed Package Size
+### Chore
+- Update Requirements
+- Update Requirements
+- Remove Pipfile
 
-### Style
-- **flake8:** Ignore auto-generated setup.py
+### Features
+- Cleanup Log File Formatting
+- Use Poetry for Dependency Management
+
+### Performance Improvements
+- **size:** Slimmed Package Size
 
 
 <a name="v3.1.0"></a>
 ## [v3.1.0] - 2019-11-12
-### Build
-- Pytest Coverage Watch, Additional Default Options
-
-### Ci
-- Add Windows back
-- Temporarily Remove windows from Test Environment
-- Report Python Environment Version in Tox
-- Update Windows environment to latest
-- Update Setup Python Action
-
-### Docs
-- Update modules docs page
-- Add missing doc strings
-- Format Docstrings
-
-### Feat
-- Report Ready on Project Load, Code Cleanup
-- Write .gitignore file in generated .micropy folder
-- Proxy Project Hooks to allow hooks with the same name, Split De...
-- Resolve Project Hooks via attrs, Fix Stub List
-- **project:** Project Method Hook Decorator
-
-### Fix
+### Bug Fixes
 - Handle Errors when adding Packages
 - Project Context Stub Path Ordering
 - HookProxy failed to work with descriptors.
@@ -496,74 +353,54 @@
 - Move Template Check flag to TemplatesModule
 - Active Project Resolve, Cli Templates List
 
-### Perf
-- Lazy Load Project Stubs
-
-### Refactor
+### Code Refactoring
 - Add Packages from File
 - Import MicroPy and Modules to Package Root
 - Restructure Project Module
 
-### Style
-- Cleanup imports, Code style
+### Features
+- Report Ready on Project Load, Code Cleanup
+- Write .gitignore file in generated .micropy folder
+- Proxy Project Hooks to allow hooks with the same name, Split De...
+- Resolve Project Hooks via attrs, Fix Stub List
+- **project:** Project Method Hook Decorator
 
-### Test
-- Bug Fixes and PackagesModule Tests
-- StubsModule Tests
-- Project Load and Update Tests
-- Cleanup some Fixtures, Cleaning Project Tests
-- Set Pytest Max Processes to 4
-- Run Tests in Parallel, Add Code Formatting Makefile Rule
-- **project:** Parametrize Tests, add context/config tests
+### Performance Improvements
+- Lazy Load Project Stubs
 
 
 <a name="v3.0.1"></a>
 ## [v3.0.1] - 2019-10-13
-### Fix
+### Bug Fixes
 - Auto Update Check's Cache not expiring after update
 - VSCode Template Check always Fails on Linux ([#65](https://github.com/BradenM/micropy-cli/issues/65))
 - **upstream:** Fails to Generate Stub Files
 
-### Tests
-- **windows:** Fix tests that fail on Windows ([#66](https://github.com/BradenM/micropy-cli/issues/66))
-
 
 <a name="v3.0.0"></a>
 ## [v3.0.0] - 2019-10-13
-### Chore
-- Update submodule micropython-stubber
-
-### Ci
-- Add Git Workflow ([#63](https://github.com/BradenM/micropy-cli/issues/63))
-- **workflow:** Update Workflow Job Name
-
-### Docs
-- Update Doc Reqs
-
-### Feat
-- Add Flag for Skipping Template Checks
-- Search/Retrieve Stubs Directly from micropy-stubs
-- Update MicropyCli Stub Sources
-- Refactor MicroPy Class for Better State Management
-
-### Fix
+### Bug Fixes
 - Project Fails to Init due to Checks on Windows
 - Stub Package Url fails to resolve on Windows
 - Handle Chunked Content Length on Package Download
 - Package urls not resolving correctly
 - Fails to load Project if Template Files are Missing ([#55](https://github.com/BradenM/micropy-cli/issues/55))
 
-### Perf
-- Lazy Load Stubs when Needed
-- **project:** Lazy Load Current Active Project
+### Chore
+- Update submodule micropython-stubber
 
-### Refactor
+### Code Refactoring
 - **data:** Move all Data Paths to Data Module
 
-### Test
-- Recover and Extend Coverage
-- Raise Coverage to Existing
-- **stubs:** Update Stub/StubSource Tests
+### Features
+- Add Flag for Skipping Template Checks
+- Search/Retrieve Stubs Directly from micropy-stubs
+- Update MicropyCli Stub Sources
+- Refactor MicroPy Class for Better State Management
+
+### Performance Improvements
+- Lazy Load Stubs when Needed
+- **project:** Lazy Load Current Active Project
 
 ### BREAKING CHANGE
 
@@ -572,32 +409,22 @@ micropy.STUBS renamed to micropy.stubs
 
 <a name="v2.2.0"></a>
 ## [v2.2.0] - 2019-09-28
-### Build
-- **setup:** Update setup.py
-
-### Docs
-- Add VSCode Ext Info to Readme
-- **cli:** Basic Cli Docs
-
-### Feat
+### Features
 - Template Checks, MS-Python Check ([#52](https://github.com/BradenM/micropy-cli/issues/52))
 - **cli:** Automatic Update Checks ([#54](https://github.com/BradenM/micropy-cli/issues/54))
 - **vscode:** Ensure Jedi is Disabled in VSCode Template
 
-### Perf
+### Performance Improvements
 - **stubs:** Cache Available Stubs for Searching
 
 
 <a name="v2.1.1"></a>
 ## [v2.1.1] - 2019-09-22
-### Build
-- **make:** Test Watching Functionality
-
-### Feat
-- Relicensed under MIT
-
-### Fix
+### Bug Fixes
 - **hotfix:** Remove workspaceRoot var from VSCode Settings ([#51](https://github.com/BradenM/micropy-cli/issues/51))
+
+### Features
+- Relicensed under MIT
 
 ### BREAKING CHANGE
 
@@ -606,49 +433,36 @@ No longer compatible with <=ms-python.python[@2019](https://github.com/2019).8.3
 
 <a name="v2.1.0"></a>
 ## [v2.1.0] - 2019-09-01
-### Docs
-- Add Docs Automation
-- Update Docs, Fix Autosummary Issues
-- Update Project Description
-- Setup Basic Docs/API Reference
-- **readme:** Add Link to LemaRiva Post
+### Bug Fixes
+- **project:** Requirement Files skipped on First Init
+- **windows:** Support User Level Directory Linking ([#45](https://github.com/BradenM/micropy-cli/issues/45))
 
-### Feat
+### Features
 - **log:** Cap Log File at 2MB
 - **project:** Init Project with Micropy Dev Dependency
 - **project:** Git Ignore Template Option
 
-### Fix
-- **project:** Requirement Files skipped on First Init
-- **windows:** Support User Level Directory Linking ([#45](https://github.com/BradenM/micropy-cli/issues/45))
-
-### Test
-- Update Project Structure Test
-
 
 <a name="v2.0.2"></a>
 ## [v2.0.2] - 2019-08-21
-### Fix
+### Bug Fixes
 - **dep:** Require appropriate Click version
 - **windows:** Warn User if MicroPy Lacks Admin Privs
 
 
 <a name="v2.0.1"></a>
 ## [v2.0.1] - 2019-07-26
-### Fix
+### Bug Fixes
 - **stubs:** Reduce Schema Strictness
 
 
 <a name="v2.0.0"></a>
 ## [v2.0.0] - 2019-07-25
-### Ci
-- **travis:** Fix Install Failing
+### Bug Fixes
+- **dep:** Broken Docutils Dependency
+- **project:** Only modules install correctly
 
-### Docs
-- Update README with Project Deps Info
-- Update Template Module Docstrings
-
-### Feat
+### Features
 - Add Optional Pyminifier Dep for Stub Creation
 - **cli:** Install Python Packages for Project
 - **cli:** Verbosity Flag for Stub Creation
@@ -665,41 +479,34 @@ No longer compatible with <=ms-python.python[@2019](https://github.com/2019).8.3
 - **stubs:** Minify Stubber Before Executing
 - **util:** Generate Stub from File Utility
 
-### Fix
-- **dep:** Broken Docutils Dependency
-- **project:** Only modules install correctly
-
-### Test
-- Project Requirements Stubs Tests
-- **project:** Cover adding project requirements
-- **pyb:** Increase PyboardWrapper Coverage
-
 
 <a name="v1.1.3"></a>
 ## [v1.1.3] - 2019-07-20
-### Fix
+### Bug Fixes
 - ValueError raised after Creating Project in Windows ([#33](https://github.com/BradenM/micropy-cli/issues/33))
 - Unicode Error raised when logging on Windows ([#32](https://github.com/BradenM/micropy-cli/issues/32))
 
 
 <a name="v1.1.2"></a>
 ## [v1.1.2] - 2019-07-19
-### Fix
+### Bug Fixes
 - **stubs:** Ensure Firmware Stubs Load First
 
 
 <a name="v1.1.1"></a>
 ## [v1.1.1] - 2019-07-17
-### Fix
+### Bug Fixes
 - Temp Hotfix for False Stub Duplication
 
 
 <a name="v1.1.0"></a>
 ## [v1.1.0] - 2019-07-16
-### Docs
-- Add Docs for Micropy Project Environment
+### Bug Fixes
+- **cli:** Stub List always prints Unknown
+- **cli:** Made Stub Search Case Insensitive
+- **stubs:** FileExistsError when adding existing Stub
 
-### Feat
+### Features
 - **cli:** List Project Stubs if in Project Directory
 - **cli:** Stubs now list by Firmware
 - **cli:** Create Formatted Strings from Logger
@@ -707,21 +514,18 @@ No longer compatible with <=ms-python.python[@2019](https://github.com/2019).8.3
 - **project:** Micropy Project Info File ([#29](https://github.com/BradenM/micropy-cli/issues/29))
 - **project:** Micropy Project Folder ([#28](https://github.com/BradenM/micropy-cli/issues/28))
 
-### Fix
-- **cli:** Stub List always prints Unknown
-- **cli:** Made Stub Search Case Insensitive
-- **stubs:** FileExistsError when adding existing Stub
-
 
 <a name="v1.0.0"></a>
 ## [v1.0.0] - 2019-07-11
-### Docs
-- Updated README Stub Information
-- Updated Package Docstring
-- Updated README Added more information regarding usage and cleaned it up.
-- **cli:** Added Detail to Cli Help Cmds
+### Bug Fixes
+- **cli:** Init Crashes if no Stubs are Loaded
+- **cli:** Create Stubs Help Formatting
+- **log:** Output Highlight Bug, Cleanup
+- **stub:** Stub Name without Firmware
+- **stubs:** Firmware not showing as Installed in Stub Search
+- **stubs:** Fix Existing Firmware Reinstall
 
-### Feat
+### Features
 - Implemented Local and Remote Stub Sources ([#18](https://github.com/BradenM/micropy-cli/issues/18))
 - **cli:** Minified Cli Output Style
 - **cli:** Search Available Stubs ([#27](https://github.com/BradenM/micropy-cli/issues/27))
@@ -738,58 +542,26 @@ No longer compatible with <=ms-python.python[@2019](https://github.com/2019).8.3
 - **stubs:** Update Stub Creation ([#26](https://github.com/BradenM/micropy-cli/issues/26))
 - **util:** Generic Utility Functions and Module Cleanup
 
-### Fix
-- **cli:** Init Crashes if no Stubs are Loaded
-- **cli:** Create Stubs Help Formatting
-- **log:** Output Highlight Bug, Cleanup
-- **stub:** Stub Name without Firmware
-- **stubs:** Firmware not showing as Installed in Stub Search
-- **stubs:** Fix Existing Firmware Reinstall
-
-### Perf
+### Performance Improvements
 - **cli:** Only Instantiate MicroPy when needed
-
-### Test
-- Prevented Requests, Increased Coverage, Cleanup
-- **stubs:** Updated Tests for Stubs Refactor
 
 
 <a name="v0.3.0"></a>
 ## [v0.3.0] - 2019-06-25
-### Build
-- **cov:** Integrate Coveralls
-- **cov:** Added coverage commands to Makefile
+### Code Refactoring
+- MicroPy to use new Stub and Utility Features ([#14](https://github.com/BradenM/micropy-cli/issues/14))
 
-### Docs
-- Add Coveralls Badge to Readme
-- Added Links to Badges to README
-
-### Feat
+### Features
 - **cli:** Version Flag
 - **log:** New Cli Output Style, Log Class Methods
 - **pyb:** PyboardWrapper Utility ([#13](https://github.com/BradenM/micropy-cli/issues/13))
 - **stubs:** Stub Manager ([#5](https://github.com/BradenM/micropy-cli/issues/5))
 - **utils:** Utils Module and Validator Utility  ([#4](https://github.com/BradenM/micropy-cli/issues/4))
 
-### Refactor
-- MicroPy to use new Stub and Utility Features ([#14](https://github.com/BradenM/micropy-cli/issues/14))
-
-### Style
-- Cleanup Code Style Issues
-- Code Cleanup, Sorted Imports
-
-### Test
-- **cli:** Cover Cli Module
-
 
 <a name="v0.2.0"></a>
 ## [v0.2.0] - 2019-06-14
-### Docs
-- Fixed Travis Badge
-- Added some badges
-- Fixed SVGs in Readme
-
-### Feat
+### Features
 - **log:** Added Proper Log Formatting, cleaned messages before write.
 - **log:** Added Logging to Template Module
 - **project:** Drop Cookiecutter for Purely Jinja2 ([#3](https://github.com/BradenM/micropy-cli/issues/3))
@@ -797,10 +569,7 @@ No longer compatible with <=ms-python.python[@2019](https://github.com/2019).8.3
 
 <a name="v0.1.1"></a>
 ## [v0.1.1] - 2019-06-10
-### Docs
-- Updated Readme, added Changelog
-
-### Fix
+### Bug Fixes
 - **setup:** Fixed missing cookiecutter package requirement
 - **setup:** Fixed Pypi misinformation, cleaned up dist-management files
 - **setup:** Fix Missing .vscode Template Files
@@ -808,23 +577,28 @@ No longer compatible with <=ms-python.python[@2019](https://github.com/2019).8.3
 
 <a name="v0.1.0"></a>
 ## v0.1.0 - 2019-06-09
-### Build
-- **travis:** Added Basic Travis Config
+### Bug Fixes
+- Fails First Time Setup Failed to init on first run if the stubs folder didnt exist
+- Removed old command
+- Fix Project Init
+- Added rshell to setup.py
+- Quick Fix before Project Class Restructure
+- Packaging Fixes
+- **package:** Allow multiple versions of python, Update Reqs
+- **setup:** Included Template in Manifest
+- **stub:** Fixed Refresh Stubs
+- **stubs:** Cleaned Stub Names before Adding
+- **stubs:** Removed Old Stub Command
+- **stubs:** Fixed missing logging.py
+- **template:** Fixed src template
 
 ### Chore
 - Add Makefile
 
-### Ci
-- Updated Tox and Travis Config
-- Update travis config
-- **travis:** Fix missing pytest-datadir
+### Code Refactoring
+- Setup as proper package
 
-### Docs
-- Add Basic README
-- Added Docstrings
-- Added docstrings to MicroPy and Project classes
-
-### Feat
+### Features
 - Project Init and Template Serialization
 - Finished Package Setup and Structure
 - Let Stub class handle validation and files
@@ -849,47 +623,9 @@ No longer compatible with <=ms-python.python[@2019](https://github.com/2019).8.3
 - **stubs:** Added Basic Stub Exceptions
 - **template:** Setup Template in Cookiecutter Fashion
 
-### Fix
-- Fails First Time Setup Failed to init on first run if the stubs folder didnt exist
-- Removed old command
-- Fix Project Init
-- Added rshell to setup.py
-- Quick Fix before Project Class Restructure
-- Packaging Fixes
-- **package:** Allow multiple versions of python, Update Reqs
-- **setup:** Included Template in Manifest
-- **stub:** Fixed Refresh Stubs
-- **stubs:** Cleaned Stub Names before Adding
-- **stubs:** Removed Old Stub Command
-- **stubs:** Fixed missing logging.py
-- **template:** Fixed src template
 
-### Refactor
-- Setup as proper package
-
-### Style
-- flake8 cleanup
-- Code formatting and cleanup
-- Added .editorconfig
-- Cleaned Formatting
-- Clean up code
-- **flake:** Make flake happy with stub module
-
-### Test
-- Fix tox/pipenv setup, fix Manifest file
-- Updated Tests for main and stub module
-- Temporarily remove project tests Will reimplement when Project class gets overhauled with Cookiecutter
-- Setup Testing Environment and Initial Tests
-- Added Create Script Retrieval Test
-- Cleaned up Fixture, Added add_stubs test
-- Added Stub tests, Moved Fixtures to conftest.py
-- **cli:** Added Basic CLI Tests
-- **project:** Added Basic Project Tests
-- **project:** Added Project Tests
-- **tox:** Add Tox Setup and Setup Configs
-
-
-[Unreleased]: https://github.com/BradenM/micropy-cli/compare/v4.0.0.rc.1...HEAD
+[Unreleased]: https://github.com/BradenM/micropy-cli/compare/v4.0.0-rc.2...HEAD
+[v4.0.0-rc.2]: https://github.com/BradenM/micropy-cli/compare/v4.0.0.rc.1...v4.0.0-rc.2
 [v4.0.0.rc.1]: https://github.com/BradenM/micropy-cli/compare/v3.6.0...v4.0.0.rc.1
 [v3.6.0]: https://github.com/BradenM/micropy-cli/compare/v3.5.0...v3.6.0
 [v3.5.0]: https://github.com/BradenM/micropy-cli/compare/v3.5.0.rc.1...v3.5.0
