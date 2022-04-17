@@ -104,6 +104,13 @@ sphinx-autodoc-typehints = "^1.10.3"
 recommonmark = "^0.6.0"
 sphinx_rtd_theme = "^0.4.3"
 
+
+[[tool.poetry.source]]
+name = "pypi-test"
+url = "https://test.pypi.org/simple/"
+default = false
+secondary = false
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
