@@ -6,6 +6,7 @@
     "python.autoComplete.extraPaths": {{ paths }},
     "python.autoComplete.typeshedPaths":  {{ paths }},
     "python.analysis.typeshedPaths":  {{ paths }},
+    "python.analysis.extraPaths":  {{ paths }},
 
     "python.linting.pylintEnabled": true
 }
