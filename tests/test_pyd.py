@@ -31,6 +31,8 @@ def mock_upy_uos(mocker: MockFixture):
 def mock_rsh(mocker: MockFixture):
     mock_rsh = mocker.patch.object(backend_rshell, "rsh", autospec=True)
     mock_rsh.connect = mocker.Mock()
+    mock_rsh.find_serial_device_by_port = mocker.Mock()
+    mock_rsh.cp = mocker.Mock()
     return mock_rsh
 
 
