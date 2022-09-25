@@ -30,6 +30,7 @@ def mock_upy_uos(mocker: MockFixture):
 @pytest.fixture
 def mock_rsh(mocker: MockFixture):
     mock_rsh = mocker.patch.object(backend_rshell, "rsh", autospec=True)
+    mock_rsh.connect = mocker.Mock()
     return mock_rsh
 
 
@@ -90,7 +91,7 @@ class TestPyDeviceBackend:
             ),
         ]
     )
-    def pymock_setup(self, request: pytest.FixtureRequest) -> MockAdapter:
+    def pymock_setup(self, request: pytest.FixtureRequest):
         self.backend = request.param
         self.pyd_cls = (
             backend_upydevice.UPyDeviceBackend
