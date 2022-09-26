@@ -110,7 +110,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "bleak"
-version = "0.18.0"
+version = "0.18.1"
 description = "Bluetooth Low Energy platform Agnostic Klient"
 category = "main"
 optional = false
@@ -304,7 +304,7 @@ yaml = ["PyYAML (>=3.10)"]
 
 [[package]]
 name = "dbus-fast"
-version = "1.13.0"
+version = "1.14.0"
 description = "A faster version of dbus-next"
 category = "main"
 optional = false
@@ -1591,7 +1591,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "4da07a89bbc35cbc30683288bea3d3d53a1d3d9ce5a2f345e6414e116e959e1c"
+content-hash = "0ed2e0611e1f230b666fe77232b2ec57f4d3ff175d34a5a6eea163d116a30f04"
 
 [metadata.files]
 alabaster = [
@@ -1627,8 +1627,8 @@ black = [
     {file = "black-21.12b0.tar.gz", hash = "sha256:77b80f693a569e2e527958459634f18df9b0ba2625ba4e0c2d5da5be42e6f2b3"},
 ]
 bleak = [
-    {file = "bleak-0.18.0-py3-none-any.whl", hash = "sha256:aca7527866b594d930c051e1c77ca8e0a007cb0a0cf7cfb87eea1d7dbb4a23fe"},
-    {file = "bleak-0.18.0.tar.gz", hash = "sha256:4ff2a70f4f5903793458afa26654d2d176e25f27f709c4921d12ba842994650c"},
+    {file = "bleak-0.18.1-py3-none-any.whl", hash = "sha256:d6c3d81a03ec92d19e504de7f92f903520dbae38b823433aadc85e9c43cbdab7"},
+    {file = "bleak-0.18.1.tar.gz", hash = "sha256:5878871f7ba36ad49183e37e49856d3b165c012b4d3065fbeb477ddba26c3922"},
 ]
 bleak-sigspec = [
     {file = "bleak_sigspec-0.0.4-py3-none-any.whl", hash = "sha256:0a7b68909773a05429ceaaeaf10964a24d2df53dd40f17c35a0f96071ac927c7"},
@@ -1748,8 +1748,8 @@ coveralls = [
     {file = "coveralls-3.3.1.tar.gz", hash = "sha256:b32a8bb5d2df585207c119d6c01567b81fba690c9c10a753bfe27a335bfc43ea"},
 ]
 dbus-fast = [
-    {file = "dbus-fast-1.13.0.tar.gz", hash = "sha256:6ffd207d3b58058f6535d1f4139f299d6a30106c7b713ce2c1603277c804995f"},
-    {file = "dbus_fast-1.13.0-py3-none-any.whl", hash = "sha256:e65fd4b0e0854d259416cce031689ffb2cc7b256a4c3beebb1512fe3e44ded7e"},
+    {file = "dbus-fast-1.14.0.tar.gz", hash = "sha256:cd3c3017f5647b5190f228f00554ee1672b7623c2f581f019a042e0edb41dbc0"},
+    {file = "dbus_fast-1.14.0-py3-none-any.whl", hash = "sha256:fb09586c33ae83e83cff3ce3cd3fda2453f77bccfa7f995449ab566626eb652f"},
 ]
 dill = [
     {file = "dill-0.3.5.1-py2.py3-none-any.whl", hash = "sha256:33501d03270bbe410c72639b350e941882a8b0fd55357580fbc873fba0c59302"},
