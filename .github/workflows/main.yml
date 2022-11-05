@@ -7,8 +7,10 @@ on:
             - master
 
 env:
-    POETRY_VERSION: 1.2.1
-    POETRY_URL: https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py
+    POETRY_VERSION: 1.2.2
+    POETRY_VIRTUALENVS_IN_PROJECT: true
+    POETRY_NO_INTERACTION: 1
+    POETRY_URL: https://install.python-poetry.org
 
 concurrency:
     group: main-${{ github.event_name }}-${{ github.ref }}
@@ -32,28 +34,15 @@ jobs:
                 python: ["3.7", "3.8", "3.9", "3.10"]
 
         steps:
-            - uses: actions/checkout@v2.1.0
+            - uses: actions/checkout@v3
               with:
                   submodules: true
 
-            # Poetry cache depends on OS, Python version and Poetry version.
-            - name: Cache Poetry cache
-              uses: actions/cache@v2
-              with:
-                  path: ~/.cache/pypoetry
-                  key: poetry-cache-${{ runner.os }}-${{ matrix.python }}-${{ env.POETRY_VERSION }}
-
-            # virtualenv cache should depends on OS, Python version and `poetry.lock` (and optionally workflow files).
-            - name: Cache Packages
-              uses: actions/cache@v2
-              with:
-                  path: ~/.local
-                  key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
-
             - name: Set up Python ${{ matrix.python }}
-              uses: actions/setup-python@v2
+              uses: actions/setup-python@v4
               with:
                   python-version: ${{ matrix.python }}
+                  cache: poetry
 
             - name: Install Poetry
               run: |
@@ -65,7 +54,42 @@ jobs:
               shell: pwsh
               run: echo "C:\Users\runneradmin\AppData\Roaming\Python\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Append
 
+            # See: https://github.com/actions/cache/blob/main/workarounds.md#improving-cache-restore-performance-on-windowsusing-cross-os-caching
+            - name: Use GNU tar
+              if: runner.os == 'Windows'
+              shell: cmd
+              run: |
+                  echo "Adding GNU tar to PATH"
+                  echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
+            - name: Get Poetry Cache Path
+              id: poetry-config
+              run: |
+                  echo "cache-dir=$(poetry config cache-dir)" >> $GITHUB_OUTPUT
+
+            # Poetry cache depends on OS, Python version and Poetry version.
+            - name: Cache Poetry cache
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.poetry-config.outputs.cache-dir }}
+                  key: poetry-cache-${{ runner.os }}-${{ matrix.python }}-${{ env.POETRY_VERSION }}
+                  restore-keys: |
+                      poetry-cache-${{ runner.os }}-${{ matrix.python }}-
+                      poetry-cache-${{ runner.os }}-
+
+            # virtualenv cache should depends on OS, Python version and `poetry.lock`
+            - name: Cache Packages
+              uses: actions/cache@v3
+              id: pkg-cache
+              with:
+                  path: .venv
+                  key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}-
+                  restore-keys: |
+                      poetry-${{ runner.os }}-${{ matrix.python }}-
+                      poetry-${{ runner.os }}-
+
             - name: Install Dependencies
+              if: steps.pkg-cache.outputs.cache-hit != 'true'
               run: poetry install --with docs --with test -v
 
             - name: Run Tests
