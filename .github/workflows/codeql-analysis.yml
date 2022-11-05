@@ -23,8 +23,10 @@ on:
     - cron: '24 9 * * 4'
 
 env:
-    POETRY_VERSION: 1.2.1
-    POETRY_URL: https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py
+    POETRY_VERSION: 1.2.2
+    POETRY_VIRTUALENVS_IN_PROJECT: true
+    POETRY_NO_INTERACTION: 1
+    POETRY_URL: https://install.python-poetry.org
 
 jobs:
   analyze:
@@ -73,25 +75,34 @@ jobs:
     #   make release
 
     # Poetry cache depends on OS, Python version and Poetry version.
+    - name: Get Poetry Cache Path
+      id: poetry-config
+      run: |
+            echo "cache-dir=$(poetry config cache-dir)" >> $GITHUB_OUTPUT
+
+    # Poetry cache depends on OS, Python version and Poetry version.
     - name: Cache Poetry cache
       uses: actions/cache@v3
       with:
-          path: ~/.cache/pypoetry
-          key: poetry-cache-${{ runner.os }}-${{ matrix.python }}-${{ env.POETRY_VERSION }}
+        path: ${{ steps.poetry-config.outputs.cache-dir }}
+        key: poetry-cache-${{ runner.os }}-${{ matrix.python }}-${{ env.POETRY_VERSION }}
+        restore-keys: |
+            poetry-cache-${{ runner.os }}-${{ matrix.python }}-
+            poetry-cache-${{ runner.os }}-
 
-    # virtualenv cache should depends on OS, Python version and `poetry.lock` (and optionally workflow files).
+    # virtualenv cache should depends on OS, Python version and `poetry.lock`
     - name: Cache Packages
       uses: actions/cache@v3
+      id: pkg-cache
       with:
-          path: ~/.local
-          key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
-
-    - name: Install Poetry
-      run: |
-          curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        path: .venv
+        key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}-
+        restore-keys: |
+            poetry-${{ runner.os }}-${{ matrix.python }}-
+            poetry-${{ runner.os }}-
 
     - name: Install Dependencies
+      if: steps.pkg-cache.outputs.cache-hit != 'true'
       run: poetry install --with docs --with test -v
 
     - name: Perform CodeQL Analysis
