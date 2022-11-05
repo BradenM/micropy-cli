@@ -96,7 +96,7 @@ jobs:
       id: pkg-cache
       with:
         path: .venv
-        key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}-
+        key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}
         restore-keys: |
             poetry-${{ runner.os }}-${{ matrix.python }}-
             poetry-${{ runner.os }}-
