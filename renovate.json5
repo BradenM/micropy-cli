@@ -12,5 +12,6 @@
     addLabels: ["dependencies"],
     major: {
         automerge: false
-    }
+    },
+    ignorePaths: ["docs/requirements.txt"]
 }
