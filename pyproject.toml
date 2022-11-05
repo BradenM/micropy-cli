@@ -45,7 +45,7 @@ requests = "2.28.1"
 requirements-parser = "0.2.0"
 tqdm = "4.64.1"
 click = "8.1.3"
-colorama = { version = "0.4.5", platform = "win32" }
+colorama = { version = "==0.4.6", platform = "win32" }
 jsonschema = "=3.2.0"
 dpath = "==1.5.0"
 GitPython = "3.1.27"
