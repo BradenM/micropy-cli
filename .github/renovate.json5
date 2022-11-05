@@ -13,5 +13,6 @@
     major: {
         automerge: false
     },
-    ignorePaths: ["docs/requirements.txt"]
+    ignorePaths: ["docs/requirements.txt"],
+    dependencyDashboard: true
 }
