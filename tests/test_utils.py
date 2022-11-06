@@ -158,7 +158,7 @@ def test_extract_tarbytes(mocker):
     mock_tar = mock_tarfile.open.return_value.__enter__.return_value
     utils.extract_tarbytes(test_bytes, "foobar")
     mock_tarfile.open.assert_called_once_with(fileobj=io.BytesIO(test_bytes), mode="r:gz")
-    mock_tar.extractall.assert_called_once_with("foobar")
+    mock_tar.extractall.assert_called_once_with("foobar", mocker.ANY, numeric_owner=mocker.ANY)
 
 
 def test_iter_requirements(mocker, tmp_path):
