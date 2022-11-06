@@ -41,6 +41,9 @@ jobs:
       fail-fast: false
       matrix:
         language: [ 'python' ]
+        include:
+          - language: python
+            python: '3.10'
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
         # Learn more about CodeQL language support at https://git.io/codeql-language-support
 
@@ -48,11 +51,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python }}
+    - name: Set up Python
       id: python
       uses: actions/setup-python@v4
       with:
           python-version: ${{ matrix.python }}
+
+    - name: Install Poetry
+      run: |
+        curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     # Poetry cache depends on OS, Python version and Poetry version.
     - name: Get Poetry Cache Path
