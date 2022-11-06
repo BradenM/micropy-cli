@@ -10,6 +10,7 @@ used by MicropyCli
 
 import inspect
 import io
+import os
 import shutil
 import subprocess as subproc
 import sys
@@ -17,6 +18,7 @@ import tarfile
 import xml.etree.ElementTree as ET
 from datetime import timedelta
 from pathlib import Path
+from typing import Iterable, Optional, Union
 
 import micropy
 import requests
@@ -277,7 +279,33 @@ def get_package_meta(name, url):
     return tar_meta
 
 
-def extract_tarbytes(file_bytes, path):
+def is_within_directory(
+    directory: Union[os.PathLike, str], target: Union[str, os.PathLike]
+) -> bool:
+    abs_directory = os.path.abspath(directory)
+    abs_target = os.path.abspath(target)
+
+    prefix = os.path.commonprefix([abs_directory, abs_target])
+
+    return prefix == abs_directory
+
+
+def safe_extract(
+    tar: tarfile.TarFile,
+    path: Union[os.PathLike, str] = ".",
+    members: Optional[Iterable[tarfile.TarInfo]] = None,
+    *,
+    numeric_owner: bool = False,
+) -> None:
+    for member in tar.getmembers():
+        member_path = os.path.join(path, member.name)
+        if not is_within_directory(path, member_path):
+            raise Exception("Attempted Path Traversal in Tar File")
+
+    tar.extractall(path, members, numeric_owner=numeric_owner)
+
+
+def extract_tarbytes(file_bytes: bytes, path: str) -> str:
     """Extract tarfile as bytes.
 
     Args:
@@ -290,28 +318,6 @@ def extract_tarbytes(file_bytes, path):
     """
     tar_bytes_obj = io.BytesIO(file_bytes)
     with tarfile.open(fileobj=tar_bytes_obj, mode="r:gz") as tar:
-        
-        import os
-        
-        def is_within_directory(directory, target):
-            
-            abs_directory = os.path.abspath(directory)
-            abs_target = os.path.abspath(target)
-        
-            prefix = os.path.commonprefix([abs_directory, abs_target])
-            
-            return prefix == abs_directory
-        
-        def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
-        
-            for member in tar.getmembers():
-                member_path = os.path.join(path, member.name)
-                if not is_within_directory(path, member_path):
-                    raise Exception("Attempted Path Traversal in Tar File")
-        
-            tar.extractall(path, members, numeric_owner=numeric_owner) 
-            
-        
         safe_extract(tar, path)
     return path
 
