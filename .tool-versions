@@ -1,1 +1,3 @@
-poetry 1.2.1
+python 3.10.6
+poetry 1.2.2
+git-chglog 0.15.1
