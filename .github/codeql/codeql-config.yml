@@ -1,0 +1,5 @@
+# do not scan entire .venv
+# security alters stemming from dependencies are handled elsewhere (dependabot alerts+github).
+paths-ignore:
+  - .venv
+  - test
