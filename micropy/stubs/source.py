@@ -9,10 +9,8 @@ and their location.
 """
 
 
-import io
 import json
 import shutil
-import tarfile
 import tempfile
 from contextlib import contextmanager
 from functools import partial
@@ -217,31 +215,7 @@ class RemoteStubSource(StubSource):
             path: path extracted to
 
         """
-        tar_bytes_obj = io.BytesIO(file_bytes)
-        with tarfile.open(fileobj=tar_bytes_obj, mode="r:gz") as tar:
-            
-            import os
-            
-            def is_within_directory(directory, target):
-                
-                abs_directory = os.path.abspath(directory)
-                abs_target = os.path.abspath(target)
-            
-                prefix = os.path.commonprefix([abs_directory, abs_target])
-                
-                return prefix == abs_directory
-            
-            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
-            
-                for member in tar.getmembers():
-                    member_path = os.path.join(path, member.name)
-                    if not is_within_directory(path, member_path):
-                        raise Exception("Attempted Path Traversal in Tar File")
-            
-                tar.extractall(path, members, numeric_owner=numeric_owner) 
-                
-            
-            safe_extract(tar, path)
+        path = Path(utils.extract_tarbytes(file_bytes, path))
         output = next(path.iterdir())
         return output
 
