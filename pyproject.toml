@@ -50,7 +50,7 @@ jsonschema = "=3.2.0"
 dpath = "==1.5.0"
 GitPython = "==3.1.29"
 packaging = "^21.3"
-python-minifier = "2.6.0"
+python-minifier = "==2.7.0"
 mypy = "^0.940"
 ## rshell is broken on windows (with python >=3.10) due to pyreadline dependency.
 rshell = [
