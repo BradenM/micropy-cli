@@ -60,6 +60,9 @@ rshell = [
 ]
 MarkupSafe = "==2.1.1"
 upydevice = "0.3.8"
+attrs = "^22.1.0"
+typing-extensions = "^4.4.0"
+pydantic = "^1.10.2"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "^1.4"
@@ -170,6 +173,7 @@ exclude_lines = [
 ]
 
 [tool.mypy]
+plugins = "pydantic.mypy"
 warn_redundant_casts = true
 follow_imports = "skip"
 
