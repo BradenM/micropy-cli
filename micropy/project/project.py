@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Hosts functionality relating to generation of user projects."""
 
 from pathlib import Path

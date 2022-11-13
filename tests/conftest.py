@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """ Common Pytest Fixtures"""
 
 import importlib
@@ -120,9 +119,9 @@ def get_stub_paths(shared_datadir, tmp_path):
 
 @pytest.fixture
 def mock_mp_stubs(mock_micropy, mocker, shared_datadir):
-    mock_micropy.stubs.add((shared_datadir / "fware_test_stub"))
-    mock_micropy.stubs.add((shared_datadir / "esp8266_test_stub"))
-    mock_micropy.stubs.add((shared_datadir / "esp32_test_stub"))
+    mock_micropy.stubs.add(shared_datadir / "fware_test_stub")
+    mock_micropy.stubs.add(shared_datadir / "esp8266_test_stub")
+    mock_micropy.stubs.add(shared_datadir / "esp32_test_stub")
     return mock_micropy
 
 

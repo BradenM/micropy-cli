@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Module for handling jinja2 and MicroPy Templates."""
 
 import json

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import shutil
 
 import pytest
@@ -29,8 +27,7 @@ def get_module(tmp_path):
         if names == "all":
             names = ",".join(list(mods.keys()))
         _mods = [mods[n.strip()] for n in names.split(",") if n]
-        for m in _mods:
-            yield m
+        yield from _mods
 
     return _get_module
 
@@ -75,7 +72,7 @@ def get_context():
                 "paths": _paths,
                 "datadir": data_dir,
             },
-            "reqs": {"paths": setutils.IndexedSet([pkg_path]), "local_paths": set([])},
+            "reqs": {"paths": setutils.IndexedSet([pkg_path]), "local_paths": set()},
         }
         if request == "all":
             request = ",".join(list(_context.keys()))

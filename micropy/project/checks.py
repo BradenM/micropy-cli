@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Various requirement checks for templates."""
 
 import subprocess as subproc

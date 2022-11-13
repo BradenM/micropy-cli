@@ -353,7 +353,7 @@ class TestConsumers:
         delegate = consumers.ConsumerDelegate()
         assert delegate.on_message("") is None
         delegate = consumers.ConsumerDelegate(consumers.MessageHandlers(on_message=lambda m: m))
-        assert delegate.on_message("a") is "a"
+        assert delegate.on_message("a") == "a"
 
     @pytest.mark.skipif(
         IS_WIN_PY310, reason="skipping due to rshell/pyreadline broken for >=py310 on windows."

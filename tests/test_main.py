@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from shutil import copytree, rmtree
 
 import micropy.exceptions as exc
@@ -44,7 +41,7 @@ def test_create_stub__connect_error(mock_micropy, mocker, shared_datadir, tmp_pa
 
 def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     """should create and add stubs"""
-    mock_micropy.stubs.add((shared_datadir / "fware_test_stub"))
+    mock_micropy.stubs.add(shared_datadir / "fware_test_stub")
     tmp_stub_path = tmp_path / "createtest"
     tmp_stub_path.mkdir()
     copytree(str(shared_datadir / "stubber_test_stub"), str(tmp_stub_path / "stubber_test_stub"))
@@ -57,8 +54,8 @@ def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     with pytest.raises(Exception):
         stub = mp.create_stubs("/dev/PORT")
     stub = mp.create_stubs("/dev/PORT")
-    mp.stubs.add.assert_any_call((tmp_stub_path / "esp32-1.11.0"))
-    rmtree((tmp_stub_path / "esp32-1.11.0"))
+    mp.stubs.add.assert_any_call(tmp_stub_path / "esp32-1.11.0")
+    rmtree(tmp_stub_path / "esp32-1.11.0")
     assert isinstance(stub, stubs.DeviceStub)
 
 

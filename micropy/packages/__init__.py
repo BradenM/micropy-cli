@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Packages Module.
 
 Allows user to address different dependency types (package, module,

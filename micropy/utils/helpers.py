@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 micropy.utils.helpers
 ~~~~~~~~~~~~~~
@@ -240,8 +238,7 @@ def iter_requirements(path):
     """
     req_path = Path(path).absolute()
     with req_path.open("r") as rfile:
-        for req in requirements.parse(rfile):
-            yield req
+        yield from requirements.parse(rfile)
 
 
 def get_package_meta(name, url):
@@ -275,7 +272,7 @@ def get_package_meta(name, url):
         spec_key = str(next(_iter_compare(spec_v, rel_versions, spec_comp)))
         spec_data = releases[spec_key]
     # Find .tar.gz meta
-    tar_meta = next((i for i in spec_data if ".tar.gz" in Path(i["url"]).name))
+    tar_meta = next(i for i in spec_data if ".tar.gz" in Path(i["url"]).name)
     return tar_meta
 
 

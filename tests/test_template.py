@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import json
 from pathlib import Path
 
@@ -52,7 +50,7 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     assert sorted(expect_paths) == sorted(content["python.autoComplete.extraPaths"])
     assert expected_path.exists()
     # Test Update
-    ctx_paths.append((tmp_path / "foobar" / "foo.py"))
+    ctx_paths.append(tmp_path / "foobar" / "foo.py")
     prov.update(
         "vscode",
         tmp_path,

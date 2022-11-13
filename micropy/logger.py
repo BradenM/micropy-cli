@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Logging functionality.
 
 TODO: Split logging from UI, refactor.
@@ -38,7 +36,7 @@ class Log:
     def get_logger(cls, service_name):
         """Retrieves a child logger by service name."""
         _self = cls()
-        logger = next((i for i in _self.loggers if i.service_name == service_name))
+        logger = next(i for i in _self.loggers if i.service_name == service_name)
         return logger
 
 

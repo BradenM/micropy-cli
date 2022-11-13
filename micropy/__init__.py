@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Micropy Cli.
 
 Micropy Cli is a project management/generation tool for writing Micropython

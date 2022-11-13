@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from contextlib import AbstractContextManager, ExitStack, contextmanager
 from pathlib import Path
 from typing import List, Optional, Tuple

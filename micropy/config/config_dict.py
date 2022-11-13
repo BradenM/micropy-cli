@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from .config_source import ConfigSource
 
 
