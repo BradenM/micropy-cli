@@ -2,6 +2,38 @@
 ## [Unreleased]
 
 
+<a name="v4.0.0"></a>
+## [v4.0.0] - 2022-11-13
+### Bug Fixes
+- **deps:** update dependency python-minifier to v2.7.0
+- **deps:** update dependency markupsafe to v2.1.1
+- **deps:** update dependency jinja2 to v3.1.2
+- **deps:** update dependency gitpython to v3.1.29
+- **deps:** update dependency colorama to v0.4.6
+- **deps:** pin dependencies
+
+### Chore
+- **deps:** update codecov/codecov-action action to v3
+- **deps:** add renovate.json
+- **deps:** update dependency recommonmark to ^0.7.0
+- **deps:** update dependency doc8 to ^0.11.0
+- **git:** add previous commit to blame ignores
+- **pre-commit:** update pre-commit, remove local poetry-export hook workaround
+- **precommit:** remove dev group from docs export hook.
+- **precommit:** auto-update precommit
+- **tools:** update poetry, add python+git-chlog to tool versions
+- **tools:** update poetry to v1.2
+
+### Code Refactoring
+- **stubs:** utilize helper method during remote stub unpack.
+- **utils:** extract helper methods, add types.
+
+### Features
+- **deps:** update python constraint to include v3.11, update lockfile.
+- **deps:** upgrade to click v8
+- **deps:** update all deps in-range
+
+
 <a name="v4.0.0-rc.2"></a>
 ## [v4.0.0-rc.2] - 2022-04-17
 ### Bug Fixes
@@ -17,6 +49,7 @@
 - **deps:** update scoped deps+lockfile
 - **pkg:** remove setup.cfg
 - **pre-commit:** update pre-commit, pin black till click upgrade
+- **release:** bump version to v4.0.0-rc.2
 - **tools:** update poetry to v1.2.0b1
 
 ### Features
@@ -624,7 +657,8 @@ No longer compatible with <=ms-python.python[@2019](https://github.com/2019).8.3
 - **template:** Setup Template in Cookiecutter Fashion
 
 
-[Unreleased]: https://github.com/BradenM/micropy-cli/compare/v4.0.0-rc.2...HEAD
+[Unreleased]: https://github.com/BradenM/micropy-cli/compare/v4.0.0...HEAD
+[v4.0.0]: https://github.com/BradenM/micropy-cli/compare/v4.0.0-rc.2...v4.0.0
 [v4.0.0-rc.2]: https://github.com/BradenM/micropy-cli/compare/v4.0.0.rc.1...v4.0.0-rc.2
 [v4.0.0.rc.1]: https://github.com/BradenM/micropy-cli/compare/v3.6.0...v4.0.0.rc.1
 [v3.6.0]: https://github.com/BradenM/micropy-cli/compare/v3.5.0...v3.6.0
