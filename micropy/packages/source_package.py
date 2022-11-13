@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 import shutil
 from pathlib import Path
 from tempfile import mkdtemp

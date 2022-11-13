@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from copy import deepcopy
 from typing import Any, List, Sequence, Tuple, Type, Union
 

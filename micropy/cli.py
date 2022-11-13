@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """MicropyCli Console Entrypoint."""
 import sys

@@ -62,7 +62,7 @@ class MetaPyDeviceBackend(abc.ABC):
     location: str
 
     @abc.abstractmethod
-    def establish(self, target: str) -> "MetaPyDeviceBackend":
+    def establish(self, target: str) -> MetaPyDeviceBackend:
         ...
 
     @abc.abstractmethod

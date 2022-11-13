@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import shutil
 from pathlib import Path
 
@@ -50,7 +48,7 @@ def test_valid_stub(shared_datadir):
     stub_path = shared_datadir / "esp8266_test_stub"
     stub = stubs.stubs.DeviceStub(stub_path)
     stub_2 = stubs.stubs.DeviceStub(stub_path)
-    fware = stubs.stubs.FirmwareStub((shared_datadir / "fware_test_stub"))
+    fware = stubs.stubs.FirmwareStub(shared_datadir / "fware_test_stub")
     assert stub == stub_2
     expect_fware = {
         "machine": "ESP module with ESP8266",
@@ -252,7 +250,7 @@ def test_iter_by_firm_stubs(mocker):
     unk_stub = mocker.MagicMock()
     unk_stub.firmware = None
     manager = stubs.StubManager()
-    manager._loaded = set([firm_stub, dev_stub, unk_stub])
-    manager._firmware = set([firm_stub])
+    manager._loaded = {firm_stub, dev_stub, unk_stub}
+    manager._firmware = {firm_stub}
     stub_iter = list(manager.iter_by_firmware())
     assert stub_iter == [(firm_stub, [dev_stub]), ("Unknown", [unk_stub])]

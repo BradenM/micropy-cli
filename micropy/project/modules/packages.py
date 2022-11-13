@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Project Packages Module."""
 
 import shutil
@@ -211,7 +209,7 @@ class PackagesModule(ProjectModule):
         self.log.debug(f"dumping to {self.path.name}")
         with self.path.open("r+") as f:
             content = [c.strip() for c in f.readlines() if c.strip() != ""]
-            _lines = sorted(set(str(p) for p in pkgs) | set(content))
+            _lines = sorted({str(p) for p in pkgs} | set(content))
             lines = [l + "\n" for l in _lines]
             self.log.debug(f"dumping: {lines}")
             f.seek(0)

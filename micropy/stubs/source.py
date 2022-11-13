@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 micropy.stubs.source
 ~~~~~~~~~~~~~~
@@ -84,7 +82,7 @@ class StubRepo:
         """
         query = query.strip().lower()
         pkg_names = [p["name"] for p in self.packages]
-        results = set([p for p in pkg_names if query in p.lower()])
+        results = {p for p in pkg_names if query in p.lower()}
         return results
 
     @classmethod

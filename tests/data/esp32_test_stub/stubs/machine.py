@@ -6,7 +6,7 @@ Module: 'machine' on esp8266 v1.9.4
 
 
 class ADC:
-    ""
+    """"""
 
     def read():
         pass
@@ -18,4 +18,4 @@ HARD_RESET = 6
 
 
 class I2C:
-    ""
+    """"""
