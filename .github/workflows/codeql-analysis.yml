@@ -66,7 +66,7 @@ jobs:
     - name: Get Poetry Cache Path
       id: poetry-config
       run: |
-            echo "cache-dir=$(poetry config cache-dir)" >> $GITHUB_OUTPUT
+        echo "cache-dir=$(poetry config cache-dir)" >> $GITHUB_OUTPUT
 
     # Poetry cache depends on OS, Python version and Poetry version.
     - name: Cache Poetry cache
@@ -97,11 +97,12 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       env:
-        CODEQL_PYTHON: ${{ steps.python.outputs.python-path }}
+        CODEQL_PYTHON: ./.venv/bin/python
       with:
         languages: ${{ matrix.language }}
         setup-python-dependencies: false
         config-file: ./.github/codeql/codeql-config.yml
+        source-root: micropy
         # If you wish to specify custom queries, you can do so here or in a config file.
         # By default, queries listed here will override any specified in a config file.
         # Prefix the list here with "+" to use these queries and those in the config file.
@@ -109,5 +110,5 @@ jobs:
 
     - name: Perform CodeQL Analysis
       env:
-        CODEQL_PYTHON: ${{ steps.python.outputs.python-path }}
+        CODEQL_PYTHON: ./.venv/bin/python
       uses: github/codeql-action/analyze@v2
