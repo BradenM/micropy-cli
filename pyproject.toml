@@ -22,6 +22,7 @@ repository = "https://github.com/BradenM/micropy-cli"
 documentation = "https://micropy-cli.readthedocs.io"
 keywords = ["micropython", "stubs", "linting", "vscode", "intellisense"]
 classifiers = [
+    "Operating System :: OS Independent",
     "Topic :: Software Development :: Code Generators",
     "Topic :: Software Development :: Embedded Systems",
     "Topic :: Software Development :: Build Tools",
@@ -36,7 +37,7 @@ classifiers = [
 micropy = 'micropy.cli:cli'
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.11"
+python = ">=3.7,<3.12"
 boltons = "19.3.0"
 cachier = "1.5.4"
 Jinja2 = "3.1.2"
