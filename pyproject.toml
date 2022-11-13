@@ -73,6 +73,7 @@ doc8 = "^0.11.0"
 docformatter = "^1.4"
 mypy = { version = "^0.940", extras = ["dmypy"] }
 types-requests = "^2.27.14"
+pyupgrade = "^3.2.2"
 
 [tool.poetry.group.test]
 optional = true
