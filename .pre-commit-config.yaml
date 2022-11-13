@@ -24,7 +24,7 @@ repos:
       - id: pyupgrade
         args:
           - --py3-plus
-          - keep-runtime-typing
+          - --keep-runtime-typing
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0
     hooks:
@@ -62,6 +62,4 @@ repos:
           - docs/requirements.txt
           - --with
           - docs
-          - --with
-          - dev
           - --without-hashes
