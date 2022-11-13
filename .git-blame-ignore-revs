@@ -1,2 +1,4 @@
 # Format all files with pre-commit->black, isort, autoflake and other hooks
 80755a39f3fbd9983a07ff4571197b8f6dcae1cb
+# style(pyupgrade): format all files
+402f8e68ee9c211e1f0238b8531b3ee0a9ce6806
