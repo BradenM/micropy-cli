@@ -1055,7 +1055,7 @@ watchdog = ">=0.6.0"
 
 [[package]]
 name = "pytest-xdist"
-version = "2.5.0"
+version = "3.0.2"
 description = "pytest xdist plugin for distributed testing and loop-on-failing modes"
 category = "dev"
 optional = false
@@ -1064,7 +1064,6 @@ python-versions = ">=3.6"
 [package.dependencies]
 execnet = ">=1.1"
 pytest = ">=6.2.0"
-pytest-forked = "*"
 
 [package.extras]
 psutil = ["psutil (>=3.0)"]
@@ -1617,7 +1616,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.12"
-content-hash = "343532b90c88a2a37434b18b4b979b97053e4fbf6f58aff70b44e4c0f3ed4e80"
+content-hash = "1b70fe1906d4117dbb0caf87cc4275126700b7b5da6e2d99536f39732615f1cc"
 
 [metadata.files]
 alabaster = [
@@ -2195,8 +2194,8 @@ pytest-watch = [
     {file = "pytest-watch-4.2.0.tar.gz", hash = "sha256:06136f03d5b361718b8d0d234042f7b2f203910d8568f63df2f866b547b3d4b9"},
 ]
 pytest-xdist = [
-    {file = "pytest-xdist-2.5.0.tar.gz", hash = "sha256:4580deca3ff04ddb2ac53eba39d76cb5dd5edeac050cb6fbc768b0dd712b4edf"},
-    {file = "pytest_xdist-2.5.0-py3-none-any.whl", hash = "sha256:6fe5c74fec98906deb8f2d2b616b5c782022744978e7bd4695d39c8f42d0ce65"},
+    {file = "pytest-xdist-3.0.2.tar.gz", hash = "sha256:688da9b814370e891ba5de650c9327d1a9d861721a524eb917e620eec3e90291"},
+    {file = "pytest_xdist-3.0.2-py3-none-any.whl", hash = "sha256:9feb9a18e1790696ea23e1434fa73b325ed4998b0e9fcb221f16fd1945e6df1b"},
 ]
 python-minifier = [
     {file = "python_minifier-2.7.0-py2.py3-none-any.whl", hash = "sha256:cfb8ab802d04280cc1740433859688e449160a4a6936084d6099e03f1098bf7c"},
