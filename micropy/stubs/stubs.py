@@ -1,11 +1,17 @@
+from __future__ import annotations
+
 import json
 import shutil
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from micropy import data, utils
 from micropy.exceptions import StubError, StubValidationError
 from micropy.logger import Log
 from micropy.stubs import source
+
+if TYPE_CHECKING:
+    from micropy.stubs.repo import StubRepository
 
 
 class StubManager:
@@ -23,6 +29,8 @@ class StubManager:
         object: Instance of StubManager
 
     """
+
+    repos: list[StubRepository]
 
     _schema = data.SCHEMAS / "stubs.json"
     _firm_schema = data.SCHEMAS / "firmware.json"
@@ -359,8 +367,9 @@ class StubManager:
         installed = [str(s) for s in self._loaded.union(self._firmware)]
         for repo in self.repos:
             for p in repo.search(query):
-                results.append((p, p in installed))
-        return sorted(results)
+                result = (p.absolute_name, p in installed)
+                results.append(result)
+        return results
 
     def resolve_subresource(self, stubs, subresource):
         """Resolve or Create StubManager from list of stubs.
