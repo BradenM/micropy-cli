@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from .repository_info import RepositoryInfo
 
 
-@attrs.define
+@attrs.define(frozen=True)
 class StubRepository:
     manifests: list[StubsManifest] = attrs.field(factory=list)
     packages: list[StubRepositoryPackage] = attrs.field(factory=list)
@@ -47,7 +47,7 @@ class StubRepository:
             ):
                 continue
             else:
-                return StubRepository(manifests=[*self.manifests, manifest])
+                return attrs.evolve(self, manifests=[*self.manifests, manifest])
         raise ValueError(f"Failed to determine manifest format for repo: {info}")
 
     def search(self, query: str) -> Generator[StubRepositoryPackage, None, None]:
