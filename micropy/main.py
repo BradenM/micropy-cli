@@ -1,5 +1,7 @@
 """Main Module."""
 
+from __future__ import annotations
+
 import tempfile
 from pathlib import Path
 
@@ -9,7 +11,8 @@ from micropy.lib.stubber import process as stubber
 from micropy.logger import Log
 from micropy.project import Project, modules
 from micropy.pyd import DevicePath, MessageHandlers, ProgressStreamConsumer, PyDevice
-from micropy.stubs import StubManager, source
+from micropy.stubs import RepositoryInfo, StubManager, StubRepository
+from pydantic import parse_file_as
 
 
 class MicroPy:
@@ -39,9 +42,11 @@ class MicroPy:
             StubManager: StubManager Instance
 
         """
-        repo_list = data.REPO_SOURCES.read_text()
-        repos = source.StubRepo.from_json(repo_list)
-        return StubManager(resource=data.STUB_DIR, repos=repos)
+        repo_list = parse_file_as(list[RepositoryInfo], data.REPO_SOURCES)
+        repo = StubRepository()
+        for repo_info in repo_list:
+            repo.add_repository(repo_info)
+        return StubManager(resource=data.STUB_DIR, repos=[repo])
 
     @utils.lazy_property
     def project(self):
