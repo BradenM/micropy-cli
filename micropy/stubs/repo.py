@@ -62,11 +62,11 @@ class StubRepository:
         """
         query = query.strip().lower()
         for package in self.packages:
-            if query in package.package.name.lower():
+            if query in package.name.lower():
                 yield package
 
     def resolve_package(self, name: str) -> str:
-        pkg = next((p for p in self.packages if p.package.name == name), None)
+        pkg = next((p for p in self.packages if p.name == name or p.absolute_name == name), None)
         if pkg is None:
             raise exc.StubNotFound(pkg)
         return pkg.url
