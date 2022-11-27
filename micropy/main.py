@@ -45,7 +45,7 @@ class MicroPy:
         repo_list = parse_file_as(list[RepositoryInfo], data.REPO_SOURCES)
         repo = StubRepository()
         for repo_info in repo_list:
-            repo.add_repository(repo_info)
+            repo = repo.add_repository(repo_info)
         return StubManager(resource=data.STUB_DIR, repos=[repo])
 
     @utils.lazy_property
