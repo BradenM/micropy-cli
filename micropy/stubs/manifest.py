@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import abc
-from typing import ClassVar
+from typing import ClassVar, Type
 
 from micropy.stubs.package import StubPackage
 from micropy.stubs.repository_info import RepositoryInfo
@@ -9,7 +9,7 @@ from pydantic import BaseModel
 
 
 class StubsManifest(BaseModel, abc.ABC):
-    manifest_formats: ClassVar[list[type[StubsManifest]]] = []
+    manifest_formats: ClassVar[list[Type[StubsManifest]]] = []
 
     repository: RepositoryInfo
     packages: list[StubPackage]
