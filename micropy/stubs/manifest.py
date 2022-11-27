@@ -21,3 +21,7 @@ class StubsManifest(BaseModel, abc.ABC):
     @abc.abstractmethod
     def resolve_package_url(self, package: StubPackage) -> str:
         """Resolve package to a stub source."""
+
+    def resolve_package_absolute_name(self, package: StubPackage) -> str:
+        """Resolve package absolute name."""
+        return "/".join([self.repository.name, package.name])
