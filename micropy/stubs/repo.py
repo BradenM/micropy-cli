@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Generator
 
 import attrs
+import micropy.exceptions as exc
 import requests
 
 from .manifest import StubsManifest
@@ -63,3 +64,9 @@ class StubRepository:
         for package in self.packages:
             if query in package.package.name.lower():
                 yield package
+
+    def resolve_package(self, name: str) -> str:
+        pkg = next((p for p in self.packages if p.package.name == name), None)
+        if pkg is None:
+            raise exc.StubNotFound(pkg)
+        return pkg.url
