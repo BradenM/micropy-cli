@@ -2,12 +2,14 @@ import pytest
 from micropy import stubs
 
 micropy_source = stubs.repository_info.RepositoryInfo(
-    name="Micropy Stubs",
+    name="BradenM/micropy-stubs",
+    display_name="micropy-stubs",
     source="https://raw.githubusercontent.com/BradenM/micropy-stubs/master/source.json",
 )
 
 micropython_source = stubs.repository_info.RepositoryInfo(
-    name="Micropython Stubs",
+    name="Josverl/micropython-stubs",
+    display_name="micropython-stubs",
     source="https://raw.githubusercontent.com/Josverl/micropython-stubs/main/publish/package_data.jsondb",
 )
 
