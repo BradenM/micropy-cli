@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from pydantic import Field, validator
+from pathlib import PurePosixPath
+from urllib import parse
+
+from pydantic import Field, root_validator
 from typing_extensions import Annotated
 
 from ..manifest import StubsManifest
@@ -13,8 +16,21 @@ class MicropyStubPackage(StubPackage):
 
 
 class MicropyStubsManifest(StubsManifest):
+    location: str
+    path: str
     packages: list[MicropyStubPackage]
 
-    @validator("packages", pre=True)
-    def _get_packages(cls, v: dict[str, dict]):
-        return v["packages"]
+    @root_validator(pre=True)
+    def check(cls, values: dict):
+        pkgs = values["packages"]
+        if "packages" in pkgs:
+            values["location"] = pkgs["location"]
+            values["path"] = pkgs["path"]
+            values["packages"] = pkgs["packages"]
+        return values
+
+    def resolve_package_url(self, package: StubPackage) -> str:
+        base_path = PurePosixPath(parse.urlparse(self.location).path)
+        pkg_path = base_path / PurePosixPath(self.path) / PurePosixPath(package.name)
+        url = parse.urljoin(self.location, str(pkg_path))
+        return url
