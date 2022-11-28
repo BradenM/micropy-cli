@@ -5,13 +5,15 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from distlib import metadata
 from micropy import data, utils
-from micropy.exceptions import StubError, StubValidationError
+from micropy.exceptions import StubError, StubNotFound, StubValidationError
 from micropy.logger import Log
 from micropy.stubs import source
+from packaging.utils import parse_sdist_filename
 
 if TYPE_CHECKING:
-    from micropy.stubs.repo import StubRepository
+    from micropy.stubs.repo import StubRepository, StubRepositoryPackage
 
 
 class StubManager:
@@ -30,7 +32,7 @@ class StubManager:
 
     """
 
-    repos: list[StubRepository]
+    repo: StubRepository
 
     _schema = data.SCHEMAS / "stubs.json"
     _firm_schema = data.SCHEMAS / "firmware.json"
@@ -39,7 +41,7 @@ class StubManager:
         self._loaded = set()
         self._firmware = set()
         self.resource = resource
-        self.repos = repos
+        self.repo = repos
         self.log = Log.add_logger("Stubs", stdout=False, show_title=False)
         if self.resource:
             self.load_from(resource, strict=False)
@@ -94,6 +96,12 @@ class StubManager:
 
         """
         with stub_source.ready() as src_path:
+            if not self.is_valid(src_path) and isinstance(stub_source, source.RemoteStubSource):
+                # this module needs to be burned...
+                infos = self.from_metadata(
+                    parse_sdist_filename(stub_source.location.split("/")[-1])[0], src_path
+                )
+                kwargs["name"] = infos["name"]
             try:
                 stub_type = self._get_stubtype(src_path)
             except Exception as e:
@@ -313,6 +321,10 @@ class StubManager:
         if self._should_recurse(location):
             return self.load_from(location, strict=False, copy_to=dest)
         self.log.info(f"\nResolving stub...")
+        try:
+            location = self.repo.resolve_package(location)
+        except StubNotFound:
+            pass
         stub_source = source.get_source(location, log=self.log)
         return self._load(stub_source, copy_to=dest)
 
@@ -351,7 +363,47 @@ class StubManager:
         shutil.copytree(path, stub_path)
         return out_stub
 
-    def search_remote(self, query):
+    def from_metadata(self, package_name: str, path: Path) -> dict[str, str]:
+        """Creates stub info.json meta from dist metadata.
+
+        Notes:
+            This method is a (very) dirty adapter (just like above...)
+            until this module can be rewritten from scratch.
+
+        """
+        metadatas = (metadata.Metadata(path=p) for p in path.rglob("PKG-INFO"))
+        meta = next(m for m in metadatas if m.todict()["name"] == package_name)
+        info_path = path / "info.json"
+        name_parts = set(meta.todict()["name"].split("-"))
+        name_parts.remove("stubs")
+        # oh lawd, look away!!
+        dev_name = min(name_parts, key=lambda s: len(s))
+        name_parts.remove(dev_name)
+        firm_name = name_parts.pop()
+        firm = {
+            "ver": "",
+            "port": dev_name,
+            "arch": "",
+            "sysname": dev_name,
+            "name": firm_name,
+            "mpy": 0,
+            "version": "",
+            "machine": "",
+            "build": "",
+            "nodename": dev_name,
+            "platform": dev_name,
+            "family": firm_name,
+        }
+        info_json = {
+            "firmware": firm,
+            "stubber": {"version": ""},
+            "modules": [],
+            "name": package_name,
+        }
+        info_path.write_text(json.dumps(info_json))
+        return info_json
+
+    def search_remote(self, query) -> list[tuple[StubRepositoryPackage, bool]]:
         """Search all repositories for query.
 
         Args:
@@ -365,10 +417,9 @@ class StubManager:
         """
         results = []
         installed = [str(s) for s in self._loaded.union(self._firmware)]
-        for repo in self.repos:
-            for p in repo.search(query):
-                result = (p.absolute_name, p in installed)
-                results.append(result)
+        for p in self.repo.search(query):
+            result = (p, p.name in installed)
+            results.append(result)
         return results
 
     def resolve_subresource(self, stubs, subresource):
@@ -479,6 +530,8 @@ class DeviceStub(Stub):
         self.firmware = kwargs.get("firmware", None)
         self.sysname = self.firm_info.get("sysname")
         self.version = self.firm_info.get("version")
+        # TODO: make this module not garbage.
+        self._name = kwargs.get("name", self.info.get("name", None))
 
     @property
     def firmware_name(self):
@@ -498,6 +551,8 @@ class DeviceStub(Stub):
 
     @property
     def name(self):
+        if self._name:
+            return self._name
         if not isinstance(self.firmware, FirmwareStub):
             return f"{self.sysname}-{self.version}"
         return f"{self.sysname}-{self.firmware_name}-{self.version}"
