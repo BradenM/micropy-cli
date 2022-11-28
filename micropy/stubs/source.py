@@ -6,19 +6,23 @@ This module contains abstractions for handling stub sources
 and their location.
 """
 
+from __future__ import annotations
 
+import abc
 import json
 import shutil
 import tempfile
 from contextlib import contextmanager
 from functools import partial
 from pathlib import Path, PurePosixPath
+from typing import Any, Callable, Optional, final
 from urllib import parse
 
 import micropy.exceptions as exc
 import requests
 from micropy import utils
 from micropy.logger import Log
+from micropy.utils.types import PathStr
 
 
 class StubRepo:
@@ -123,7 +127,10 @@ class StubRepo:
         for source in data:
             source_url = source["source"]
             source_data = requests.get(source_url).json()
-            cls(**source_data)
+            try:
+                cls(**source_data)
+            except Exception as e:
+                pass
         return cls.repos
 
     def __eq__(self, other):
@@ -133,19 +140,25 @@ class StubRepo:
         return hash(self.location)
 
 
-class StubSource:
+class StubSource(abc.ABC):
     """Abstract Base Class for Stub Sources."""
 
-    def __init__(self, location, log=None):
+    location: PathStr
+
+    def __init__(self, location: PathStr, log=None):
         self.location = location
         _name = self.__class__.__name__
         self.log = log or Log.add_logger(_name)
 
+    @abc.abstractmethod
+    def prepare(self) -> tuple[PathStr, Optional[Callable[..., Any]]]:
+        """Prepares the source."""
+
     @contextmanager
-    def ready(self, path=None, teardown=None):
+    def ready(self):
         """Yields prepared Stub Source.
 
-        Allows StubSource subclasses to have a preperation
+        Allows StubSource subclasses to have a preparation
         method before providing a local path to itself.
 
         Args:
@@ -158,9 +171,11 @@ class StubSource:
             Resolved PathLike object to stub source
 
         """
-        _path = path or self.location
-        info_path = next(_path.rglob("info.json"), None)
-        path = Path(info_path.parent) if info_path else _path
+        prep = iter(self.prepare())
+        path = next(prep, self.location)
+        teardown = next(prep, lambda: None)
+        info_path = next(Path(path).rglob("info.json"), None)
+        path = Path(info_path.parent) if info_path else path
         yield path
         if teardown:
             teardown()
@@ -170,6 +185,7 @@ class StubSource:
         return f"<{_name}@{self.location}>"
 
 
+@final
 class LocalStubSource(StubSource):
     """Stub Source Subclass for local locations.
 
@@ -181,11 +197,15 @@ class LocalStubSource(StubSource):
 
     """
 
+    def prepare(self) -> tuple[PathStr, Optional[Callable[..., Any]]]:
+        return self.location, None
+
     def __init__(self, path, **kwargs):
         location = utils.ensure_existing_dir(path)
-        return super().__init__(location, **kwargs)
+        super().__init__(location, **kwargs)
 
 
+@final
 class RemoteStubSource(StubSource):
     """Stub Source for remote locations.
 
@@ -196,10 +216,6 @@ class RemoteStubSource(StubSource):
         obj: Instance of RemoteStubSource
 
     """
-
-    def __init__(self, name, **kwargs):
-        location = StubRepo.resolve_package(name)
-        return super().__init__(location, **kwargs)
 
     def _unpack_archive(self, file_bytes, path):
         """Unpack archive from bytes buffer.
@@ -217,7 +233,7 @@ class RemoteStubSource(StubSource):
         output = next(path.iterdir())
         return output
 
-    def ready(self):
+    def prepare(self) -> tuple[PathStr, Optional[Callable[..., Any]]]:
         """Retrieves and unpacks source.
 
         Prepares remote stub resource by downloading and
@@ -238,7 +254,7 @@ class RemoteStubSource(StubSource):
         )
         source_path = self._unpack_archive(content, tmp_path)
         teardown = partial(shutil.rmtree, tmp_path)
-        return super().ready(path=source_path, teardown=teardown)
+        return source_path, teardown
 
 
 def get_source(location, **kwargs):
