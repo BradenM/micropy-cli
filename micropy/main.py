@@ -35,7 +35,7 @@ class MicroPy:
         data.STUB_DIR.mkdir()
 
     @utils.lazy_property
-    def stubs(self):
+    def stubs(self) -> StubManager:
         """Primary Stub Manager for MicroPy.
 
         Returns:
@@ -46,7 +46,7 @@ class MicroPy:
         repo = StubRepository()
         for repo_info in repo_list:
             repo = repo.add_repository(repo_info)
-        return StubManager(resource=data.STUB_DIR, repos=[repo])
+        return StubManager(resource=data.STUB_DIR, repos=repo)
 
     @utils.lazy_property
     def project(self):
