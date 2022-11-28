@@ -46,6 +46,8 @@ __all__ = [
     "get_class_that_defined_method",
 ]
 
+from .types import PathStr
+
 
 def is_url(url):
     """Check if provided string is a url.
@@ -87,7 +89,7 @@ def ensure_valid_url(url):
     return url
 
 
-def ensure_existing_dir(path):
+def ensure_existing_dir(path: PathStr) -> Path:
     """Ensure path exists and is a directory.
 
     If path does exist, it will be returned as
