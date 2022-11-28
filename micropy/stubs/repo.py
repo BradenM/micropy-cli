@@ -24,7 +24,7 @@ class StubRepository:
     def _build_packages(self) -> None:
         for manifest in self.manifests:
             for package in manifest.packages:
-                self.packages.append(StubRepositoryPackage(repository=manifest, package=package))
+                self.packages.append(StubRepositoryPackage(manifest=manifest, package=package))
 
     def add_repository(self, info: RepositoryInfo) -> StubRepository:
         """Creates a new `StubRepository` instance with a `StubManifest` derived from `info`.
