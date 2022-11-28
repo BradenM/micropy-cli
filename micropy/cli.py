@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 """MicropyCli Console Entrypoint."""
+from __future__ import annotations
+
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import click
 import micropy.exceptions as exc
@@ -11,6 +14,9 @@ from micropy import main, utils
 from micropy.logger import Log
 from micropy.project import Project, modules
 from questionary import Choice
+
+if TYPE_CHECKING:
+    from stubs import StubManager
 
 pass_mpy = click.make_pass_decorator(main.MicroPy, ensure=True)
 
@@ -225,13 +231,16 @@ def add(mpy, stub_name, force=False):
 @stubs.command()
 @click.argument("query", required=True)
 @pass_mpy
-def search(mpy, query):
+def search(mpy: main.MicroPy, query):
     """Search available Stubs."""
     mpy.log.title(f"Searching Stub Repositories...")
-    results = mpy.stubs.search_remote(query)
+    stubs: StubManager = mpy.stubs  # noqa
+    results = stubs.search_remote(query)
+    results = sorted(results, key=lambda pkg: pkg[0].name)
     mpy.log.title(f"Results for $[{query}]:")
     for pkg, installed in results:
-        name = f"{pkg} $B[(Installed)]" if installed else pkg
+        name = f"$W[{pkg.repo_name}]/{pkg.versioned_name}"
+        name = f"{pkg.absolute_versioned_name} $B[(Installed)]" if installed else name
         mpy.log.info(name)
 
 
