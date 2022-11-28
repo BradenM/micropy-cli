@@ -5,12 +5,12 @@ from pydantic import BaseModel
 
 
 class StubRepositoryPackage(BaseModel):
-    repository: StubsManifest
+    manifest: StubsManifest
     package: StubPackage
 
     @property
     def url(self) -> str:
-        return self.repository.resolve_package_url(self.package)
+        return self.manifest.resolve_package_url(self.package)
 
     @property
     def name(self) -> str:
@@ -22,4 +22,4 @@ class StubRepositoryPackage(BaseModel):
 
     @property
     def absolute_name(self) -> str:
-        return self.repository.resolve_package_absolute_name(self.package)
+        return self.manifest.resolve_package_absolute_name(self.package)
