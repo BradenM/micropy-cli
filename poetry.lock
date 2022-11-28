@@ -325,7 +325,7 @@ reference = "pypi-test"
 name = "distlib"
 version = "0.3.6"
 description = "Distribution utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -1631,7 +1631,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.12"
-content-hash = "db61c4efa839a138f663b1dfa259a100da10753728789ea68d2fcc1fa4f8f5d3"
+content-hash = "74dbe3e751915835e1f5cd3729e7dc88427e48136e679153c6d92efd54321789"
 
 [metadata.files]
 alabaster = [
