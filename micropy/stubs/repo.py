@@ -66,7 +66,7 @@ class StubRepository:
                 yield package
 
     def resolve_package(self, name: str) -> str:
-        pkg = next((p for p in self.packages if p.name == name or p.absolute_name == name), None)
+        pkg = next((p for p in self.packages if p.match_exact(name)), None)
         if pkg is None:
             raise exc.StubNotFound(pkg)
         return pkg.url
