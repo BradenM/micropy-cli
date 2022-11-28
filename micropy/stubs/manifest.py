@@ -25,3 +25,11 @@ class StubsManifest(BaseModel, abc.ABC):
     def resolve_package_absolute_name(self, package: StubPackage) -> str:
         """Resolve package absolute name."""
         return "/".join([self.repository.name, package.name])
+
+    def resolve_package_versioned_name(self, package: StubPackage) -> str:
+        """Resolve package versioned absolute name."""
+        return "-".join([package.name, package.version])
+
+    def resolve_package_absolute_versioned_name(self, package: StubPackage) -> str:
+        """Resolve package versioned absolute name."""
+        return "-".join([self.resolve_package_absolute_name(package), package.version])
