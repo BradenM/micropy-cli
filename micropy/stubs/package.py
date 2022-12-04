@@ -4,6 +4,9 @@ from pydantic import BaseModel
 
 
 class StubPackage(BaseModel):
+    class Config:
+        frozen = True
+
     name: str
     version: str
 
