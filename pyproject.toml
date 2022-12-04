@@ -64,6 +64,7 @@ attrs = "^22.1.0"
 typing-extensions = "^4.4.0"
 pydantic = "^1.10.2"
 distlib = "^0.3.6"
+importlib-metadata = "^5.1.0"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "^1.4"
@@ -174,10 +175,25 @@ exclude_lines = [
 ]
 
 [tool.mypy]
-plugins = "pydantic.mypy"
+plugins = [
+  "pydantic.mypy"
+]
+follow_imports = "silent"
 warn_redundant_casts = true
-follow_imports = "skip"
+warn_unused_ignores = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
+disallow_untyped_defs = true
+
 
 [[tool.mypy.overrides]]
 module = ["boltons", "upydevice", "upydevice.*", "rshell", "tqdm"]
 ignore_missing_imports = true
+
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
