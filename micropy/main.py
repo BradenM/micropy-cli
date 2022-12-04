@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
+from typing import Optional
 
 from micropy import data, utils
 from micropy.exceptions import PyDeviceError
@@ -19,11 +20,17 @@ class MicroPy:
     """Handles App State Management."""
 
     RUN_CHECKS = True
+    repo: StubRepository
+    _stubs: Optional[StubManager] = None
 
     def __init__(self):
         self.log = Log.get_logger("MicroPy")
         self.verbose = True
         self.log.debug("MicroPy Loaded")
+        repo_list = parse_file_as(list[RepositoryInfo], data.REPO_SOURCES)
+        self.repo = StubRepository()
+        for repo_info in repo_list:
+            self.repo = self.repo.add_repository(repo_info)
         if not data.STUB_DIR.exists():
             self.setup()
 
@@ -34,7 +41,7 @@ class MicroPy:
         data.FILES.mkdir(exist_ok=True)
         data.STUB_DIR.mkdir()
 
-    @utils.lazy_property
+    @property
     def stubs(self) -> StubManager:
         """Primary Stub Manager for MicroPy.
 
@@ -42,11 +49,9 @@ class MicroPy:
             StubManager: StubManager Instance
 
         """
-        repo_list = parse_file_as(list[RepositoryInfo], data.REPO_SOURCES)
-        repo = StubRepository()
-        for repo_info in repo_list:
-            repo = repo.add_repository(repo_info)
-        return StubManager(resource=data.STUB_DIR, repos=repo)
+        if not self._stubs:
+            self._stubs = StubManager(resource=data.STUB_DIR, repos=self.repo)
+        return self._stubs
 
     @utils.lazy_property
     def project(self):
