@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from distlib import metadata
 from micropy import data, utils
-from micropy.exceptions import StubError, StubNotFound, StubValidationError
+from micropy.exceptions import StubError, StubValidationError
 from micropy.logger import Log
 from micropy.stubs import source
 from packaging.utils import parse_sdist_filename
@@ -321,10 +321,6 @@ class StubManager:
         if self._should_recurse(location):
             return self.load_from(location, strict=False, copy_to=dest)
         self.log.info(f"\nResolving stub...")
-        try:
-            location = self.repo.resolve_package(location)
-        except StubNotFound:
-            pass
         stub_source = source.get_source(location, log=self.log)
         return self._load(stub_source, copy_to=dest)
 
