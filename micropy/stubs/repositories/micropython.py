@@ -20,7 +20,7 @@ class MicropythonStubsPackage(StubPackage):
 
 class MicropythonStubsManifest(StubsManifest):
 
-    packages: list[MicropythonStubsPackage]
+    packages: frozenset[MicropythonStubsPackage]
 
     @validator("packages", pre=True)
     def _get_packages(cls, v: dict[str, dict]):
