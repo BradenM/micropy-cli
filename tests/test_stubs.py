@@ -12,8 +12,8 @@ def mock_fware(mocker, shared_datadir):
         return super().ready(path=fware_stub)
 
     fware_stub = shared_datadir / "fware_test_stub"
-    mock_remote = mocker.patch.object(stubs.source, "RemoteStubSource").return_value
-    mock_remote.ready.return_value.__enter__.return_value = fware_stub
+    mock_remote = mocker.patch.object(stubs.source.RemoteStubSource, "ready").return_value
+    mock_remote.__enter__.return_value = fware_stub
 
 
 def test_stub_validation(shared_datadir):
