@@ -18,7 +18,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Iterable, Optional, Union
 
-import micropy
+import importlib_metadata
 import requests
 import requirements
 from cachier import cachier
@@ -396,7 +396,7 @@ def is_update_available():
     versions = [k for k in data["releases"].keys() if "rc" not in k]
     if versions:
         latest = version.parse(versions[-1])
-        cur_version = version.parse(micropy.__version__)
+        cur_version = version.parse(importlib_metadata.version("micropy-cli"))
         if cur_version < latest:
             return str(latest)
     return False
