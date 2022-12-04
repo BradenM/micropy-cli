@@ -241,10 +241,15 @@ def search(mpy: main.MicroPy, query):
     results = stubs.search_remote(query)
     results = sorted(results, key=lambda pkg: pkg[0].name)
     mpy.log.title(f"Results for $[{query}]:")
+    max_name = max(len(n[0].repo_name) for n in results)
     for pkg, installed in results:
-        name = f"$W[{pkg.repo_name}]/{pkg.versioned_name}"
-        name = f"{pkg.absolute_versioned_name} $B[(Installed)]" if installed else name
-        mpy.log.info(name)
+        pad = max_name - len(pkg.repo_name) + 2
+        pad = pad if (pad % 2 == 0) else pad + 1
+        spacer = "{:>{pad}}".format(f"::", pad=pad)
+        repo_logger = Log.add_logger(f"{pkg.repo_name} {spacer}", "bright_white")
+        name = "{:>{pad}}".format(pkg.versioned_name, pad=pad)
+        name = f"{name} $B[(Installed)]" if installed else name
+        repo_logger.info(name)
 
 
 @stubs.command()
