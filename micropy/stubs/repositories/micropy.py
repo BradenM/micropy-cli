@@ -18,7 +18,7 @@ class MicropyStubPackage(StubPackage):
 class MicropyStubsManifest(StubsManifest):
     location: str
     path: str
-    packages: list[MicropyStubPackage]
+    packages: frozenset[MicropyStubPackage]
 
     @root_validator(pre=True)
     def check(cls, values: dict):
