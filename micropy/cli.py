@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import sys
+from contextlib import suppress
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -193,7 +194,7 @@ def install(mpy, packages, dev=False, path=None):
 @click.argument("stub_name", required=True)
 @click.option("-f", "--force", is_flag=True, default=False, help="Overwrite Stub if it exists.")
 @pass_mpy
-def add(mpy, stub_name, force=False):
+def add(mpy: main.MicroPy, stub_name, force=False):
     """Add Stubs from package or path.
 
     \b
@@ -214,6 +215,8 @@ def add(mpy, stub_name, force=False):
     mpy.stubs.verbose_log(True)
     proj = mpy.project
     mpy.log.title(f"Adding $[{stub_name}] to stubs")
+    with suppress(exc.StubNotFound):
+        stub_name = mpy.repo.resolve_package(stub_name)
     try:
         stub = mpy.stubs.add(stub_name, force=force)
     except exc.StubNotFound:
