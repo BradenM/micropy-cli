@@ -6,6 +6,8 @@ This module contains generic utility helpers
 used by MicropyCli
 """
 
+from __future__ import annotations
+
 import inspect
 import io
 import os
@@ -27,6 +29,8 @@ from requests import exceptions as reqexc
 from requests import utils as requtil
 from tqdm import tqdm
 
+from .types import PathStr
+
 __all__ = [
     "is_url",
     "get_url_filename",
@@ -45,8 +49,6 @@ __all__ = [
     "get_cached_data",
     "get_class_that_defined_method",
 ]
-
-from .types import PathStr
 
 
 def is_url(url):
@@ -402,7 +404,7 @@ def is_update_available():
     return False
 
 
-@cachier(stale_after=timedelta(days=3))
+@cachier(stale_after=timedelta(days=3), next_time=True)
 def get_cached_data(url):
     """Wrap requests with a short cache."""
     source_data = requests.get(url).json()
