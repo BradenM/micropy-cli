@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import abc
-from typing import ClassVar, Type
 
 from micropy.stubs.package import StubPackage
 from micropy.stubs.repository_info import RepositoryInfo
@@ -12,14 +11,8 @@ class StubsManifest(BaseModel, abc.ABC):
     class Config:
         frozen = True
 
-    manifest_formats: ClassVar[list[Type[StubsManifest]]] = []
-
     repository: RepositoryInfo
     packages: frozenset[StubPackage]
-
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-        cls.manifest_formats.append(cls)
 
     @abc.abstractmethod
     def resolve_package_url(self, package: StubPackage) -> str:
