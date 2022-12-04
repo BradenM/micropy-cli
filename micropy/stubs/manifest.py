@@ -9,10 +9,13 @@ from pydantic import BaseModel
 
 
 class StubsManifest(BaseModel, abc.ABC):
+    class Config:
+        frozen = True
+
     manifest_formats: ClassVar[list[Type[StubsManifest]]] = []
 
     repository: RepositoryInfo
-    packages: list[StubPackage]
+    packages: frozenset[StubPackage]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
