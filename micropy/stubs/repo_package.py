@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from typing import Iterator
+
+import attrs
 from micropy.stubs import StubPackage, StubsManifest
-from pydantic import BaseModel
 
 
-class StubRepositoryPackage(BaseModel):
+@attrs.frozen
+class StubRepositoryPackage:
     manifest: StubsManifest
     package: StubPackage
 
@@ -36,5 +39,17 @@ class StubRepositoryPackage(BaseModel):
     def absolute_versioned_name(self) -> str:
         return self.manifest.resolve_package_absolute_versioned_name(self.package)
 
+    @property
+    def exact_matchers(self) -> Iterator[str]:
+        yield self.absolute_versioned_name
+        yield self.versioned_name
+        yield self.absolute_name
+
+    @property
+    def partial_matchers(self) -> Iterator[str]:
+        yield from self.exact_matchers
+        yield self.name
+        yield self.version
+
     def match_exact(self, in_name: str) -> bool:
-        return in_name in [self.absolute_name, self.versioned_name, self.absolute_versioned_name]
+        return in_name in self.exact_matchers
