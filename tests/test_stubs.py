@@ -7,12 +7,9 @@ from micropy import exceptions, stubs
 
 @pytest.fixture
 def mock_fware(mocker, shared_datadir):
-    def mock_ready(self, *args, **kwargs):
-        fware_stub = shared_datadir / "fware_test_stub"
-        return super().ready(path=fware_stub)
 
     fware_stub = shared_datadir / "fware_test_stub"
-    mock_remote = mocker.patch.object(stubs.source.RemoteStubSource, "ready").return_value
+    mock_remote = mocker.patch.object(stubs.source.RemoteStubLocator, "prepare").return_value
     mock_remote.__enter__.return_value = fware_stub
 
 
@@ -143,13 +140,13 @@ def test_add_with_resource(datadir, mock_fware, tmp_path, mocker):
     manager.add(datadir)
     assert len(manager) == 2
     assert "esp8266_test_stub" in [p.name for p in resource.iterdir()]
-    assert load_spy.call_count == 4
+    assert load_spy.call_count == 3
     # Should not add any new stubs
     assert manager.add(datadir)
-    assert load_spy.call_count == 4
+    assert load_spy.call_count == 3
     # Should force load
     assert manager.add(datadir, force=True)
-    assert load_spy.call_count == 7
+    assert load_spy.call_count == 6
 
 
 def test_add_no_resource_no_dest(datadir, mock_fware):
@@ -176,27 +173,6 @@ def test_name_property(shared_datadir):
     with pytest.raises(NotImplementedError):
         x = ErrorStub(test_stub)
         x.name
-
-
-def test_stub_search(mocker, test_urls, shared_datadir, tmp_path, test_repo):
-    test_fware = shared_datadir / "fware_test_stub"
-    test_stub = shared_datadir / "esp8266_test_stub"
-    tmp_path = tmp_path / "foobar"
-    tmp_path.mkdir()
-    manager = stubs.StubManager(resource=tmp_path, repos=[test_repo])
-    manager.add(test_fware)
-    print(manager._firmware)
-    print(list(manager))
-    manager.add(test_stub)
-    results = manager.search_remote("esp8266")
-    assert len(results) == 1
-    res = results[0]
-    assert res[0] == "esp8266-micropython-1.9.4"
-    assert res[1]
-    results = manager.search_remote("esp32")
-    res = results[0]
-    assert res[0] == "esp32-micropython-1.11.0"
-    assert not res[1]
 
 
 def test_stub_resolve_link(mock_mp_stubs, tmp_path):
