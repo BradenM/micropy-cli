@@ -3,7 +3,8 @@ from shutil import copytree, rmtree
 import micropy.exceptions as exc
 import pytest
 from micropy import data, main
-from micropy.stubs import stubs
+from micropy.stubs import StubManager, stubs
+from pytest_mock import MockFixture
 
 
 def test_setup(mock_micropy_path):
@@ -39,7 +40,7 @@ def test_create_stub__connect_error(mock_micropy, mocker, shared_datadir, tmp_pa
     assert mp.create_stubs("/dev/PORT") is None
 
 
-def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
+def test_create_stub(mock_micropy, mocker: MockFixture, shared_datadir, tmp_path):
     """should create and add stubs"""
     mock_micropy.stubs.add(shared_datadir / "fware_test_stub")
     tmp_stub_path = tmp_path / "createtest"
@@ -49,12 +50,12 @@ def test_create_stub(mock_micropy, mocker, shared_datadir, tmp_path):
     mock_tmpdir.return_value.__enter__.return_value = tmp_stub_path
     mock_pyb = mocker.patch("micropy.main.PyDevice")
     mp = mock_micropy
-    mocker.spy(mp.stubs, "add")
+    mocker.spy(StubManager, "add")
     mock_pyb.return_value.run_script.side_effect = [Exception, mocker.ANY, mocker.ANY]
     with pytest.raises(Exception):
         stub = mp.create_stubs("/dev/PORT")
     stub = mp.create_stubs("/dev/PORT")
-    mp.stubs.add.assert_any_call(tmp_stub_path / "esp32-1.11.0")
+    mp.stubs.add.assert_any_call(mocker.ANY, tmp_stub_path / "esp32-1.11.0")
     rmtree(tmp_stub_path / "esp32-1.11.0")
     assert isinstance(stub, stubs.DeviceStub)
 

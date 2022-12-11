@@ -242,16 +242,6 @@ def mock_manifests(mocker, requests_mock):
 
 
 @pytest.fixture
-def test_repo(mock_manifests):
-    micropy_source.fetch_source.clear_cache()
-    micropython_source.fetch_source.clear_cache()
-    repo = micropy.stubs.repo.StubRepository()
-    repo = repo.add_repository(micropy_source)
-    repo = repo.add_repository(micropython_source)
-    return repo
-
-
-@pytest.fixture
 def mock_checks(mocker):
     """Mock VSCode Template Checks"""
     m_run = mocker.patch.object(micropy.project.checks.subproc, "run").return_value
