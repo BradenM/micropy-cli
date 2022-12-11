@@ -17,7 +17,7 @@ from micropy.project import Project, modules
 from questionary import Choice
 
 if TYPE_CHECKING:
-    from stubs import StubManager
+    pass
 
 pass_mpy = click.make_pass_decorator(main.MicroPy, ensure=True)
 
@@ -233,13 +233,22 @@ def add(mpy: main.MicroPy, stub_name, force=False):
 
 @stubs.command()
 @click.argument("query", required=True)
+@click.option(
+    "-s", "--show-outdated", is_flag=True, help="Include outdated versions in search results."
+)
 @pass_mpy
-def search(mpy: main.MicroPy, query):
+def search(mpy: main.MicroPy, query: str, show_outdated: bool = False):
     """Search available Stubs."""
     mpy.log.title(f"Searching Stub Repositories...")
-    stubs: StubManager = mpy.stubs  # noqa
-    results = stubs.search_remote(query)
+    installed_stubs = map(str, mpy.stubs._loaded | mpy.stubs._firmware)
+    results = [
+        (r, r.name in installed_stubs)
+        for r in mpy.repo.search(query, include_versions=show_outdated)
+    ]
     results = sorted(results, key=lambda pkg: pkg[0].name)
+    if not any(results):
+        mpy.log.warn(f"No results found for: $[{query}].")
+        sys.exit(0)
     mpy.log.title(f"Results for $[{query}]:")
     max_name = max(len(n[0].repo_name) for n in results)
     for pkg, installed in results:
@@ -247,7 +256,7 @@ def search(mpy: main.MicroPy, query):
         pad = pad if (pad % 2 == 0) else pad + 1
         spacer = "{:>{pad}}".format(f"::", pad=pad)
         repo_logger = Log.add_logger(f"{pkg.repo_name} {spacer}", "bright_white")
-        name = "{:>{pad}}".format(pkg.versioned_name, pad=pad)
+        name = "{:>{pad}}".format(f"{pkg.name} ($w[{pkg.version}])", pad=pad)
         name = f"{name} $B[(Installed)]" if installed else name
         repo_logger.info(name)
 
