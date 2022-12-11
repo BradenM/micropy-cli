@@ -8,7 +8,7 @@ from typing import Any, Union
 from typing_extensions import Protocol, TypeAlias, runtime_checkable
 
 # PathLike string or string type alias.
-PathStr: TypeAlias = Union[str, PathLike[str]]
+PathStr: TypeAlias = Union[str, PathLike]
 
 
 @runtime_checkable
