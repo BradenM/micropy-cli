@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 from micropy import data, utils
 from micropy.exceptions import PyDeviceError
@@ -27,7 +27,7 @@ class MicroPy:
         self.log = Log.get_logger("MicroPy")
         self.verbose = True
         self.log.debug("MicroPy Loaded")
-        repo_list = parse_file_as(list[RepositoryInfo], data.REPO_SOURCES)
+        repo_list = parse_file_as(List[RepositoryInfo], data.REPO_SOURCES)
         self.repo = StubRepository()
         for repo_info in repo_list:
             self.repo = self.repo.add_repository(repo_info)
