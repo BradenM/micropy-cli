@@ -5,6 +5,7 @@ import pytest
 from click.testing import CliRunner
 from micropy import cli
 from micropy.exceptions import RequirementException
+from pytest_mock import MockFixture
 
 
 @pytest.fixture
@@ -134,18 +135,13 @@ def test_cli_stubs_add(mocker, mock_mpy, shared_datadir, runner, tmp_path, mock_
     assert result.exit_code == 0
 
 
-def test_cli_stubs_search(mock_mpy, runner):
+def test_cli_stubs_search(mock_mpy, mocker: MockFixture, runner):
     """should search stubs"""
-    mock_mpy.stubs.search_remote.return_value = [
-        (
-            "esp8266-micropython-1.11.0",
-            True,
-        ),
-        (
-            "esp8266-micropython-1.10.0",
-            False,
-        ),
-    ]
+    pkg_stub = mocker.stub()
+    pkg_stub.repo_name = "Test1"
+    pkg_stub.name = "stub-pkg"
+    pkg_stub.version = "1.0.0"
+    mock_mpy.repo.search.return_value = [pkg_stub]
     result = runner.invoke(cli.search, ["esp8266"])
     assert result.exit_code == 0
 
