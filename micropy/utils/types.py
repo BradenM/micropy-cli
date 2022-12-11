@@ -1,4 +1,7 @@
 """Type utilities and variables."""
+
+from __future__ import annotations
+
 from os import PathLike
 from typing import Any, Union
 
