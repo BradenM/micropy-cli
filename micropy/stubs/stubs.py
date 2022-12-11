@@ -96,12 +96,15 @@ class StubManager:
 
         """
         with stub_source.ready() as src_path:
-            if not self.is_valid(src_path) and isinstance(stub_source, source.RemoteStubSource):
-                # this module needs to be burned...
-                infos = self.from_metadata(
-                    parse_sdist_filename(stub_source.location.split("/")[-1])[0], src_path
-                )
-                kwargs["name"] = infos["name"]
+            if not self.is_valid(src_path):
+                self.log.debug("attempting to load stub from metadata.")
+                try:
+                    infos = self.from_metadata(
+                        parse_sdist_filename(stub_source.location.split("/")[-1])[0], src_path
+                    )
+                    kwargs["name"] = infos["name"]
+                except Exception as e:
+                    self.log.debug(f"failed to load from metadata: {e}")
             try:
                 stub_type = self._get_stubtype(src_path)
             except Exception as e:
@@ -141,7 +144,7 @@ class StubManager:
         if not fware:
             try:
                 self.log.info("Firmware not found locally, attempting to install it...")
-                fware = self.add(fware_name)
+                fware = self.add(self.repo.resolve_package(fware_name))
             except Exception:
                 self.log.error("Failed to resolve firmware!")
                 return None
@@ -170,10 +173,12 @@ class StubManager:
         val = utils.Validator(schema)
         try:
             val.validate(stub_info)
-        except FileNotFoundError:
-            raise StubError(f"{path.name} contains no info file!")
+        except FileNotFoundError as e:
+            self.log.error(f"missing info spec @ {path}", exception=e)
+            raise StubError(f"{path.name} contains no info file!") from e
         except Exception as e:
-            raise StubValidationError(path, str(e))
+            self.log.error(f"validation error at {path}", exception=e)
+            raise StubValidationError(path, str(e)) from e
 
     def _get_stubtype(self, path):
         """Resolves appropriate stub type.
@@ -321,7 +326,7 @@ class StubManager:
         if self._should_recurse(location):
             return self.load_from(location, strict=False, copy_to=dest)
         self.log.info(f"\nResolving stub...")
-        stub_source = source.get_source(location, log=self.log)
+        stub_source = source.get_source(location)
         return self._load(stub_source, copy_to=dest)
 
     def from_stubber(self, path, dest):
@@ -375,24 +380,24 @@ class StubManager:
         # oh lawd, look away!!
         dev_name = min(name_parts, key=lambda s: len(s))
         name_parts.remove(dev_name)
-        firm_name = name_parts.pop()
+        name_parts.pop()
         firm = {
-            "ver": "",
+            "ver": meta.version or "",
             "port": dev_name,
             "arch": "",
             "sysname": dev_name,
-            "name": firm_name,
+            "name": "",
             "mpy": 0,
-            "version": "",
+            "version": meta.version or "",
             "machine": "",
             "build": "",
             "nodename": dev_name,
             "platform": dev_name,
-            "family": firm_name,
+            "family": "",
         }
         info_json = {
             "firmware": firm,
-            "stubber": {"version": ""},
+            "stubber": {"version": meta.version or ""},
             "modules": [],
             "name": package_name,
         }
@@ -522,7 +527,7 @@ class DeviceStub(Stub):
             return self.firmware.firmware
         fware = self.firm_info.get("name", None)
         if not fware:
-            fware = self.firm_info.get("firmware").strip()
+            fware = self.firm_info.get("firmware", "").strip()
             fware.replace(" ", "-")
         return fware
 
