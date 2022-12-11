@@ -15,10 +15,9 @@ class MicropyStubPackage(StubPackage):
     version: Annotated[str, Field(alias="sha256sum")]
 
 
-class MicropyStubsManifest(StubsManifest):
+class MicropyStubsManifest(StubsManifest[MicropyStubPackage]):
     location: str
     path: str
-    packages: frozenset[MicropyStubPackage]
 
     @root_validator(pre=True)
     def check(cls, values: dict):

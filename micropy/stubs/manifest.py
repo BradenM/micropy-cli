@@ -1,18 +1,22 @@
 from __future__ import annotations
 
 import abc
+from typing import Generic
 
-from micropy.stubs.package import StubPackage
+from micropy.stubs.package import AnyStubPackage, StubPackage
 from micropy.stubs.repository_info import RepositoryInfo
-from pydantic import BaseModel
+from pydantic import Field
+from pydantic.generics import GenericModel
+from typing_extensions import Annotated
 
 
-class StubsManifest(BaseModel, abc.ABC):
+class StubsManifest(GenericModel, Generic[AnyStubPackage], abc.ABC):
+
     class Config:
         frozen = True
 
     repository: RepositoryInfo
-    packages: frozenset[StubPackage]
+    packages: Annotated[frozenset[AnyStubPackage], Field(repr=False)]
 
     @abc.abstractmethod
     def resolve_package_url(self, package: StubPackage) -> str:
