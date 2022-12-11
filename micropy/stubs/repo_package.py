@@ -8,7 +8,7 @@ from micropy.stubs import StubPackage, StubsManifest
 
 @attrs.frozen
 class StubRepositoryPackage:
-    manifest: StubsManifest
+    manifest: StubsManifest[StubPackage]
     package: StubPackage
 
     @property

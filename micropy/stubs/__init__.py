@@ -8,7 +8,7 @@ to stub files/frozen modules and their usage in MicropyCli
 
 from . import source
 from .manifest import StubsManifest
-from .package import StubPackage
+from .package import AnyStubPackage, StubPackage
 from .repo import StubRepository
 from .repo_package import StubRepositoryPackage
 from .repositories import MicropyStubPackage, MicropythonStubsManifest, MicropythonStubsPackage
@@ -20,6 +20,7 @@ __all__ = [
     "source",
     "StubsManifest",
     "StubPackage",
+    "AnyStubPackage",
     "StubRepository",
     "MicropyStubPackage",
     "MicropythonStubsPackage",

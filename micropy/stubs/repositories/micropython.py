@@ -18,10 +18,10 @@ class MicropythonStubsPackage(StubPackage):
     version: Annotated[str, Field(alias="pkg_version")]
 
 
-class MicropythonStubsManifest(StubsManifest):
 
-    packages: frozenset[MicropythonStubsPackage]
 
+
+class MicropythonStubsManifest(StubsManifest[MicropythonStubsPackage]):
     @validator("packages", pre=True)
     def _get_packages(cls, v: dict[str, dict]):
         data = v["data"].values()
