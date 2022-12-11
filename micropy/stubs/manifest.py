@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import abc
-from typing import Generic
+from typing import FrozenSet, Generic
 
 from micropy.stubs.package import AnyStubPackage, StubPackage
 from micropy.stubs.repository_info import RepositoryInfo
@@ -11,12 +9,11 @@ from typing_extensions import Annotated
 
 
 class StubsManifest(GenericModel, Generic[AnyStubPackage], abc.ABC):
-
     class Config:
         frozen = True
 
     repository: RepositoryInfo
-    packages: Annotated[frozenset[AnyStubPackage], Field(repr=False)]
+    packages: Annotated[FrozenSet[AnyStubPackage], Field(repr=False)]
 
     @abc.abstractmethod
     def resolve_package_url(self, package: StubPackage) -> str:
