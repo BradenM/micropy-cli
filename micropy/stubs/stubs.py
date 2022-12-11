@@ -13,7 +13,7 @@ from micropy.stubs import source
 from packaging.utils import parse_sdist_filename
 
 if TYPE_CHECKING:
-    from micropy.stubs.repo import StubRepository, StubRepositoryPackage
+    from micropy.stubs.repo import StubRepository
 
 
 class StubManager:
@@ -398,25 +398,6 @@ class StubManager:
         }
         info_path.write_text(json.dumps(info_json))
         return info_json
-
-    def search_remote(self, query) -> list[tuple[StubRepositoryPackage, bool]]:
-        """Search all repositories for query.
-
-        Args:
-            query (str): query to search for
-
-        Returns:
-            [tuple]: List of result tuples. The first item
-                is the package name, and the second is a bool
-                based on whether the package is installed or not
-
-        """
-        results = []
-        installed = [str(s) for s in self._loaded.union(self._firmware)]
-        for p in self.repo.search(query):
-            result = (p, p.name in installed)
-            results.append(result)
-        return results
 
     def resolve_subresource(self, stubs, subresource):
         """Resolve or Create StubManager from list of stubs.
