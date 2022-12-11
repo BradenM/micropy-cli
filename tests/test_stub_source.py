@@ -1,19 +1,16 @@
 from micropy.stubs import source
 
 
-def test_get_source(shared_datadir, test_urls, test_repo):
-    """should return correct subclass"""
+def test_stub_info_spec_locator(shared_datadir):
     test_path = shared_datadir / "esp8266_test_stub"
-    local_stub = source.get_source(test_path)
-    assert isinstance(local_stub, source.LocalStubSource)
-    remote_stub = source.get_source("esp8266-test-stub")
-    assert isinstance(remote_stub, source.RemoteStubSource)
-    stub_source = source.get_source(test_urls["valid"])
-    print(str(stub_source))
-    assert str(stub_source) == f"<RemoteStubSource@{stub_source.location}>"
+    assert source.StubInfoSpecLocator().prepare(test_path) == test_path.absolute()
 
 
-def test_source_ready(shared_datadir, test_urls, tmp_path, mocker, test_archive, test_repo):
+def test_stub_info_spec_locator__returns_location_on_fail(tmp_path):
+    assert source.StubInfoSpecLocator().prepare(tmp_path) == tmp_path
+
+
+def test_source_ready(shared_datadir, test_urls, tmp_path, mocker, test_archive):
     """should prepare and resolve stub"""
     # Test LocalStub ready
     test_path = shared_datadir / "esp8266_test_stub"
