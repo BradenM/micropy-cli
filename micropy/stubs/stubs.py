@@ -108,7 +108,7 @@ class StubManager:
             try:
                 stub_type = self._get_stubtype(src_path)
             except Exception as e:
-                self.log.debug(f"{src_path.name} failed to validate: {e}")
+                self.log.debug(f"{Path(src_path).name} failed to validate: {e}")
                 if strict:
                     raise e
             else:
