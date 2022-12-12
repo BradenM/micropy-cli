@@ -140,13 +140,13 @@ def test_add_with_resource(datadir, mock_fware, tmp_path, mocker):
     manager.add(datadir)
     assert len(manager) == 2
     assert "esp8266_test_stub" in [p.name for p in resource.iterdir()]
-    assert load_spy.call_count == 3
+    assert load_spy.call_count == 5
     # Should not add any new stubs
     assert manager.add(datadir)
-    assert load_spy.call_count == 3
+    assert load_spy.call_count == 5
     # Should force load
     assert manager.add(datadir, force=True)
-    assert load_spy.call_count == 6
+    assert load_spy.call_count == 10
 
 
 def test_add_no_resource_no_dest(datadir, mock_fware):
