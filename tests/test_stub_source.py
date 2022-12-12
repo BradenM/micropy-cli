@@ -1,5 +1,7 @@
 from micropy.stubs import source
 
+from tests.test_stubs_repo import stub_repo  # noqa
+
 
 def test_stub_info_spec_locator(shared_datadir):
     test_path = shared_datadir / "esp8266_test_stub"
@@ -31,3 +33,8 @@ def test_source_ready(shared_datadir, test_urls, tmp_path, mocker, test_archive)
         print(list(source_path.parent.iterdir()))
         assert (source_path / "info.json").exists()
         assert len(list(source_path.iterdir())) == 3
+
+
+def test_stub_repo_locator(stub_repo):
+    locator = source.RepoStubLocator(stub_repo)
+    assert locator.prepare("stub1-foo") == "https://test-manifest/stub1-foo"
