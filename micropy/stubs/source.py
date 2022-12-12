@@ -11,16 +11,19 @@ from __future__ import annotations
 import abc
 import shutil
 import tempfile
-from contextlib import contextmanager
-from functools import partial
+from contextlib import ExitStack, contextmanager
+from functools import partial, reduce
 from pathlib import Path
-from typing import Any, Callable, ContextManager, Iterable, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, ContextManager, Optional, Union, cast
 
 import attrs
 from micropy import utils
 from micropy.logger import Log
 from micropy.utils.types import PathStr
 from typing_extensions import Protocol
+
+if TYPE_CHECKING:
+    pass
 
 
 class LocateStrategy(Protocol):
@@ -29,22 +32,34 @@ class LocateStrategy(Protocol):
         ...
 
 
-logger = Log.add_logger(__name__)
+logger = Log.add_logger(__name__, show_title=False)
 
 
 @attrs.define
 class StubSource:
     """Handles sourcing stubs."""
 
-    location: PathStr = attrs.field()
     locators: list[LocateStrategy] = attrs.field()
+    location: Optional[PathStr] = attrs.field(default=None)
 
     @locators.default
     def _default_locators(self: StubSource) -> list[LocateStrategy]:
         return [RemoteStubLocator(), StubInfoSpecLocator()]
 
+    def _do_locate(self, stack: ExitStack, path: PathStr, locator: LocateStrategy) -> PathStr:
+        logger.debug(f"running (strategy:{locator}) @ (location:{path})")
+        response = locator.prepare(path)
+        parts = iter(response if isinstance(response, tuple) else (response,))
+        path = next(parts, path)
+        teardown = next(parts, None)
+        if teardown:
+            logger.debug(f"adding teardown callback for: {locator}")
+            stack.callback(teardown)
+        logger.debug(f"results of (strategy:{locator}) -> (location:{path})")
+        return path
+
     @contextmanager
-    def ready(self) -> ContextManager[PathStr]:
+    def ready(self, location: Optional[PathStr] = None) -> ContextManager[PathStr]:
         """Yields prepared Stub Source.
 
         Allows StubSource subclasses to have a preparation
@@ -54,18 +69,12 @@ class StubSource:
             Resolved PathLike object to stub source
 
         """
-        path = self.location
-        teardown = lambda: None
-        for locator in self.locators:
-            logger.debug(f"running (strategy:{locator}) @ (location:{path})")
-            response = locator.prepare(path)
-            parts = iter(response if isinstance(response, Iterable) else (response,))
-            path = next(parts, path)
-            teardown = next(parts, teardown)
-            logger.debug(f"results of (strategy:{locator}) -> (location:{path})")
-        yield path
-        if teardown:
-            teardown()
+        with ExitStack() as stack:
+            reducer = cast(
+                Callable[[PathStr, LocateStrategy], PathStr], partial(self._do_locate, stack)
+            )
+            path = reduce(reducer, self.locators, location or self.location)
+            yield path
 
 
 @attrs.define
@@ -128,4 +137,4 @@ def get_source(location, **kwargs):
         obj: Either Local or Remote StubSource Instance
 
     """
-    return StubSource(location, **kwargs)
+    return StubSource(**kwargs, location=location)
