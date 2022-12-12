@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import sys
-from contextlib import suppress
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -14,6 +13,7 @@ import questionary as prompt
 from micropy import main, utils
 from micropy.logger import Log
 from micropy.project import Project, modules
+from micropy.stubs import source as stubs_source
 from questionary import Choice
 
 if TYPE_CHECKING:
@@ -212,11 +212,13 @@ def add(mpy: main.MicroPy, stub_name, force=False):
     Checkout the docs on Github for more info.
 
     """
-    mpy.stubs.verbose_log(True)
     proj = mpy.project
     mpy.log.title(f"Adding $[{stub_name}] to stubs")
-    with suppress(exc.StubNotFound):
-        stub_name = mpy.repo.resolve_package(stub_name)
+    locator = stubs_source.StubSource(
+        [stubs_source.RepoStubLocator(mpy.repo), stubs_source.StubInfoSpecLocator()]
+    )
+    with locator.ready(stub_name) as stub:
+        stub_name = stub
     try:
         stub = mpy.stubs.add(stub_name, force=force)
     except exc.StubNotFound:
@@ -226,6 +228,7 @@ def add(mpy: main.MicroPy, stub_name, force=False):
         mpy.log.error(f"$[{stub_name}] is not a valid stub!")
         sys.exit(1)
     else:
+        mpy.log.success(f"{stub.name} added!")
         if proj.exists:
             mpy.log.title(f"Adding $[{stub.name}] to $[{proj.name}]")
             proj.add_stub(stub)
