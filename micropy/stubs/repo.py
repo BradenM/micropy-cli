@@ -116,7 +116,7 @@ class StubRepository:
             return versions[0]
         return max(versions, key=lambda x: x.package.version)
 
-    def resolve_package(self, name: str) -> str:
+    def resolve_package(self, name: str) -> StubRepositoryPackage:
         """Resolve a package name to a package path.
 
         Args:
@@ -129,12 +129,12 @@ class StubRepository:
             StubNotFound: When package cannot be resolved.
 
         """
-        for package in self.search(name):
+        for package in self.search(str(name)):
             if package.match_exact(name) or package.match_exact(
                 "/".join([package.repo_name, name])
             ):
-                return package.url
+                return package
             latest = self.latest_for_package(package)
             if latest and latest.name == name:
-                return latest.url
+                return latest
         raise exc.StubNotFound(name)
