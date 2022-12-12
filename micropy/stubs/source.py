@@ -17,13 +17,14 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, ContextManager, Optional, Union, cast
 
 import attrs
+import micropy.exceptions as exc
 from micropy import utils
 from micropy.logger import Log
 from micropy.utils.types import PathStr
 from typing_extensions import Protocol
 
 if TYPE_CHECKING:
-    pass
+    from micropy.stubs.repo import StubRepository
 
 
 class LocateStrategy(Protocol):
@@ -123,6 +124,23 @@ class RemoteStubLocator(LocateStrategy):
         source_path = self._unpack_archive(content, tmp_path)
         teardown = partial(shutil.rmtree, tmp_path)
         return source_path, teardown
+
+
+@attrs.define
+class RepoStubLocator(LocateStrategy):
+
+    repo: StubRepository = attrs.field(repr=False)
+
+    def prepare(self, location: PathStr) -> Union[PathStr, tuple[PathStr, Callable[..., Any]]]:
+        if not self.repo:
+            return location
+        try:
+            source = self.repo.resolve_package(location)
+        except exc.StubNotFound as e:
+            logger.debug(f"{self}: {location} not found in repo, skipping... (exc: {e})")
+            return location
+        else:
+            return source.url
 
 
 def get_source(location, **kwargs):
