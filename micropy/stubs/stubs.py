@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from distlib import metadata
+from distlib import locators, metadata
 from micropy import data, utils
 from micropy.exceptions import StubError, StubValidationError
 from micropy.logger import Log
@@ -121,7 +121,6 @@ class StubManager:
                 fware = self.resolve_firmware(stub)
                 stub.firmware = fware
                 self._loaded.add(stub)
-                self.log.success(f"{stub.name} added!")
                 self.log.debug(f"Loaded: {stub}")
                 return stub
 
@@ -144,7 +143,7 @@ class StubManager:
         if not fware:
             try:
                 self.log.info("Firmware not found locally, attempting to install it...")
-                fware = self.add(self.repo.resolve_package(fware_name))
+                fware = self.add(fware_name)
             except Exception:
                 self.log.error("Failed to resolve firmware!")
                 return None
@@ -263,7 +262,7 @@ class StubManager:
         """
         dir_path = Path(str(directory)).resolve()
         dirs = dir_path.iterdir()
-        sources = [source.get_source(d) for d in dirs]
+        sources = [source.StubSource([source.StubInfoSpecLocator()], location=d) for d in dirs]
         stubs = []
         for stub in sources.copy():
             if self.is_valid(stub.location):
@@ -326,7 +325,14 @@ class StubManager:
         if self._should_recurse(location):
             return self.load_from(location, strict=False, copy_to=dest)
         self.log.info(f"\nResolving stub...")
-        stub_source = source.get_source(location)
+        stub_source = source.StubSource(
+            [
+                source.RepoStubLocator(self.repo),
+                source.RemoteStubLocator(),
+                source.StubInfoSpecLocator(),
+            ],
+            location,
+        )
         return self._load(stub_source, copy_to=dest)
 
     def from_stubber(self, path, dest):
@@ -402,6 +408,15 @@ class StubManager:
             "name": package_name,
         }
         info_path.write_text(json.dumps(info_json))
+        # TODO: properly resolve requirements prior/external to this.
+        requires = (r for r in meta.run_requires if "stub" in r)
+        for req in requires:
+            dist = locators.locate(req)
+            if not dist:
+                continue
+            dist_url = next((i for i in dist.download_urls if ".tar.gz" in i), None)
+            if dist_url:
+                self.add(dist_url)
         return info_json
 
     def resolve_subresource(self, stubs, subresource):
@@ -503,8 +518,10 @@ class DeviceStub(Stub):
     def __init__(self, path, copy_to=None, **kwargs):
         super().__init__(path, copy_to, **kwargs)
 
-        self.stubs = self.path / "stubs"
-        self.frozen = self.path / "frozen"
+        stubs_path = self.path / "stubs"
+        self.stubs = stubs_path if stubs_path.exists() else self.path
+        frozen_path = self.path / "frozen"
+        self.frozen = frozen_path if frozen_path.exists() else self.path
         stubber = self.info.get("stubber")
         self.stub_version = stubber.get("version")
 
