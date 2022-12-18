@@ -72,9 +72,6 @@ jobs:
         with:
           path: ${{ steps.poetry-config.outputs.cache-dir }}
           key: poetry-cache-${{ runner.os }}-${{ matrix.python }}-${{ env.POETRY_VERSION }}
-          restore-keys: |
-            poetry-cache-${{ runner.os }}-${{ matrix.python }}-
-            poetry-cache-${{ runner.os }}-
 
       # virtualenv cache should depends on OS, Python version and `poetry.lock`
       - name: Cache Packages
@@ -83,9 +80,6 @@ jobs:
         with:
           path: .venv
           key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            poetry-${{ runner.os }}-${{ matrix.python }}-
-            poetry-${{ runner.os }}-
 
       - name: Install Dependencies
         if: steps.pkg-cache.outputs.cache-hit != 'true'
