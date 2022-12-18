@@ -1961,15 +1961,18 @@ test = ["fixtures", "mock", "purl", "pytest", "requests-futures", "sphinx", "tes
 
 [[package]]
 name = "requirements-parser"
-version = "0.2.0"
-description = "Parses Pip requirement files"
+version = "0.5.0"
+description = "This is a small Python module for parsing Pip requirement files."
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6,<4.0"
 files = [
-    {file = "requirements-parser-0.2.0.tar.gz", hash = "sha256:5963ee895c2d05ae9f58d3fc641082fb38021618979d6a152b6b1398bd7d4ed4"},
-    {file = "requirements_parser-0.2.0-py2-none-any.whl", hash = "sha256:76650b4a9d98fc65edf008a7920c076bb2a76c08eaae230ce4cfc6f51ea6a773"},
+    {file = "requirements-parser-0.5.0.tar.gz", hash = "sha256:3336f3a3ae23e06d3f0f88595e4052396e3adf91688787f637e5d2ca1a904069"},
+    {file = "requirements_parser-0.5.0-py3-none-any.whl", hash = "sha256:e7fcdcd04f2049e73a9fb150d8a0f9d51ce4108f5f7cbeac74c484e17b12bcd9"},
 ]
+
+[package.dependencies]
+types-setuptools = ">=57.0.0"
 
 [[package]]
 name = "restructuredtext-lint"
@@ -2404,6 +2407,18 @@ files = [
 types-urllib3 = "<1.27"
 
 [[package]]
+name = "types-setuptools"
+version = "65.6.0.2"
+description = "Typing stubs for setuptools"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-setuptools-65.6.0.2.tar.gz", hash = "sha256:ad60ccf01d626de9762224448f36c13e0660e863afd6dc11d979b3739a6c7d24"},
+    {file = "types_setuptools-65.6.0.2-py3-none-any.whl", hash = "sha256:2c2b4f756f79778074ce2d21f745aa737b12160d9f8dfa274f47a7287c7a2fee"},
+]
+
+[[package]]
 name = "types-urllib3"
 version = "1.26.25.3"
 description = "Typing stubs for urllib3"
@@ -2652,4 +2667,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7,<3.12"
-content-hash = "d168840cf58801d5a41fe302ae109d84b63e5cd26e666645400305054c5426b8"
+content-hash = "7c210d3ac2e030d93afeb650d9b0c1a2a1d5064a165719c264ca063cab101fdb"
