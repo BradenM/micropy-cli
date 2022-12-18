@@ -1,103 +1,103 @@
 name: Test MicropyCli
 
 on:
-    pull_request: ~
-    push:
-        branches:
-            - master
+  pull_request: ~
+  push:
+    branches:
+      - master
 
 env:
-    POETRY_VERSION: 1.3.0
-    POETRY_VIRTUALENVS_IN_PROJECT: true
-    POETRY_NO_INTERACTION: 1
-    POETRY_URL: https://install.python-poetry.org
+  POETRY_VERSION: 1.3.1
+  POETRY_VIRTUALENVS_IN_PROJECT: true
+  POETRY_NO_INTERACTION: 1
+  POETRY_URL: https://install.python-poetry.org
 
 concurrency:
-    group: main-${{ github.event_name }}-${{ github.ref }}
-    cancel-in-progress: true
+  group: main-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
     shell: bash
 
 jobs:
-    test:
-        name: ${{ matrix.os }} @ Py v${{ matrix.python }}
-        runs-on: ${{ matrix.os }}
-        env:
-            OS: ${{ matrix.os }}
-            PYTHON: ${{ matrix.python }}
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [windows-latest, macOS-latest, ubuntu-latest]
-                python: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+  test:
+    name: ${{ matrix.os }} @ Py v${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macOS-latest, ubuntu-latest]
+        python: ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
-        steps:
-            - uses: actions/checkout@v3
-              with:
-                  submodules: true
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
 
-            - name: Set up Python ${{ matrix.python }}
-              uses: actions/setup-python@v4
-              with:
-                  python-version: ${{ matrix.python }}
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
 
-            - name: Install Poetry
-              run: |
-                  curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
-                  echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Install Poetry
+        run: |
+          curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-            - name: Setup Win Path
-              if: matrix.os == 'windows-latest'
-              shell: pwsh
-              run: echo "C:\Users\runneradmin\AppData\Roaming\Python\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Append
+      - name: Setup Win Path
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: echo "C:\Users\runneradmin\AppData\Roaming\Python\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Append
 
-            # See: https://github.com/actions/cache/blob/main/workarounds.md#improving-cache-restore-performance-on-windowsusing-cross-os-caching
-            - name: Use GNU tar
-              if: runner.os == 'Windows'
-              shell: cmd
-              run: |
-                  echo "Adding GNU tar to PATH"
-                  echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+      # See: https://github.com/actions/cache/blob/main/workarounds.md#improving-cache-restore-performance-on-windowsusing-cross-os-caching
+      - name: Use GNU tar
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          echo "Adding GNU tar to PATH"
+          echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
 
-            - name: Get Poetry Cache Path
-              id: poetry-config
-              run: |
-                  echo "cache-dir=$(poetry config cache-dir)" >> $GITHUB_OUTPUT
+      - name: Get Poetry Cache Path
+        id: poetry-config
+        run: |
+          echo "cache-dir=$(poetry config cache-dir)" >> $GITHUB_OUTPUT
 
-            # Poetry cache depends on OS, Python version and Poetry version.
-            - name: Cache Poetry cache
-              uses: actions/cache@v3
-              with:
-                  path: ${{ steps.poetry-config.outputs.cache-dir }}
-                  key: poetry-cache-${{ runner.os }}-${{ matrix.python }}-${{ env.POETRY_VERSION }}
-                  restore-keys: |
-                      poetry-cache-${{ runner.os }}-${{ matrix.python }}-
-                      poetry-cache-${{ runner.os }}-
+      # Poetry cache depends on OS, Python version and Poetry version.
+      - name: Cache Poetry cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.poetry-config.outputs.cache-dir }}
+          key: poetry-cache-${{ runner.os }}-${{ matrix.python }}-${{ env.POETRY_VERSION }}
+          restore-keys: |
+            poetry-cache-${{ runner.os }}-${{ matrix.python }}-
+            poetry-cache-${{ runner.os }}-
 
-            # virtualenv cache should depends on OS, Python version and `poetry.lock`
-            - name: Cache Packages
-              uses: actions/cache@v3
-              id: pkg-cache
-              with:
-                  path: .venv
-                  key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}
-                  restore-keys: |
-                      poetry-${{ runner.os }}-${{ matrix.python }}-
-                      poetry-${{ runner.os }}-
+      # virtualenv cache should depends on OS, Python version and `poetry.lock`
+      - name: Cache Packages
+        uses: actions/cache@v3
+        id: pkg-cache
+        with:
+          path: .venv
+          key: poetry-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ runner.os }}-${{ matrix.python }}-
+            poetry-${{ runner.os }}-
 
-            - name: Install Dependencies
-              if: steps.pkg-cache.outputs.cache-hit != 'true'
-              run: poetry install --with docs --with test -v
+      - name: Install Dependencies
+        if: steps.pkg-cache.outputs.cache-hit != 'true'
+        run: poetry install --with docs --with test -v
 
-            - name: Run Tests
-              run: poetry run pytest --cov --cov-config=pyproject.toml --junit-xml=test_log.xml --cov-report=xml:cov.xml -vv -ra -n0
+      - name: Run Tests
+        run: poetry run pytest --cov --cov-config=pyproject.toml --junit-xml=test_log.xml --cov-report=xml:cov.xml -vv -ra -n0
 
-            - name: Upload Codecov
-              uses: codecov/codecov-action@v3
-              with:
-                files: ./cov.xml
-                fail_ci_if_error: true
-                flags: unittests
-                env_vars: OS,PYTHON
+      - name: Upload Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./cov.xml
+          fail_ci_if_error: true
+          flags: unittests
+          env_vars: OS,PYTHON
