@@ -55,18 +55,18 @@ runs:
         mkdir -p "${{ inputs.poetry-home }}"
         curl -sSL -o ${{ inputs.poetry-home }}/install-poetry.py ${{ inputs.poetry-install-url }}
 
+    - name: Install Poetry
+      shell: bash
+      run: |
+        python3 ${{ inputs.poetry-home }}/install-poetry.py --version ${{ inputs.poetry-version }}
+        ${{ inputs.poetry-home }}/bin/poetry --version
+
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v4
       id: python-setup
       with:
         python-version: ${{ inputs.python-version }}
         cache: "poetry"
-
-    - name: Install Poetry
-      shell: bash
-      run: |
-        python ${{ inputs.poetry-home }}/install-poetry.py --version ${{ inputs.poetry-version }}
-        ${{ inputs.poetry-home }}/bin/poetry --version
 
     - name: Get poetry cache dir.
       id: poetry-config
