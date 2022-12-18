@@ -72,7 +72,6 @@ runs:
       id: python-setup
       with:
         python-version: ${{ inputs.python-version }}
-        cache: "poetry"
 
     - name: Get poetry cache dir.
       id: poetry-config
@@ -89,7 +88,14 @@ runs:
         path: ${{ steps.poetry-config.outputs.cache-dir }}
         key: poetry-cache-dir-${{ inputs.runner || matrix.os || runner.os }}-${{ inputs.python-version }}-${{ inputs.poetry-version }}
 
+    - name: Cache virtual env.
+      uses: actions/cache@v3
+      id: venv-cache
+      with:
+        path: ./.venv
+        key: poetry-venv-dir-${{ inputs.runner || matrix.os || runner.os }}-${{ inputs.python-version }}-${{ inputs.poetry-version }}
+
     - name: Install dependencies.
       shell: bash
-      if: steps.python-setup.outputs.cache-hit != 'true'
+      if: steps.venv-cache.outputs.cache-hit != 'true'
       run: ${{ inputs.poetry-home }}/bin/poetry install --with docs --with test -v
