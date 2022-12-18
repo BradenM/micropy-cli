@@ -24,7 +24,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macOS-latest, ubuntu-latest]
+        # explicitly use macOS-12 to avoid
+        # macOS-11 cached wheels failing to install on a 12 runner.
+        # this is due to an active transition by github.
+        # see: https://github.blog/changelog/2022-10-03-github-actions-jobs-running-on-macos-latest-are-now-running-on-macos-12/
+        os: [windows-latest, macOS-12, ubuntu-latest]
         python: ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
     steps:
