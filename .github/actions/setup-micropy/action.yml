@@ -39,7 +39,9 @@ runs:
     - name: Setup Win Path
       if: matrix.os == 'windows-latest'
       shell: pwsh
-      run: echo "C:\Program Files\Git\tmp\opt\poetry\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+      run: |
+        echo "C:\Users\runneradmin\AppData\Local\Temp\opt\poetry\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+        echo "C:\Users\runneradmin\AppData\Local\Temp\opt\poetry\venv\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Append
 
     - name: Cache poetry install.
       uses: actions/cache@v3
