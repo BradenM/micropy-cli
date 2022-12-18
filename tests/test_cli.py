@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import click
@@ -110,6 +111,9 @@ def test_cli_init(mocker, mock_mpy, shared_datadir, mock_prompt, runner, cliargs
     assert result.exit_code == 0
 
 
+@pytest.mark.skipif(
+    sys.version_info < (3, 8), reason="Some change in behavior with magic mock possibly."
+)
 def test_cli_stubs_add(mocker, mock_mpy, shared_datadir, runner, tmp_path, mock_checks):
     """should add stub"""
     mock_proj = mocker.patch.object(cli, "Project").return_value
