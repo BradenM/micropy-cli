@@ -1,0 +1,89 @@
+name: "Setup Micropy"
+description: "Setup micropy CI env."
+inputs:
+  poetry-version:
+    description: Poetry version to use.
+    required: true
+  poetry-install-url:
+    description: Poetry install url to use.
+    required: false
+    default: "https://install.python-poetry.org"
+  poetry-home:
+    description: Path to use as POETRY_HOME
+    required: false
+    default: "/opt/poetry"
+  python-version:
+    description: Python version to use.
+    required: true
+runs:
+  using: composite
+  steps:
+    # See: https://github.com/actions/cache/blob/main/workarounds.md#improving-cache-restore-performance-on-windowsusing-cross-os-caching
+    - name: Use GNU tar
+      if: runner.os == 'Windows'
+      shell: cmd
+      run: |
+        echo "Adding GNU tar to PATH"
+        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
+    - name: Setup Poetry env.
+      shell: bash
+      run: |
+        echo 'POETRY_HOME=${{ inputs.poetry-home }}' >> $GITHUB_ENV
+        echo 'POETRY_VIRTUALENVS_IN_PROJECT=true' >> $GITHUB_ENV
+        echo 'POETRY_NO_INTERACTION=true' >> $GITHUB_ENV
+        echo 'POETRY_VERSION=${{ inputs.poetry-version }}' >> $GITHUB_ENV
+        echo "${{ inputs.poetry-home }}/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Setup Win Path
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: echo "C:\Users\runneradmin\AppData\Roaming\Python\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+    - name: Cache poetry install.
+      uses: actions/cache@v3
+      id: poetry-install-cache
+      with:
+        path: ${{ inputs.poetry-home }}/install-poetry.py
+        key: poetry-install-${{ runner.os }}-${{ inputs.poetry-version }}
+
+    - name: Fetch Poetry Installer
+      shell: bash
+      if: steps.poetry-install-cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p "${{ inputs.poetry-home }}"
+        curl -sSL -o ${{ inputs.poetry-home }}/install-poetry.py ${{ inputs.poetry-install-url }}
+
+    - name: Set up Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v4
+      id: python-setup
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: "poetry"
+
+    - name: Install Poetry
+      shell: bash
+      run: |
+        python ${{ inputs.poetry-home }}/install-poetry.py --version ${{ inputs.poetry-version }}
+        ${{ inputs.poetry-home }}/bin/poetry --version
+
+    - name: Get poetry cache dir.
+      id: poetry-config
+      shell: bash
+      run: |
+        POETRY="${{ inputs.poetry-home }}/bin/poetry"
+        CACHE_DIR="$($POETRY config cache-dir)"
+        echo "Poetry cache: $CACHE_DIR"
+        echo "cache-dir=$CACHE_DIR" >> $GITHUB_OUTPUT
+
+    - name: Cache poetry cache.
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.poetry-config.outputs.cache-dir }}
+        key: poetry-cache-dir-${{ runner.os }}-${{ inputs.python-version }}-${{ inputs.poetry-version }}
+
+    - name: Install dependencies.
+      shell: bash
+      if: steps.python-setup.outputs.cache-hit != 'true'
+      run: ${{ inputs.poetry-home }}/bin/poetry install --with docs --with test -v
