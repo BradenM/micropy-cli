@@ -49,6 +49,7 @@ jobs:
         with:
           poetry-version: ${{ env.POETRY_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
+          runner: ubuntu-latest
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL

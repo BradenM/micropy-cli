@@ -15,6 +15,10 @@ inputs:
   python-version:
     description: Python version to use.
     required: true
+  runner:
+    description: Explicit runner cache to use.
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
@@ -37,7 +41,7 @@ runs:
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Setup Win Path
-      if: matrix.os == 'windows-latest'
+      if: runner.os == 'Windows'
       shell: pwsh
       run: |
         echo "C:\Users\runneradmin\AppData\Local\Temp\opt\poetry\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
@@ -48,7 +52,7 @@ runs:
       id: poetry-install-cache
       with:
         path: ${{ inputs.poetry-home }}/install-poetry.py
-        key: poetry-install-${{ runner.os }}-${{ inputs.poetry-version }}
+        key: poetry-install-${{ inputs.runner || matrix.os || runner.os }}-${{ inputs.poetry-version }}
 
     - name: Fetch Poetry Installer
       shell: bash
@@ -83,7 +87,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: ${{ steps.poetry-config.outputs.cache-dir }}
-        key: poetry-cache-dir-${{ runner.os }}-${{ inputs.python-version }}-${{ inputs.poetry-version }}
+        key: poetry-cache-dir-${{ inputs.runner || matrix.os || runner.os }}-${{ inputs.python-version }}-${{ inputs.poetry-version }}
 
     - name: Install dependencies.
       shell: bash
