@@ -39,7 +39,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Run Tests
-        run: poetry run pytest --cov --cov-config=pyproject.toml -junit-xml=test_log.xml --cov-report=xml:cov.xml -vv -ra -n'auto'
+        run: poetry run pytest --cov --cov-config=pyproject.toml --junit-xml=test_log.xml --cov-report=xml:cov.xml -vv -ra -n'auto'
 
       - name: Upload Codecov
         uses: codecov/codecov-action@v3
