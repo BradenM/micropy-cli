@@ -64,7 +64,7 @@ attrs = "22.1.0"
 typing-extensions = "4.4.0"
 pydantic = "1.10.2"
 distlib = "0.3.6"
-importlib-metadata = "5.1.0"
+importlib-metadata = "==5.2.0"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "^1.4"
