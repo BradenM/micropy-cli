@@ -52,7 +52,7 @@ dpath = "==1.5.0"
 GitPython = "==3.1.29"
 packaging = "21.3"
 python-minifier = "==2.7.0"
-mypy = "0.940"
+mypy = "==0.991"
 ## rshell is broken on windows (with python >=3.10) due to pyreadline dependency.
 rshell = [
     { version = "^0.0.31", platform = "win32", python = "<3.10" },
@@ -76,7 +76,7 @@ black = "^21.5b1"
 pre-commit = "^2.17.0"
 doc8 = "^0.11.0"
 docformatter = "^1.4"
-mypy = { version = "^0.940", extras = ["dmypy"] }
+mypy = { version = "^0.991", extras = ["dmypy"] }
 types-requests = "^2.27.14"
 pyupgrade = "^3.2.2"
 better-exceptions = "^0.3.3"
