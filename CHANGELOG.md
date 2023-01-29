@@ -29,6 +29,7 @@
 - **chglog:** update changelog.
 - **chglog:** update changelog.
 - **chglog:** update changelog.
+- **chglog:** update changelog.
 - **deps:** update lockfile.
 - **deps:** update dependency python to v3.11.0
 - **deps:** update dependency python to v3.11.1
