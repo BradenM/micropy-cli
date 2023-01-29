@@ -93,7 +93,9 @@ runs:
       id: venv-cache
       with:
         path: ./.venv
-        key: poetry-venv-dir-${{ inputs.runner || matrix.os || runner.os }}-${{ inputs.python-version }}-${{ inputs.poetry-version }}
+        key: poetry-venv-dir-${{ inputs.runner || matrix.os || runner.os }}-${{ inputs.python-version }}-${{ inputs.poetry-version }}-${{ hashFiles('poetry.lock') }}
+        restore-keys: |
+          poetry-venv-dir-${{ inputs.runner || matrix.os || runner.os }}-${{ inputs.python-version }}-${{ inputs.poetry-version }}-
 
     - name: Install dependencies.
       shell: bash
