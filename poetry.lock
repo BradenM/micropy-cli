@@ -2573,6 +2573,11 @@ files = [
     {file = "wcwidth-0.2.5.tar.gz", hash = "sha256:c4d647b99872929fdb7bdcaa4fbe7f01413ed3d98077df798530e5b04f116c83"},
 ]
 
+[package.source]
+type = "legacy"
+url = "https://test.pypi.org/simple"
+reference = "pypi-test"
+
 [[package]]
 name = "wrapt"
 version = "1.14.1"
@@ -2666,4 +2671,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7,<3.12"
-content-hash = "d168840cf58801d5a41fe302ae109d84b63e5cd26e666645400305054c5426b8"
+content-hash = "4bc7f8b4c24f4a9da5b99d3092a228a10edadf5daca9bf755d4abad61b713a49"
