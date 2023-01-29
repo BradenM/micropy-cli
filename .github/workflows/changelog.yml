@@ -19,11 +19,8 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v3
 
-      - name: Install gh-chglog
-        run: go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
-
       - name: Generate Changelog
-        run: git-chglog
+        run: go run github.com/git-chglog/git-chglog/cmd/git-chglog@latest --output CHANGELOG.md
 
       - name: Commit Changes
         run: |
