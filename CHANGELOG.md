@@ -24,6 +24,7 @@
 - **utils:** remove PathLike GenericAlias subscript for py <3.8
 
 ### Chore
+- **chglog:** update changelog.
 - **deps:** update dependency python to v3.11.1
 - **deps:** update lockfile
 - **deps:** update dependency mypy to v0.991
