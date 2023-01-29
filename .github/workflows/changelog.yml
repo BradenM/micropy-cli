@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-go@v3
 
       - name: Install gh-chglog
-        run: go get github.com/git-chglog/git-chglog/cmd/git-chglog@latest
+        run: go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
 
       - name: Generate Changelog
         run: git-chglog
