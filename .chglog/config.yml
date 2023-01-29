@@ -5,20 +5,18 @@ info:
   repository_url: https://github.com/BradenM/micropy-cli
 options:
   commits:
-     filters:
-       Type:
-         - feat
-         - fix
-         - perf
-         - refactor
-         - chore
+    filters:
+      Type:
+        - feat
+        - fix
+        - perf
+        - refactor
   commit_groups:
-     title_maps:
-       feat: Features
-       fix: Bug Fixes
-       perf: Performance Improvements
-       refactor: Code Refactoring
-       chores: Chores
+    title_maps:
+      feat: Features
+      fix: Bug Fixes
+      perf: Performance Improvements
+      refactor: Code Refactoring
   header:
     pattern: "^(\\w*)(?:\\(([\\w\\$\\.\\-\\*\\s]*)\\))?\\:\\s(.*)$"
     pattern_maps:
@@ -28,7 +26,7 @@ options:
 
   issues:
     prefix:
-      - #
+      -  #
 
   refs:
     actions:
