@@ -4,6 +4,7 @@
 ### Bug Fixes
 - **compat:** <=3.8 python typing compat issues.
 - **deps:** pin dependencies
+- **deps:** update dependency markupsafe to v2.1.2
 - **deps:** update dependency requests to v2.28.2
 - **deps:** update dependency pydantic to v1.10.3
 - **deps:** update dependency python-minifier to v2.8.0
@@ -12,7 +13,7 @@
 - **deps:** update dependency importlib-metadata to v5.2.0
 - **deps:** update dependency requirements-parser to v0.5.0
 - **deps:** update dependency gitpython to v3.1.30
-- **deps:** update dependency markupsafe to v2.1.2
+- **deps:** update dependency pydantic to v1.10.4
 - **deps:** update dependency boltons to v21
 - **main:** add types to `MicroPy.stubs`
 - **main:** StubRepository has faux immutability.
