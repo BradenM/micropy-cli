@@ -1,6 +1,99 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bug Fixes
+- **compat:** <=3.8 python typing compat issues.
+- **deps:** update dependency gitpython to v3.1.30
+- **deps:** update dependency python-minifier to v2.8.0
+- **deps:** pin dependencies
+- **deps:** update dependency attrs to v22.2.0
+- **deps:** update dependency importlib-metadata to v5.2.0
+- **deps:** update dependency requirements-parser to v0.5.0
+- **deps:** update dependency pydantic to v1.10.3
+- **deps:** pin dependencies
+- **deps:** update dependency boltons to v21
+- **main:** StubRepository has faux immutability.
+- **main:** add types to `MicroPy.stubs`
+- **stubs:** utilize absolute names in stub search results.
+- **stubs:** perform repo lookups prior to adding stub
+- **stubs:** remove mutating subclass hook from `StubsManifest`.
+- **stubs:** ensure src path is path type in log.
+- **stubs:** use `typing.Type` for sub py3.7 compat.
+- **utils:** use importlib metadata to check micropy version in utils.
+- **utils:** add annotations future in type utils.
+- **utils:** remove PathLike GenericAlias subscript for py <3.8
+
+### Chore
+- **deps:** update dependency python to v3.11.1
+- **deps:** update lockfile
+- **deps:** update dependency mypy to v0.991
+- **deps:** update lockfile.
+- **deps:** update dependency python to v3.11.0
+- **deps:** update dependency pytest-xdist to v3
+- **tools:** update gh-chlog version
+- **tools:** update poetry in tool versions.
+- **tools:** update poetry to v1.3.0
+- **tools:** update poetry to latest
+
+### Code Refactoring
+- **stubs:** remove search remote from stub manager.
+- **stubs:** utilize locator strategies over stub source factory method.
+- **stubs:** remove old `StubRepo` class.
+- **stubs:** update repository impls to retain immutability.
+
+### Features
+- **cli:** utilize stub source locators during add.
+- **cli:** improve stub search output.
+- **cli:** add flag to show outdated stub packages in search + group output by repo.
+- **cli:** format repo as title in stubs search output.
+- **data:** add micropython-stubs source
+- **data:** add display names for current stub sources.
+- **deps:** add distlib.
+- **deps:** add importlib_metadata as dep.
+- **deps:** add pytest-clarity+better-exceptions to dev deps.
+- **deps:** add attrs/pydantic
+- **main:** init `StubRepository` as attr.
+- **main:** drop in new StubRepository impl in place of StubRepo.
+- **stubs:** rename `StubRepositoryPackage.repository` -> `manifest`.
+- **stubs:** build progressive package indexes in `StubRepository`, utilize in search/resolve.
+- **stubs:** make `StubPackage` immutable.
+- **stubs:** make `StubsManifest` immutable.
+- **stubs:** make `StubRepositoryPackage` immutable, iterate matchers.
+- **stubs:** validate RepoInfo source, add method for fetching contents.
+- **stubs:** add RepositoryInfo model.
+- **stubs:** assume latest version by default, optionally show latest only in search, general improvements in stub repo.
+- **stubs:** accept generic package type in stub manifest
+- **stubs:** implement dirty metadata adapter for dist-based stubs until proper refactorings.
+- **stubs:** make `StubSource` proper abstract, add prepare abstractmethod + impls.
+- **stubs:** utilize `StubRepositoryPackage.match_exact`
+- **stubs:** expose `repo_name`,`versioned_name`,`absolute_versioned_name` on `StubRepositoryPackage`
+- **stubs:** make micropython stubs package sortable.
+- **stubs:** add `resolve_package_(absolute,)_versioned_name` to manifest.
+- **stubs:** impl `resolve_package_url` for micropython-stubs repo.
+- **stubs:** add StubRepositoryPackage model.
+- **stubs:** add StubPackage model.
+- **stubs:** make `StubRepository.resolve_package` return `StubRepositoryPackage`
+- **stubs:** enforce faux immutability in StubRepository.
+- **stubs:** check absolute name for stub resolve matching.
+- **stubs:** expose name/version/absolute_name fields from stub repo package.
+- **stubs:** add method for resolving absolute stub package name from manifest.
+- **stubs:** support reuse of `StubSource` instances, improvements.
+- **stubs:** add `display_name` field to stub repository.
+- **stubs:** `RepoStubLocator` locate strategy.
+- **stubs:** impl resolve package method in StubRepository.
+- **stubs:** expose url via StubRepositoryPackage descriptor.
+- **stubs:** micropy-stubs resolve package url impl, stub micropython for now.
+- **stubs:** add resolve package url abstract meth to stubs manifest
+- **stubs:** add StubRepository for managing stub manifests.
+- **stubs:** add Micropython stubs package/manifest models.
+- **stubs:** utilize locators in `StubManager`, resolve requirements from metadata.
+- **stubs:** add StubsManifest model.
+- **stubs:** add MicropyStubs package/manifest models.
+- **utils:** add types to `ensure_existing_dir`
+- **utils:** defer updating stale cache with `utils.get_cached_data`
+- **utils:** add SupportsLessThan protocol to types util.
+- **utils:** add utils.types, PathStr alias.
+
 
 <a name="v4.0.0"></a>
 ## [v4.0.0] - 2022-11-13
@@ -21,6 +114,7 @@
 - **pre-commit:** update pre-commit, remove local poetry-export hook workaround
 - **precommit:** remove dev group from docs export hook.
 - **precommit:** auto-update precommit
+- **release:** release v4.0.0
 - **tools:** update poetry, add python+git-chlog to tool versions
 - **tools:** update poetry to v1.2
 
