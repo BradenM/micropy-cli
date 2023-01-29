@@ -27,10 +27,11 @@
 - **chglog:** update changelog.
 - **chglog:** update changelog.
 - **chglog:** update changelog.
+- **chglog:** update changelog.
+- **deps:** update lockfile.
 - **deps:** update dependency python to v3.11.0
 - **deps:** update dependency python to v3.11.1
 - **deps:** update lockfile
-- **deps:** update lockfile.
 - **deps:** update dependency mypy to v0.991
 - **deps:** update dependency pytest-xdist to v3
 - **tools:** update poetry in tool versions.
