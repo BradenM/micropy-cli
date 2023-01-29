@@ -1,6 +1,87 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bug Fixes
+- **compat:** <=3.8 python typing compat issues.
+- **deps:** update dependency gitpython to v3.1.30
+- **deps:** update dependency python-minifier to v2.8.0
+- **deps:** pin dependencies
+- **deps:** update dependency attrs to v22.2.0
+- **deps:** update dependency importlib-metadata to v5.2.0
+- **deps:** update dependency requirements-parser to v0.5.0
+- **deps:** update dependency pydantic to v1.10.3
+- **deps:** pin dependencies
+- **deps:** update dependency boltons to v21
+- **main:** StubRepository has faux immutability.
+- **main:** add types to `MicroPy.stubs`
+- **stubs:** utilize absolute names in stub search results.
+- **stubs:** perform repo lookups prior to adding stub
+- **stubs:** remove mutating subclass hook from `StubsManifest`.
+- **stubs:** ensure src path is path type in log.
+- **stubs:** use `typing.Type` for sub py3.7 compat.
+- **utils:** use importlib metadata to check micropy version in utils.
+- **utils:** add annotations future in type utils.
+- **utils:** remove PathLike GenericAlias subscript for py <3.8
+
+### Code Refactoring
+- **stubs:** remove search remote from stub manager.
+- **stubs:** utilize locator strategies over stub source factory method.
+- **stubs:** remove old `StubRepo` class.
+- **stubs:** update repository impls to retain immutability.
+
+### Features
+- **cli:** utilize stub source locators during add.
+- **cli:** improve stub search output.
+- **cli:** add flag to show outdated stub packages in search + group output by repo.
+- **cli:** format repo as title in stubs search output.
+- **data:** add micropython-stubs source
+- **data:** add display names for current stub sources.
+- **deps:** add distlib.
+- **deps:** add importlib_metadata as dep.
+- **deps:** add pytest-clarity+better-exceptions to dev deps.
+- **deps:** add attrs/pydantic
+- **main:** init `StubRepository` as attr.
+- **main:** drop in new StubRepository impl in place of StubRepo.
+- **stubs:** rename `StubRepositoryPackage.repository` -> `manifest`.
+- **stubs:** build progressive package indexes in `StubRepository`, utilize in search/resolve.
+- **stubs:** make `StubPackage` immutable.
+- **stubs:** make `StubsManifest` immutable.
+- **stubs:** make `StubRepositoryPackage` immutable, iterate matchers.
+- **stubs:** validate RepoInfo source, add method for fetching contents.
+- **stubs:** add RepositoryInfo model.
+- **stubs:** assume latest version by default, optionally show latest only in search, general improvements in stub repo.
+- **stubs:** accept generic package type in stub manifest
+- **stubs:** implement dirty metadata adapter for dist-based stubs until proper refactorings.
+- **stubs:** make `StubSource` proper abstract, add prepare abstractmethod + impls.
+- **stubs:** utilize `StubRepositoryPackage.match_exact`
+- **stubs:** expose `repo_name`,`versioned_name`,`absolute_versioned_name` on `StubRepositoryPackage`
+- **stubs:** make micropython stubs package sortable.
+- **stubs:** add `resolve_package_(absolute,)_versioned_name` to manifest.
+- **stubs:** impl `resolve_package_url` for micropython-stubs repo.
+- **stubs:** add StubRepositoryPackage model.
+- **stubs:** add StubPackage model.
+- **stubs:** make `StubRepository.resolve_package` return `StubRepositoryPackage`
+- **stubs:** enforce faux immutability in StubRepository.
+- **stubs:** check absolute name for stub resolve matching.
+- **stubs:** expose name/version/absolute_name fields from stub repo package.
+- **stubs:** add method for resolving absolute stub package name from manifest.
+- **stubs:** support reuse of `StubSource` instances, improvements.
+- **stubs:** add `display_name` field to stub repository.
+- **stubs:** `RepoStubLocator` locate strategy.
+- **stubs:** impl resolve package method in StubRepository.
+- **stubs:** expose url via StubRepositoryPackage descriptor.
+- **stubs:** micropy-stubs resolve package url impl, stub micropython for now.
+- **stubs:** add resolve package url abstract meth to stubs manifest
+- **stubs:** add StubRepository for managing stub manifests.
+- **stubs:** add Micropython stubs package/manifest models.
+- **stubs:** utilize locators in `StubManager`, resolve requirements from metadata.
+- **stubs:** add StubsManifest model.
+- **stubs:** add MicropyStubs package/manifest models.
+- **utils:** add types to `ensure_existing_dir`
+- **utils:** defer updating stale cache with `utils.get_cached_data`
+- **utils:** add SupportsLessThan protocol to types util.
+- **utils:** add utils.types, PathStr alias.
+
 
 <a name="v4.0.0"></a>
 ## [v4.0.0] - 2022-11-13
@@ -11,18 +92,6 @@
 - **deps:** update dependency gitpython to v3.1.29
 - **deps:** update dependency colorama to v0.4.6
 - **deps:** pin dependencies
-
-### Chore
-- **deps:** update codecov/codecov-action action to v3
-- **deps:** add renovate.json
-- **deps:** update dependency recommonmark to ^0.7.0
-- **deps:** update dependency doc8 to ^0.11.0
-- **git:** add previous commit to blame ignores
-- **pre-commit:** update pre-commit, remove local poetry-export hook workaround
-- **precommit:** remove dev group from docs export hook.
-- **precommit:** auto-update precommit
-- **tools:** update poetry, add python+git-chlog to tool versions
-- **tools:** update poetry to v1.2
 
 ### Code Refactoring
 - **stubs:** utilize helper method during remote stub unpack.
@@ -43,14 +112,6 @@
 - **pyd:** upydevice connect proper attr error if before established
 - **pyd:** use host path suffix check only as fallback in copy_to
 - **pyd:** consumer handler protocol methods should not be writable
-
-### Chore
-- **chlog:** update changelog config+template
-- **deps:** update scoped deps+lockfile
-- **pkg:** remove setup.cfg
-- **pre-commit:** update pre-commit, pin black till click upgrade
-- **release:** bump version to v4.0.0-rc.2
-- **tools:** update poetry to v1.2.0b1
 
 ### Features
 - **deps:** add upydevice+deps, missing type-stubs to dev, update mypy config
@@ -95,22 +156,6 @@
 - **utils:** capture attribue err that occurs on py310 win32 rshell import
 - **utils:** utilize mp-stubbers new logic for generating stubs
 
-### Chore
-- **pkg:** update lock file
-- **pkg:** remove setup from bump2version
-- **pkg:** regen lock file
-- **pkg:** update makefile setup.cfg references to pyproject
-- **pkg:** add py.typed file
-- **pkg:** update lockfile
-- **pkg:** remove old tox file
-- **pkg:** remove setup file
-- **pkg:** drop support for python 3.6
-- **precommit:** update precommit versions
-- **release:** bump version to v4.0.0.rc.1
-- **tools:** update to poetry v1.2.0a2
-- **tools:** update poetry to v1.1.13
-- **tools:** update poetry version in tools-versions
-
 ### Features
 - **deps:** update dependencies scoped
 - **deps:** update micropython-stubber to latest master commit
@@ -125,58 +170,6 @@
 ## [v3.6.0] - 2021-05-17
 ### Bug Fixes
 - **data:** update stubs schema for compat with latest stubber
-
-### Chore
-- **cleanup:** remove .vscode folder
-- **deps:** bump gitpython from 3.1.12 to 3.1.14
-- **deps:** bump cachier from 1.4.4 to 1.5.0
-- **deps:** bump tqdm from 4.53.0 to 4.54.1
-- **deps:** bump packaging from 20.4 to 20.8
-- **deps:** bump tqdm from 4.52.0 to 4.53.0
-- **deps:** bump tqdm from 4.54.1 to 4.55.1
-- **deps:** bump questionary from 1.8.1 to 1.9.0
-- **deps:** bump tqdm from 4.55.1 to 4.56.0
-- **deps:** [security] bump py from 1.9.0 to 1.10.0
-- **deps:** bump tqdm from 4.56.0 to 4.60.0
-- **deps:** bump gitpython from 3.1.11 to 3.1.12
-- **deps:** bump requests from 2.25.0 to 2.25.1
-- **deps:** bump more-itertools from 8.6.0 to 8.7.0
-- **deps:** [security] bump urllib3 from 1.26.3 to 1.26.4
-- **deps:** bump jinja2 from 2.11.2 to 2.11.3
-- **deps:** bump packaging from 20.8 to 20.9
-- **deps:** bump sphinx-click from 2.6.0 to 2.7.1
-- **deps:** [security] bump urllib3 from 1.26.2 to 1.26.3
-- **deps:** bump sphinx-click from 2.5.0 to 2.6.0
-- **deps:** bump pyyaml from 5.3.1 to 5.4.1
-- **deps-dev:** bump flake8 from 3.8.4 to 3.9.0
-- **deps-dev:** bump tox from 3.21.3 to 3.23.0
-- **deps-dev:** bump pylint from 2.6.0 to 2.7.2
-- **deps-dev:** bump coveralls from 3.0.0 to 3.0.1
-- **deps-dev:** bump coveralls from 3.0.0 to 3.0.1
-- **deps-dev:** bump mypy from 0.790 to 0.812
-- **deps-dev:** bump pytest from 6.2.1 to 6.2.3
-- **deps-dev:** bump pytest-randomly from 3.5.0 to 3.7.0
-- **deps-dev:** bump pytest-runner from 5.2 to 5.3.0
-- **deps-dev:** bump autopep8 from 1.5.4 to 1.5.5
-- **deps-dev:** bump pytest-cov from 2.11.0 to 2.11.1
-- **deps-dev:** bump isort from 5.6.4 to 5.7.0
-- **deps-dev:** bump coveralls from 2.2.0 to 3.0.0
-- **deps-dev:** bump tox from 3.20.1 to 3.21.3
-- **deps-dev:** bump isort from 5.7.0 to 5.8.0
-- **deps-dev:** bump requests-mock from 1.8.0 to 1.9.2
-- **deps-dev:** bump pytest-cov from 2.10.1 to 2.11.0
-- **deps-dev:** bump rope from 0.18.0 to 0.19.0
-- **deps-dev:** bump pytest-mock from 3.4.0 to 3.5.1
-- **deps-dev:** bump flake8 from 3.9.0 to 3.9.1
-- **deps-dev:** bump pytest from 6.1.2 to 6.2.1
-- **deps-dev:** bump pytest-mock from 3.3.1 to 3.4.0
-- **deps-dev:** bump flake8 from 3.9.1 to 3.9.2
-- **deps-dev:** bump docformatter from 1.3.1 to 1.4
-- **deps-dev:** bump coveralls from 2.1.2 to 2.2.0
-- **git:** update git ignore
-- **git:** add git-blame-ignore-revs to ignore prev commit
-- **release:** bump version to v3.6.0
-- **tools:** update poetry to latest
 
 ### Features
 - **deps:** update rshell dependency
@@ -200,35 +193,6 @@
 - **pkg:** constrain questionary version to <1.8.0
 - **pkg:** setuptools editable installation issues
 
-### Chore
-- **deps:** update dependencies
-- **deps:** bump more-itertools from 8.0.2 to 8.6.0
-- **deps:** bump jinja2 from 2.10.3 to 2.11.2
-- **deps:** bump tqdm from 4.40.2 to 4.49.0
-- **deps:** bump cachier from 1.4.2 to 1.4.3
-- **deps:** bump sphinx-click from 2.3.2 to 2.5.0
-- **deps:** bump pyyaml from 5.2 to 5.3.1
-- **deps:** bump requests from 2.24.0 to 2.25.0
-- **deps:** bump questionary from 1.4.0 to 1.6.0
-- **deps:** update setup.py
-- **deps:** update gitpython
-- **deps-dev:** bump pytest-randomly from 3.4.0 to 3.4.1
-- **deps-dev:** bump pytest-testmon from 1.0.1 to 1.0.2
-- **deps-dev:** bump mypy from 0.781 to 0.790
-- **deps-dev:** bump flake8 from 3.8.3 to 3.8.4
-- **deps-dev:** bump rope from 0.14.0 to 0.18.0
-- **deps-dev:** bump pytest-mock from 1.13.0 to 3.3.1
-- **deps-dev:** bump autopep8 from 1.5.3 to 1.5.4
-- **deps-dev:** bump pytest-cov from 2.10.0 to 2.10.1
-- **deps-dev:** bump autoflake from 1.3.1 to 1.4
-- **deps-dev:** bump isort from 4.3.21 to 5.6.4
-- **deps-dev:** bump coveralls from 2.1.1 to 2.1.2
-- **deps-dev:** bump pytest from 5.4.3 to 6.1.2
-- **deps-dev:** bump coveralls from 2.0.0 to 2.1.1
-- **deps-dev:** bump flaky from 3.6.1 to 3.7.0
-- **deps-dev:** bump pytest-forked from 1.1.3 to 1.3.0
-- **pkg:** fix/update setup.py
-
 ### Features
 - **package:** detect and return VCSDependencySource when needed in create dep source factory
 - **package:** add VCSDependencySource class for supporting VCS requirements
@@ -244,29 +208,6 @@
 ## [v3.4.0] - 2020-07-25
 ### Bug Fixes
 - **deps:** update dpath constraint to >=1.4,<2.0
-
-### Chore
-- **deps:** bump sphinx-click from 2.3.1 to 2.3.2
-- **deps:** bump dpath from 1.4.2 to 2.0.1
-- **deps:** bump packaging from 19.2 to 20.4
-- **deps:** bump requests from 2.22.0 to 2.24.0
-- **deps:** bump sphinx from 2.2.2 to 2.4.4
-- **deps:** bump cachier from 1.2.8 to 1.4.2
-- **deps:** bump click from 7.0 to 7.1.2
-- **deps-dev:** bump flake8 from 3.7.9 to 3.8.3
-- **deps-dev:** bump pytest from 5.3.1 to 5.4.3
-- **deps-dev:** bump tox from 3.14.2 to 3.16.1
-- **deps-dev:** bump requests-mock from 1.7.0 to 1.8.0
-- **deps-dev:** bump coveralls from 1.9.2 to 2.0.0
-- **deps-dev:** bump pytest-cov from 2.9.0 to 2.10.0
-- **deps-dev:** bump pylint from 2.4.4 to 2.5.3
-- **deps-dev:** bump mypy from 0.750 to 0.781
-- **deps-dev:** bump pytest-cov from 2.8.1 to 2.9.0
-- **deps-dev:** bump autopep8 from 1.5.2 to 1.5.3
-- **deps-dev:** bump pytest-randomly from 3.1.0 to 3.4.0
-- **deps-dev:** bump autopep8 from 1.4.4 to 1.5.2
-- **pkg:** add .tool-versions, ignore pycharm workspace
-- **pkg:** update setup.py
 
 
 <a name="v3.3.0"></a>
@@ -313,10 +254,6 @@
 - **project:** Context not being updated when needed
 - **project:** Add empty dict to config on create
 
-### Chore
-- Setup pre-releases in bump2version config
-- Update Deps
-
 ### Code Refactoring
 - Cleanup Stubs Module Context Handling
 - **packages:** Use new Dependency Api in Packages Module
@@ -362,11 +299,6 @@
 - **package:** Use Dephell to generate setup.py, Remove Manifiest.in
 - **project:** Exception Raised if no Templates are used in Project
 - **project:** VSCode check always failed silently
-
-### Chore
-- Update Requirements
-- Update Requirements
-- Remove Pipfile
 
 ### Features
 - Cleanup Log File Formatting
@@ -418,9 +350,6 @@
 - Handle Chunked Content Length on Package Download
 - Package urls not resolving correctly
 - Fails to load Project if Template Files are Missing ([#55](https://github.com/BradenM/micropy-cli/issues/55))
-
-### Chore
-- Update submodule micropython-stubber
 
 ### Code Refactoring
 - **data:** Move all Data Paths to Data Module
@@ -624,9 +553,6 @@ No longer compatible with <=ms-python.python[@2019](https://github.com/2019).8.3
 - **stubs:** Removed Old Stub Command
 - **stubs:** Fixed missing logging.py
 - **template:** Fixed src template
-
-### Chore
-- Add Makefile
 
 ### Code Refactoring
 - Setup as proper package
