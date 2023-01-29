@@ -2,17 +2,34 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - master
 
 env:
   POETRY_VERSION: 1.3.2
   PYTHON_VERSION: 3.11
 
 jobs:
-  release:
-    name: Release
+  release-please:
+    name: Release Please
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release-please.outputs.release_created }}
+      tag_name: ${{ steps.release-please.outputs.tag_name }}
+    steps:
+      - name: Release Please
+        id: release-please
+        uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: python
+          # mark gh releases as pre (IF version is a semantic pre)
+          prerelease: true
+
+  publish:
+    name: Publish ${{ needs.release-please.outputs.tag_name }}
+    runs-on: ubuntu-latest
+    needs: [release-please]
+    if: needs.release-please.outputs.release_created
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,21 +41,8 @@ jobs:
           poetry-version: ${{ env.POETRY_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Check Version
-        id: check-version
-        run: |
-          [[ "$(poetry version --short)" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || echo prerelease=true >> $GITHUB_OUTPUT
-
       - name: Build
         run: poetry build
-
-      - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "dist/*"
-          token: ${{ secrets.GH_PAT }}
-          draft: false
-          prerelease: steps.check-version.outputs.prerelease == 'true'
 
       - name: Publish
         env:
