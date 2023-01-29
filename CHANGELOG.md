@@ -3,25 +3,26 @@
 
 ### Bug Fixes
 - **compat:** <=3.8 python typing compat issues.
-- **deps:** update dependency gitpython to v3.1.30
+- **deps:** pin dependencies
+- **deps:** update dependency pydantic to v1.10.3
 - **deps:** update dependency python-minifier to v2.8.0
 - **deps:** pin dependencies
 - **deps:** update dependency attrs to v22.2.0
 - **deps:** update dependency importlib-metadata to v5.2.0
 - **deps:** update dependency requirements-parser to v0.5.0
-- **deps:** update dependency pydantic to v1.10.3
-- **deps:** pin dependencies
+- **deps:** update dependency gitpython to v3.1.30
+- **deps:** update dependency requests to v2.28.2
 - **deps:** update dependency boltons to v21
-- **main:** StubRepository has faux immutability.
 - **main:** add types to `MicroPy.stubs`
+- **main:** StubRepository has faux immutability.
 - **stubs:** utilize absolute names in stub search results.
 - **stubs:** perform repo lookups prior to adding stub
-- **stubs:** remove mutating subclass hook from `StubsManifest`.
 - **stubs:** ensure src path is path type in log.
 - **stubs:** use `typing.Type` for sub py3.7 compat.
+- **stubs:** remove mutating subclass hook from `StubsManifest`.
 - **utils:** use importlib metadata to check micropy version in utils.
-- **utils:** add annotations future in type utils.
 - **utils:** remove PathLike GenericAlias subscript for py <3.8
+- **utils:** add annotations future in type utils.
 
 ### Code Refactoring
 - **stubs:** remove search remote from stub manager.
