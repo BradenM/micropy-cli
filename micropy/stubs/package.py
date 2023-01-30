@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 
 class StubPackage(BaseModel):
-
     class Config:
         frozen = True
         allow_population_by_field_name = True
