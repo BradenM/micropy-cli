@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 import click
 import micropy.exceptions as exc
 import questionary as prompt
+from micropy import __version__ as micropy_version
 from micropy import main, utils
 from micropy.logger import Log
 from micropy.project import Project, modules
@@ -23,7 +24,7 @@ pass_mpy = click.make_pass_decorator(main.MicroPy, ensure=True)
 
 
 @click.group(invoke_without_command=True)
-@click.version_option()
+@click.version_option(version=micropy_version)
 @click.option(
     "--skip-checks",
     "-s",
