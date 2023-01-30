@@ -4,12 +4,11 @@ import json
 import os
 from itertools import chain
 from pathlib import Path
-from typing import Iterator, List
+from typing import Iterator, List, Union
 
 from jinja2 import Environment, FileSystemLoader
 from micropy.logger import Log
-
-from .checks import TEMPLATE_CHECKS
+from typing_extensions import Literal
 
 
 class Template:
@@ -170,10 +169,14 @@ class CodeTemplate(Template):
     """Template for VSCode settings."""
 
     FILENAME = ".vscode/settings.json"
-    CHECKS = [TEMPLATE_CHECKS["ms-python"]]
+
+    # TODO: rewrite this module and have proper DI
+    language_server: Union[Literal["mpls"] | Literal["pylance"]]
 
     def __init__(self, *args, **kwargs):
         self.update_method = self.update_as_json
+        # TODO: but for now, assume pylance.
+        self.language_server = kwargs.get("language_server", "pylance")
         super().__init__(*args, **kwargs)
 
     @property
@@ -188,6 +191,7 @@ class CodeTemplate(Template):
         ctx = {
             "stubs": self.stubs or [],
             "paths": stub_paths,
+            "language_server": self.language_server,
         }
         return ctx
 
@@ -215,7 +219,7 @@ class PylintTemplate(Template):
 
 
 class TemplateProvider:
-    """Template Factory."""
+    """Template Provider."""
 
     _template_files = {
         "vscode": CodeTemplate,
@@ -231,7 +235,7 @@ class TemplateProvider:
     TEMPLATES = {
         "vscode": (
             ["vscode", "vsextensions"],
-            ("VSCode Settings for " "Autocompletion/Intellisense"),
+            "VSCode Settings for Autocompletion/Intellisense",
         ),
         "pymakr": (["pymakr"], "Pymakr Configuration"),
         "pylint": (["pylint"], "Pylint MicroPython Settings"),
