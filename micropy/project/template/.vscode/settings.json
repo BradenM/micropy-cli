@@ -1,12 +1,16 @@
 {
-    "python.linting.enabled": true,
-    "python.jediEnabled": false,
-
     // Loaded Stubs: {% for stub in stubs %} {{ stub }} {% endfor %}
+    {% if language_server == 'pylance' %}
+    "python.languageServer": "Pylance",
+    "python.analysis.autoSearchPath": true,
     "python.autoComplete.extraPaths": {{ paths }},
+    {% endif %}
+    {% if language_server == 'mpls' %}
+    "python.jediEnabled": false,
     "python.autoComplete.typeshedPaths":  {{ paths }},
     "python.analysis.typeshedPaths":  {{ paths }},
-    "python.analysis.extraPaths":  {{ paths }},
+    {% endif %}
 
+    "python.linting.enabled": true,
     "python.linting.pylintEnabled": true
 }
