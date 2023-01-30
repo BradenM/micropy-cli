@@ -39,7 +39,7 @@ micropy = 'micropy.cli:cli'
 [tool.poetry.dependencies]
 python = ">=3.7,<3.12"
 boltons = "==21.0.0"
-cachier = "1.5.4"
+cachier = "2.0.0"
 Jinja2 = "3.1.2"
 questionary = "1.10.0"
 requests = "2.28.2"

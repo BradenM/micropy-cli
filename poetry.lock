@@ -252,14 +252,14 @@ files = [
 
 [[package]]
 name = "cachier"
-version = "1.5.4"
+version = "2.0.0"
 description = "Persistent, stale-free, local and cross-machine caching for Python functions."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "cachier-1.5.4-py2.py3-none-any.whl", hash = "sha256:0465a451fd7845afb4dc31d6d4b4c1391ff78b83172a6d3057f6ba98c0f682eb"},
-    {file = "cachier-1.5.4.tar.gz", hash = "sha256:368ef452605e1d96e9909f2c51816f30ca4c91ffb0cdfef38610af8da7359296"},
+    {file = "cachier-2.0.0-py2.py3-none-any.whl", hash = "sha256:383564e514b5fcf6aa1a714afb73cf6cca71552d442f2c699246ca97a7aef343"},
+    {file = "cachier-2.0.0.tar.gz", hash = "sha256:b24eb049d8871a191fe3096cacc9ec7aa4d5aac7fe16fd6c41cff4ad7d1e2d32"},
 ]
 
 [package.dependencies]
@@ -2683,4 +2683,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7,<3.12"
-content-hash = "81ab9f82d8241941f392a85e15fc8866f0d0f2a3aeb5172e0065d8c955d5232a"
+content-hash = "7a65c2623500c1bbea195fec020ec3f0cf3ed7d50280afacba47df2c1e812419"
