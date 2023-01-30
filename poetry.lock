@@ -623,14 +623,20 @@ reference = "pypi-test"
 
 [[package]]
 name = "dpath"
-version = "1.5.0"
+version = "2.1.5"
 description = "Filesystem-like pathing and searching for dictionaries"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "dpath-1.5.0.tar.gz", hash = "sha256:496615b4ea84236d18e0d286122de74869a60e0f87e2c7ec6787ff286c48361b"},
+    {file = "dpath-2.1.5-py3-none-any.whl", hash = "sha256:b9ae2dc18b7c569fd28b9e5d7839867b3299c7b2a629ba117fe435dc60de5d9e"},
+    {file = "dpath-2.1.5.tar.gz", hash = "sha256:e8e1aba1143ceb572304dd59a76a701a65fdb1054429b56a3d0628a524184ae6"},
 ]
+
+[package.source]
+type = "legacy"
+url = "https://test.pypi.org/simple"
+reference = "pypi-test"
 
 [[package]]
 name = "exceptiongroup"
@@ -2683,4 +2689,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7,<3.12"
-content-hash = "81ab9f82d8241941f392a85e15fc8866f0d0f2a3aeb5172e0065d8c955d5232a"
+content-hash = "36f14189bff3dbd12d303cdac3608eec5a5334e5a5abfd7c799fa7fdc583561e"
