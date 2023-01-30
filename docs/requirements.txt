@@ -68,7 +68,7 @@ sphinxcontrib-htmlhelp==2.0.0 ; python_version >= "3.7" and python_version < "3.
 sphinxcontrib-jsmath==1.0.1 ; python_version >= "3.7" and python_version < "3.12"
 sphinxcontrib-qthelp==1.0.3 ; python_version >= "3.7" and python_version < "3.12"
 sphinxcontrib-serializinghtml==1.1.5 ; python_version >= "3.7" and python_version < "3.12"
-tomli==1.2.3 ; python_version >= "3.7" and python_version < "3.11"
+tomli==2.0.1 ; python_version >= "3.7" and python_version < "3.11"
 tqdm==4.64.1 ; python_version >= "3.7" and python_version < "3.12"
 typed-ast==1.5.4 ; python_version >= "3.7" and python_version < "3.8"
 typing-extensions==4.4.0 ; python_version >= "3.7" and python_version < "3.12"
