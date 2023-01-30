@@ -16,6 +16,11 @@ import sys
 
 from recommonmark.transform import AutoStructify
 
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
+
 sys.path.insert(0, os.path.abspath(".."))
 
 
@@ -30,7 +35,7 @@ author = "Braden Mars"
 github_doc_root = "https://github.com/BradenM/micropy-cli/tree/master/docs/"
 
 # The full version, including alpha/beta/rc tags
-release = "4.0.0"
+release = importlib_metadata.version("micropy-cli")
 
 
 # -- General configuration ---------------------------------------------------
