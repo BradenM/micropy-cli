@@ -21,6 +21,7 @@ jobs:
         id: release-please
         uses: google-github-actions/release-please-action@v3
         with:
+          token: ${{ secrets.GH_PAT }}
           release-type: python
           # mark gh releases as pre (IF version is a semantic pre)
           prerelease: true
