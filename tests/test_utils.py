@@ -235,7 +235,7 @@ def test_is_update_available(mocker, requests_mock, versions, expect):
     """Test self-update check method"""
     fake_data = {"releases": {k: [] for k in versions}}
     requests_mock.get("https://pypi.org/pypi/micropy-cli/json", json=fake_data)
-    mocker.patch("importlib_metadata.version", return_value="0.0.0")
+    mocker.patch("micropy.utils._compat.metadata.version", return_value="0.0.0")
     utils.helpers.get_cached_data.clear_cache()
     assert utils.helpers.is_update_available() == expect
 
