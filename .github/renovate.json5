@@ -7,12 +7,25 @@
         ":prHourlyLimitNone",
         ":pinDependencies",
         ":automergeMinor",
-        ":automergeDigest"
+        ":automergeDigest",
     ],
     addLabels: ["dependencies"],
     major: {
-        automerge: false
+        automerge: false,
     },
     ignorePaths: ["docs/requirements.txt"],
-    dependencyDashboard: true
+    dependencyDashboard: true,
+    packageRules: [
+        {
+            matchDepTypes: ["devDependencies"],
+            matchUpdateTypes: ["minor", "patch"],
+            automerge: true,
+            groupName: "devDependencies (non-major)"
+        },
+        {
+            matchDepTypes: ["devDependencies"],
+            matchUpdateTypes:  ["major"],
+            automerge: true
+        }
+    ],
 }
