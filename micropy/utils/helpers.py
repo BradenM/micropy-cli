@@ -20,7 +20,6 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Iterable, Optional, Union
 
-import importlib_metadata
 import requests
 import requirements
 from cachier import cachier
@@ -29,6 +28,7 @@ from requests import exceptions as reqexc
 from requests import utils as requtil
 from tqdm import tqdm
 
+from ._compat import metadata
 from .types import PathStr
 
 __all__ = [
@@ -398,7 +398,7 @@ def is_update_available():
     versions = [k for k in data["releases"].keys() if "rc" not in k]
     if versions:
         latest = version.parse(versions[-1])
-        cur_version = version.parse(importlib_metadata.version("micropy-cli"))
+        cur_version = version.parse(metadata.version("micropy-cli"))
         if cur_version < latest:
             return str(latest)
     return False
