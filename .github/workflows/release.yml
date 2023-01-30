@@ -13,7 +13,8 @@ jobs:
     steps:
       - name: Release Please
         id: release-please
-        uses: google-github-actions/release-please-action@v3
+        # see: googleapis/release-please#1837
+        uses: BradenM/release-please-action@661b5aac32c2caa7ccbaff42d32cb01d35a6797b
         with:
           token: ${{ secrets.GH_PAT }}
           command: manifest
