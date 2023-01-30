@@ -171,7 +171,7 @@ class CodeTemplate(Template):
     FILENAME = ".vscode/settings.json"
 
     # TODO: rewrite this module and have proper DI
-    language_server: Union[Literal["mpls"] | Literal["pylance"]]
+    language_server: Union[Literal["mpls"], Literal["pylance"]]
 
     def __init__(self, *args, **kwargs):
         self.update_method = self.update_as_json
