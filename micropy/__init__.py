@@ -13,11 +13,9 @@ and more.
 
 """
 
-from micropy import data, lib, project, pyd, stubs, utils
+from __future__ import annotations
 
-from .main import MicroPy
+from micropy.main import MicroPy
+from micropy.utils._compat import metadata
 
-__author__ = """Braden Mars"""
-__version__ = "4.0.0"
-
-__all__ = ["MicroPy", "data", "lib", "project", "stubs", "utils", "pyd"]
+__version__ = metadata.version("micropy-cli")
