@@ -7,17 +7,23 @@ version: 2
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
-    configuration: docs/conf.py
+  configuration: docs/conf.py
 
 # Fetch Submodules
 submodules:
-    include: all
+  include: all
 
 # Optionally build your docs in additional formats such as PDF and ePub
 formats: all
 
 # Optionally set the version of Python and requirements required to build your docs
 python:
-    version: 3.8
-    install:
-        - requirements: docs/requirements.txt
+  install:
+    - requirements: docs/requirements.txt
+    - method: "pip"
+      path: "."
+
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3"
