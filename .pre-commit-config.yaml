@@ -65,5 +65,8 @@ repos:
           - --without-hashes
 
 ci:
+  skip:
+    # todo: well-overdue update of docs
+    - poetry-export
   autofix_commit_msg: 🎨 [pre-commit.ci] Auto format from pre-commit.com hooks
   autoupdate_commit_msg: ⬆ [pre-commit.ci] pre-commit autoupdate
