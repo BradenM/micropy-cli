@@ -26,7 +26,6 @@ def get_indent(l):
 
 
 def tokenize(readline):
-
     indent = 0
 
     yield TokenInfo(ENCODING, "utf-8", 0, 0, "")

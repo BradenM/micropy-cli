@@ -7,7 +7,6 @@ from micropy import exceptions, stubs
 
 @pytest.fixture
 def mock_fware(mocker, shared_datadir):
-
     fware_stub = shared_datadir / "fware_test_stub"
     mock_remote = mocker.patch.object(stubs.source.RemoteStubLocator, "prepare").return_value
     mock_remote.__enter__.return_value = fware_stub
