@@ -128,7 +128,6 @@ class RemoteStubLocator(LocateStrategy):
 
 @attrs.define
 class RepoStubLocator(LocateStrategy):
-
     repo: StubRepository = attrs.field(repr=False)
 
     def prepare(self, location: PathStr) -> Union[PathStr, tuple[PathStr, Callable[..., Any]]]:

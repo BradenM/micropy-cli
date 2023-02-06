@@ -5,7 +5,6 @@ from micropy import config
 
 
 class TestConfig:
-
     default = {"one": 1, "two": 2, "sub": {"items": ["foo", "bar"], "bool": True}}
 
     @pytest.fixture
