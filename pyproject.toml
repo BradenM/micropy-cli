@@ -50,7 +50,7 @@ colorama = { version = "==0.4.6", platform = "win32" }
 jsonschema = "=3.2.0"
 dpath = "==1.5.0"
 GitPython = "==3.1.30"
-packaging = "21.3"
+packaging = "23.0"
 python-minifier = "==2.8.0"
 mypy = "==0.991"
 ## rshell is broken on windows (with python >=3.10) due to pyreadline dependency.
