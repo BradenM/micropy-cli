@@ -293,8 +293,16 @@ def list(mpy):
 @stubs.command(short_help="Create Stubs from Pyboard")
 @click.argument("port", required=True)
 @click.option("-v", "--verbose", is_flag=True, default=False, help="Enable verbose output")
+@click.option(
+    "-b",
+    "--backend",
+    type=click.Choice(["upydevice", "rshell"]),
+    default="upydevice",
+    help="PyDevice backend.",
+    show_default=True,
+)
 @pass_mpy
-def create(mpy, port, verbose=False):
+def create(mpy, port, verbose=False, backend="upydevice"):
     """Create stubs from a pyboard at <PORT>
 
     \b
@@ -303,7 +311,7 @@ def create(mpy, port, verbose=False):
     at: https://github.com/Josverl/micropython-stubber
 
     """
-    return mpy.create_stubs(port, verbose=verbose)
+    return mpy.create_stubs(port, verbose=verbose, backend=backend)
 
 
 if __name__ == "__main__":
