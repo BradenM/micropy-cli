@@ -114,8 +114,7 @@ def test_search_xml(mocker, shared_datadir, test_urls):
 
 
 def test_generate_stub(shared_datadir, tmp_path, mocker):
-    mock_stubber = mocker.patch.object(utils.stub, "import_stubber").return_value
-    mock_stubber.__file__ = tmp_path
+    mock_stubber = mocker.patch.object(utils.stub, "stubmaker")
     expect_path = tmp_path / "foo.py"
     expect_path.touch()
     result = utils.generate_stub(expect_path)

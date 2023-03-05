@@ -56,7 +56,7 @@ def test_stub_list(mock_mpy, mocker, runner):
 def test_stub_create(runner, mock_mpy):
     """should call create_stubs"""
     result = runner.invoke(cli.create, ["/dev/PORT"], obj=mock_mpy)
-    mock_mpy.create_stubs.assert_called_once_with("/dev/PORT", verbose=False)
+    mock_mpy.create_stubs.assert_called_once_with("/dev/PORT", verbose=False, backend="upydevice")
     assert result.exit_code == 0
 
 
