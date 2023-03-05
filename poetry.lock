@@ -228,14 +228,14 @@ files = [
 
 [[package]]
 name = "boltons"
-version = "21.0.0"
+version = "23.0.0"
 description = "When they're not builtins, they're boltons."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "boltons-21.0.0-py2.py3-none-any.whl", hash = "sha256:b9bb7b58b2b420bbe11a6025fdef6d3e5edc9f76a42fb467afe7ca212ef9948b"},
-    {file = "boltons-21.0.0.tar.gz", hash = "sha256:65e70a79a731a7fe6e98592ecfb5ccf2115873d01dbc576079874629e5c90f13"},
+    {file = "boltons-23.0.0-py2.py3-none-any.whl", hash = "sha256:f716a1b57698a5b19062f3146cb5ce3549904028a2f267c2c0cf584eea3ad75b"},
+    {file = "boltons-23.0.0.tar.gz", hash = "sha256:8c50a71829525835ca3c849c7ed2511610c972b4dddfcd41a4a5447222beb4b0"},
 ]
 
 [[package]]
@@ -2665,4 +2665,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7,<3.12"
-content-hash = "b6e94494665a7e09e15df7c45461a1a7a079cc7b857e83b3aefca0a9bc3ebcd4"
+content-hash = "5956fdef5bcbb50ab6c7e352ca316f4884afd40442e81843b71ed4e3403af375"
