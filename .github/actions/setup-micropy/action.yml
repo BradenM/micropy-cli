@@ -49,6 +49,7 @@ runs:
 
     - name: Workaround Poetry v1.4.0 Win Py3.9 specific issues.
       if: runner.os == 'Windows' && inputs.python-version == 3.9
+      shell: bash
       run: |
         # have not looked into why this occurs.
         # just disable new installer for this one specific scenario.
