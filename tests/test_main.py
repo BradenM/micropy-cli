@@ -55,7 +55,7 @@ def test_create_stub(mock_micropy, mocker: MockFixture, shared_datadir, tmp_path
     with pytest.raises(Exception):
         stub = mp.create_stubs("/dev/PORT")
     stub = mp.create_stubs("/dev/PORT")
-    mp.stubs.add.assert_any_call(mocker.ANY, tmp_stub_path / "esp32-1.11.0")
+    mp.stubs.add.assert_any_call(mocker.ANY, str(tmp_stub_path / "esp32-1.11.0"))
     rmtree(tmp_stub_path / "esp32-1.11.0")
     assert isinstance(stub, stubs.DeviceStub)
 
