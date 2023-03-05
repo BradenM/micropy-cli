@@ -187,7 +187,8 @@ class RShellPyDeviceBackend(MetaPyDeviceBackend):
             "print_func": lambda *args: None,
             "sync_hidden": False,
         }
-        self._rsh.rsync(dir_path, str(dest_path), **(rsync_args | rsync))
+        rsync.pop("consumer", None)
+        self._rsh.rsync(dir_path, str(dest_path), **{**rsync_args, **rsync})
         return dest_path
 
     @contextmanager
