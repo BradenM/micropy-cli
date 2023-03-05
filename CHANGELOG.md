@@ -1,5 +1,23 @@
 <a name="v4.0.0"></a>
 
+## [4.1.0](https://github.com/BradenM/micropy-cli/compare/v4.1.0-beta...v4.1.0) (2023-03-05)
+
+
+### Bug Fixes
+
+* **deps:** Update dependency cachier to v2 ([956cce8](https://github.com/BradenM/micropy-cli/commit/956cce8ca8c594659fd3e57a77c65d0d65036ff9))
+* **deps:** Update dependency gitpython to v3.1.31 ([65b3e83](https://github.com/BradenM/micropy-cli/commit/65b3e83fa7136765c10f268409d002f3c784c4dc))
+* **deps:** Update dependency packaging to v23 ([b81b513](https://github.com/BradenM/micropy-cli/commit/b81b513248e82bb14e7d24e9b528f37fb278942b))
+* **deps:** Update dependency pydantic to v1.10.5 ([0fb9624](https://github.com/BradenM/micropy-cli/commit/0fb96244da1f42207aa09cb2d1230f0c5278a6f6))
+* **deps:** Update dependency tqdm to v4.65.0 ([9fb64dd](https://github.com/BradenM/micropy-cli/commit/9fb64ddb893a48b60ba41d5b25b422a7542c9b09))
+* **deps:** Update dependency typing-extensions to v4.5.0 ([e6c57c3](https://github.com/BradenM/micropy-cli/commit/e6c57c30bf7f73b887437950d72593594f6f08ac))
+* **pyd:** Backend rshell excess consumer kwarg, can't union with supported py versions. ([de8da4e](https://github.com/BradenM/micropy-cli/commit/de8da4e46d3033d4a1d8c25452d975a26ed1892d))
+
+
+### Miscellaneous Chores
+
+* **release:** Update release. ([7b6d9bb](https://github.com/BradenM/micropy-cli/commit/7b6d9bb90f8d003627e57e5a8d3e70bba2e104d9))
+
 ## [4.1.0-beta](https://github.com/BradenM/micropy-cli/compare/v4.0.0...v4.1.0-beta) (2023-01-30)
 
 
