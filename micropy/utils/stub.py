@@ -1,11 +1,31 @@
 """Micropy stub utils."""
+from __future__ import annotations
 
 import importlib.util
+import io
 import sys
 from pathlib import Path
 from types import ModuleType
+from typing import Optional
 
 import micropy.data
+
+try:
+    from stubber import minify
+    from stubber.codemod import board as stub_board
+    from stubber.utils import stubmaker
+except ImportError:
+    stubmaker = None
+    stub_board = None
+    minify = None
+
+import libcst as cst
+import libcst.codemod as codemod
+
+
+def locate_create_stubs() -> Path:
+    """Locate createstubs.py"""
+    return Path(importlib.util.find_spec("stubber.board.createstubs").origin)
 
 
 def import_source_code(module_name: str, path: Path) -> ModuleType:
@@ -53,14 +73,12 @@ def generate_stub(path, log_func=None):
         tuple: Tuple of file path and generated stub path.
 
     """
-    stubgen = import_stubber()
-    # Monkeypatch print to prevent or wrap output
-    logfn = log_func or (lambda *a: None)
-    stubgen.print = logfn
-    stubgen.stubgen.print = logfn
+    if stubmaker is None:
+        raise ImportError("micropython-stubber requires a python version of >= 3.8")
+    stubmaker.STUBGEN_OPT.quiet = True
     file_path = Path(path).absolute()
     stubbed_path = file_path.with_suffix(".pyi")
-    stubgen.generate_pyi_from_file(file_path)
+    stubmaker.generate_pyi_from_file(file_path)
     # ensure stubs reside next to their source.
     result = next((file_path.parent.rglob(f"**/{stubbed_path.name}")), stubbed_path)
     if result.exists():
@@ -69,3 +87,30 @@ def generate_stub(path, log_func=None):
         result.parent.rmdir()
     files = (file_path, stubbed_path)
     return files
+
+
+def prepare_create_stubs(
+    *,
+    variant: Optional[stub_board.CreateStubsVariant] = None,
+    modules_set: Optional[stub_board.ListChangeSet] = None,
+    problem_set: Optional[stub_board.ListChangeSet] = None,
+    exclude_set: Optional[stub_board.ListChangeSet] = None,
+) -> io.StringIO:
+    if stub_board is None:
+        raise ImportError("micropython-stubber requires a python version of >= 3.8")
+    variant = variant or stub_board.CreateStubsVariant.BASE
+    ctx = codemod.CodemodContext()
+    code_mod = stub_board.CreateStubsCodemod(
+        ctx, variant=variant, modules=modules_set, problematic=problem_set, excluded=exclude_set
+    )
+    create_stubs = cst.parse_module(locate_create_stubs().read_text())
+    result = code_mod.transform_module_impl(create_stubs).code
+    result_io = io.StringIO(result)
+    minified_io = io.StringIO()
+    minify.minify(result_io, minified_io, keep_report=True, diff=False)
+    minified_io.seek(0)
+    # TODO: compile w/ mpy-cross
+    # compiled_io = io.BytesIO()
+    # minify.cross_compile(minified_io, compiled_io)
+    # compiled_io.seek(0)
+    return minified_io
