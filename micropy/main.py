@@ -4,15 +4,17 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Literal, Optional, Union
 
 from micropy import data, utils
 from micropy.exceptions import PyDeviceError
-from micropy.lib.stubber import process as stubber
 from micropy.logger import Log
 from micropy.project import Project, modules
 from micropy.pyd import DevicePath, MessageHandlers, ProgressStreamConsumer, PyDevice
+from micropy.pyd.backend_rshell import RShellPyDeviceBackend
+from micropy.pyd.backend_upydevice import UPyDeviceBackend
 from micropy.stubs import RepositoryInfo, StubManager, StubRepository
+from micropy.utils.stub import prepare_create_stubs
 from pydantic import parse_file_as
 
 
@@ -90,7 +92,12 @@ class MicroPy:
             return proj
         return proj
 
-    def create_stubs(self, port, verbose=False):
+    def create_stubs(
+        self,
+        port,
+        verbose=False,
+        backend: Union[Literal["upydevice"], Literal["rshell"]] = "upydevice",
+    ):
         """Create and add stubs from Pyboard.
 
         Todo:
@@ -105,6 +112,7 @@ class MicroPy:
         """
         self.log.title(f"Connecting to Pyboard @ $[{port}]")
         pyb_log = Log.add_logger("Pyboard", "bright_white")
+        backend = UPyDeviceBackend if backend == "upydevice" else RShellPyDeviceBackend
 
         def _get_desc(name: str, cfg: dict):
             desc = f"{pyb_log.get_service()} {name}"
@@ -119,15 +127,16 @@ class MicroPy:
                 auto_connect=True,
                 stream_consumer=ProgressStreamConsumer(on_description=_get_desc),
                 message_consumer=message_handler,
+                backend=backend,
             )
         except (SystemExit, PyDeviceError):
             self.log.error(f"Failed to connect, are you sure $[{port}] is correct?")
             return None
         self.log.success("Connected!")
-        script = stubber.minify_script(stubber.source_script)
+        create_stubs = prepare_create_stubs()
         self.log.info("Executing stubber on pyboard...")
         try:
-            pyb.run_script(script, DevicePath("createstubs.py"))
+            pyb.run_script(create_stubs.getvalue(), DevicePath("createstubs.py"))
         except Exception as e:
             # TODO: Handle more usage cases
             self.log.error(f"Failed to execute script: {str(e)}", exception=e)
@@ -140,7 +149,7 @@ class MicroPy:
             stub_path = next(out_dir.iterdir())
             self.log.info(f"Copied Stubs: $[{stub_path.name}]")
             stub_path = self.stubs.from_stubber(stub_path, out_dir)
-            stub = self.stubs.add(stub_path)
+            stub = self.stubs.add(str(stub_path))
         pyb.disconnect()
         self.log.success(f"Added {stub.name} to stubs!")
         return stub
