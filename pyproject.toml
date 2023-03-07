@@ -52,7 +52,7 @@ dpath = "==1.5.0"
 GitPython = "==3.1.31"
 packaging = "23.0"
 python-minifier = "==2.8.0"
-mypy = "==1.0.1"
+mypy = "==1.1.1"
 ## rshell is broken on windows (with python >=3.10) due to pyreadline dependency.
 rshell = [
     { version = "^0.0.31", platform = "win32", python = "<3.10" },
