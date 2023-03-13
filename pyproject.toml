@@ -67,19 +67,21 @@ distlib = "0.3.6"
 importlib-metadata = { version = "==5.2.0", python = '<3.10' }
 
 [tool.poetry.group.dev.dependencies]
-autoflake = "^2.0.0"
-autopep8 = "^1.5"
 bump2version = "^0.5.11"
-isort = { version="^5.12.0", python=">=3.8" }
-pylint = "^2.7"
-black = "^23.0.0"
 pre-commit = { version="^3.0.2", python=">=3.8" }
-doc8 = "^0.11.0"
-docformatter = "^1.4"
 mypy = { version = "^1.0", extras = ["dmypy"] }
 types-requests = "^2.27.14"
-pyupgrade = "^3.3.1"
+pylint = "^2.7"
 better-exceptions = "^0.3.3"
+
+[tool.poetry.group.lint]
+optional = true
+
+[tool.poetry.group.lint.dependencies]
+pyupgrade = "^3.3.1"
+isort = { version="^5.12.0", python=">=3.8" }
+black = "^23.0.0"
+ruff = "^0.0.254"
 
 [tool.poetry.group.test]
 optional = true
@@ -153,6 +155,32 @@ profile = "black"
 src_paths = ["src"]
 line_length = 100
 honor_noqa = true
+
+[tool.ruff]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    # "I",  # isort
+    # "D",  # pydocstyle
+    "UP", # pyupgrade
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    # "PT",  # flake8-pytest-style
+    "RUF" # ruff specific rules
+]
+ignore = [
+    "E501", # line too long - let black handle.
+    "C901", # too complex
+    "C408", # rewrite as literal; makes comprehensions harder sometimes imo
+]
+line-length = 100
+target-version = 'py37'
+src = ['micropy']
+extend-exclude = ['micropy/lib', 'tests/test_stubs', 'tests/data', 'micropy/utils/__init__.py']
+
+[tool.ruff.pyupgrade]
+keep-runtime-typing = true
 
 [tool.pytest.ini_options]
 collect_ignore = ['setup.py', 'micropy/lib/*', 'micropy/lib/**/*']
