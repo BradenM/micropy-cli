@@ -123,4 +123,4 @@ class TestPackages:
         if pkg.editable:
             assert pkg.path == Path("src/lib/custompackage")
         else:
-            assert pkg.path == None
+            assert pkg.path is None

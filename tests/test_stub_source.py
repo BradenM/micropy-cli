@@ -35,6 +35,6 @@ def test_source_ready(shared_datadir, test_urls, tmp_path, mocker, test_archive)
         assert len(list(source_path.iterdir())) == 3
 
 
-def test_stub_repo_locator(stub_repo):
+def test_stub_repo_locator(stub_repo):  # noqa
     locator = source.RepoStubLocator(stub_repo)
     assert locator.prepare("stub1-foo") == "https://test-manifest/stub1-foo"

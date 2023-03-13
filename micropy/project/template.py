@@ -108,7 +108,9 @@ class Template:
         r_lines = list(self.iter_clean())
         upd_lines = []
         if by_contains:
-            upd_lines = [r_lines.index(l) for l in r_lines if any(i in l for i in by_contains)]
+            upd_lines = [
+                r_lines.index(line) for line in r_lines if any(i in line for i in by_contains)
+            ]
         with path.open("r+") as f:
             c_lines = self.iter_clean(f.read())
             f.seek(0)

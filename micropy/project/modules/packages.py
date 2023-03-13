@@ -160,7 +160,8 @@ class PackagesModule(ProjectModule):
             self.log.success("Package installed!")
         finally:
             self.parent.update()
-            return self.packages
+            # TODO: B012
+            return self.packages  # noqa
 
     def load(self, fetch=True, **kwargs):
         """Retrieves and stubs project requirements."""
@@ -210,7 +211,7 @@ class PackagesModule(ProjectModule):
         with self.path.open("r+") as f:
             content = [c.strip() for c in f.readlines() if c.strip() != ""]
             _lines = sorted({str(p) for p in pkgs} | set(content))
-            lines = [l + "\n" for l in _lines]
+            lines = [line + "\n" for line in _lines]
             self.log.debug(f"dumping: {lines}")
             f.seek(0)
             f.writelines(lines)

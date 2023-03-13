@@ -133,7 +133,6 @@ class TestPyDeviceBackend:
                 pyd._ensure_connected()
 
     def test_connected(self, pymock):
-        m = pymock
         pyd = self.pyd_cls().establish(MOCK_PORT)
         pyd.connect()
         assert pyd.connected

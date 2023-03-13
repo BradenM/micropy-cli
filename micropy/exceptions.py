@@ -21,7 +21,7 @@ class StubValidationError(StubError):
 
     def __init__(self, path, errors, *args, **kwargs):
         msg = f"Stub at[{str(path)}] encountered" f" the following validation errors: {str(errors)}"
-        super().__init__(message=msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
     def __str__(self):
         return self.message

@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Any, List, Sequence, Tuple, Type, Union
+from typing import Any, List, Optional, Sequence, Tuple, Type, Union
 
 import dpath
 from boltons import iterutils
@@ -27,8 +27,12 @@ class Config:
     """
 
     def __init__(
-        self, *args: Any, source_format: Type[ConfigSource] = JSONConfigSource, default: dict = {}
+        self,
+        *args: Any,
+        source_format: Type[ConfigSource] = JSONConfigSource,
+        default: Optional[dict] = None,
     ):
+        default = default or dict()
         self.log: ServiceLog = Log.add_logger(f"{__name__}")
         self.format = source_format
         self._source: ConfigSource = self.format(*args)

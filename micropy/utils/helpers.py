@@ -115,8 +115,8 @@ def ensure_existing_dir(path: PathStr) -> Path:
             raise NotADirectoryError(f"{_path} does not exist!")
         if not path.is_dir():
             raise NotADirectoryError(f"{_path} is not a directory!")
-    except OSError:
-        raise NotADirectoryError(f"{_path} is not a valid path!")
+    except OSError as e:
+        raise NotADirectoryError(f"{_path} is not a valid path!") from e
     return _path
 
 
@@ -393,7 +393,7 @@ def is_update_available():
         bool: True if update available, else False.
 
     """
-    url = f"https://pypi.org/pypi/micropy-cli/json"
+    url = "https://pypi.org/pypi/micropy-cli/json"
     data = get_cached_data(url)
     versions = [k for k in data["releases"].keys() if "rc" not in k]
     if versions:

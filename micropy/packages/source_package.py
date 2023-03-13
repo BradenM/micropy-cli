@@ -27,8 +27,10 @@ class PackageDependencySource(DependencySource):
         super().__init__(package)
         try:
             utils.ensure_valid_url(self.repo_url)
-        except Exception:
-            raise RequirementNotFound(f"{self.repo_url} is not a valid url!", package=self.package)
+        except Exception as e:
+            raise RequirementNotFound(
+                f"{self.repo_url} is not a valid url!", package=self.package
+            ) from e
         else:
             self._meta: dict = utils.get_package_meta(str(self.package), self.repo_url)
             self.format_desc = format_desc or (lambda n: n)
@@ -97,10 +99,10 @@ class VCSDependencySource(DependencySource):
         self._repo: Optional[Repo] = None
         try:
             utils.ensure_valid_url(self.repo_url)
-        except Exception:
+        except Exception as e:
             raise RequirementNotFound(
                 f"{self.repo_url} is not a valid VCS url!", package=self.package
-            )
+            ) from e
         else:
             self.format_desc = format_desc or (lambda n: n)
 

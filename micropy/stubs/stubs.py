@@ -324,7 +324,7 @@ class StubManager:
                 shutil.rmtree(stub.path)
         if self._should_recurse(location):
             return self.load_from(location, strict=False, copy_to=dest)
-        self.log.info(f"\nResolving stub...")
+        self.log.info("\nResolving stub...")
         stub_source = source.StubSource(
             [
                 source.RepoStubLocator(self.repo),

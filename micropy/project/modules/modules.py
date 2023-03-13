@@ -56,7 +56,8 @@ class ProjectModule(metaclass=abc.ABCMeta):
     def update(self):
         """Method to update component."""
 
-    def add(self, component: Type["ProjectModule"], *args: Any, **kwargs: Any) -> Any:
+    # FIXME: B027
+    def add(self, component: Type["ProjectModule"], *args: Any, **kwargs: Any) -> Any:  # noqa: B027
         """Adds component.
 
         Args:
@@ -64,7 +65,8 @@ class ProjectModule(metaclass=abc.ABCMeta):
 
         """
 
-    def remove(self, component: Type["ProjectModule"]) -> Any:
+    # FIXME: B027
+    def remove(self, component: Type["ProjectModule"]) -> Any:  # noqa: B027
         """Removes component.
 
         Args:

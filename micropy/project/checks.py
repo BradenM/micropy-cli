@@ -19,7 +19,7 @@ def iter_vscode_ext(name=None):
 
     """
     _cmd = "code --list-extensions --show-versions"
-    proc = subproc.run(_cmd, stdout=subproc.PIPE, stderr=subproc.PIPE, shell=True)
+    proc = subproc.run(_cmd, capture_output=True, shell=True)
     results = [e.strip() for e in proc.stdout.splitlines()]
     for ext in results:
         ename, vers = ext.split("@")

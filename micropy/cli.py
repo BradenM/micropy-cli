@@ -97,13 +97,13 @@ def init(mpy, path, name=None, template=None):
     if not template:
         templates = modules.TemplatesModule.TEMPLATES.items()
         templ_choices = [Choice(str(val[1]), value=t) for t, val in templates]
-        template = prompt.checkbox(f"Choose any Templates to Generate", choices=templ_choices).ask()
+        template = prompt.checkbox("Choose any Templates to Generate", choices=templ_choices).ask()
     stubs = [Choice(str(s), value=s) for s in mpy.stubs]
     if not stubs:
         mpy.log.error("You don't have any stubs!")
         mpy.log.title("To add stubs to micropy, use $[micropy stubs add <STUB_NAME>]")
         sys.exit(1)
-    stub_choices = prompt.checkbox(f"Which stubs would you like to use?", choices=stubs).ask()
+    stub_choices = prompt.checkbox("Which stubs would you like to use?", choices=stubs).ask()
     project = Project(path, name=name)
     project.add(modules.StubsModule, mpy.stubs, stubs=stub_choices)
     project.add(modules.PackagesModule, "requirements.txt")
@@ -174,8 +174,8 @@ def install(mpy, packages, dev=False, path=None):
         try:
             project.add_from_file(dev=dev)
         except Exception as e:
-            mpy.error(f"Failed to load requirements!", exception=e)
-            raise click.Abort()
+            mpy.error("Failed to load requirements!", exception=e)
+            raise click.Abort() from e
         else:
             mpy.log.success("\nRequirements Installed!")
             sys.exit(0)
@@ -188,7 +188,7 @@ def install(mpy, packages, dev=False, path=None):
             mpy.log.error(
                 (f"Failed to install {pkg_name}!" " Is it available on PyPi?"), exception=e
             )
-            raise click.Abort()
+            raise click.Abort() from e
 
 
 @stubs.command(short_help="Add Stubs from package or path")
@@ -243,7 +243,7 @@ def add(mpy: main.MicroPy, stub_name, force=False):
 @pass_mpy
 def search(mpy: main.MicroPy, query: str, show_outdated: bool = False):
     """Search available Stubs."""
-    mpy.log.title(f"Searching Stub Repositories...")
+    mpy.log.title("Searching Stub Repositories...")
     installed_stubs = map(str, mpy.stubs._loaded | mpy.stubs._firmware)
     results = [
         (r, r.name in installed_stubs)
@@ -258,7 +258,7 @@ def search(mpy: main.MicroPy, query: str, show_outdated: bool = False):
     for pkg, installed in results:
         pad = max_name - len(pkg.repo_name) + 2
         pad = pad if (pad % 2 == 0) else pad + 1
-        spacer = "{:>{pad}}".format(f"::", pad=pad)
+        spacer = "{:>{pad}}".format("::", pad=pad)
         repo_logger = Log.add_logger(f"{pkg.repo_name} {spacer}", "bright_white")
         name = "{:>{pad}}".format(f"{pkg.name} ($w[{pkg.version}])", pad=pad)
         name = f"{name} $B[(Installed)]" if installed else name
