@@ -81,7 +81,7 @@ class StubRepository:
             else:
                 return attrs.evolve(
                     self,
-                    manifests=self.manifests + [manifest],
+                    manifests=[*self.manifests, manifest],
                     packages_index=self.packages_index,
                     versions_index=self.versions_index,
                 )

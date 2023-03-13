@@ -60,7 +60,7 @@ def generate_stub(path, log_func=None):
     stubgen.stubgen.print = logfn
     file_path = Path(path).absolute()
     stubbed_path = file_path.with_suffix(".pyi")
-    stubgen.generate_pyi_from_file(file_path)  # noqa
+    stubgen.generate_pyi_from_file(file_path)
     # ensure stubs reside next to their source.
     result = next((file_path.parent.rglob(f"**/{stubbed_path.name}")), stubbed_path)
     if result.exists():

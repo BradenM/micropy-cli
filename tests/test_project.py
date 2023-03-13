@@ -34,7 +34,8 @@ def get_module(tmp_path):
 
 @pytest.fixture
 def get_config():
-    def _get_config(request, name="NewProject", stubs=None, templates=None, packages={}):
+    def _get_config(request, name="NewProject", stubs=None, templates=None, packages=None):
+        packages = packages or dict()
         templates = templates or ["vscode", "pylint"]
         stubs = stubs or []
         _mods = {

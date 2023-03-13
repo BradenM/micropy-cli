@@ -62,7 +62,7 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
 
     def _ensure_connected(self):
         if not self.connected:
-            raise PyDeviceError(f"No currently connected device found!")
+            raise PyDeviceError("No currently connected device found!")
 
     def _rand_device_path(self) -> DevicePath:
         name = "".join(random.sample(string.ascii_lowercase, 6))
@@ -189,14 +189,14 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
         target_path = self.resolve_path(target_path)
         self._pydevice.cmd("import ubinascii", silent=True)
         self._pydevice.cmd(f"f = open('{str(target_path)}', 'rb')", silent=True)
-        content_size = self._pydevice.cmd(f"f.seek(0,2)", rtn_resp=True, silent=True)
+        content_size = self._pydevice.cmd("f.seek(0,2)", rtn_resp=True, silent=True)
         self._pydevice.cmd("f.seek(0)", silent=True)
         buffer = io.BytesIO()
         if consumer:
             consumer.on_start(name=f"Reading {target_path}", size=content_size // 2)
         last_pos = 0
         while True:
-            pos = self._pydevice.cmd(f"f.tell()", rtn_resp=True, silent=True)
+            pos = self._pydevice.cmd("f.tell()", rtn_resp=True, silent=True)
             if consumer:
                 consumer.on_update(size=(pos - last_pos) // 2)
             last_pos = pos

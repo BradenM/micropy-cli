@@ -79,8 +79,8 @@ class TestCreateProject:
         vsc_path = path / ".vscode" / "settings.json"
         assert vsc_path.exists()
         with vsc_path.open() as f:
-            lines = [l.strip() for l in f.readlines() if l]
-            valid = [l for l in lines if "//" not in l[:2]]
+            lines = [line.strip() for line in f.readlines() if line]
+            valid = [line for line in lines if "//" not in line[:2]]
         vsc_data = json.loads("\n".join(valid))
         expect_data = expect or self.expect_vsc_data(name)
         assert vsc_data["python.analysis.typeshedPaths"] == expect_data

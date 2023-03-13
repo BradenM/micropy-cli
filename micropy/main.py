@@ -83,7 +83,7 @@ class MicroPy:
         proj.add(modules.TemplatesModule, run_checks=self.RUN_CHECKS)
         if proj.exists:
             if verbose:
-                self.log.title(f"Loading Project")
+                self.log.title("Loading Project")
             proj.load()
             if verbose:
                 self.log.success("Ready!")

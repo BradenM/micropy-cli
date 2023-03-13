@@ -39,8 +39,8 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     print(out_content)
     # Get rid of comments
     with expected_path.open() as f:
-        lines = [l.strip() for l in f.readlines() if l]
-        valid = [l for l in lines if "//" not in l[:2]]
+        lines = [line.strip() for line in f.readlines() if line]
+        valid = [line for line in lines if "//" not in line[:2]]
     # Valid JSON?
     expect_paths = [str(p.relative_to(tmp_path)) for p in ctx_paths]
     expect_paths.append(str(ctx_local.relative_to(tmp_path)))  # add local path (should be relative)
@@ -74,7 +74,7 @@ def test_pylint_template(stub_context, tmp_path):
             lint_args = ["--rcfile", str(expected_path.absolute())]
             pylint.lint.Run(lint_args)
         except SyntaxError:
-            pytest.fail(str(SyntaxError))  # noqa
+            pytest.fail(str(SyntaxError))
         except:  # noqa
             pass
 

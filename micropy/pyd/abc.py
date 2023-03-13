@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import abc
 from pathlib import Path
-from typing import Any, AnyStr
+from typing import Any, AnyStr, NewType
 
-from typing_extensions import NewType, Protocol
+from typing_extensions import Protocol
 
 HostPath = NewType("HostPath", str)
 DevicePath = NewType("DevicePath", str)

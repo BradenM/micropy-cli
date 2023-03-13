@@ -147,7 +147,7 @@ class Project(ProjectModule):
             child.create()
         self.info_path.touch()
         self.config.sync()
-        self.log.success(f"Project Created!")
+        self.log.success("Project Created!")
         return self.path
 
     def update(self):

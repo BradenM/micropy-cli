@@ -1,8 +1,10 @@
+from typing import Optional
+
 from .config_source import ConfigSource
 
 
 class DictConfigSource(ConfigSource):
-    def __init__(self, config: dict = {}):
+    def __init__(self, config: Optional[dict] = None):
         """Dict Config Source.
 
         Args:

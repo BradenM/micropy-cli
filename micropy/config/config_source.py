@@ -2,7 +2,7 @@
 
 import abc
 import contextlib
-from typing import Any
+from typing import Any, Optional
 
 from micropy.logger import Log, ServiceLog
 
@@ -16,8 +16,8 @@ class ConfigSource(contextlib.AbstractContextManager, metaclass=abc.ABCMeta):
 
     """
 
-    def __init__(self, initial_config: dict = {}):
-        self._config: dict = initial_config
+    def __init__(self, initial_config: Optional[dict] = None):
+        self._config: dict = initial_config or dict()
         self.log: ServiceLog = Log.add_logger(__name__)
 
     @property

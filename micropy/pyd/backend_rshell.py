@@ -227,6 +227,6 @@ class RShellPyDeviceBackend(MetaPyDeviceBackend):
             try:
                 out_bytes = self.eval(_contents, consumer=consumer)
             except PyboardError as e:
-                raise Exception(str(e))
+                raise Exception(str(e)) from e
             out = out_bytes.decode("utf-8")
             return out

@@ -115,8 +115,9 @@ class ServiceLog:
         clean = clean.encode("ascii", "ignore").decode("utf-8").strip()
         return (parts, clean)
 
-    def get_parents(self, names=[]):
+    def get_parents(self, names=None):
         """Retrieve all parents."""
+        names = names or []
         if len(names) == 0:
             names = [self.service_name]
         if self.parent:
@@ -218,7 +219,7 @@ class ServiceLog:
         :rtype: method
 
         """
-        bold = kwargs.pop("bold", (exception != None))
+        bold = kwargs.pop("bold", (exception is not None))
         self.echo(
             msg,
             log="error",
