@@ -177,7 +177,7 @@ ignore = [
 line-length = 100
 target-version = 'py37'
 src = ['micropy']
-extend-exclude = ['micropy/lib', 'tests/test_stubs', 'tests/data', 'micropy/utils/__init__.py']
+extend-exclude = ['micropy/lib', 'tests/test_stubs', 'tests/data', 'micropy/utils/__init__.py', 'micropy/__init__.py']
 
 [tool.ruff.pyupgrade]
 keep-runtime-typing = true
