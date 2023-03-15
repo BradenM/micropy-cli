@@ -1603,17 +1603,18 @@ termcolor = ">=1.1.0"
 
 [[package]]
 name = "pytest-testmon"
-version = "1.4.1"
+version = "1.4.5"
 description = "selects tests affected by changed files and methods"
 category = "dev"
 optional = false
 python-versions = "<3.12,>=3.7"
 files = [
-    {file = "pytest-testmon-1.4.1.tar.gz", hash = "sha256:da65692b99c31e6d8b5645e51dbb9b37aa2c4a4e59af811a878bdafc82722e9b"},
+    {file = "pytest-testmon-1.4.5.tar.gz", hash = "sha256:6fbbc63fb2d56b64d70197cae2ecbcf8074f81a1a174944a829b29f24ca2603d"},
+    {file = "pytest_testmon-1.4.5-py3-none-any.whl", hash = "sha256:313424d868c0924596f710d49506c554dce78be85b96553a433141626e870ef1"},
 ]
 
 [package.dependencies]
-coverage = ">=6,<7"
+coverage = ">=6,<8"
 pytest = ">=5,<8"
 
 [[package]]
