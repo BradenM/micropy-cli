@@ -1657,14 +1657,14 @@ testing = ["filelock"]
 
 [[package]]
 name = "python-minifier"
-version = "2.8.0"
+version = "2.8.1"
 description = "Transform Python source code into it's most compact representation"
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, <3.12"
 files = [
-    {file = "python_minifier-2.8.0-py2.py3-none-any.whl", hash = "sha256:a6971d38beb69335b319d9b670036ec072a8fbbf9dd5f889e689b5ac287d70de"},
-    {file = "python_minifier-2.8.0.tar.gz", hash = "sha256:07d0e8ae63fc5db3b9d9363ee26b8b1f42ec905a4feb86e9acdac4acd5396fb7"},
+    {file = "python_minifier-2.8.1-py2.py3-none-any.whl", hash = "sha256:2a228480e3690fb36aafa99892831b1b5479b44d2a4bc17736754a0378f06141"},
+    {file = "python_minifier-2.8.1.tar.gz", hash = "sha256:a20e6c101c5b9eae943c52d2f175e3ce749b65870dcdac85904fc6f0720fc079"},
 ]
 
 [[package]]
@@ -2539,4 +2539,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7,<3.12"
-content-hash = "43d2da26737e6c1a20c60ac2706b3fde05657d995e156a1917b788d42f0e2052"
+content-hash = "b2a2a0f1fc3542dbb861044dda2aa5899fbd25f87a21c20bfd93a213e7f84f7d"
