@@ -122,12 +122,6 @@ Sphinx = "^5.2.1"
 sphinx-rtd-theme = "^1.0.0"
 
 
-[[tool.poetry.source]]
-name = "pypi-test"
-url = "https://test.pypi.org/simple/"
-default = false
-secondary = false
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
