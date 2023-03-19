@@ -47,14 +47,6 @@ runs:
         echo "C:\Users\runneradmin\AppData\Local\Temp\opt\poetry\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
         echo "C:\Users\runneradmin\AppData\Local\Temp\opt\poetry\venv\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Append
 
-    - name: Workaround Poetry v1.4.0 Windows issues.
-      if: runner.os == 'Windows'
-      shell: bash
-      run: |
-        # have not looked into why this occurs.
-        # just disable new installer for windows.
-        echo 'POETRY_INSTALLER_MODERN_INSTALLATION=false' >> $GITHUB_ENV
-
     - name: Cache poetry install.
       uses: actions/cache@v3
       id: poetry-install-cache
