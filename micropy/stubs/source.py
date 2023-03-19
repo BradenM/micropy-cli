@@ -14,14 +14,13 @@ import tempfile
 from contextlib import ExitStack, contextmanager
 from functools import partial, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, ContextManager, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, ContextManager, Optional, Protocol, Union, cast
 
 import attrs
 import micropy.exceptions as exc
 from micropy import utils
 from micropy.logger import Log
 from micropy.utils.types import PathStr
-from typing_extensions import Protocol
 
 if TYPE_CHECKING:
     from micropy.stubs.repo import StubRepository

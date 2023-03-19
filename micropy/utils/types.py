@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Any, Union
+from typing import Any, Protocol, Union, runtime_checkable
 
-from typing_extensions import Protocol, TypeAlias, runtime_checkable
+from typing_extensions import TypeAlias
 
 # PathLike string or string type alias.
 PathStr: TypeAlias = Union[str, PathLike]

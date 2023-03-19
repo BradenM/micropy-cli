@@ -3,7 +3,7 @@ from __future__ import annotations
 import stat
 import sys
 from pathlib import PurePosixPath
-from typing import Type
+from typing import Literal, Type
 from unittest.mock import ANY, MagicMock
 
 import pytest
@@ -12,7 +12,6 @@ from micropy.pyd import backend_rshell, backend_upydevice, consumers
 from micropy.pyd.abc import MetaPyDeviceBackend, PyDeviceConsumer
 from micropy.pyd.pydevice import PyDevice
 from pytest_mock import MockFixture
-from typing_extensions import Literal
 
 
 @pytest.fixture
