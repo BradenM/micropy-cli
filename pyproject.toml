@@ -37,7 +37,7 @@ classifiers = [
 micropy = 'micropy.cli:cli'
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.12"
+python = ">=3.8,<3.12"
 boltons = "==23.0.0"
 cachier = "2.0.0"
 Jinja2 = "3.1.2"
@@ -68,17 +68,10 @@ importlib-metadata = { version = "==5.2.0", python = '<3.10' }
 
 [tool.poetry.group.dev.dependencies]
 bump2version = "^0.5.11"
-pre-commit = { version="^3.0.2", python=">=3.8" }
+pre-commit = "^3.0.2"
 mypy = { version = "^1.0", extras = ["dmypy"] }
 types-requests = "^2.27.14"
-pylint = [
-    { version = "^2.7", python = ">=3.8" },
-    { version = ">=2.7,<2.13", python = "<3.8" },
-]
-isort = [
-    { version = "^5.12.0", python = ">=3.8" },
-    { version = ">5,<5.12.0", python = "<3.8" }
-]
+pylint = "^2.7"
 better-exceptions = "^0.3.3"
 
 [tool.poetry.group.lint]
@@ -86,7 +79,7 @@ optional = true
 
 [tool.poetry.group.lint.dependencies]
 pyupgrade = "^3.3.1"
-isort = { version="^5.12.0", python=">=3.8" }
+isort = "^5.12.0"
 black = "^23.0.0"
 ruff = "^0.0.257"
 
