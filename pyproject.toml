@@ -71,7 +71,10 @@ bump2version = "^0.5.11"
 pre-commit = { version="^3.0.2", python=">=3.8" }
 mypy = { version = "^1.0", extras = ["dmypy"] }
 types-requests = "^2.27.14"
-pylint = "^2.7"
+pylint = [
+    { version = "^2.7", python = ">=3.8" },
+    { version = ">=2.7,<2.13", python = "<3.8" },
+]
 better-exceptions = "^0.3.3"
 
 [tool.poetry.group.lint]
