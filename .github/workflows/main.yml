@@ -7,7 +7,7 @@ on:
       - master
 
 env:
-  POETRY_VERSION: 1.4.0
+  POETRY_VERSION: 1.4.1
 
 concurrency:
   group: main-${{ github.event_name }}-${{ github.ref }}
