@@ -169,7 +169,7 @@ ignore = [
     "C408", # rewrite as literal; makes comprehensions harder sometimes imo
 ]
 line-length = 100
-target-version = 'py37'
+target-version = 'py38'
 src = ['micropy']
 extend-exclude = ['micropy/lib', 'tests/test_stubs', 'tests/data', 'micropy/utils/__init__.py', 'micropy/__init__.py']
 
