@@ -109,6 +109,5 @@ runs:
       shell: bash
       if: steps.venv-cache.outputs.cache-hit != 'true'
       run: |
-        ${{ inputs.poetry-home }}/bin/poetry env use ${{ steps.python-setup.outputs.python-path }}
         ${{ inputs.poetry-home }}/bin/poetry install --with docs --with test -v
         ${{ inputs.poetry-home }}/bin/poetry env info
