@@ -105,7 +105,17 @@ runs:
         restore-keys: |
           poetry-venv-dir-${{ inputs.runner || matrix.os || runner.os }}-${{ inputs.python-version }}-${{ inputs.poetry-version }}-
 
+    - name: Use venv.
+      shell: bash
+      if: steps.venv-cache.outputs.cache-hit == 'true'
+      run: |
+        ${{ inputs.poetry-home }}/bin/poetry env use ./.venv/bin/python
+        ${{ inputs.poetry-home }}/bin/poetry env info
+
     - name: Install dependencies.
       shell: bash
       if: steps.venv-cache.outputs.cache-hit != 'true'
-      run: ${{ inputs.poetry-home }}/bin/poetry install --with docs --with test -v
+      run: |
+        ${{ inputs.poetry-home }}/bin/poetry env use ${{ steps.python-setup.outputs.python-path }}
+        ${{ inputs.poetry-home }}/bin/poetry install --with docs --with test -v
+        ${{ inputs.poetry-home }}/bin/poetry env info
