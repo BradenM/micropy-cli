@@ -7,8 +7,6 @@ from jsonschema import ValidationError
 from micropy import utils
 from requests.exceptions import ConnectionError, HTTPError, InvalidURL
 
-IS_GT_PY37 = sys.version_info > (3, 7)
-
 
 @pytest.fixture
 def schema(datadir):
@@ -116,7 +114,7 @@ def test_search_xml(mocker, shared_datadir, test_urls):
     )
 
 
-@pytest.mark.skipif(IS_GT_PY37, reason="requires python > 3.7")
+@pytest.mark.xfail(sys.version_info >= (3, 8), reason="requires python >= 3.8")
 def test_generate_stub__py37(tmp_path):
     with pytest.raises(ImportError):
         expect_path = tmp_path / "foo.py"
@@ -124,13 +122,13 @@ def test_generate_stub__py37(tmp_path):
         utils.generate_stub(expect_path)
 
 
-@pytest.mark.skipif(IS_GT_PY37, reason="requires python > 3.7")
+@pytest.mark.xfail(sys.version_info >= (3, 8), reason="requires python >= 3.8")
 def test_prepare_create_stubs__py37():
     with pytest.raises(ImportError):
         utils.stub.prepare_create_stubs()
 
 
-@pytest.mark.skipif(not IS_GT_PY37, reason="requires python > 3.7")
+@pytest.mark.xfail(sys.version_info < (3, 8), reason="requires python >= 3.8", raises=ImportError)
 def test_prepare_create_stubs():
     create_stubs = utils.stub.prepare_create_stubs()
     assert isinstance(create_stubs, io.StringIO)
