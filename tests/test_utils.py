@@ -1,10 +1,13 @@
 import io
+import sys
 
 import pytest
 import requests
 from jsonschema import ValidationError
 from micropy import utils
 from requests.exceptions import ConnectionError, HTTPError, InvalidURL
+
+IS_GT_PY37 = sys.version_info > (3, 7)
 
 
 @pytest.fixture
@@ -111,6 +114,27 @@ def test_search_xml(mocker, shared_datadir, test_urls):
     assert sorted(results) == sorted(
         ["packages/esp32-micropython-1.10.0.tar.gz", "packages/esp32-micropython-1.11.0.tar.gz"]
     )
+
+
+@pytest.mark.skipif(IS_GT_PY37, reason="requires python > 3.7")
+def test_generate_stub__py37(tmp_path):
+    with pytest.raises(ImportError):
+        expect_path = tmp_path / "foo.py"
+        expect_path.touch()
+        utils.generate_stub(expect_path)
+
+
+@pytest.mark.skipif(IS_GT_PY37, reason="requires python > 3.7")
+def test_prepare_create_stubs__py37():
+    with pytest.raises(ImportError):
+        utils.stub.prepare_create_stubs()
+
+
+@pytest.mark.skipif(not IS_GT_PY37, reason="requires python > 3.7")
+def test_prepare_create_stubs():
+    create_stubs = utils.stub.prepare_create_stubs()
+    assert isinstance(create_stubs, io.StringIO)
+    assert len(create_stubs.getvalue()) > 1
 
 
 def test_generate_stub(shared_datadir, tmp_path, mocker):
