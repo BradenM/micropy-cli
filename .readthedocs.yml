@@ -16,14 +16,14 @@ submodules:
 # Optionally build your docs in additional formats such as PDF and ePub
 formats: all
 
-# Optionally set the version of Python and requirements required to build your docs
-python:
-  install:
-    - requirements: docs/requirements.txt
-    - method: "pip"
-      path: "."
-
 build:
   os: ubuntu-22.04
   tools:
-    python: "3"
+    python: "3.11"
+  jobs:
+    # see: https://docs.readthedocs.io/en/stable/build-customization.html#install-dependencies-with-poetry
+    post_create_environment:
+      - pip install poetry==1.4.1
+      - poetry config virtualenvs.create false
+    post_install:
+      - poetry install --with docs
