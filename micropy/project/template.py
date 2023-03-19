@@ -4,11 +4,10 @@ import json
 import os
 from itertools import chain
 from pathlib import Path
-from typing import Iterator, List, Union
+from typing import Iterator, List, Literal, Union
 
 from jinja2 import Environment, FileSystemLoader
 from micropy.logger import Log
-from typing_extensions import Literal
 
 
 class Template:
