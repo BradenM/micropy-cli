@@ -34,7 +34,7 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-micropy = 'micropy.cli:cli'
+micropy = 'micropy.app:app'
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
@@ -169,6 +169,7 @@ ignore = [
     "E501", # line too long - let black handle.
     "C901", # too complex
     "C408", # rewrite as literal; makes comprehensions harder sometimes imo
+    "B008", # no function call as arg default; typer uses this pattern.
 ]
 line-length = 100
 target-version = 'py38'

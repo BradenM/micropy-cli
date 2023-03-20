@@ -8,19 +8,12 @@ from pathlib import Path
 from types import ModuleType
 from typing import Optional
 
-import micropy.data
-
-try:
-    from stubber import minify
-    from stubber.codemod import board as stub_board
-    from stubber.utils import stubmaker
-except ImportError:
-    stubmaker = None
-    stub_board = None
-    minify = None
-
 import libcst as cst
 import libcst.codemod as codemod
+import micropy.data
+from stubber import minify
+from stubber.codemod import board as stub_board
+from stubber.utils import stubmaker
 
 
 def locate_create_stubs() -> Path:
