@@ -1,5 +1,43 @@
 <a name="v4.0.0"></a>
 
+## [4.2.0-beta](https://github.com/BradenM/micropy-cli/compare/v4.1.0...v4.2.0-beta) (2023-03-20)
+
+
+### Features
+
+* **cli:** Expose backend option to select pydevice backend. ([43f3751](https://github.com/BradenM/micropy-cli/commit/43f3751620acd6fcb49d0e4cc63d9afd4b998857))
+* **deps:** Add libcst as dependency, remove py38 constraint from ([9bdb811](https://github.com/BradenM/micropy-cli/commit/9bdb811a2be6c2258f9e3619b9a9265565fe5ab7))
+* **deps:** Add lint dependency group, remove unused/replaced with ([f820baa](https://github.com/BradenM/micropy-cli/commit/f820baae961b41d3386f1823565709be67436df0))
+* **deps:** Add micropython-stubber as proper library. ([d82f5fc](https://github.com/BradenM/micropy-cli/commit/d82f5fcc49f3adc3c25a1eea010091f48ebbe056))
+* **dx:** Replace pyupgrade/autoflake hooks with ruff ([3c47ebd](https://github.com/BradenM/micropy-cli/commit/3c47ebdee44547c2f3370fb18f6b6ef0ba5b7617))
+* **lib:** Remove old micropython-stubber submodule. ([ea1ee8c](https://github.com/BradenM/micropy-cli/commit/ea1ee8cdebc8ed2e7be593412e069fd1c1a2fd39))
+* **main:** Support create stubs backend parameter, utilize create stub variant. ([5cb26c3](https://github.com/BradenM/micropy-cli/commit/5cb26c38e06606b84f515ac7f8f0506ddf057e8b))
+* **pkg:** Drop support for python 3.7 ([87eb790](https://github.com/BradenM/micropy-cli/commit/87eb7901fe7d0ba5cd974629fadbb82524603af7))
+* **utils:** Prepare create stubs with codemod variants/modules, update stubmaker imports. ([2b8de82](https://github.com/BradenM/micropy-cli/commit/2b8de8298d5220f301b792f0718e74be5429904c))
+
+
+### Bug Fixes
+
+* **deps:** Pin dependencies ([9a7f407](https://github.com/BradenM/micropy-cli/commit/9a7f407e39be33a639c48de3527d6482ece82f26))
+* **deps:** Remove pypi-test sourced from pyproject ([b3fc9e3](https://github.com/BradenM/micropy-cli/commit/b3fc9e3b09002c5d5c17fe28173055cc3d3d830e))
+* **deps:** Target isort &lt;5.12.0 when on py3.7 ([f936752](https://github.com/BradenM/micropy-cli/commit/f936752a73898e9dce3ef5f3f4763384db0eab79))
+* **deps:** Target pylint &lt;2.13 when on py3.7 ([80dc833](https://github.com/BradenM/micropy-cli/commit/80dc833bb6128c033e1278ba5f3a93afe70ff2e8))
+* **deps:** Update dependency boltons to v23 ([27238ba](https://github.com/BradenM/micropy-cli/commit/27238ba47d817e3286b4a1b4fa0ccc1155985e6a))
+* **deps:** Update dependency mypy to v1.1.1 ([a88668c](https://github.com/BradenM/micropy-cli/commit/a88668c39019ee466a388c0ca868305687537002))
+* **deps:** Update dependency pydantic to v1.10.6 ([8c600f2](https://github.com/BradenM/micropy-cli/commit/8c600f24f03ae2b1349b9c483f46c21a76de3e51))
+* **deps:** Update dependency python-minifier to v2.8.1 ([24ce47d](https://github.com/BradenM/micropy-cli/commit/24ce47d875e9bc5a0c4f20bfd582a313642aac78))
+
+
+### Documentation
+
+* **cfg:** Remove requirements ([2b54413](https://github.com/BradenM/micropy-cli/commit/2b54413c2e4923aeb4ed7da2e3b78d92407b3db0))
+* **cfg:** Update rtd config to setup env w/ poetry. ([82c4da0](https://github.com/BradenM/micropy-cli/commit/82c4da02955080e5202bb1630a69daadce8323f4))
+
+
+### Miscellaneous Chores
+
+* **release:** Set release v4.2.0-beta ([0e2d138](https://github.com/BradenM/micropy-cli/commit/0e2d13883f7c45c36a75ee3d51e6dd63057b0b96))
+
 ## [4.1.0](https://github.com/BradenM/micropy-cli/compare/v4.1.0-beta...v4.1.0) (2023-03-05)
 
 
