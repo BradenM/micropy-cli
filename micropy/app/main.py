@@ -1,0 +1,178 @@
+import sys
+from enum import Enum
+from pathlib import Path
+from typing import Optional
+
+import micropy.exceptions as exc
+import questionary as prompt
+import typer
+from micropy import logger, utils
+from micropy.main import MicroPy
+from micropy.project import Project, modules
+from questionary import Choice
+
+from .stubs import stubs_app
+
+app = typer.Typer(name="micropy-cli", no_args_is_help=True, rich_markup_mode="markdown")
+app.add_typer(stubs_app)
+
+
+@app.callback()
+def main_callback(ctx: typer.Context):
+    """
+    **Micropy CLI** is a project management/generation tool for writing [Micropython](https://micropython.org/) code in modern IDEs such as VSCode.
+
+    Its primary goal is to automate the process of creating a workspace complete with:
+
+    * **Linting** compatible with Micropython
+
+    * IDE **Intellisense**
+
+    * **Autocompletion**
+
+    * Dependency Management
+
+    * VCS Compatibility
+    """
+    if ctx.resilient_parsing:
+        return
+    micropy = ctx.ensure_object(MicroPy)
+    if not micropy.project.exists:
+        return
+    latest = utils.is_update_available()
+    if latest:
+        log = logger.Log.get_logger("MicroPy")
+        log.title("Update Available!")
+        log.info(f"Version $B[v{latest}] is now available")
+        log.info("You can update via: $[pip install --upgrade micropy-cli]\n")
+
+
+TemplateEnum = Enum(
+    "TemplateEnum", {t: t for t in list(modules.TemplatesModule.TEMPLATES.keys())}, type=str
+)
+
+
+@app.command(name="init")
+def main_init(
+    ctx: typer.Context,
+    path: Optional[Path] = typer.Argument(
+        None, help="Path to project. Defaults to current working directory."
+    ),
+    name: Optional[str] = typer.Option(
+        None, "--name", "-n", help="Project Name. Defaults to path name."
+    ),
+    template: Optional[list[TemplateEnum]] = typer.Option(
+        None,
+        "--template",
+        "-t",
+        help="Templates to generate for project. Can be specified multiple times. Skips interactive prompt.",
+    ),
+):
+    """Create new Micropython Project.
+
+    \b When creating a new project, all files will be placed under the
+    generated <PROJECT_NAME> folder.
+
+    """
+    mpy: MicroPy = ctx.find_object(MicroPy)
+    mpy.log.title("Creating New Project")
+    if not path:
+        path = Path.cwd()
+        default_name = path.name
+        prompt_name = prompt.text("Project Name", default=default_name).ask()
+        name = prompt_name.strip()
+    if not template:
+        templates = modules.TemplatesModule.TEMPLATES.items()
+        templ_choices = [Choice(str(val[1]), value=t) for t, val in templates]
+        template = prompt.checkbox("Choose any Templates to Generate", choices=templ_choices).ask()
+    stubs = [Choice(str(s), value=s) for s in mpy.stubs]
+    if not stubs:
+        mpy.log.error("You don't have any stubs!")
+        mpy.log.title("To add stubs to micropy, use $[micropy stubs add <STUB_NAME>]")
+        sys.exit(1)
+    stub_choices = prompt.checkbox("Which stubs would you like to use?", choices=stubs).ask()
+    project = Project(path, name=name)
+    project.add(modules.StubsModule, mpy.stubs, stubs=stub_choices)
+    project.add(modules.PackagesModule, "requirements.txt")
+    project.add(modules.DevPackagesModule, "dev-requirements.txt")
+    project.add(modules.TemplatesModule, templates=template, run_checks=mpy.RUN_CHECKS)
+    proj_path = project.create()
+    try:
+        rel_path = f"./{proj_path.relative_to(Path.cwd())}"
+    except ValueError:
+        rel_path = proj_path
+    mpy.log.title(f"Created $w[{project.name}] at $w[{rel_path}]")
+
+
+@app.command(name="install")
+def main_install(
+    ctx: typer.Context,
+    packages: list[str],
+    dev: bool = False,
+    path: Optional[Path] = typer.Option(
+        None, help="Add dependency from local path. Can be a file or directory."
+    ),
+):
+    """Install Packages as Project Requirements.
+
+    \b
+    Install a project dependency while enabling
+    intellisense, autocompletion, and linting for it.
+
+    \b
+    If no packages are passed and a requirements.txt file is found,
+    then micropy will install all packages listed in it.
+
+    \b
+    If the --dev flag is passed, then the packages are only
+    added to micropy.json. They are not stubbed.
+
+    \b
+    To add a dependency from a path, use the --path option
+    and provide a name for your package:
+
+        \b
+        $ micropy install --path ./src/lib/mypackage MyCustomPackage
+        \b
+
+
+
+    \b
+    You can import installed packages just as you would
+    on your actual device:
+
+        \b
+        _import <package_name>_
+
+    """
+    mpy: MicroPy = ctx.find_object(MicroPy)
+    project = mpy.project
+    if not project.exists:
+        mpy.log.error("You are not currently in an active project!")
+        sys.exit(1)
+    if path:
+        pkg_name = next(iter(packages), None)
+        mpy.log.title("Installing Local Package")
+        pkg_path = "-e " + path
+        project.add_package(pkg_path, dev=dev, name=pkg_name)
+        sys.exit(0)
+    if not packages:
+        mpy.log.title("Installing all Requirements")
+        try:
+            project.add_from_file(dev=dev)
+        except Exception as e:
+            mpy.log.error("Failed to load requirements!", exception=e)
+            raise typer.Abort() from e
+        else:
+            mpy.log.success("\nRequirements Installed!")
+            sys.exit(0)
+    mpy.log.title("Installing Packages")
+    for pkg in packages:
+        try:
+            project.add_package(pkg, dev=dev)
+        except exc.RequirementException as e:
+            pkg_name = str(e.package)
+            mpy.log.error(
+                (f"Failed to install {pkg_name}!" " Is it available on PyPi?"), exception=e
+            )
+            raise typer.Abort() from e
