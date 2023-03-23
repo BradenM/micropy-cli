@@ -62,7 +62,7 @@ MarkupSafe = "==2.1.2"
 upydevice = "0.3.8"
 attrs = "==22.2.0"
 typing-extensions = "4.5.0"
-pydantic = "1.10.6"
+pydantic = "1.10.7"
 distlib = "0.3.6"
 importlib-metadata = { version = "==5.2.0", python = '<3.10' }
 micropython-stubber = "==1.13.1.post1"
