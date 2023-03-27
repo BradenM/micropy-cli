@@ -1,5 +1,12 @@
 <a name="v4.0.0"></a>
 
+## [4.2.0-beta.2](https://github.com/BradenM/micropy-cli/compare/v4.2.0-beta.1...v4.2.0-beta.2) (2023-03-27)
+
+
+### Bug Fixes
+
+* **deps:** Use latest stable typer. ([ec3082e](https://github.com/BradenM/micropy-cli/commit/ec3082ed541b724743f8bc7b5bb19ecce9c9e2bc))
+
 ## [4.2.0-beta.1](https://github.com/BradenM/micropy-cli/compare/v4.2.0-beta...v4.2.0-beta.1) (2023-03-27)
 
 
