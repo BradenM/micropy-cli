@@ -59,7 +59,8 @@ def mock_micropy_path(mocker, tmp_path):
 
 @pytest.fixture
 def mock_micropy(mock_micropy_path):
-    mp = micropy.main.MicroPy()
+    config = micropy.main.MicroPyOptions(root_dir=mock_micropy_path)
+    mp = micropy.main.MicroPy(options=config)
     return mp
 
 
