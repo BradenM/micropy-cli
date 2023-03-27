@@ -4,6 +4,7 @@ import pytest
 from micropy.app import stubs as stubs_app
 from micropy.app.stubs import stubs_app as app
 from micropy.pyd import PyDevice
+from micropy.stubs.source import StubSource
 from pytest_mock import MockerFixture
 from stubber.codemod.modify_list import ListChangeSet
 from tests.app.conftest import MicroPyScenario
@@ -41,6 +42,13 @@ def pyb_mock(request: pytest.FixtureRequest, mocker: MockerFixture):
     return pyb
 
 
+@pytest.fixture
+def stubs_locator_mock(mocker: MockerFixture):
+    stubs_locator = mocker.MagicMock(StubSource, autospec=True)
+    mocker.patch("micropy.app.stubs.stubs_source.StubSource", return_value=stubs_locator)
+    return stubs_locator
+
+
 def test_stubs_create(mocker: MockerFixture, pyb_mock, micropy_obj, runner):
     result = runner.invoke(app, ["create", "/dev/port"], obj=micropy_obj)
     print(result.stdout)
@@ -61,6 +69,23 @@ def test_stubs_create__script_error(pyb_mock, micropy_obj, runner):
             app, ["create", "/dev/port"], obj=micropy_obj, catch_exceptions=False
         )
         assert result.return_value is None
+
+
+@pytest.mark.parametrize("force", [True, False])
+@pytest.mark.parametrize("micropy_obj", [MicroPyScenario(impl_add=False)], indirect=True)
+def test_stubs_add_success(
+    mocker: MockerFixture, micropy_obj, runner, stubs_locator_mock, mock_repo, force
+):
+    stubs_locator_mock.ready.return_value.__enter__.return_value = "test-stub"
+    args = ["add", "test-stub"]
+    if force:
+        args.append("--force")
+    result = runner.invoke(app, args, obj=micropy_obj, catch_exceptions=False)
+    print(result.stdout)
+    assert result.exit_code == 0
+    assert "added!" in result.stdout
+    stubs_locator_mock.ready.assert_called_once_with("test-stub")
+    micropy_obj.stubs.add.assert_called_once_with("test-stub", force=force)
 
 
 @pytest.mark.parametrize(

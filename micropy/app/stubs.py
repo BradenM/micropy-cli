@@ -145,7 +145,7 @@ def stubs_create(
 
 
 @stubs_app.command(name="add")
-def add(ctx: typer.Context, stub_name: str, force: bool = False):
+def stubs_add(ctx: typer.Context, stub_name: str, force: bool = False):
     """Add Stubs from package or path.
 
     \b
