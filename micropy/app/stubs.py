@@ -212,7 +212,7 @@ def stubs_search(ctx: typer.Context, query: str, show_outdated: bool = False):
 
 
 @stubs_app.command(name="list")
-def stubs_list(ctx: typer.Context, show_outdated: bool = False):
+def stubs_list(ctx: typer.Context):
     """List installed stubs."""
     mpy: MicroPy = ctx.find_object(MicroPy)
 
