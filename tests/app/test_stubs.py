@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 from micropy.app import stubs as stubs_app
 from micropy.app.stubs import stubs_app as app
+from micropy.exceptions import StubError, StubNotFound
 from micropy.pyd import PyDevice
 from micropy.stubs.source import StubSource
 from pytest_mock import MockerFixture
@@ -73,9 +74,7 @@ def test_stubs_create__script_error(pyb_mock, micropy_obj, runner):
 
 @pytest.mark.parametrize("force", [True, False])
 @pytest.mark.parametrize("micropy_obj", [MicroPyScenario(impl_add=False)], indirect=True)
-def test_stubs_add_success(
-    mocker: MockerFixture, micropy_obj, runner, stubs_locator_mock, mock_repo, force
-):
+def test_stubs_add_success(micropy_obj, runner, stubs_locator_mock, mock_repo, force):
     stubs_locator_mock.ready.return_value.__enter__.return_value = "test-stub"
     args = ["add", "test-stub"]
     if force:
@@ -86,6 +85,24 @@ def test_stubs_add_success(
     assert "added!" in result.stdout
     stubs_locator_mock.ready.assert_called_once_with("test-stub")
     micropy_obj.stubs.add.assert_called_once_with("test-stub", force=force)
+
+
+@pytest.mark.parametrize("micropy_obj", [MicroPyScenario(impl_add=False)], indirect=True)
+def test_stubs_add__not_found(micropy_obj, runner, stubs_locator_mock, mock_repo):
+    micropy_obj.stubs.add.side_effect = StubNotFound()
+    result = runner.invoke(app, ["add", "nonexistent-stub"], obj=micropy_obj)
+    assert result.exit_code == 1
+    assert "could not be found" in result.stdout
+    stubs_locator_mock.ready.assert_called_once_with("nonexistent-stub")
+
+
+@pytest.mark.parametrize("micropy_obj", [MicroPyScenario(impl_add=False)], indirect=True)
+def test_stubs_add__invalid(micropy_obj, runner, stubs_locator_mock, mock_repo):
+    micropy_obj.stubs.add.side_effect = StubError()
+    result = runner.invoke(app, ["add", "invalid-stub"], obj=micropy_obj)
+    assert result.exit_code == 1
+    assert "is not a valid stub!" in result.stdout
+    stubs_locator_mock.ready.assert_called_once_with("invalid-stub")
 
 
 @pytest.mark.parametrize(
