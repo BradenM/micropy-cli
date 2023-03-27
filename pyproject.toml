@@ -67,10 +67,7 @@ distlib = "0.3.6"
 importlib-metadata = { version = "==5.2.0", python = '<3.10' }
 micropython-stubber = "==1.13.1.post1"
 libcst = "0.4.9"
-shellingham = "^1.5.0.post1"
-rich = "^13.3.2"
-# until typer is updated to support recent rich versions
-typer = {git = "https://github.com/BradenM/typer"}
+typer = {version = "^0.7.0", extras = ["all"]}
 
 [tool.poetry.group.dev.dependencies]
 bump2version = "^0.5.11"
