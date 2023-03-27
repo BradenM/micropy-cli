@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import inspect
 from copy import deepcopy
@@ -18,9 +20,9 @@ class ProjectModule(metaclass=abc.ABCMeta):
     """Abstract Base Class for Project Modules."""
 
     PRIORITY: int = 0
-    _hooks: List["HookProxy"] = []
+    _hooks: List[HookProxy] = []
 
-    def __init__(self, parent: Optional["ProjectModule"] = None, log: Optional[ServiceLog] = None):
+    def __init__(self, parent: Optional[ProjectModule] = None, log: Optional[ServiceLog] = None):
         self._parent = parent
         self.log = log
 
@@ -30,7 +32,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
         return self._parent
 
     @parent.setter
-    def parent(self, parent: Type["ProjectModule"]) -> Type["ProjectModule"]:
+    def parent(self, parent: Type[ProjectModule]) -> Type[ProjectModule]:
         """Sets component parent.
 
         Args:
@@ -57,7 +59,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
         """Method to update component."""
 
     # FIXME: B027
-    def add(self, component: Type["ProjectModule"], *args: Any, **kwargs: Any) -> Any:  # noqa: B027
+    def add(self, component: Type[ProjectModule], *args: Any, **kwargs: Any) -> Any:  # noqa: B027
         """Adds component.
 
         Args:
@@ -66,7 +68,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
         """
 
     # FIXME: B027
-    def remove(self, component: Type["ProjectModule"]) -> Any:  # noqa: B027
+    def remove(self, component: Type[ProjectModule]) -> Any:  # noqa: B027
         """Removes component.
 
         Args:
@@ -102,7 +104,7 @@ class ProjectModule(metaclass=abc.ABCMeta):
 
         return _hook
 
-    def resolve_hook(self, name: str) -> Union[Optional["HookProxy"], T]:
+    def resolve_hook(self, name: str) -> Union[Optional[HookProxy], T]:
         """Resolves appropriate hook for attribute name.
 
         Args:
