@@ -39,8 +39,6 @@ def micropy_obj(request: pytest.FixtureRequest, tmp_path, mocker: MockFixture) -
     mpy.stubs.add = lambda i: i
     if param := getattr(request, "param", MicroPyScenario()):
         mpy.project.exists = param.project_exists
-        # stub = mocker.MagicMock(DeviceStub, autospec=True)
-        # stub.name = 'a-stub'
         stubs = ["a-stub"] if param.has_stubs else []
         mpy.stubs.__iter__.return_value = iter(stubs)
     mocker.patch("micropy.main.MicroPy", return_value=mpy)
