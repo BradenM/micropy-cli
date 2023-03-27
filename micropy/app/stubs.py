@@ -82,11 +82,10 @@ def stubs_create(
     ),
 ):
     """Create stubs from a micropython-enabled device."""
-    mpy: MicroPy = ctx.find_object(MicroPy)
-    log = mpy.log
+    mp: MicroPy = ctx.find_object(MicroPy)
+    log = mp.log
     log.title(f"Connecting to Pyboard @ $[{port}]")
     pyb_log = Log.add_logger("Pyboard", "bright_white")
-    mp = MicroPy()
 
     def _get_desc(name: str, cfg: dict):
         desc = f"{pyb_log.get_service()} {name}"
