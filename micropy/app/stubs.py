@@ -4,7 +4,7 @@ import sys
 import tempfile
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Type
 
 import micropy.exceptions as exc
 import typer
@@ -55,7 +55,7 @@ class CreateBackend(str, Enum):
     upydevice = ("upydevice", UPyDeviceBackend)
     rshell = ("rshell", RShellPyDeviceBackend)
 
-    def __new__(cls, value: str, backend: type[MetaPyDeviceBackend]):
+    def __new__(cls, value: str, backend: Type[MetaPyDeviceBackend]):
         obj = str.__new__(cls, value)
         obj._value_ = value
         obj.backend = backend
