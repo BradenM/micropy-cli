@@ -125,12 +125,12 @@ def test_cli_stubs_add(mocker, mock_mpy, shared_datadir, runner, tmp_path, mock_
     mocker.spy(cli.sys, "exit")
 
     result = runner.invoke(cli.add, ["invalid-stub"], obj=mock_mpy)
-    assert cli.sys.exit.called_with(1)
+    # assert cli.sys.exit.called_with(1)
     assert "is not a valid stub" in result.output
     assert result.exit_code == 1
 
     result = runner.invoke(cli.add, ["not-real-stub"])
-    assert cli.sys.exit.called_with(1)
+    # assert cli.sys.exit.called_with(1)
     assert "could not be found" in result.output
     assert result.exit_code == 1
 
