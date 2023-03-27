@@ -2,20 +2,21 @@
 
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
-from typing import List, Literal, Optional, Union
+from typing import List, Optional
 
+import attr
 from micropy import data, utils
-from micropy.exceptions import PyDeviceError
 from micropy.logger import Log
 from micropy.project import Project, modules
-from micropy.pyd import DevicePath, MessageHandlers, ProgressStreamConsumer, PyDevice
-from micropy.pyd.backend_rshell import RShellPyDeviceBackend
-from micropy.pyd.backend_upydevice import UPyDeviceBackend
 from micropy.stubs import RepositoryInfo, StubManager, StubRepository
-from micropy.utils.stub import prepare_create_stubs
 from pydantic import parse_file_as
+
+
+@attr.define(kw_only=True)
+class MicroPyOptions:
+    root_dir: Path = attr.field(default=data.FILES)
+    stubs_dir: Path = attr.Factory(lambda self: self.root_dir / "stubs", takes_self=True)
 
 
 class MicroPy:
@@ -23,9 +24,11 @@ class MicroPy:
 
     RUN_CHECKS = True
     repo: StubRepository
+    config: MicroPyOptions
     _stubs: Optional[StubManager] = None
 
-    def __init__(self):
+    def __init__(self, *, options: Optional[MicroPyOptions] = None):
+        self.config = options or MicroPyOptions()
         self.log = Log.get_logger("MicroPy")
         self.verbose = True
         self.log.debug("MicroPy Loaded")
@@ -33,15 +36,14 @@ class MicroPy:
         self.repo = StubRepository()
         for repo_info in repo_list:
             self.repo = self.repo.add_repository(repo_info)
-        if not data.STUB_DIR.exists():
+        if not self.config.stubs_dir.exists():
             self.setup()
 
     def setup(self):
         """Creates necessary directories for micropy."""
         self.log.debug("Running first time setup...")
-        self.log.debug(f"Creating .micropy directory @ {data.FILES}")
-        data.FILES.mkdir(exist_ok=True)
-        data.STUB_DIR.mkdir()
+        self.log.debug(f"Creating .micropy directory @ {self.config.root_dir}")
+        self.config.stubs_dir.mkdir(parents=True, exist_ok=True)
 
     @property
     def stubs(self) -> StubManager:
@@ -52,7 +54,7 @@ class MicroPy:
 
         """
         if not self._stubs:
-            self._stubs = StubManager(resource=data.STUB_DIR, repos=self.repo)
+            self._stubs = StubManager(resource=self.config.stubs_dir, repos=self.repo)
         return self._stubs
 
     @utils.lazy_property
