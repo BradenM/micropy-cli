@@ -25,7 +25,7 @@ from micropy.utils.stub import prepare_create_stubs
 from stubber.codemod import board as stub_board
 from stubber.codemod.modify_list import ListChangeSet
 
-stubs_app = typer.Typer(name="stubs", rich_markup_mode="rich", no_args_is_help=True)
+stubs_app = typer.Typer(name="stubs", rich_markup_mode="markdown", no_args_is_help=True)
 
 
 @stubs_app.callback()
@@ -74,7 +74,11 @@ def stubs_create(
     port: str = typer.Argument(..., help="Serial port used to connect to device"),
     backend: CreateBackend = typer.Option(CreateBackend.upydevice, help="PyDevice backend."),
     variant: stub_board.CreateStubsVariant = typer.Option(
-        stub_board.CreateStubsVariant.BASE, "-v", "--variant", help="Create Stubs variant."
+        stub_board.CreateStubsVariant.BASE,
+        "-v",
+        "--variant",
+        help="Create Stubs variant.",
+        rich_help_panel="Stubs",
     ),
     module: Optional[List[str]] = typer.Option(
         None, "-m", "--module", help="Modules to add.", rich_help_panel="Stubs"
@@ -83,7 +87,12 @@ def stubs_create(
         None, "-e", "--exclude", help="Modules to exclude.", rich_help_panel="Stubs"
     ),
 ):
-    """Create stubs from a micropython-enabled device."""
+    """Create stubs from micropython-enabled devices.
+
+    Utilize Josverl's [micropython-stubber](https://github.com/josverl/micropython-stubber/)
+    to generate stubs from your own micropython-enabled device.
+
+    """
     mp: MicroPy = ctx.find_object(MicroPy)
     log = mp.log
     log.title(f"Connecting to Pyboard @ $[{port}]")
@@ -107,6 +116,7 @@ def stubs_create(
     except (SystemExit, PyDeviceError):
         log.error(f"Failed to connect, are you sure $[{port}] is correct?")
         return None
+
     log.success("Connected!")
     create_stubs = prepare_create_stubs(
         variant=variant,
