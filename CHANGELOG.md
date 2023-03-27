@@ -1,5 +1,37 @@
 <a name="v4.0.0"></a>
 
+## [4.2.0-beta.1](https://github.com/BradenM/micropy-cli/compare/v4.2.0-beta...v4.2.0-beta.1) (2023-03-27)
+
+
+### Features
+
+* **app:** Extract main cli logic out to command/option callbacks. ([e3f6401](https://github.com/BradenM/micropy-cli/commit/e3f6401f99faebaec13946b371b966d22edd681b)), closes [#338](https://github.com/BradenM/micropy-cli/issues/338)
+* **app:** Implement main app cli entries with typer. ([d2b22a5](https://github.com/BradenM/micropy-cli/commit/d2b22a567a0e0e084378f0279aa23f5802fa8bc6))
+* **app:** Implement stubs subcommand with typer. ([7733f24](https://github.com/BradenM/micropy-cli/commit/7733f243c62065500be46b5995819076c41fae32))
+* **app:** Link to Josverl/micropython-stubber in create help ([88fb8dd](https://github.com/BradenM/micropy-cli/commit/88fb8dd8a90d120483ae008e1d46e553293032c6))
+* **cli:** Remove old cli module. ([8e14fa6](https://github.com/BradenM/micropy-cli/commit/8e14fa691158a4c537cd89d39db1b92cd208bc42))
+* **deps:** Add rich, typer, shellingham ([62f7c72](https://github.com/BradenM/micropy-cli/commit/62f7c729442399038b326628fa5c96c26b0e84a3))
+* **deps:** Remove pytest-clarity ([d712580](https://github.com/BradenM/micropy-cli/commit/d71258076ed85343a5a145418e5dab11f446b85e))
+* **dev:** Add and utilize external mock with pytest-mock ([79b3d96](https://github.com/BradenM/micropy-cli/commit/79b3d965f46a4ffd1e9bb972267f80ae77b68fda))
+* **dev:** Add pdbpp to dev deps. ([239cb3e](https://github.com/BradenM/micropy-cli/commit/239cb3ebc690fd83583d4126cecae7268aea7c4e))
+* **main:** Allow override of primary data directories. ([1689bfd](https://github.com/BradenM/micropy-cli/commit/1689bfdca7c8dcdb3b4cf137978c51a2ee33506e))
+* **main:** Remove stub creation logic from micropy main state. ([1f8d9ba](https://github.com/BradenM/micropy-cli/commit/1f8d9baf32e742757f8bef348e90b289317cf9b4))
+* **utils:** Remove import catch for stubber. ([91103e6](https://github.com/BradenM/micropy-cli/commit/91103e6e790954648ccf6d7f50d5049bfc477bfa))
+
+
+### Bug Fixes
+
+* **app:** Use future annotations. ([450c27d](https://github.com/BradenM/micropy-cli/commit/450c27d9f1b6748464715e888144eca9d0ac2c62))
+* **compat:** Typer list type errors on py3.8 ([3483302](https://github.com/BradenM/micropy-cli/commit/34833023e9c80e74b02cea1d51447a6b203064b7))
+* **compat:** Use typing.Type in app.stubs ([00858c2](https://github.com/BradenM/micropy-cli/commit/00858c292d4a098b4414138842a97761384cbaef))
+* **deps:** Exclude pdbpp on windows ([445455e](https://github.com/BradenM/micropy-cli/commit/445455e07917cc1b7f647bc7cb89a65050a2ade9))
+* **deps:** Update dependency pydantic to v1.10.7 ([36e4727](https://github.com/BradenM/micropy-cli/commit/36e47271a1da50a9c1a35646b0f82011781bf721))
+
+
+### Miscellaneous Chores
+
+* **release:** Set release to v4.2.0-beta.1 ([614d3aa](https://github.com/BradenM/micropy-cli/commit/614d3aac359373d929b113874d7d73976a2cbb3f))
+
 ## [4.2.0-beta](https://github.com/BradenM/micropy-cli/compare/v4.1.0...v4.2.0-beta) (2023-03-20)
 
 
