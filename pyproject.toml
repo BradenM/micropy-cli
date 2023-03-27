@@ -75,6 +75,7 @@ mypy = { version = "^1.0", extras = ["dmypy"] }
 types-requests = "^2.27.14"
 pylint = "^2.7"
 better-exceptions = "^0.3.3"
+pdbpp = "^0.10.3"
 
 [tool.poetry.group.lint]
 optional = true
