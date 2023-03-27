@@ -6,6 +6,7 @@ from micropy.app.stubs import stubs_app as app
 from micropy.pyd import PyDevice
 from pytest_mock import MockerFixture
 from stubber.codemod.modify_list import ListChangeSet
+from tests.app.conftest import MicroPyScenario
 
 
 @pytest.mark.parametrize(
@@ -60,3 +61,17 @@ def test_stubs_create__script_error(pyb_mock, micropy_obj, runner):
             app, ["create", "/dev/port"], obj=micropy_obj, catch_exceptions=False
         )
         assert result.return_value is None
+
+
+@pytest.mark.parametrize(
+    "micropy_obj", [MicroPyScenario(), MicroPyScenario(project_exists=False)], indirect=True
+)
+def test_stubs_list(micropy_obj, runner):
+    result = runner.invoke(app, ["list"], obj=micropy_obj)
+    assert result.exit_code == 0
+    assert "Installed Stubs" in result.stdout
+    print(result.stdout)
+    if not micropy_obj.project.exists:
+        micropy_obj.stubs.iter_by_firmware.assert_called_once()
+    else:
+        assert micropy_obj.stubs.iter_by_firmware.call_count == 2
