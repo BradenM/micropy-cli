@@ -5,6 +5,7 @@ from micropy.app import stubs as stubs_app
 from micropy.app.stubs import stubs_app as app
 from micropy.exceptions import StubError, StubNotFound
 from micropy.pyd import PyDevice
+from micropy.stubs import StubRepositoryPackage
 from micropy.stubs.source import StubSource
 from pytest_mock import MockerFixture
 from stubber.codemod.modify_list import ListChangeSet
@@ -48,6 +49,24 @@ def stubs_locator_mock(mocker: MockerFixture):
     stubs_locator = mocker.MagicMock(StubSource, autospec=True)
     mocker.patch("micropy.app.stubs.stubs_source.StubSource", return_value=stubs_locator)
     return stubs_locator
+
+
+@pytest.fixture()
+def stub_search_data(mocker: MockerFixture):
+    stub1 = mocker.MagicMock(StubRepositoryPackage, autospec=True)
+    stub2 = mocker.MagicMock(StubRepositoryPackage, autospec=True)
+    stub3 = mocker.MagicMock(StubRepositoryPackage, autospec=True)
+    stub1.name = "test1"
+    stub1.version = "1.0.0"
+    stub2.name = "test2"
+    stub2.version = "1.1.0"
+    stub3.name = "test3"
+    stub3.version = "0.9.0"
+    return [
+        stub1,
+        stub2,
+        stub3,
+    ]
 
 
 def test_stubs_create(mocker: MockerFixture, pyb_mock, micropy_obj, runner):
@@ -117,3 +136,31 @@ def test_stubs_list(micropy_obj, runner):
         micropy_obj.stubs.iter_by_firmware.assert_called_once()
     else:
         assert micropy_obj.stubs.iter_by_firmware.call_count == 2
+
+
+@pytest.mark.parametrize("outdated", [True, False])
+def test_stubs_search(stub_search_data, micropy_obj, runner, outdated):
+    micropy_obj.stubs._loaded = {"test1", "test3"}
+    micropy_obj.stubs._firmware = {"test1", "test3"}
+    micropy_obj.repo.search.return_value = stub_search_data
+
+    args = ["search", "test"]
+    if outdated:
+        args.append("--show-outdated")
+    result = runner.invoke(app, args, obj=micropy_obj, catch_exceptions=False)
+
+    assert result.exit_code == 0
+    assert "Results for test" in result.stdout
+    assert "test1" in result.stdout
+    assert "test2" in result.stdout
+    assert "test3" in result.stdout
+    assert "Installed" in result.stdout
+
+
+def test_stubs_search_no_results(mocker: MockerFixture, micropy_obj, runner):
+    micropy_obj.repo.search.return_value = []
+
+    result = runner.invoke(app, ["search", "nonexistent"], obj=micropy_obj)
+
+    assert result.exit_code == 0
+    assert "No results found for: nonexistent" in result.stdout
