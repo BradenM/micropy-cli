@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from pathlib import Path
-from typing import Optional, cast
+from typing import List, Optional, cast
 
 import micropy.exceptions as exc
 import questionary as prompt
@@ -49,12 +49,14 @@ def main_callback(ctx: typer.Context):
         log.info("You can update via: $[pip install --upgrade micropy-cli]\n")
 
 
-TemplateEnum = Enum("TemplateEnum", {t: t for t in modules.TemplatesModule.TEMPLATES}, type=str)
+TemplateEnum = Enum(
+    "TemplateEnum", {t: t for t in list(modules.TemplatesModule.TEMPLATES.keys())}, type=str
+)
 
 
 def template_callback(
-    ctx: typer.Context, value: Optional[list[TemplateEnum]]
-) -> Optional[list[TemplateEnum]]:
+    ctx: typer.Context, value: Optional[List[TemplateEnum]]
+) -> Optional[List[TemplateEnum]]:
     if ctx.resilient_parsing:
         return
     if not value:
@@ -91,7 +93,7 @@ def name_callback(ctx: typer.Context, value: Optional[str]) -> Optional[str]:
     return value
 
 
-def stubs_callback(ctx: typer.Context, value: Optional[list[str]]) -> Optional[list[Stub]]:
+def stubs_callback(ctx: typer.Context, value: Optional[List[str]]) -> Optional[List[Stub]]:
     if ctx.resilient_parsing:
         return
     mpy = ctx.ensure_object(MicroPy)
@@ -138,7 +140,7 @@ def main_init(
         show_default=False,
         callback=name_callback,
     ),
-    template: Optional[list[TemplateEnum]] = typer.Option(
+    template: Optional[List[TemplateEnum]] = typer.Option(
         None,
         "--template",
         "-t",
@@ -146,7 +148,7 @@ def main_init(
         show_default=False,
         callback=template_callback,
     ),
-    stubs: Optional[list[str]] = typer.Option(
+    stubs: Optional[List[str]] = typer.Option(
         None,
         "--stubs",
         "-s",
@@ -208,7 +210,7 @@ def install_local_callback(ctx: typer.Context, value: Optional[Path]) -> Optiona
     raise typer.Exit()
 
 
-def install_project_callback(ctx: typer.Context, value: Optional[list[str]]) -> Optional[list[str]]:
+def install_project_callback(ctx: typer.Context, value: Optional[List[str]]) -> Optional[List[str]]:
     """Handle project requirements install."""
     if ctx.resilient_parsing:
         return
@@ -233,7 +235,7 @@ def install_project_callback(ctx: typer.Context, value: Optional[list[str]]) -> 
 @app.command(name="install")
 def main_install(
     ctx: typer.Context,
-    packages: Optional[list[str]] = typer.Argument(
+    packages: Optional[List[str]] = typer.Argument(
         None, help="Packages to install.", callback=install_project_callback
     ),
     dev: bool = typer.Option(

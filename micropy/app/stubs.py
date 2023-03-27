@@ -4,7 +4,7 @@ import sys
 import tempfile
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Type
+from typing import List, Optional, Type
 
 import micropy.exceptions as exc
 import typer
@@ -62,7 +62,7 @@ class CreateBackend(str, Enum):
         return obj
 
 
-def changeset_callback(value: Optional[list[str]]) -> Optional[ListChangeSet]:
+def create_changeset(value: Optional[List[str]]) -> Optional[ListChangeSet]:
     if value is None:
         return value
     return ListChangeSet.from_strings(add=value)
@@ -76,9 +76,11 @@ def stubs_create(
     variant: stub_board.CreateStubsVariant = typer.Option(
         stub_board.CreateStubsVariant.BASE, "-v", "--variant", help="Create Stubs variant."
     ),
-    module: Optional[list[str]] = typer.Option(None, "-m", "--module", help="Modules to add."),
-    exclude: Optional[list[str]] = typer.Option(
-        None, "-e", "--exclude", help="Modules to exclude."
+    module: Optional[List[str]] = typer.Option(
+        None, "-m", "--module", help="Modules to add.", rich_help_panel="Stubs"
+    ),
+    exclude: Optional[List[str]] = typer.Option(
+        None, "-e", "--exclude", help="Modules to exclude.", rich_help_panel="Stubs"
     ),
 ):
     """Create stubs from a micropython-enabled device."""
@@ -108,8 +110,8 @@ def stubs_create(
     log.success("Connected!")
     create_stubs = prepare_create_stubs(
         variant=variant,
-        modules_set=changeset_callback(module),
-        exclude_set=changeset_callback(exclude),
+        modules_set=create_changeset(module),
+        exclude_set=create_changeset(exclude),
     )
     log.info("Executing stubber on pyboard...")
     try:
