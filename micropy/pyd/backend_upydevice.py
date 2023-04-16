@@ -331,3 +331,6 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
         self.write_file(contents, DevicePath(_target_path), consumer=consumer)
         self.eval(f"import {Path(_target_path).stem}", consumer=consumer)
         self.uos.remove(str(_target_path))
+
+    def remove(self, path: DevicePath) -> None:
+        self.uos.remove(str(path))

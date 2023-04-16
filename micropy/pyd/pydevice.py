@@ -68,6 +68,9 @@ class PyDevice(MetaPyDevice[AnyBackend], Generic[AnyBackend]):
             raise RuntimeError("Copying dirs to device is not yet supported!")
         return self.pydevice.push_file(source_path, target_path, consumer=self.consumer, **kwargs)
 
+    def remove(self, target_path: DevicePath) -> None:
+        return self.pydevice.remove(target_path)
+
     def connect(self):
         return self.pydevice.connect()
 
