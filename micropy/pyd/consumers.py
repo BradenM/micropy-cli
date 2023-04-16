@@ -72,3 +72,12 @@ class StreamHandlers(NamedTuple):
 
 class MessageHandlers(NamedTuple):
     on_message: MessageHandler
+
+
+def _no_op(*args, **kwargs):
+    return None
+
+
+NoOpStreamConsumer = StreamHandlers(on_start=_no_op, on_update=_no_op, on_end=_no_op)
+NoOpMessageConsumer = MessageHandlers(on_message=_no_op)
+NoOpConsumer = ConsumerDelegate(NoOpMessageConsumer, NoOpMessageConsumer)
