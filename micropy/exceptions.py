@@ -1,4 +1,5 @@
 """Micropy Exceptions."""
+from __future__ import annotations
 
 
 class MicropyException(Exception):
@@ -61,3 +62,16 @@ class PyDeviceConnectionError(PyDeviceError):
 
     def __init__(self, location: str):
         super().__init__(self._default_message.format(location=location))
+
+
+class PyDeviceFileIntegrityError(PyDeviceError):
+    _default_message = (
+        "Failed to verify integrity: {device_path} (device={device_sum}, recv={digest})"
+    )
+
+    def __init__(self, device_path: str, device_sum: str, digest: str):
+        super().__init__(
+            self._default_message.format(
+                device_path=device_path, device_sum=device_sum, digest=digest
+            )
+        )
