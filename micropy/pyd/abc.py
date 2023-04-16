@@ -112,6 +112,10 @@ class MetaPyDeviceBackend(abc.ABC):
         ...
 
     @abc.abstractmethod
+    def remove(self, path: DevicePath) -> None:
+        ...
+
+    @abc.abstractmethod
     def copy_dir(
         self,
         source_path: DevicePath,

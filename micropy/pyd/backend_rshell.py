@@ -230,3 +230,6 @@ class RShellPyDeviceBackend(MetaPyDeviceBackend):
                 raise Exception(str(e)) from e
             out = out_bytes.decode("utf-8")
             return out
+
+    def remove(self, path: DevicePath) -> None:
+        self._rsh.rm(str(path))
