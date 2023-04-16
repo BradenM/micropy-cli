@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import abc
+from io import BytesIO, StringIO
 from pathlib import Path
-from typing import Any, AnyStr, NewType, Protocol
+from typing import Any, AnyStr, Generic, NewType, Protocol, TypeVar
 
 HostPath = NewType("HostPath", str)
 DevicePath = NewType("DevicePath", str)
@@ -136,8 +137,11 @@ class MetaPyDeviceBackend(abc.ABC):
         ...
 
 
-class MetaPyDevice(abc.ABC):
-    pydevice: MetaPyDeviceBackend
+AnyBackend = TypeVar("AnyBackend", bound=MetaPyDeviceBackend)
+
+
+class MetaPyDevice(abc.ABC, Generic[AnyBackend]):
+    pydevice: AnyBackend
     stream_consumer: StreamConsumer | None
     message_consumer: MessageConsumer | None
 
@@ -154,9 +158,17 @@ class MetaPyDevice(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def copy_from(self, source_path: DevicePath, target_path: HostPath) -> None:
+    def copy_from(
+        self, source_path: DevicePath, target_path: HostPath, *, verify_integrity: bool = True
+    ) -> None:
         ...
 
     @abc.abstractmethod
-    def run_script(self, content: AnyStr, target_path: DevicePath | None = None):
+    def remove(self, target_path: DevicePath) -> None:
+        ...
+
+    @abc.abstractmethod
+    def run_script(
+        self, content: AnyStr | StringIO | BytesIO, target_path: DevicePath | None = None
+    ):
         ...

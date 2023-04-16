@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from io import BytesIO, StringIO
 from pathlib import Path
-from typing import AnyStr, Type
+from typing import AnyStr, Generic, Optional, Type
 
 from .abc import (
+    AnyBackend,
     DevicePath,
     HostPath,
     MessageConsumer,
@@ -15,8 +17,8 @@ from .backend_upydevice import UPyDeviceBackend
 from .consumers import ConsumerDelegate
 
 
-class PyDevice(MetaPyDevice):
-    pydevice: MetaPyDeviceBackend
+class PyDevice(MetaPyDevice[AnyBackend], Generic[AnyBackend]):
+    pydevice: AnyBackend
     consumer: ConsumerDelegate
 
     def __init__(
@@ -34,21 +36,37 @@ class PyDevice(MetaPyDevice):
         if auto_connect and self.pydevice:
             self.pydevice.connect()
 
-    def copy_from(self, source_path: DevicePath, target_path: HostPath) -> None:
+    def copy_from(
+        self,
+        source_path: DevicePath,
+        target_path: HostPath,
+        *,
+        verify_integrity: bool = True,
+        exclude_integrity: Optional[set[str]] = None,
+    ) -> None:
         src_path = Path(str(source_path))
         # 'is_dir/file' only works on existing paths.
         if not src_path.suffix:
             return self.pydevice.copy_dir(
-                DevicePath(source_path), target_path, consumer=self.consumer
+                DevicePath(source_path),
+                target_path,
+                consumer=self.consumer,
+                verify_integrity=verify_integrity,
+                exclude_integrity=exclude_integrity,
             )
-        return self.pydevice.pull_file(DevicePath(source_path), target_path, consumer=self.consumer)
+        return self.pydevice.pull_file(
+            DevicePath(source_path),
+            target_path,
+            consumer=self.consumer,
+            verify_integrity=verify_integrity,
+        )
 
-    def copy_to(self, source_path: HostPath, target_path: DevicePath) -> None:
+    def copy_to(self, source_path: HostPath, target_path: DevicePath, **kwargs) -> None:
         src_path = Path(str(source_path))
         host_exists = src_path.exists()
         if (host_exists and src_path.is_dir()) or (not host_exists and not src_path.suffix):
             raise RuntimeError("Copying dirs to device is not yet supported!")
-        return self.pydevice.push_file(source_path, target_path, consumer=self.consumer)
+        return self.pydevice.push_file(source_path, target_path, consumer=self.consumer, **kwargs)
 
     def connect(self):
         return self.pydevice.connect()
@@ -56,5 +74,21 @@ class PyDevice(MetaPyDevice):
     def disconnect(self):
         return self.pydevice.disconnect()
 
-    def run_script(self, content: AnyStr, target_path: DevicePath | None = None):
-        return self.pydevice.eval_script(content, target_path, consumer=self.consumer)
+    def run_script(
+        self, content: AnyStr | StringIO | BytesIO, target_path: DevicePath | None = None
+    ):
+        _content = (
+            content
+            if isinstance(
+                content,
+                (
+                    str,
+                    bytes,
+                ),
+            )
+            else content.read()
+        )
+        return self.pydevice.eval_script(_content, target_path, consumer=self.consumer)
+
+    def run(self, content: str) -> str | None:
+        return self.pydevice.eval(content, consumer=self.consumer)
