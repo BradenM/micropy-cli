@@ -88,7 +88,8 @@ def prepare_create_stubs(
     modules_set: Optional[stub_board.ListChangeSet] = None,
     problem_set: Optional[stub_board.ListChangeSet] = None,
     exclude_set: Optional[stub_board.ListChangeSet] = None,
-) -> io.StringIO:
+    compile: bool = False,
+) -> io.StringIO | io.BytesIO:
     if stub_board is None:
         raise ImportError("micropython-stubber requires a python version of >= 3.8")
     variant = variant or stub_board.CreateStubsVariant.BASE
@@ -103,7 +104,9 @@ def prepare_create_stubs(
     minify.minify(result_io, minified_io, keep_report=True, diff=False)
     minified_io.seek(0)
     # TODO: compile w/ mpy-cross
-    # compiled_io = io.BytesIO()
-    # minify.cross_compile(minified_io, compiled_io)
-    # compiled_io.seek(0)
+    if compile:
+        compiled_io = io.BytesIO()
+        minify.cross_compile(minified_io, compiled_io)
+        compiled_io.seek(0)
+        return compiled_io
     return minified_io
