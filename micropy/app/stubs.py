@@ -62,10 +62,12 @@ class CreateBackend(str, Enum):
         return obj
 
 
-def create_changeset(value: Optional[List[str]]) -> Optional[ListChangeSet]:
+def create_changeset(
+    value: Optional[List[str]], *, replace: bool = False
+) -> Optional[ListChangeSet]:
     if value is None:
         return value
-    return ListChangeSet.from_strings(add=value)
+    return ListChangeSet.from_strings(add=value, replace=replace)
 
 
 @stubs_app.command(name="create")
@@ -83,8 +85,18 @@ def stubs_create(
     module: Optional[List[str]] = typer.Option(
         None, "-m", "--module", help="Modules to add.", rich_help_panel="Stubs"
     ),
+    module_defaults: bool = typer.Option(
+        True, help="Include createstubs default modules.", rich_help_panel="Stubs"
+    ),
     exclude: Optional[List[str]] = typer.Option(
         None, "-e", "--exclude", help="Modules to exclude.", rich_help_panel="Stubs"
+    ),
+    compile: bool = typer.Option(
+        True,
+        "-c",
+        "--compile",
+        help="Cross compile to .mpy via mpy-cross.",
+        rich_help_panel="Stubs",
     ),
 ):
     """Create stubs from micropython-enabled devices.
@@ -93,7 +105,7 @@ def stubs_create(
     to generate stubs from your own micropython-enabled device.
 
     """
-    mp: MicroPy = ctx.find_object(MicroPy)
+    mp: MicroPy = ctx.ensure_object(MicroPy)
     log = mp.log
     log.title(f"Connecting to Pyboard @ $[{port}]")
     pyb_log = Log.add_logger("Pyboard", "bright_white")
@@ -118,14 +130,20 @@ def stubs_create(
         return None
 
     log.success("Connected!")
+    if module or exclude:
+        log.title("Preparing createstubs for:")
+        log.info(f"Modules: {', '.join(module or [])}")
+        log.info(f"Exclude: {', '.join(exclude or [])}")
     create_stubs = prepare_create_stubs(
         variant=variant,
-        modules_set=create_changeset(module),
+        modules_set=create_changeset(module, replace=not module_defaults),
         exclude_set=create_changeset(exclude),
+        compile=compile,
     )
+    dev_path = DevicePath("createstubs.mpy") if compile else DevicePath("createstubs.py")
     log.info("Executing stubber on pyboard...")
     try:
-        pyb.run_script(create_stubs.getvalue(), DevicePath("createstubs.py"))
+        pyb.run_script(create_stubs, DevicePath(dev_path))
     except Exception as e:
         # TODO: Handle more usage cases
         log.error(f"Failed to execute script: {str(e)}", exception=e)
@@ -133,12 +151,19 @@ def stubs_create(
     log.success("Done!")
     log.info("Copying stubs...")
     with tempfile.TemporaryDirectory() as tmpdir:
-        pyb.copy_from(DevicePath("/stubs"), tmpdir)
+        pyb.copy_from(
+            DevicePath("/stubs"),
+            tmpdir,
+            verify_integrity=True,
+            # exclude due to ps1 var possibly different.
+            exclude_integrity={"sys.py", "usys.py"},
+        )
         out_dir = Path(tmpdir)
         stub_path = next(out_dir.iterdir())
         log.info(f"Copied Stubs: $[{stub_path.name}]")
         stub_path = mp.stubs.from_stubber(stub_path, out_dir)
         stub = mp.stubs.add(str(stub_path))
+    pyb.remove(dev_path)
     pyb.disconnect()
     log.success(f"Added {stub.name} to stubs!")
     return stub
