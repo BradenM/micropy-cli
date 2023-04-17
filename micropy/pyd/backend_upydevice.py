@@ -277,7 +277,7 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
         consumer.on_start(
             name=f"Reading {Path(target_path).name} (xsize: {chunk_size})", size=int(content_size)
         )
-        hasher = hashlib.sha256(usedforsecurity=False)
+        hasher = hashlib.sha256()
         while pos < content_size:
             try:
                 cmd = read_chunk_cmd.format(path=str(target_path), pos=pos, chunk_size=chunk_size)
