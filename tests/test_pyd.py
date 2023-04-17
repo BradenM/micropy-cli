@@ -238,6 +238,24 @@ class TestPyDeviceBackend:
         mock_upy_retry.assert_not_called()
         assert m.device.cmd.call_count == 5
 
+    def test_read_file__bad_chunk(self, mock_upy_retry, pymock, mocker: MockFixture):
+        m = pymock
+        if m.is_rsh:
+            # upy only
+            return
+        # content size
+        m.mock_uos.return_value.stat.side_effect = ["ENOENT", [0, 0, 0, 0, 0, 0, 8]]
+        # chunk size will default to 8/4
+        chunks = [b"Hi", b"", b" t", b"he", b"re"]
+        m.device.cmd.side_effect = [8, *chunks]
+        m.mock.Device.return_value.reset = mocker.MagicMock(return_value=None)
+        pyd = self.pyd_cls().establish(MOCK_PORT)
+        res = pyd.read_file("/some/path", verify_integrity=False)
+        assert res == "Hi there"
+        mock_upy_retry.assert_not_called()
+        assert m.device.cmd.call_count == 6
+        assert m.mock.Device.return_value.reset.call_count == 1
+
     def test_pull_file(self, pymock, tmp_path, mock_upy_retry):
         m = pymock
         pyd = self.pyd_cls().establish(MOCK_PORT)
