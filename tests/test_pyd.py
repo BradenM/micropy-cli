@@ -228,7 +228,7 @@ class TestPyDeviceBackend:
         m.mock_uos.return_value.stat.side_effect = ["ENOENT", [0, 0, 0, 0, 0, 0, 8]]
         # chunk size will default to 8/4
         chunks = [b"Hi", b" t", b"he", b"re"]
-        chunks_hash = hashlib.sha256(usedforsecurity=False)
+        chunks_hash = hashlib.sha256()
         for chunk in chunks:
             chunks_hash.update(chunk)
         m.device.cmd.side_effect = [8, *chunks, chunks_hash.hexdigest()]
