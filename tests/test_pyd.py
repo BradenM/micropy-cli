@@ -366,6 +366,26 @@ class TestPyDevice:
                 verify_integrity=mocker.ANY,
             )
 
+    def test_copy_from__integrity(self, mock_backend, path_type, mocker):
+        pyd = PyDevice(MOCK_PORT, backend=mock_backend)
+        ptype, p = path_type
+        if ptype == "dir":
+            pyd.copy_from(p, "/host/path", verify_integrity=True, exclude_integrity={"abc.py"})
+        else:
+            pyd.copy_from(p, "/host/path", verify_integrity=True)
+        if ptype == "dir":
+            mock_backend.return_value.copy_dir.assert_called_once_with(
+                p,
+                "/host/path",
+                consumer=mocker.ANY,
+                verify_integrity=True,
+                exclude_integrity={"abc.py"},
+            )
+        else:
+            mock_backend.return_value.pull_file.assert_called_once_with(
+                p, "/host/path", consumer=mocker.ANY, verify_integrity=True
+            )
+
     def test_copy_to(self, mock_backend, path_type, mocker):
         pyd = PyDevice(MOCK_PORT, backend=mock_backend)
         ptype, p = path_type
