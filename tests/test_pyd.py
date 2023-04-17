@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import stat
 import sys
 from pathlib import PurePosixPath
@@ -24,6 +25,12 @@ def mock_upy(mocker: MockFixture):
 def mock_upy_uos(mocker: MockFixture):
     mock_uos = mocker.patch.object(backend_upydevice, "UOS", autospec=True)
     return mock_uos
+
+
+@pytest.fixture
+def mock_upy_retry(mocker: MockFixture):
+    mock_retry = mocker.patch.object(backend_upydevice, "retry", autospec=True)
+    return mock_retry
 
 
 @pytest.fixture
@@ -160,10 +167,7 @@ class TestPyDeviceBackend:
         pyd.eval("abc", **with_consumer)
         has_cons = "consumer" in with_consumer
         if m.is_upy:
-            if has_cons:
-                m.device.cmd.assert_called_once_with("abc", follow=True, pipe=mocker.ANY)
-            else:
-                m.device.cmd.assert_called_once_with("abc")
+            m.device.cmd.assert_called_once_with("abc", follow=True, pipe=mocker.ANY)
         else:
             if has_cons:
                 pyd._pydevice.exec_raw.assert_called_once_with("abc", data_consumer=mocker.ANY)
@@ -200,22 +204,53 @@ class TestPyDeviceBackend:
         ]
         return cmd_effects
 
-    def test_read_file(self, pymock):
+    def test_read_file(self, mock_upy_retry, pymock):
         m = pymock
         if m.is_rsh:
+            # upy only
             return
+        # content size
+        m.mock_uos.return_value.stat.side_effect = ["ENOENT", [0, 0, 0, 0, 0, 0, 8]]
+        # chunk size will default to 8/4
+        m.device.cmd.side_effect = [8, b"Hi", b" t", b"he", b"re"]
         pyd = self.pyd_cls().establish(MOCK_PORT)
-        m.device.cmd.side_effect = self.read_file_effects
-        res = pyd.read_file("/some/path")
+        res = pyd.read_file("/some/path", verify_integrity=False)
         assert res == "Hi there"
+        mock_upy_retry.assert_not_called()
+        assert m.device.cmd.call_count == 5
 
-    def test_pull_file(self, pymock, tmp_path):
+    def test_read_file__with_integrity(self, mock_upy_retry, pymock):
+        m = pymock
+        if m.is_rsh:
+            # upy only
+            return
+        # content size
+        m.mock_uos.return_value.stat.side_effect = ["ENOENT", [0, 0, 0, 0, 0, 0, 8]]
+        # chunk size will default to 8/4
+        chunks = [b"Hi", b" t", b"he", b"re"]
+        chunks_hash = hashlib.sha256(usedforsecurity=False)
+        for chunk in chunks:
+            chunks_hash.update(chunk)
+        m.device.cmd.side_effect = [8, *chunks, chunks_hash.hexdigest()]
+        pyd = self.pyd_cls().establish(MOCK_PORT)
+        res = pyd.read_file("/some/path", verify_integrity=False)
+        assert res == "Hi there"
+        mock_upy_retry.assert_not_called()
+        assert m.device.cmd.call_count == 5
+
+    def test_pull_file(self, pymock, tmp_path, mock_upy_retry):
         m = pymock
         pyd = self.pyd_cls().establish(MOCK_PORT)
         pyd.connect()
         if m.is_upy:
-            m.device.cmd.side_effect = self.read_file_effects
-            pyd.pull_file("/some/path", (tmp_path / "out.txt"))
+            m.mock_uos.return_value.stat.side_effect = [
+                "ENOENT",  # resolve root
+                "ENOENT",  # resolve root
+                [0, 0, 0, 0, 0, 0, 8],
+            ]
+            # chunk size will default to 8/4
+            m.device.cmd.side_effect = [8, b"Hi", b" t", b"he", b"re"]
+            pyd.pull_file("/some/path", (tmp_path / "out.txt"), verify_integrity=False)
             assert (tmp_path / "out.txt").read_text() == "Hi there"
         else:
             m.mock.find_serial_device_by_port.return_value.name_path = "/"
@@ -299,11 +334,18 @@ class TestPyDevice:
         pyd.copy_from(p, "/host/path")
         if ptype == "dir":
             mock_backend.return_value.copy_dir.assert_called_once_with(
-                p, "/host/path", consumer=mocker.ANY
+                p,
+                "/host/path",
+                consumer=mocker.ANY,
+                verify_integrity=mocker.ANY,
+                exclude_integrity=None,
             )
         else:
             mock_backend.return_value.pull_file.assert_called_once_with(
-                p, "/host/path", consumer=mocker.ANY
+                p,
+                "/host/path",
+                consumer=mocker.ANY,
+                verify_integrity=mocker.ANY,
             )
 
     def test_copy_to(self, mock_backend, path_type, mocker):
