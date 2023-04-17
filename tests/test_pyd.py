@@ -10,7 +10,7 @@ from unittest.mock import ANY, MagicMock
 import pytest
 from micropy.exceptions import PyDeviceError
 from micropy.pyd import backend_rshell, backend_upydevice, consumers
-from micropy.pyd.abc import MetaPyDeviceBackend, PyDeviceConsumer
+from micropy.pyd.abc import DevicePath, MetaPyDeviceBackend, PyDeviceConsumer
 from micropy.pyd.pydevice import PyDevice
 from pytest_mock import MockFixture
 
@@ -431,6 +431,11 @@ class TestPyDevice:
             mock_backend.return_value.push_file.assert_called_once_with(
                 "/host/path/f.txt", p, consumer=mocker.ANY
             )
+
+    def test_remove(self, mock_backend):
+        pyd = PyDevice(MOCK_PORT, backend=mock_backend)
+        pyd.remove(DevicePath("/some/path"))
+        mock_backend.return_value.remove.assert_called_once_with("/some/path")
 
 
 class TestConsumers:
