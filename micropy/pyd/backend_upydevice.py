@@ -311,19 +311,17 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
         value = buffer.getvalue().decode()
         return value
 
-    def eval(self, command: str, *, consumer: MessageConsumer | None = None) -> str | None:
-        if consumer:
-            return self._pydevice.cmd(
-                command, follow=True, pipe=lambda m, *args, **kws: consumer.on_message(m)
-            )
-        return self._pydevice.cmd(command)
+    def eval(self, command: str, *, consumer: MessageConsumer = NoOpConsumer) -> str | None:
+        return self._pydevice.cmd(
+            command, follow=True, pipe=lambda m, *args, **kws: consumer.on_message(m)
+        )
 
     def eval_script(
         self,
         contents: AnyStr,
         target_path: DevicePath | None = None,
         *,
-        consumer: PyDeviceConsumer | None = None,
+        consumer: PyDeviceConsumer = NoOpConsumer,
     ):
         _target_path = (
             self.resolve_path(target_path) if target_path else f"{self._rand_device_path()}.py"
