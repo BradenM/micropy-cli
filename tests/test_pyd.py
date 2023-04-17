@@ -233,10 +233,10 @@ class TestPyDeviceBackend:
             chunks_hash.update(chunk)
         m.device.cmd.side_effect = [8, *chunks, chunks_hash.hexdigest()]
         pyd = self.pyd_cls().establish(MOCK_PORT)
-        res = pyd.read_file("/some/path", verify_integrity=False)
+        res = pyd.read_file("/some/path", verify_integrity=True)
         assert res == "Hi there"
         mock_upy_retry.assert_not_called()
-        assert m.device.cmd.call_count == 5
+        assert m.device.cmd.call_count == 6
 
     def test_read_file__bad_chunk(self, mock_upy_retry, pymock, mocker: MockFixture):
         m = pymock
