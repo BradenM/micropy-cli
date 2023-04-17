@@ -1,5 +1,31 @@
 <a name="v4.0.0"></a>
 
+## [4.2.0-beta.3](https://github.com/BradenM/micropy-cli/compare/v4.2.0-beta.2...v4.2.0-beta.3) (2023-04-17)
+
+
+### Features
+
+* **app:** Expose compile, module-defaults flags, integrity in stubs create command. ([885e9d3](https://github.com/BradenM/micropy-cli/commit/885e9d369cad98345e6132315f6fb76694379339))
+* **exc:** `PyDeviceFileIntegrityError` exception. ([a2187c8](https://github.com/BradenM/micropy-cli/commit/a2187c898c9aeb641a63a9237d2469faaf929de5))
+* **pyd:** `NoOpConsumer` implementation. ([5a21ecd](https://github.com/BradenM/micropy-cli/commit/5a21ecd1e85f74a5976aac209457d8273d8596cb))
+* **pydevice:** File integrity support, simple run in pydevice. ([8b7a255](https://github.com/BradenM/micropy-cli/commit/8b7a2557d42cb70430430ad04280dffebd45aeb6))
+* **pyd:** File integrity check support in upydevice backend. ([a3cbf31](https://github.com/BradenM/micropy-cli/commit/a3cbf31f8ff5fd5f0da24661a911f030672d93b7))
+* **pyd:** Implement `remove` across backends. ([f0bba8d](https://github.com/BradenM/micropy-cli/commit/f0bba8d25cd7eb6bdb2567bfde97c22a02088c16))
+* **pyd:** Use noop consumer default for upy `eval`/`eval_script` ([720ace4](https://github.com/BradenM/micropy-cli/commit/720ace4355d5e7a794e6d204a6bccfe0249d5f5d))
+* **utils:** Support compiling createstubs with mpy-cross ([1819197](https://github.com/BradenM/micropy-cli/commit/181919714c6d5d9a5a382e673bd81334164cbb53))
+
+
+### Bug Fixes
+
+* **deps:** Pin dependency typer to 0.7.0 ([30ab97f](https://github.com/BradenM/micropy-cli/commit/30ab97fc450ae5af9f58cf3e5770ce609cba9745))
+* **pyd:** Remove usedforsecurity hash flag for py3.8 ([522a0c3](https://github.com/BradenM/micropy-cli/commit/522a0c3537634950178178628d097944ce554cb3))
+* **pyd:** Support pushing binary files to pydevice in upydevice backend. ([e58c1f2](https://github.com/BradenM/micropy-cli/commit/e58c1f2f90f6e901298dfe54d0b5234818107140))
+
+
+### Miscellaneous Chores
+
+* **release:** Set release to v4.2.0-beta3 ([9ee81a2](https://github.com/BradenM/micropy-cli/commit/9ee81a2f4f63de78716b73b2bc4224a50e58a2c4))
+
 ## [4.2.0-beta.2](https://github.com/BradenM/micropy-cli/compare/v4.2.0-beta.1...v4.2.0-beta.2) (2023-03-27)
 
 
