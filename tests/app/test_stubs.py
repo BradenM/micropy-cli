@@ -27,7 +27,7 @@ def test_create_changeset(input, expected):
 
 @pytest.fixture()
 def pydevice_mock(mocker: MockerFixture):
-    def mock_copy_from(dev_path, tmp_dir):
+    def mock_copy_from(dev_path, tmp_dir, **kwargs):
         stub_dir = Path(tmp_dir) / "stubs"
         stub_dir.mkdir()
 
