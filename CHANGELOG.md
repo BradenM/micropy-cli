@@ -1,5 +1,22 @@
 <a name="v4.0.0"></a>
 
+## [4.2.0](https://github.com/BradenM/micropy-cli/compare/v4.2.0-beta.3...v4.2.0) (2023-04-22)
+
+
+### Features
+
+* **app:** Add exclude_defaults, improve help in stubs create command. ([efa3263](https://github.com/BradenM/micropy-cli/commit/efa3263121704e56d6e4dc0aa4975228b4731184))
+
+
+### Documentation
+
+* **app:** Improve stubs create help. ([9738ac7](https://github.com/BradenM/micropy-cli/commit/9738ac71256e8375ee190f3114ef5cb7e46c3506))
+
+
+### Miscellaneous Chores
+
+* **release:** Release as 4.2.0 ([817c583](https://github.com/BradenM/micropy-cli/commit/817c583bc460e642ddad0b383d88483945ee234b))
+
 ## [4.2.0-beta.3](https://github.com/BradenM/micropy-cli/compare/v4.2.0-beta.2...v4.2.0-beta.3) (2023-04-17)
 
 
