@@ -74,7 +74,7 @@ def create_changeset(
 def stubs_create(
     ctx: typer.Context,
     port: str = typer.Argument(..., help="Serial port used to connect to device"),
-    backend: CreateBackend = typer.Option(CreateBackend.upydevice, help="PyDevice backend."),
+    backend: CreateBackend = typer.Option(CreateBackend.upydevice, help="PyDevice backend to use."),
     variant: stub_board.CreateStubsVariant = typer.Option(
         stub_board.CreateStubsVariant.BASE,
         "-v",
@@ -83,13 +83,26 @@ def stubs_create(
         rich_help_panel="Stubs",
     ),
     module: Optional[List[str]] = typer.Option(
-        None, "-m", "--module", help="Modules to add.", rich_help_panel="Stubs"
+        None,
+        "-m",
+        "--module",
+        help="Modules to look for and stub. This flag can be used multiple times.",
+        rich_help_panel="Stubs",
     ),
     module_defaults: bool = typer.Option(
-        True, help="Include createstubs default modules.", rich_help_panel="Stubs"
+        True, help="Include createstubs.py default modules.", rich_help_panel="Stubs"
     ),
     exclude: Optional[List[str]] = typer.Option(
-        None, "-e", "--exclude", help="Modules to exclude.", rich_help_panel="Stubs"
+        None,
+        "-e",
+        "--exclude",
+        help="Modules to exclude from stubber. This flag can be used multiple times.",
+        rich_help_panel="Stubs",
+    ),
+    exclude_defaults: bool = typer.Option(
+        True,
+        help="Include createstubs.py default module excludes. This flag can be used multiple times.",
+        rich_help_panel="Stubs",
     ),
     compile: bool = typer.Option(
         True,
@@ -137,7 +150,7 @@ def stubs_create(
     create_stubs = prepare_create_stubs(
         variant=variant,
         modules_set=create_changeset(module, replace=not module_defaults),
-        exclude_set=create_changeset(exclude),
+        exclude_set=create_changeset(exclude, replace=not exclude_defaults),
         compile=compile,
     )
     dev_path = DevicePath("createstubs.mpy") if compile else DevicePath("createstubs.py")
