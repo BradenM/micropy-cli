@@ -117,6 +117,26 @@ def stubs_create(
     Utilize Josverl's [micropython-stubber](https://github.com/josverl/micropython-stubber/)
     to generate stubs from your own micropython-enabled device.
 
+    \n
+    **Create stubs with defaults**:\n
+     - `micropy stubs create /dev/ttyUSB0`
+
+    \n
+    **Specify additional modules**:\n
+     - `micropy stubs create -m custom_module -m other_module /dev/ttyUSB0`\n
+     - _Only given modules_: `micropy stubs create -m custom_module --no-module-defaults /dev/ttyUSB0`
+
+    \n
+    **Exclude additional modules**:\n
+     - `micropy stubs create -e custom_module -e other_module /dev/ttyUSB0`\n
+     - _Only exclude given modules_: `micropy stubs create -e custom_module --no-module-defaults /dev/ttyUSB0`
+
+    \n
+    **Create Stubs Variants**:\n
+     - **mem**: Optimized for low memory devices._\n
+     - **db**: Persist stub progress across reboots.\n
+     - **lvgl**: Additional support for LVGL devices.\n
+
     """
     mp: MicroPy = ctx.ensure_object(MicroPy)
     log = mp.log
