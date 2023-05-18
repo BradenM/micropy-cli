@@ -1,5 +1,21 @@
 <a name="v4.0.0"></a>
 
+## [4.2.1](https://github.com/BradenM/micropy-cli/compare/v4.2.0...v4.2.1) (2023-05-18)
+
+
+### Bug Fixes
+
+* **deps:** Update dependency attrs to v23 ([3422a84](https://github.com/BradenM/micropy-cli/commit/3422a84f576e2db7e39331512e71e3d72ed85d55))
+* **deps:** Update dependency python-minifier to v2.9.0 ([2a7464c](https://github.com/BradenM/micropy-cli/commit/2a7464cf9be34dc4766083fab6570fe0c507e5d7))
+* **deps:** Update dependency requests to v2.29.0 ([8361e7c](https://github.com/BradenM/micropy-cli/commit/8361e7cc15b0bdcefa07048814f30c0d4bb531b3))
+* **deps:** Update dependency requests to v2.30.0 ([9e389b1](https://github.com/BradenM/micropy-cli/commit/9e389b11c171d16af26b28217993e38bbbf4fa4f))
+* **deps:** Update dependency typer to v0.8.0 ([d2bf4e6](https://github.com/BradenM/micropy-cli/commit/d2bf4e69e83da62b589658ed3210742152547db6))
+* **deps:** Update dependency typer to v0.9.0 ([f8f4105](https://github.com/BradenM/micropy-cli/commit/f8f4105e65370eb275114f1e30ce5c3361e61dd5))
+* **stubs:** Always ensure correct pyi stub root paths. ([27f87a1](https://github.com/BradenM/micropy-cli/commit/27f87a1d697e2ee5e18d178eb46c7532b3c2fe29))
+* **stubs:** Do not drop firmware name when parsing from dist metadata. ([be269ee](https://github.com/BradenM/micropy-cli/commit/be269ee5e241d9274d100c5dc1c9f28278b0d1d6))
+* **template:** Resolve pylance type-checking / import errors. ([179c29d](https://github.com/BradenM/micropy-cli/commit/179c29d68bf025c1b3436d53dd3f9168d93285cf))
+* **template:** Update pylint config to use `MAIN` and `INFERENCE` confidence level. ([f5f5c98](https://github.com/BradenM/micropy-cli/commit/f5f5c983cbeeb6730c85750ac78115d86135d44b))
+
 ## [4.2.0](https://github.com/BradenM/micropy-cli/compare/v4.2.0-beta.3...v4.2.0) (2023-04-22)
 
 
