@@ -462,6 +462,13 @@ class Stub:
         if copy_to is not None:
             self.copy_to(copy_to)
 
+    def find_root(self, path: Path) -> Path:
+        """Attempt to find appropriate stub root."""
+        pyi_files = path.rglob("*.pyi")
+        if pyi_path := next(pyi_files, None):
+            return pyi_path.parent
+        return path
+
     def copy_to(self, dest, name=None):
         """Copy stub to a directory."""
         if not name:
@@ -519,9 +526,11 @@ class DeviceStub(Stub):
         super().__init__(path, copy_to, **kwargs)
 
         stubs_path = self.path / "stubs"
-        self.stubs = stubs_path if stubs_path.exists() else self.path
+        self.stubs = self.find_root(stubs_path if stubs_path.exists() else self.path)
+
         frozen_path = self.path / "frozen"
-        self.frozen = frozen_path if frozen_path.exists() else self.path
+        self.frozen = self.find_root(frozen_path if frozen_path.exists() else self.path)
+
         stubber = self.info.get("stubber")
         self.stub_version = stubber.get("version")
 
