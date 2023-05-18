@@ -386,13 +386,13 @@ class StubManager:
         # oh lawd, look away!!
         dev_name = min(name_parts, key=lambda s: len(s))
         name_parts.remove(dev_name)
-        name_parts.pop()
+        firm_name = name_parts.pop()
         firm = {
             "ver": meta.version or "",
             "port": dev_name,
             "arch": "",
             "sysname": dev_name,
-            "name": "",
+            "name": firm_name,
             "mpy": 0,
             "version": meta.version or "",
             "machine": "",
