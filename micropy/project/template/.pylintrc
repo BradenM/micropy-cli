@@ -1,11 +1,11 @@
-[MASTER]
+[MAIN]
 # Loaded Stubs: {% for stub in stubs %} {{ stub }} {% endfor %}
 init-hook='import sys;sys.path[1:1]=["src/lib",{% for path in paths %}"{{ path|replace("\\", "/") }}", {% endfor %} ]'
 
 [MESSAGES CONTROL]
 # Only show warnings with the listed confidence levels. Leave empty to show
 # all. Valid levels: HIGH, INFERENCE, INFERENCE_FAILURE, UNDEFINED.
-confidence=
+confidence=INFERENCE
 
 # Disable the message, report, category or checker with the given id(s). You
 # can either give multiple identifiers separated by comma (,) or put this
