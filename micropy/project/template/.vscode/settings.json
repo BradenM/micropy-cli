@@ -4,6 +4,10 @@
     "python.languageServer": "Pylance",
     "python.analysis.autoSearchPath": true,
     "python.autoComplete.extraPaths": {{ paths }},
+    "python.analysis.diagnosticSeverityOverrides": { "reportMissingModuleSource": "none" },
+    "python.analysis.typeCheckingMode": "basic",
+    "python.autoComplete.typeshedPaths":  {{ typeshed_paths }},
+    "python.analysis.typeshedPaths":  {{ typeshed_paths }},
     {% endif %}
     {% if language_server == 'mpls' %}
     "python.jediEnabled": false,
