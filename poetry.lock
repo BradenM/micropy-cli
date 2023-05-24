@@ -1020,6 +1020,7 @@ files = [
     {file = "libcst-0.4.10-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f3e9d9fdd9a9b9b8991936ff1c07527ce7ef396c8233280ba9a7137e72c2e48e"},
     {file = "libcst-0.4.10-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:7e1b4cbaf7b1cdad5fa3eababe42d5b46c0d52afe13c5ba4eac2495fc57630ea"},
     {file = "libcst-0.4.10-cp39-cp39-win_amd64.whl", hash = "sha256:bcbd07cec3d7a7be6f0299b0c246e085e3d6cc8af367e2c96059183b97c2e2fe"},
+    {file = "libcst-0.4.10.tar.gz", hash = "sha256:b98a829d96e8b209fb761b00cd1bacc27c70eae77d00e57976e5ae2c718c3f81"},
 ]
 
 [package.dependencies]
