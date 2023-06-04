@@ -132,11 +132,6 @@ dmypy.json
 
 # End of https://www.gitignore.io/api/python
 
-.vscode
-!.vscode/tasks.json
-!micropy/project/template/**/*
-!micropy/lib
-!tests/data/project_test/**/*
 
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm+all
@@ -242,3 +237,9 @@ temp/*
 .envrc
 
 # End of https://www.toptal.com/developers/gitignore/api/direnv
+
+.vscode
+!.vscode/tasks.json
+!micropy/project/template/**/*
+!micropy/lib
+!tests/data/project_test/**/*
