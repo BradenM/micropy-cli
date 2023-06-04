@@ -6,6 +6,7 @@ from itertools import chain
 from pathlib import Path
 from typing import Iterator, List, Literal, Union
 
+import xmltodict
 from jinja2 import Environment, FileSystemLoader
 from micropy.logger import Log
 
@@ -220,12 +221,44 @@ class PylintTemplate(Template):
         return ctx
 
 
+class PyCharmTemplate(Template):
+    """Template for PyCharm settings."""
+
+    FILENAME = ".idea/{}.iml"
+
+    def __init__(self, *args, **kwargs):
+        self.update_method = self.update_as_xml
+        self.project_name = kwargs.pop("project_name", "Project")
+        self.FILENAME = PyCharmTemplate.FILENAME.format(self.project_name)
+        super().__init__(*args, **kwargs)
+
+    @property
+    def source_folders(self) -> list[str]:
+        paths = self.paths
+        if self.datadir:
+            paths = list(self.iter_relative_paths(self.paths, strict=True))
+        if self.local_paths:
+            paths.extend(self.iter_relative_paths(self.local_paths))
+        return [f"file://$MODULE_DIR$/{path}" for path in paths]
+
+    @property
+    def context(self):
+        return dict(source_folders=self.source_folders)
+
+    def update_as_xml(self, path: str):
+        data = xmltodict.parse(Path(path).read_text(), process_namespaces=True)
+        render = xmltodict.parse("".join(self.iter_clean()), process_namespaces=True)
+        data.update(render)
+        return xmltodict.unparse(data)
+
+
 class TemplateProvider:
     """Template Provider."""
 
     _template_files = {
         "vscode": CodeTemplate,
         "pylint": PylintTemplate,
+        "pycharm": PyCharmTemplate,
         "vsextensions": ".vscode/extensions.json",
         "pymakr": "pymakr.conf",
         "main": "src/main.py",
@@ -240,6 +273,7 @@ class TemplateProvider:
             "VSCode Settings for Autocompletion/Intellisense",
         ),
         "pymakr": (["pymakr"], "Pymakr Configuration"),
+        "pycharm": (["pycharm"], "PyCharm Settings for AutoCompletion/Intellisense"),
         "pylint": (["pylint"], "Pylint MicroPython Settings"),
         "gitignore": (["gitignore"], "Git Ignore Template"),
         "bootstrap": (["main", "boot"], "main.py & boot.py files"),
