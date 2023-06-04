@@ -68,6 +68,7 @@ importlib-metadata = { version = "==5.2.0", python = '<3.10' }
 micropython-stubber = "==1.13.7"
 libcst = "0.4.10"
 typer = {version = "0.9.0", extras = ["all"]}
+xmltodict = "^0.13.0"
 
 [tool.poetry.group.dev.dependencies]
 bump2version = "^0.5.11"
