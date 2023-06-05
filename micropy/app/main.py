@@ -11,6 +11,7 @@ from micropy import logger, utils
 from micropy.main import MicroPy
 from micropy.project import Project, modules
 from micropy.stubs.stubs import Stub
+from micropy.utils._compat import metadata
 from questionary import Choice
 
 from .stubs import stubs_app
@@ -47,6 +48,14 @@ def main_callback(ctx: typer.Context):
         log.title("Update Available!")
         log.info(f"Version $B[v{latest}] is now available")
         log.info("You can update via: $[pip install --upgrade micropy-cli]\n")
+
+
+@app.command(name="version")
+def main_version():
+    """Print Micropy CLI Version."""
+    vers = metadata.version("micropy-cli")
+    print(f"Micropy Version: {vers}")
+    raise typer.Exit()
 
 
 TemplateEnum = Enum(
