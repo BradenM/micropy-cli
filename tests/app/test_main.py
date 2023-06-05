@@ -245,3 +245,9 @@ def test_main_install(mocker, micropy_obj, runner, dev_flag):
 
     for pkg in packages:
         micropy_obj.project.add_package.assert_any_call(pkg, dev=dev_flag)
+
+
+def test_main_version(runner):
+    result = runner.invoke(app, ["version"])
+    assert result.exit_code == 0
+    assert "Micropy Version:" in result.stdout
