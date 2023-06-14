@@ -1,5 +1,21 @@
 <a name="v4.0.0"></a>
 
+## [4.2.2](https://github.com/BradenM/micropy-cli/compare/v4.2.1...v4.2.2) (2023-06-14)
+
+
+### Bug Fixes
+
+* **cli:** Re-add version as command ([6632c5b](https://github.com/BradenM/micropy-cli/commit/6632c5bbe82f5ebf6f306c5fbe500213d208a0fb))
+* **deps:** Update dependency libcst to v0.4.10 ([5b33886](https://github.com/BradenM/micropy-cli/commit/5b33886eb6210231a7afc4be5920f7b7c92fd762))
+* **deps:** Update dependency markupsafe to v2.1.3 ([2b5e7a3](https://github.com/BradenM/micropy-cli/commit/2b5e7a38f53cc7605a310187817a9a85a11b7624))
+* **deps:** Update dependency pydantic to v1.10.8 ([3672fcf](https://github.com/BradenM/micropy-cli/commit/3672fcf6997647366abea9672c102dc24bc5bf77))
+* **deps:** Update dependency pydantic to v1.10.9 ([66fa6e5](https://github.com/BradenM/micropy-cli/commit/66fa6e5147b29183c09dadfd4dd65e7956111596))
+* **deps:** Update dependency requests to v2.31.0 ([352d3b3](https://github.com/BradenM/micropy-cli/commit/352d3b3ad09c0723c7b9572245c336ccac22afb7))
+* **deps:** Update dependency typing-extensions to v4.6.0 ([4858007](https://github.com/BradenM/micropy-cli/commit/4858007c327a8a258196ecbca4fe4507da90332b))
+* **deps:** Update dependency typing-extensions to v4.6.1 ([24c16f2](https://github.com/BradenM/micropy-cli/commit/24c16f2978f08a6e2ac4387354ed7e309ff2158c))
+* **deps:** Update dependency typing-extensions to v4.6.2 ([98ae691](https://github.com/BradenM/micropy-cli/commit/98ae691da95de484e9dd68e0a13f79400755168c))
+* **deps:** Update dependency typing-extensions to v4.6.3 ([dd993e5](https://github.com/BradenM/micropy-cli/commit/dd993e517bab238d01aa11d03bb79aac2fe50020))
+
 ## [4.2.1](https://github.com/BradenM/micropy-cli/compare/v4.2.0...v4.2.1) (2023-05-18)
 
 
