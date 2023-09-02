@@ -174,7 +174,7 @@ class RShellPyDeviceBackend(MetaPyDeviceBackend):
         Args:
             source_path: path to directory
             target_path: destination to copy to
-            rsync (dict, optional): additonal args to pass to rsync call.
+            rsync (dict, optional): additional args to pass to rsync call.
                 Defaults to {}
 
         """

@@ -142,7 +142,7 @@ def test_project_queue(tmp_path, mock_cwd, mocker):
     # should be called in order of priority (9 being highest)
     mock_parent.assert_has_calls(
         [
-            # adding them doesnt matter
+            # adding them doesn't matter
             mocker.call.m1(log=mocker.ANY, parent=mocker.ANY),
             mocker.call.m2(log=mocker.ANY, parent=mocker.ANY),
             mocker.call.m3(log=mocker.ANY, parent=mocker.ANY),
@@ -248,7 +248,7 @@ class TestPackagesModule:
         proj, mp = next(test_project("reqs"))
         proj.create()
         proj.add_package("somepkg==7")
-        # Shouldnt allow duplicate pkgs
+        # Shouldn't allow duplicate pkgs
         res = proj.add_package("somepkg")
         assert res is None
 

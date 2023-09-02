@@ -162,7 +162,7 @@ def test_loads_from_resource(datadir, mock_fware):
 
 
 def test_name_property(shared_datadir):
-    """should raise error if name is not overriden"""
+    """should raise error if name is not overridden"""
     test_stub = shared_datadir / "esp8266_test_stub"
 
     class ErrorStub(stubs.stubs.Stub):

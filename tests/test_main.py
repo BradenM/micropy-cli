@@ -11,7 +11,7 @@ def test_setup(mock_micropy_path):
     mp = main.MicroPy(options=config)
     assert expect_mp_dir.exists()
     assert expect_stubs_dir.exists()
-    # Test after inital setup
+    # Test after initial setup
     mp_ = main.MicroPy(options=config)
     assert len(mp_.stubs) == len(mp.stubs)
 

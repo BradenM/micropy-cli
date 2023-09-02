@@ -355,7 +355,7 @@
 -   **pkg:** upgrade too and pin jinja2 @ 3.0.3
 -   **project:** report exception on install failure to stdout
 -   **stubber:** replace pyminifer with python-minifer
--   **utils:** capture attribue err that occurs on py310 win32 rshell import
+-   **utils:** capture attribute err that occurs on py310 win32 rshell import
 -   **utils:** utilize mp-stubbers new logic for generating stubs
 
 ### Features
@@ -820,7 +820,7 @@ No longer compatible with <=ms-python.python[@2019](https://github.com/2019).8.3
 
 ### Bug Fixes
 
--   Fails First Time Setup Failed to init on first run if the stubs folder didnt exist
+-   Fails First Time Setup Failed to init on first run if the stubs folder didn't exist
 -   Removed old command
 -   Fix Project Init
 -   Added rshell to setup.py

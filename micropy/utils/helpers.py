@@ -78,7 +78,7 @@ def ensure_valid_url(url):
     Raises:
         InvalidURL: URL is not a valid url
         ConnectionError: Failed to connect to url
-        HTTPError: Reponse was not 200 <OK>
+        HTTPError: Response was not 200 <OK>
 
     Returns:
         str: valid url

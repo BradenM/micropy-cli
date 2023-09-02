@@ -32,7 +32,7 @@ class TestConfig:
         cfg_file.write_text(json.dumps(self.default))
         conf = config.Config(cfg_file, default={})
         assert conf.config == self.default
-        # default should be overriden
+        # default should be overridden
         conf = config.Config(cfg_file, default={"one": 1})
         assert utils.dict_equal(conf.raw(), self.default)
 

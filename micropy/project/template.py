@@ -17,7 +17,7 @@ class Template:
         template (jinja2.Template): Jinja2 Template Instance
 
     Raises:
-        NotImplementedError: Method must be overriden by subclass
+        NotImplementedError: Method must be overridden by subclass
 
     """
 
