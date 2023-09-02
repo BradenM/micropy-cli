@@ -73,7 +73,7 @@ class Config:
         """Parses key.
 
         Splits it into a path and 'final key'
-        object. Each key is seperates by a: "/"
+        object. Each key is separates by a: "/"
 
         Example:
             >>> self.parse_key('item/subitem/value')
