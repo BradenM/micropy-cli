@@ -1139,14 +1139,14 @@ files = [
 
 [[package]]
 name = "micropython-stubber"
-version = "1.13.7"
+version = "1.13.8"
 description = "Tooling to create and maintain stubs for MicroPython"
 category = "main"
 optional = false
 python-versions = ">=3.8,<3.12"
 files = [
-    {file = "micropython_stubber-1.13.7-py3-none-any.whl", hash = "sha256:2a5a25b4d97fc3e6c0f048672efd72386c2c59a9c79515d8a6a309c9d822c3f0"},
-    {file = "micropython_stubber-1.13.7.tar.gz", hash = "sha256:8fd66a045664f3419abc9cb68dc9308b88ca10db31750ff1ce86f9493869ba17"},
+    {file = "micropython_stubber-1.13.8-py3-none-any.whl", hash = "sha256:fdc2575569956db745ec2cf574cabb93b9cd5d9802e7f8fd7757ef5ea81ea1bc"},
+    {file = "micropython_stubber-1.13.8.tar.gz", hash = "sha256:2066df355a3b79b02f9f2532718b477e1eb569f1c0b3fa458ac50aed2ef57841"},
 ]
 
 [package.dependencies]
@@ -3141,4 +3141,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "4437b6f38a16463bc867a482e5fcebd7e912b267c23f1322cf8145170f9b9ff9"
+content-hash = "1985a1aa01d8a7ae3da0afeb2f71145906522b788af0cbbb602b8bf1c30b9edb"
