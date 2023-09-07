@@ -49,7 +49,7 @@ click = "8.1.7"
 colorama = { version = "==0.4.6", platform = "win32" }
 jsonschema = "=3.2.0"
 dpath = "==1.5.0"
-GitPython = "==3.1.34"
+GitPython = "==3.1.35"
 packaging = "==21.3"
 python-minifier = "==2.9.0"
 mypy = "==1.2.0"
