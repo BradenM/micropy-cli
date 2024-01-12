@@ -84,7 +84,7 @@ optional = true
 [tool.poetry.group.lint.dependencies]
 pyupgrade = "^3.3.1"
 isort = "^5.12.0"
-black = ">=22.10,<23.0"
+black = ">=23.12,<23.13"
 ruff = "^0.1.0"
 
 [tool.poetry.group.test]
