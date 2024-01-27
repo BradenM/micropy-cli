@@ -61,7 +61,7 @@ rshell = [
 MarkupSafe = "==2.1.4"
 upydevice = "0.3.8"
 attrs = "==23.2.0"
-typing-extensions = "4.7.1"
+typing-extensions = "4.9.0"
 pydantic = "1.10.14"
 distlib = "0.3.8"
 importlib-metadata = { version = "==5.2.0", python = '<3.10' }
