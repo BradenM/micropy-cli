@@ -112,7 +112,7 @@ mock = "^5.0.1"
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-sphinx-click = "^4.3.0"
+sphinx-click = "^5.0.0"
 sphinx-autodoc-typehints = "^1.19.2"
 recommonmark = "^0.7.0"
 Sphinx = "^5.2.1"
