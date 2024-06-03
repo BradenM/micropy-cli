@@ -58,7 +58,7 @@ rshell = [
     { version = "^0.0.31", platform = "win32", python = "<3.10" },
     { version = "^0.0.31", platform = "!=win32" },
 ]
-MarkupSafe = "==2.1.4"
+MarkupSafe = "==2.1.5"
 upydevice = "0.3.8"
 attrs = "==23.2.0"
 typing-extensions = "4.9.0"
