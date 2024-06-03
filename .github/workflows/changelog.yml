@@ -30,7 +30,7 @@ jobs:
           git commit -m "chore(chglog): update changelog." -a || true
 
       - name: Push Changes
-        uses: ad-m/github-push-action@fcea09907c44d7a7a3331c9c04080d55d87c95fe
+        uses: ad-m/github-push-action@9870d48124da805820c70ebc6ba563c715551019
         with:
           github_token: ${{ secrets.GH_PAT }}
           branch: ${{ github.ref }}
