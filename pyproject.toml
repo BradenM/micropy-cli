@@ -74,7 +74,7 @@ bump2version = "^0.5.11"
 pre-commit = "^3.0.2"
 mypy = { version = "^1.0", extras = ["dmypy"] }
 types-requests = "^2.27.14"
-pylint = "^2.7"
+pylint = "^3.0.0"
 better-exceptions = "^0.3.3"
 pdbpp = {version = "^0.10.3", platform = "!=win32" }
 
