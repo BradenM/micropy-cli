@@ -296,7 +296,7 @@ class TemplateProvider:
 
         """
         template = self.get(name, **kwargs)
-        self.log.debug(f"Loaded: {str(template)}")
+        self.log.debug(f"Loaded: {template!s}")
         if self.run_checks:
             self.log.debug(f"Verifying {template} requirements...")
             template.run_checks()
@@ -305,7 +305,7 @@ class TemplateProvider:
             self.log.debug(f"Create: {out_dir}")
             parent_dir.mkdir(exist_ok=True)
             out_dir.parent.mkdir(exist_ok=True, parents=True)
-            self.log.debug(f"Rendered: {name} to {str(out_dir)}")
+            self.log.debug(f"Rendered: {name} to {out_dir!s}")
             self.log.info(f"$[{name.capitalize()}] File Generated!")
             stream = template.render_stream()
             return stream.dump(str(out_dir))
@@ -326,13 +326,13 @@ class TemplateProvider:
 
         """
         template = self.get(name, **kwargs)
-        self.log.debug(f"Loaded: {str(template)}")
+        self.log.debug(f"Loaded: {template!s}")
         try:
             template.update(root_dir)
         except FileNotFoundError:
             self.log.debug("Template does not exist!")
             return self.render_to(name, root_dir, **kwargs)
-        self.log.debug(f"Updated: {str(template)}")
+        self.log.debug(f"Updated: {template!s}")
         return template
 
     @property
