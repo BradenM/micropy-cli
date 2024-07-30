@@ -70,7 +70,7 @@ libcst = ">=1.1.0,<2.0.0"
 typer = {version = "0.12.3", extras = ["all"]}
 
 [tool.poetry.group.dev.dependencies]
-bump2version = "^0.5.11"
+bump2version = "^1.0.0"
 pre-commit = "^3.0.2"
 mypy = { version = "^1.0", extras = ["dmypy"] }
 types-requests = "^2.27.14"
