@@ -12,7 +12,7 @@ jobs:
     continue-on-error: true
     if: github.actor != 'github-actions[bot]' || github.event.pusher.email != 'github-actions[bot]@users.noreply.github.com'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
