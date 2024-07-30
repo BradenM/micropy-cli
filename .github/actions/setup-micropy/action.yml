@@ -70,7 +70,7 @@ runs:
         curl -sSL -o ${{ inputs.poetry-home }}/install-poetry.py ${{ inputs.poetry-install-url }}
 
     - name: Set up Python ${{ inputs.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       id: python-setup
       with:
         python-version: ${{ inputs.python-version }}
