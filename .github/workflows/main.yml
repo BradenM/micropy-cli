@@ -46,7 +46,7 @@ jobs:
         run: poetry run pytest --cov --cov-config=pyproject.toml --junit-xml=test_log.xml --cov-report=xml:cov.xml -vv -ra -n'auto'
 
       - name: Upload Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         env:
           OS: ${{ matrix.os }}
           PYTHON: ${{ matrix.python }}
