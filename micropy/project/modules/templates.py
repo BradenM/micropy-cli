@@ -1,6 +1,5 @@
 """Project Templates Module."""
 
-
 from micropy.project.modules import ProjectModule
 from micropy.project.template import TemplateProvider
 

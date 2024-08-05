@@ -179,7 +179,7 @@ def stubs_create(
         pyb.run_script(create_stubs, DevicePath(dev_path))
     except Exception as e:
         # TODO: Handle more usage cases
-        log.error(f"Failed to execute script: {str(e)}", exception=e)
+        log.error(f"Failed to execute script: {e!s}", exception=e)
         raise
     log.success("Done!")
     log.info("Copying stubs...")
