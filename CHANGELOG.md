@@ -1,5 +1,59 @@
 <a name="v4.0.0"></a>
 
+## [5.0.0](https://github.com/BradenM/micropy-cli/compare/v4.2.2...v5.0.0) (2024-06-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** drop support for python 3.8
+
+### Features
+
+* **deps:** Drop support for python 3.8 ([1f43c3e](https://github.com/BradenM/micropy-cli/commit/1f43c3e627cb01e65621b82ea78275d700f51be5))
+
+
+### Bug Fixes
+
+* **deps:** Resolve dependency conflicts + update lockfile, update ([4ea48d1](https://github.com/BradenM/micropy-cli/commit/4ea48d1929103e1316a66a24199b5e38c648e136))
+* **deps:** Update dependency attrs to v23.2.0 ([ab5b90a](https://github.com/BradenM/micropy-cli/commit/ab5b90abd3b289ede6c0b491ac2031fd76e8808a))
+* **deps:** Update dependency boltons to v23.1.1 ([e1bd231](https://github.com/BradenM/micropy-cli/commit/e1bd231dc814faac095fd9ac9db548d86d002022))
+* **deps:** Update dependency cachier to v2.3.0 ([6783475](https://github.com/BradenM/micropy-cli/commit/6783475174e1c151278d77bec7375253c05a5ada))
+* **deps:** Update dependency click to v8.1.7 ([71fda69](https://github.com/BradenM/micropy-cli/commit/71fda6930afb8e8597f3e0f3ffda60a16d124d91))
+* **deps:** Update dependency distlib to v0.3.7 ([bbc1af7](https://github.com/BradenM/micropy-cli/commit/bbc1af7cf0702e674245e62f933665609e46ebec))
+* **deps:** Update dependency distlib to v0.3.8 ([4d3efe7](https://github.com/BradenM/micropy-cli/commit/4d3efe797dcbccb8e4cec34ffb38afe9d7ac7f4e))
+* **deps:** Update dependency gitpython to v3.1.32 [security] ([f6906d1](https://github.com/BradenM/micropy-cli/commit/f6906d1891ec5be2d2f5caadbb4717468893071e))
+* **deps:** Update dependency gitpython to v3.1.34 ([9d68c0e](https://github.com/BradenM/micropy-cli/commit/9d68c0ec10da25a85d90d8792f417a9cdeeda4a9))
+* **deps:** Update dependency gitpython to v3.1.41 [security] ([159774b](https://github.com/BradenM/micropy-cli/commit/159774bc907a0fc4e3b55543728417a65ee20ca8))
+* **deps:** Update dependency gitpython to v3.1.43 ([c27ce01](https://github.com/BradenM/micropy-cli/commit/c27ce01cf1b3004d89c8494598b68d975020a238))
+* **deps:** Update dependency jinja2 to v3.1.3 ([617f3c0](https://github.com/BradenM/micropy-cli/commit/617f3c0a85ee2297f2b1595010f5ab9a89528b30))
+* **deps:** Update dependency jinja2 to v3.1.4 [security] ([0d84a3a](https://github.com/BradenM/micropy-cli/commit/0d84a3add88959daad834934da5420738f39cc81))
+* **deps:** Update dependency markupsafe to v2.1.4 ([71d9e77](https://github.com/BradenM/micropy-cli/commit/71d9e77027127e363672809b1072e74355ed7dc2))
+* **deps:** Update dependency markupsafe to v2.1.5 ([2e0560e](https://github.com/BradenM/micropy-cli/commit/2e0560e91423c1fb2fc29db3268ca08cae14f5a7))
+* **deps:** Update dependency micropython-stubber to v1.13.8 ([d1493d1](https://github.com/BradenM/micropy-cli/commit/d1493d15061c9dfb92c585e634475bb150da1c33))
+* **deps:** Update dependency micropython-stubber to v1.16.2 ([b6d1948](https://github.com/BradenM/micropy-cli/commit/b6d19486a74b2c93efb81448ca071a9694d582b1))
+* **deps:** Update dependency micropython-stubber to v1.16.3 ([5aa412e](https://github.com/BradenM/micropy-cli/commit/5aa412e74080fe1106b6d5877a26b0988e3070ef))
+* **deps:** Update dependency micropython-stubber to v1.20.2 ([aa6d988](https://github.com/BradenM/micropy-cli/commit/aa6d988d51a0ef961166eb1504d70747c1418262))
+* **deps:** Update dependency micropython-stubber to v1.20.4 ([4f67c74](https://github.com/BradenM/micropy-cli/commit/4f67c747884bd10ad357be939f3b974a49aa9807))
+* **deps:** Update dependency pydantic to v1.10.12 ([4e01b88](https://github.com/BradenM/micropy-cli/commit/4e01b884e41b240d088c0635d12cd8372a8464d1))
+* **deps:** Update dependency pydantic to v1.10.13 ([fb5717b](https://github.com/BradenM/micropy-cli/commit/fb5717b66be1223e30c05fd36c6bc7968b1830d3))
+* **deps:** Update dependency pydantic to v1.10.14 ([671bd37](https://github.com/BradenM/micropy-cli/commit/671bd373e12d2327dc41e705241db14dd82c9404))
+* **deps:** Update dependency pydantic to v1.10.15 ([b5ead65](https://github.com/BradenM/micropy-cli/commit/b5ead6519b3a624d810d163d516ff25f7041d581))
+* **deps:** Update dependency pydantic to v1.10.16 ([0f51607](https://github.com/BradenM/micropy-cli/commit/0f51607a54e5b2d6cb4211a3e5439d9a2953d1c8))
+* **deps:** Update dependency requests to v2.32.2 [security] ([051b666](https://github.com/BradenM/micropy-cli/commit/051b666ab52cc8bb254b1a696e13868dd319aa20))
+* **deps:** Update dependency requirements-parser to v0.9.0 ([49c7f75](https://github.com/BradenM/micropy-cli/commit/49c7f751af91c521a5106634f4792955fbd18ff4))
+* **deps:** Update dependency tqdm to v4.66.1 ([16f6143](https://github.com/BradenM/micropy-cli/commit/16f6143519199586858df1a230d0c5ababd9ec26))
+* **deps:** Update dependency tqdm to v4.66.3 [security] ([ea62ff8](https://github.com/BradenM/micropy-cli/commit/ea62ff845dd8e07c5060b9a70d031f6c8c47afc6))
+* **deps:** Update dependency tqdm to v4.66.4 ([3bc4c1d](https://github.com/BradenM/micropy-cli/commit/3bc4c1d230fe700cbfec5e59dc135fabf8102883))
+* **deps:** Update dependency typer to v0.12.3 ([c3e2b41](https://github.com/BradenM/micropy-cli/commit/c3e2b417a27708e9946382373fc97bbfec363f59))
+* **deps:** Update dependency typing-extensions to v4.12.2 ([ac85e9f](https://github.com/BradenM/micropy-cli/commit/ac85e9f12c4d71a46f589d716e37c8da33f761a7))
+* **deps:** Update dependency typing-extensions to v4.7.1 ([7f9295d](https://github.com/BradenM/micropy-cli/commit/7f9295dfa99a9c794117cfd3623a4ef803c7f364))
+* **deps:** Update dependency typing-extensions to v4.9.0 ([348f00a](https://github.com/BradenM/micropy-cli/commit/348f00a475ad98fc0e46e3e05e5052d5747ae5c7))
+
+
+### Documentation
+
+* Fix typos ([8b41206](https://github.com/BradenM/micropy-cli/commit/8b412065aa981819866ba492fcc7401eb4511ca6))
+
 ## [4.2.2](https://github.com/BradenM/micropy-cli/compare/v4.2.1...v4.2.2) (2023-06-14)
 
 
