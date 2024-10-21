@@ -28,8 +28,7 @@ if TYPE_CHECKING:
 
 class LocateStrategy(Protocol):
     @abc.abstractmethod
-    def prepare(self, location: PathStr) -> Union[PathStr, tuple[PathStr, Callable[..., Any]]]:
-        ...
+    def prepare(self, location: PathStr) -> Union[PathStr, tuple[PathStr, Callable[..., Any]]]: ...
 
 
 logger = Log.add_logger(__name__, show_title=False)
