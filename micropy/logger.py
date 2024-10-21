@@ -254,7 +254,7 @@ class ServiceLog:
 
         """
         name = type(error).__name__
-        msg = f"{name}: {str(error)}"
+        msg = f"{name}: {error!s}"
         return self.echo(msg, log="exception", title_color="red", fg="red", accent="red", **kwargs)
 
     def success(self, msg, **kwargs):
