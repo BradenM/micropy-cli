@@ -524,7 +524,7 @@
 -   **logger:** Exception formatting
 -   **package:** Add metadata to pyproject.toml
 -   **package:** Update Makefile and bump2version to use pyproject
--   **package:** Use Dephell to generate setup.py, Remove Manifiest.in
+-   **package:** Use Dephell to generate setup.py, Remove Manifest.in
 -   **project:** Exception Raised if no Templates are used in Project
 -   **project:** VSCode check always failed silently
 
