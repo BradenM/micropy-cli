@@ -10,12 +10,7 @@ include = [
     "README.md",
     "CHANGELOG.md",
     "LICENSE",
-    "micropy/lib/stubber/src/*",
-    "micropy/lib/stubber/board/*",
-    "micropy/lib/stubber/process.py",
-    "micropy/lib/stubber/minified/*"
 ]
-exclude = ["micropy/lib/stubber/*"]
 readme = "README.md"
 homepage = "https://github.com/BradenM/micropy-cli"
 repository = "https://github.com/BradenM/micropy-cli"
