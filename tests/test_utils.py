@@ -1,5 +1,6 @@
 import io
 import sys
+from pathlib import PureWindowsPath
 
 import pytest
 import requests
@@ -226,7 +227,7 @@ def test_is_dir_link(mocker, tmp_path):
     mock_sys = mocker.patch.object(utils.helpers, "sys")
     mock_platform = type(mock_sys).platform = mocker.PropertyMock()
     mock_path = mocker.patch.object(utils.helpers, "Path").return_value
-    mock_path.is_symlink.side_effect = [True, False, False, False]
+    mock_path.is_symlink.side_effect = [True, False, False, False, False]
     # Test Symlink (POSIX)
     mock_platform.return_value = "linux"
     assert utils.is_dir_link(link_path)
@@ -241,6 +242,9 @@ def test_is_dir_link(mocker, tmp_path):
     mock_path.absolute.return_value = link_path
     assert utils.is_dir_link(link_path)
     mock_path.absolute.return_value = targ_path
+    assert not utils.is_dir_link(link_path)
+    mock_path.absolute.return_value = PureWindowsPath("c:/micropy/link")
+    mock_path.resolve.return_value = PureWindowsPath("C:/micropy/link")
     assert not utils.is_dir_link(link_path)
 
 

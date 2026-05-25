@@ -380,8 +380,7 @@ def is_dir_link(path):
         return True
     if platform == "win32":
         # Test for Directory Junction
-        resolved = str(path.resolve())
-        if not str(path.absolute()) == resolved:
+        if path.absolute() != path.resolve():
             return True
     return False
 
