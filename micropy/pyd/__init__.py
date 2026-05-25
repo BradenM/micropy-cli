@@ -13,16 +13,16 @@ from .consumers import ConsumerDelegate, MessageHandlers, ProgressStreamConsumer
 from .pydevice import PyDevice
 
 __all__ = [
-    "PyDevice",
     "ConsumerDelegate",
-    "ProgressStreamConsumer",
-    "StreamHandlers",
-    "MessageHandlers",
-    "PyDeviceConsumer",
-    "MessageConsumer",
-    "StreamConsumer",
-    "MetaPyDevice",
-    "MetaPyDeviceBackend",
     "DevicePath",
     "HostPath",
+    "MessageConsumer",
+    "MessageHandlers",
+    "MetaPyDevice",
+    "MetaPyDeviceBackend",
+    "ProgressStreamConsumer",
+    "PyDevice",
+    "PyDeviceConsumer",
+    "StreamConsumer",
+    "StreamHandlers",
 ]

@@ -19,28 +19,28 @@ exclude: |
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v6.0.0
     hooks:
       - id: debug-statements
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: check-executables-have-shebangs
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.255"
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.15.14"
     hooks:
       - id: ruff
         args:
           - --fix
   - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 9.0.0a3
     hooks:
       - id: isort
-  - repo: https://github.com/psf/black
-    rev: 23.1.0
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 26.5.1
     hooks:
       - id: black
   - repo: https://github.com/python-poetry/poetry
-    rev: 1.4.1
+    rev: 2.4.1
     hooks:
       - id: poetry-check
         files: "^(pyproject.toml|poetry.lock)$"
