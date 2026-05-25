@@ -47,7 +47,7 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     # local path outside of project dir (must be absolute)
     expect_paths.append(str(ctx_absolute.absolute()))
     content = json.loads("\n".join(valid))
-    assert sorted(expect_paths) == sorted(content["python.autoComplete.extraPaths"])
+    assert sorted(expect_paths) == sorted(content["python.analysis.extraPaths"])
     assert expected_path.exists()
     # Test Update
     ctx_paths.append(tmp_path / "foobar" / "foo.py")
@@ -61,7 +61,7 @@ def test_vscode_template(stub_context, shared_datadir, tmp_path, mock_checks):
     )
     content = json.loads(expected_path.read_text())
     expect_paths.append(str((tmp_path / "foobar" / "foo.py").relative_to(tmp_path)))
-    assert sorted(expect_paths) == sorted(content["python.autoComplete.extraPaths"])
+    assert sorted(expect_paths) == sorted(content["python.analysis.extraPaths"])
     # Test update with missing file
     expected_path.unlink()  # delete file
     prov.update("vscode", tmp_path, stubs=stubs, paths=ctx_paths, datadir=ctx_datadir)

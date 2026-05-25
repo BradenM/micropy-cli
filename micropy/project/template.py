@@ -192,7 +192,6 @@ class CodeTemplate(Template):
         ctx = {
             "stubs": self.stubs or [],
             "paths": stub_paths,
-            "typeshed_paths": json.dumps([str(s) for s in [*paths, "typings"]]),
             "language_server": self.language_server,
         }
         return ctx
