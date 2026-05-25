@@ -105,7 +105,9 @@ class Package:
             return cls(**req.__dict__)
         if "-e" in specs:
             req = next(requirements.parse(specs))
-            return cls(name, req.specs, path=req.path)
+            # requirements-parser >=0.10 returns the trailing path segment as req.name; rejoin.
+            full_path = f"{req.path}/{req.name}" if req.name else req.path
+            return cls(name, req.specs, path=full_path)
         req_name = name
         if specs != "*":
             req_name = f"{name}{specs}"

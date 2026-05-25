@@ -31,9 +31,12 @@ def create_dependency_source(
     """
     req = next(requirements.parse(str(requirement)))
     if req.local_file:
-        path = Path(req.path)
+        # requirements-parser >=0.10 splits "-e a/b/c" into path="a/b" and name="c";
+        # reassemble so downstream paths still point at the package directory.
+        full_path = f"{req.path}/{req.name}" if req.name else req.path
+        path = Path(full_path)
         name = name or path.name
-        pkg = Package(name, req.specs, path=req.path)
+        pkg = Package(name, req.specs, path=full_path)
         source = LocalDependencySource(pkg, path)
         return source
     pkg = Package(**req.__dict__)
