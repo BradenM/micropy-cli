@@ -61,7 +61,7 @@ class TestCreateProject:
         if proj_path.exists():
             shutil.rmtree(proj_path, ignore_errors=True)
         proj = project.Project(proj_path)
-        proj_stub = list(mpy.stubs)[0]
+        proj_stub = next(iter(mpy.stubs))
         proj.add(project.modules.StubsModule, mpy.stubs, stubs=[proj_stub])
         proj.add(project.modules.PackagesModule, "requirements.txt")
         proj.add(project.modules.DevPackagesModule, "dev-requirements.txt")
