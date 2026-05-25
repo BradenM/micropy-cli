@@ -1976,23 +1976,21 @@ re2 = ["google-re2 (>=1.1)"]
 
 [[package]]
 name = "pdbpp"
-version = "0.10.3"
+version = "0.12.1"
 description = "pdb++, a drop-in replacement for pdb"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pdbpp-0.10.3-py2.py3-none-any.whl", hash = "sha256:79580568e33eb3d6f6b462b1187f53e10cd8e4538f7d31495c9181e2cf9665d1"},
-    {file = "pdbpp-0.10.3.tar.gz", hash = "sha256:d9e43f4fda388eeb365f2887f4e7b66ac09dce9b6236b76f63616530e2f669f5"},
+    {file = "pdbpp-0.12.1-py3-none-any.whl", hash = "sha256:3828809519439f468c9475c4c2cbb3899f2f5ba40e79c207d90eabe4c2373f5e"},
+    {file = "pdbpp-0.12.1.tar.gz", hash = "sha256:932cc5963760105e33607f44a1a3b83d28096d7dbf055b77b527c5c70a1dafef"},
 ]
 
 [package.dependencies]
-fancycompleter = ">=0.8"
+fancycompleter = ">=0.11.0"
 pygments = "*"
-wmctrl = "*"
 
 [package.extras]
-funcsigs = ["funcsigs"]
-testing = ["funcsigs", "pytest"]
+testing = ["coverage (<7.11.1)", "ipython", "pexpect", "pytest", "pytest-cov"]
 
 [[package]]
 name = "pipx"
@@ -4133,23 +4131,6 @@ winrt-runtime = ">=3.2.1.0,<3.3.0.0"
 all = ["winrt-Windows.Foundation.Collections[all] (>=3.2.1.0,<3.3.0.0)", "winrt-Windows.Foundation[all] (>=3.2.1.0,<3.3.0.0)", "winrt-Windows.Storage[all] (>=3.2.1.0,<3.3.0.0)", "winrt-Windows.System[all] (>=3.2.1.0,<3.3.0.0)"]
 
 [[package]]
-name = "wmctrl"
-version = "0.5"
-description = "A tool to programmatically control windows inside X"
-optional = false
-python-versions = ">=2.7"
-files = [
-    {file = "wmctrl-0.5-py2.py3-none-any.whl", hash = "sha256:ae695c1863a314c899e7cf113f07c0da02a394b968c4772e1936219d9234ddd7"},
-    {file = "wmctrl-0.5.tar.gz", hash = "sha256:7839a36b6fe9e2d6fd22304e5dc372dbced2116ba41283ea938b2da57f53e962"},
-]
-
-[package.dependencies]
-attrs = "*"
-
-[package.extras]
-test = ["pytest"]
-
-[[package]]
 name = "wrapt"
 version = "1.17.3"
 description = "Module for decorators, wrappers and monkey patching."
@@ -4272,4 +4253,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "acbdf3d0e8e84b1db40e37d2a15488d1db073e6cc55367ddbed6520e1ad2ecbe"
+content-hash = "eca8273e70ddd1db54d8f9ea072d53c31735c576780a557725f1dfedde863b0e"
