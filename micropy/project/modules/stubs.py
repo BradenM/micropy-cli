@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from typing import Any, List, Sequence, Union
+from typing import Any, List, Optional, Sequence, Union
 
 from boltons import setutils
 from micropy.project.modules import ProjectModule
@@ -22,7 +22,10 @@ class StubsModule(ProjectModule):
     PRIORITY: int = 9
 
     def __init__(
-        self, stub_manager: StubManager, stubs: Sequence[DeviceStub] = None, **kwargs: Any
+        self,
+        stub_manager: StubManager,
+        stubs: Optional[Sequence[DeviceStub]] = None,
+        **kwargs: Any,
     ):
         super().__init__(**kwargs)
         self.stub_manager: StubManager = stub_manager

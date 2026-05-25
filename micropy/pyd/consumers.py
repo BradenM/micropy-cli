@@ -19,14 +19,14 @@ class ProgressStreamConsumer:
 
     def __init__(
         self,
-        on_description: Callable[
-            [str, dict[str, Any] | None], tuple[str, dict[str, Any] | None]
-        ] = None,
+        on_description: (
+            Callable[[str, dict[str, Any] | None], tuple[str, dict[str, Any] | None]] | None
+        ) = None,
         **kwargs,
     ):
         self._on_description = on_description or (lambda s, cfg: (s, cfg))
 
-    def on_start(self, *, name: str = None, size: int | None = None):
+    def on_start(self, *, name: str | None = None, size: int | None = None):
         bar_format = "{l_bar}{bar}| [{n_fmt}/{total_fmt} @ {rate_fmt}]"
         tqdm_kwargs = {
             "unit_scale": True,

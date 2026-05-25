@@ -22,8 +22,7 @@ if TYPE_CHECKING:
         ASCII_XFER: bool
         QUIET: bool
 
-        def connect(self, port: str):
-            ...
+        def connect(self, port: str): ...
 
 
 try:
