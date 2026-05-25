@@ -1,4 +1,5 @@
 """Micropy Exceptions."""
+
 from __future__ import annotations
 
 
@@ -21,7 +22,7 @@ class StubValidationError(StubError):
     """Raised when a stub fails validation."""
 
     def __init__(self, path, errors, *args, **kwargs):
-        msg = f"Stub at[{str(path)}] encountered" f" the following validation errors: {str(errors)}"
+        msg = f"Stub at[{path!s}] encountered" f" the following validation errors: {errors!s}"
         super().__init__(msg, *args, **kwargs)
 
     def __str__(self):

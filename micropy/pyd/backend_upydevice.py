@@ -203,7 +203,7 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
         target_path = self.resolve_path(target_path)
         self._pydevice.cmd("import gc")
         self._pydevice.cmd("import ubinascii")
-        self._pydevice.cmd(f"f = open('{str(target_path)}', 'wb')")
+        self._pydevice.cmd(f"f = open('{target_path!s}', 'wb')")
 
         content_iter = (
             iterutils.chunked_iter(contents, self.BUFFER_SIZE)
@@ -212,7 +212,7 @@ class UPyDeviceBackend(MetaPyDeviceBackend):
         )
 
         content_size = len(contents)
-        consumer.on_start(name=f"Writing {str(target_path)}", size=content_size)
+        consumer.on_start(name=f"Writing {target_path!s}", size=content_size)
 
         for chunk in content_iter:
             cmd = (
