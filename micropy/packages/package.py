@@ -5,6 +5,24 @@ import requirements
 from packaging.utils import canonicalize_name
 
 
+def _editable_path_from_line(line: Optional[str], fallback: str) -> str:
+    """Recover the original local-file path from a requirements-parser line.
+
+    requirements-parser >=0.10 splits ``-e a/b/c`` into ``path='a/b'`` plus
+    ``name='c'``, and when ``#egg=NAME`` is supplied it puts the full path
+    in ``path`` and the egg name in ``name`` — so neither field alone
+    reconstructs the user's input. The raw line does.
+    """
+    if not line:
+        return fallback
+    stripped = line.strip()
+    for prefix in ("-e ", "--editable "):
+        if stripped.startswith(prefix):
+            stripped = stripped[len(prefix) :].strip()
+            break
+    return stripped.split("#egg=", 1)[0].strip() or fallback
+
+
 class Package:
     def __init__(
         self,
@@ -105,8 +123,7 @@ class Package:
             return cls(**req.__dict__)
         if "-e" in specs:
             req = next(requirements.parse(specs))
-            # requirements-parser >=0.10 returns the trailing path segment as req.name; rejoin.
-            full_path = f"{req.path}/{req.name}" if req.name else req.path
+            full_path = _editable_path_from_line(req.line, req.path or "")
             return cls(name, req.specs, path=full_path)
         req_name = name
         if specs != "*":

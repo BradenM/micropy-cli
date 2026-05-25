@@ -10,7 +10,7 @@ from typing import Any, Optional, Union
 
 import requirements
 
-from .package import Package
+from .package import Package, _editable_path_from_line
 from .source_package import PackageDependencySource, VCSDependencySource
 from .source_path import LocalDependencySource
 
@@ -31,11 +31,9 @@ def create_dependency_source(
     """
     req = next(requirements.parse(str(requirement)))
     if req.local_file:
-        # requirements-parser >=0.10 splits "-e a/b/c" into path="a/b" and name="c";
-        # reassemble so downstream paths still point at the package directory.
-        full_path = f"{req.path}/{req.name}" if req.name else req.path
+        full_path = _editable_path_from_line(req.line, req.path or "")
         path = Path(full_path)
-        name = name or path.name
+        name = name or req.name or path.name
         pkg = Package(name, req.specs, path=full_path)
         source = LocalDependencySource(pkg, path)
         return source
