@@ -7,14 +7,11 @@
     "python.analysis.diagnosticSeverityOverrides": { "reportMissingModuleSource": "none" },
     "python.analysis.typeCheckingMode": "basic",
     "python.autoComplete.typeshedPaths":  {{ typeshed_paths }},
-    "python.analysis.typeshedPaths":  {{ typeshed_paths }},
+    "python.analysis.typeshedPaths":  {{ typeshed_paths }}
     {% endif %}
     {% if language_server == 'mpls' %}
     "python.jediEnabled": false,
     "python.autoComplete.typeshedPaths":  {{ paths }},
-    "python.analysis.typeshedPaths":  {{ paths }},
+    "python.analysis.typeshedPaths":  {{ paths }}
     {% endif %}
-
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true
 }
