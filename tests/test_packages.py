@@ -58,7 +58,7 @@ class TestPackages:
                 ],
             ),
             (["picoweb"], ["picoweb", "*", "picoweb"]),
-            (["picoweb==^7.1"], ["picoweb", "==^7.1", "picoweb==^7.1"]),
+            (["picoweb==7.1"], ["picoweb", "==7.1", "picoweb==7.1"]),
             (["BlynkLib==0.0.0"], ["blynklib", "==0.0.0", "blynklib==0.0.0"]),
             (
                 ["-e /foobar/somepkg", "somepackage"],
