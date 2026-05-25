@@ -65,6 +65,11 @@ class TestPackages:
                 ["somepackage", "-e /foobar/somepkg", "-e /foobar/somepkg"],
             ),
             (["-e /foobar/somepkg"], ["somepkg", "-e /foobar/somepkg", "-e /foobar/somepkg"]),
+            # locks BC for the `-e <path>#egg=NAME` form: path must not include the egg name.
+            (
+                ["-e /foobar/somepkg#egg=custompkg"],
+                ["custompkg", "-e /foobar/somepkg", "-e /foobar/somepkg"],
+            ),
         ],
     )
     def test_package(self, mock_pkg, requirement, expect):
@@ -111,6 +116,11 @@ class TestPackages:
                 ("custompkg", "-e src/lib/custompackage"),
                 EXPPKG("custompkg", "-e src/lib/custompackage", "-e src/lib/custompackage"),
             ),
+            # locks BC for the `#egg=NAME` form: path must not include the egg name.
+            (
+                ("local-pkg", "-e /foo/bar#egg=local-pkg"),
+                EXPPKG("local-pkg", "-e /foo/bar", "-e /foo/bar"),
+            ),
         ],
     )
     def test_package_from_text(self, pkg, expect, utils):
@@ -121,6 +131,6 @@ class TestPackages:
         is_e = "-e" in pkg.full_name
         assert pkg.editable == is_e
         if pkg.editable:
-            assert pkg.path == Path("src/lib/custompackage")
+            assert pkg.path == Path(expect.specs.removeprefix("-e "))
         else:
             assert pkg.path is None
