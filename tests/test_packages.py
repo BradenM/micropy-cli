@@ -29,7 +29,7 @@ def test_source_package_import_does_not_require_git_executable(monkeypatch):
         if original_module is not None:
             sys.modules[source_module_name] = original_module
         if packages_module is not None:
-            setattr(packages_module, "source_package", original_attr)
+            packages_module.source_package = original_attr
 
 
 class TestPackages:
