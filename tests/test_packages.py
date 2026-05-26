@@ -1,3 +1,5 @@
+import importlib
+import sys
 from pathlib import Path
 
 import pytest
@@ -5,6 +7,29 @@ from boltons.namedutils import namedlist
 from micropy import packages
 
 EXPPKG = namedlist("ExpectPackage", ["name", "specs", "full_name"])
+
+
+def test_source_package_import_does_not_require_git_executable(monkeypatch):
+    source_module_name = "micropy.packages.source_package"
+    original_module = sys.modules.pop(source_module_name, None)
+    packages_module = sys.modules.get("micropy.packages")
+    original_attr = getattr(packages_module, "source_package", None)
+
+    class BrokenGitModule:
+        def __getattr__(self, name):
+            raise ImportError("Bad git executable.")
+
+    monkeypatch.setitem(sys.modules, "git", BrokenGitModule())
+    try:
+        source_package = importlib.import_module(source_module_name)
+        assert source_package.PackageDependencySource
+        assert source_package.VCSDependencySource
+    finally:
+        sys.modules.pop(source_module_name, None)
+        if original_module is not None:
+            sys.modules[source_module_name] = original_module
+        if packages_module is not None:
+            setattr(packages_module, "source_package", original_attr)
 
 
 class TestPackages:
