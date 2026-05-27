@@ -40,7 +40,7 @@ questionary = "2.1.1"
 requests = "2.34.2"
 requirements-parser = "0.11.0"
 tqdm = "4.67.3"
-click = "8.1.7"
+click = "8.4.1"
 colorama = { version = "==0.4.6", platform = "win32" }
 jsonschema = "=3.2.0"
 dpath = "==1.5.0"
