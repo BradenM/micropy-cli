@@ -3,7 +3,6 @@ from pathlib import Path
 from tempfile import mkdtemp
 from typing import Any, Callable, List, Optional, Tuple, Union
 
-from git import Repo
 from micropy import utils
 from micropy.exceptions import RequirementNotFound
 
@@ -96,7 +95,7 @@ class VCSDependencySource(DependencySource):
         self.log.debug(
             f"VCS package!, {self.package.revision}@{self.package.vcs}@{self.package.full_name}"
         )
-        self._repo: Optional[Repo] = None
+        self._repo: Optional[Any] = None
         try:
             utils.ensure_valid_url(self.repo_url)
         except Exception as e:
@@ -128,6 +127,8 @@ class VCSDependencySource(DependencySource):
             Path to clone repository.
 
         """
+        from git import Repo
+
         self.log.debug(f"fetching vcs package: ${self.file_name} @ ${self.repo_url}")
         self.format_desc(self.file_name)
         self._repo = Repo.clone_from(self.repo_url, str(dest_path))
