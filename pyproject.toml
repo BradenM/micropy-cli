@@ -66,7 +66,7 @@ typer = {version = "0.26.1", extras = ["all"]}
 
 [tool.poetry.group.dev.dependencies]
 bump2version = "^0.5.11"
-pre-commit = "^3.0.2"
+pre-commit = "^4.0.0"
 mypy = { version = "^1.0", extras = ["dmypy"] }
 types-requests = "^2.27.14"
 pylint = "^2.7"
