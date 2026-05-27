@@ -32,7 +32,7 @@ classifiers = [
 micropy = 'micropy.app:app'
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.12"
+python = "==3.11.15"
 boltons = "==23.1.1"
 cachier = "2.3.0"
 Jinja2 = "3.1.6"
@@ -47,7 +47,7 @@ dpath = "==1.5.0"
 GitPython = "==3.1.50"
 packaging = "==23.2"
 python-minifier = "==2.11.3"
-mypy = "^1"
+mypy = "1.10.1"
 ## rshell is broken on windows (with python >=3.10) due to pyreadline dependency.
 rshell = [
     { version = "^0.0.31", platform = "win32", python = "<3.10" },
@@ -61,7 +61,7 @@ pydantic = "1.10.26"
 distlib = "0.4.0"
 importlib-metadata = { version = "==5.2.0", python = '<3.10' }
 micropython-stubber = "==1.28.3"
-libcst = ">=1.1.0,<2.0.0"
+libcst = "==1.8.6"
 typer = {version = "0.26.1", extras = ["all"]}
 
 [tool.poetry.group.dev.dependencies]
