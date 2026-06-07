@@ -28,7 +28,7 @@ jobs:
         python: ["3.9", "3.10", "3.11"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup environment.
         uses: ./.github/actions/setup-micropy
