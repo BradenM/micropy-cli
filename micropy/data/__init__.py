@@ -8,7 +8,7 @@ data files used by MicropyCli
 
 from pathlib import Path
 
-__all__ = ["ROOT", "SCHEMAS", "REPO_SOURCES", "FILES", "STUB_DIR", "LOG_FILE", "STUBBER"]
+__all__ = ["FILES", "LOG_FILE", "REPO_SOURCES", "ROOT", "SCHEMAS", "STUBBER", "STUB_DIR"]
 
 # Paths
 MOD_PATH = Path(__file__).parent
