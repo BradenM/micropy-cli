@@ -44,8 +44,8 @@ def create_dependency_source(
 
 
 __all__ = [
+    "LocalDependencySource",
     "Package",
     "PackageDependencySource",
-    "LocalDependencySource",
     "create_dependency_source",
 ]
