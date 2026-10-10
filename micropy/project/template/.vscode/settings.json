@@ -5,14 +5,12 @@
     "python.analysis.autoSearchPath": true,
     "python.analysis.extraPaths": {{ paths }},
     "python.analysis.diagnosticSeverityOverrides": { "reportMissingModuleSource": "none" },
-    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.typeCheckingMode": "basic"
     {% endif %}
     {% if language_server == 'mpls' %}
     "python.jediEnabled": false,
     "python.autoComplete.typeshedPaths":  {{ paths }},
-    "python.analysis.typeshedPaths":  {{ paths }},
+    "python.analysis.typeshedPaths":  {{ paths }}
     {% endif %}
 
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true
 }
