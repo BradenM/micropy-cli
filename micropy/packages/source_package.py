@@ -1,14 +1,16 @@
 import shutil
 from pathlib import Path
 from tempfile import mkdtemp
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple, Union
 
-from git import Repo
 from micropy import utils
 from micropy.exceptions import RequirementNotFound
 
 from .package import Package
 from .source import DependencySource
+
+if TYPE_CHECKING:
+    from git import Repo
 
 
 class PackageDependencySource(DependencySource):
@@ -128,6 +130,8 @@ class VCSDependencySource(DependencySource):
             Path to clone repository.
 
         """
+        from git import Repo
+
         self.log.debug(f"fetching vcs package: ${self.file_name} @ ${self.repo_url}")
         self.format_desc(self.file_name)
         self._repo = Repo.clone_from(self.repo_url, str(dest_path))
