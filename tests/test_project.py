@@ -117,7 +117,7 @@ def test_implementation(mocker):
     """Test Abstract Base Class"""
     mocker.patch.object(modules.ProjectModule, "__abstractmethods__", new_callable=set)
     inst = modules.ProjectModule()
-    inst.config
+    inst.config  # noqa: B018 — abstract property is patched to be accessible
     inst.load()
     inst.create()
     inst.update()
@@ -203,7 +203,7 @@ class TestStubsModule:
         mp = micropy_stubs()
         parent_mock = mocker.MagicMock()
         parent_mock.data_path = tmp_path / ".micropy"
-        stub_item = list(mp.stubs)[0]
+        stub_item = next(iter(mp.stubs))
         stub_mod = modules.StubsModule(
             mp.stubs, stubs=[stub_item], parent=parent_mock, log=mocker.Mock()
         )

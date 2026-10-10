@@ -12,13 +12,13 @@ jobs:
     continue-on-error: true
     if: github.actor != 'github-actions[bot]' || github.event.pusher.email != 'github-actions[bot]@users.noreply.github.com'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
 
       - name: Setup go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
 
       - name: Generate Changelog
         run: go run github.com/git-chglog/git-chglog/cmd/git-chglog@latest --output CHANGELOG.md

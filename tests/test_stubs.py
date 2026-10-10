@@ -171,12 +171,12 @@ def test_name_property(shared_datadir):
 
     with pytest.raises(NotImplementedError):
         x = ErrorStub(test_stub)
-        x.name
+        x.name  # noqa: B018 — property access is expected to raise
 
 
 def test_stub_resolve_link(mock_mp_stubs, tmp_path):
     """should create DeviceStub from symlink"""
-    stub = list(mock_mp_stubs.stubs)[0]
+    stub = next(iter(mock_mp_stubs.stubs))
     link_path = tmp_path / "stub_symlink"
     linked_stub = stubs.stubs.DeviceStub.resolve_link(stub, link_path)
     assert stub == linked_stub
@@ -191,7 +191,7 @@ def test_manager_resolve_subresource(mock_mp_stubs, tmp_path):
     subresource = tmp_path / "stub_subresource"
     subresource.mkdir()
     manager = mock_mp_stubs.stubs.resolve_subresource(test_stubs, subresource)
-    linked_stub = list(manager)[0]
+    linked_stub = next(iter(manager))
     assert linked_stub.path.is_symlink()
     assert linked_stub in list(mock_mp_stubs.stubs)
 
