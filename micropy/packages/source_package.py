@@ -1,13 +1,16 @@
 import shutil
 from pathlib import Path
 from tempfile import mkdtemp
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple, Union
 
 from micropy import utils
 from micropy.exceptions import RequirementNotFound
 
 from .package import Package
 from .source import DependencySource
+
+if TYPE_CHECKING:
+    from git import Repo
 
 
 class PackageDependencySource(DependencySource):
@@ -95,7 +98,7 @@ class VCSDependencySource(DependencySource):
         self.log.debug(
             f"VCS package!, {self.package.revision}@{self.package.vcs}@{self.package.full_name}"
         )
-        self._repo: Optional[Any] = None
+        self._repo: Optional[Repo] = None
         try:
             utils.ensure_valid_url(self.repo_url)
         except Exception as e:
