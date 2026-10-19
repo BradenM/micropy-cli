@@ -16,15 +16,15 @@ from .repository_info import RepositoryInfo
 from .stubs import StubManager
 
 __all__ = [
-    "StubManager",
-    "source",
-    "StubsManifest",
-    "StubPackage",
     "AnyStubPackage",
-    "StubRepository",
     "MicropyStubPackage",
-    "MicropythonStubsPackage",
     "MicropythonStubsManifest",
+    "MicropythonStubsPackage",
     "RepositoryInfo",
+    "StubManager",
+    "StubPackage",
+    "StubRepository",
     "StubRepositoryPackage",
+    "StubsManifest",
+    "source",
 ]
