@@ -32,22 +32,22 @@ from ._compat import metadata
 from .types import PathStr
 
 __all__ = [
-    "is_url",
-    "get_url_filename",
+    "create_dir_link",
     "ensure_existing_dir",
     "ensure_valid_url",
-    "is_downloadable",
-    "is_existing_dir",
-    "stream_download",
-    "search_xml",
-    "get_package_meta",
     "extract_tarbytes",
-    "iter_requirements",
-    "create_dir_link",
-    "is_dir_link",
-    "is_update_available",
     "get_cached_data",
     "get_class_that_defined_method",
+    "get_package_meta",
+    "get_url_filename",
+    "is_dir_link",
+    "is_downloadable",
+    "is_existing_dir",
+    "is_update_available",
+    "is_url",
+    "iter_requirements",
+    "search_xml",
+    "stream_download",
 ]
 
 
